@@ -1,0 +1,88 @@
+td {
+	font-family:"DejaVu Sans",Arial,Helvetica,sans-serif;
+	font-size:12px;
+	vertical-align:top;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+td.center {
+	text-align:center;
+}
+
+td.head {
+	font-weight:bold;
+	padding-top:3px;
+	padding-bottom:3px;
+}
+
+td.right {
+	text-align:right;
+	padding-right:6px;
+}
+
+table {
+	width: 320px; border-spacing:0;
+	border-collapse:collapse;
+}
+
+
+/*
+html,body,.darkbackground
+{
+	background:#0C0C0C;
+}
+
+body
+{
+	color:#E6E6E6;
+}
+*/
+
+
+td.column1 {
+	width:60px;
+}
+
+td.column3 {
+	width:120px;
+}
+
+td.column4 {
+	width:30px;
+}
+
+#bar_wrap {
+width:10px;border:1px solid silver;width:100%;
+}
+
+div#bar1, div#bar2, div#bar3, div#bar4, 
+div#bar5, div#bar6 {
+	height:12px;
+	width:2%;
+	transition:width 2s;
+
+/*
+	<?php
+		$agent = "";
+		if(isset($_SERVER['HTTP_USER_AGENT']))
+		{
+			$agent = 
+$_SERVER['HTTP_USER_AGENT'];
+		}
+		if(strlen(stristr($agent,"applewebkit")) 
+> 0 ) echo "\n\t\t\t\t-webkit-transition:width 2s;\n";
+		else 
+if(strlen(stristr($agent,"gecko")) > 0 ) echo 
+"\n\t\t\t\t-moz-transition:width 2s;\n";
+		else 
+if(strlen(stristr($agent,"opera")) > 0 ) echo "\n\t\t\t\t-o-transition:width 2s;\n";
+	?>
+*/				
+}
+div#bar1 { background-color:#D78787; }
+div#bar2 { background-color:#AFD787; }
+div#bar3 { background-color:#F7F7AF; }
+div#bar4 { background-color:#87AFD7; }
+div#bar5 { background-color:#D7AFD7; }
+div#bar6 { background-color:#AFD7D7; }
