@@ -1,9 +1,6 @@
-Welcome to the OpenRepeater Project.
+OpenRepeater Web App
+========
 
-I am working to open source this project, so please WATCH this repository if your are interested. In the meantime, find out more information below.
+This is where web application files live for the OpenRepeater Project. The OpenRepeater web application is a front end interface to the svxlink core system and builds the appropriate configuration files needed for operation. 
 
-PROJECT PAGE
-http://openrepeater.com
-
-YOUTUBE DEMO VIDEO
-https://www.youtube.com/watch?v=FrtHzsZMfm8
+Any Issues should be reported under the main repository located at https://github.com/OpenRepeater/OpenRepeater with the appropriate label applied.
