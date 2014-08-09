@@ -22,7 +22,7 @@
 		</div>
 
 		<footer>
-			<p class="pull-left">Designed by: Aaron Crawford, N3MBH. (<a href="http://alleghenycreative.com" target="_blank">Allegheny Creative, LLC</a>)</p>
+			<p class="pull-left">Designed by: Aaron Crawford, N3MBH (<a href="http://alleghenycreative.com" target="_blank">Allegheny Creative, LLC</a>)</p>
 			<p class="pull-right">Powered by: <a href="http://sourceforge.net/projects/svxlink/">SvxLink</a></p>
 		</footer>
 		<?php } ?>
