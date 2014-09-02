@@ -3,3 +3,4 @@ activity.log
 .DS_Store
 .vagrant
 vendor/
+web/_includes/database.php
