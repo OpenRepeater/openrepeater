@@ -68,6 +68,7 @@ server:
         - screen
         - php5-imagick
         - mailutils
+        - php5-memcache
 firewall:
     install: '1'
     rules: null
