@@ -91,7 +91,7 @@ if ((isset($_POST['username'])) && (isset($_POST['password']))){
 
 //Display Login Form
 if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
-	if ($_GET['error'] == 'incorrectLogin'){
+	if (isset($_GET['error']) && $_GET['error'] == 'incorrectLogin'){
 		$login_msg = '<div class="alert alert-error">Sorry, the Username and Password combination did not match</div>';
 	} else {
 		$login_msg = '<div class="alert alert-info">Please login with your Username and Password.</div>';

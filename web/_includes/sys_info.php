@@ -1,7 +1,7 @@
 ﻿<?php
 	// Portions of code by derkev.in, http://derkev.in/rpisysinfoscript/
 
-	list($system, $host, $kernel) = split(" ", exec("uname -a"), 4);
+	list($system, $host, $kernel) = explode(" ", exec("uname -a"), 4);
 
 	$current_time = exec("date +'%d %b %Y<br />%T %Z'");
 
@@ -96,7 +96,7 @@
 	$meminfo = file("/proc/meminfo");
 	for ($i = 0; $i < count($meminfo); $i++)
 	{
-		list($item, $data) = split(":", $meminfo[$i], 2);
+		list($item, $data) = explode(":", $meminfo[$i], 2);
 		$item = trim(chop($item));
 		$data = intval(preg_replace("/[^0-9]/", "", trim(chop($data)))); //Remove non numeric characters
 		switch($item)
@@ -132,7 +132,7 @@
 	$count = 1;
 	while ($count < sizeof($diskfree))
 	{
-		list($drive[$count], $typex[$count], $size[$count], $used[$count], $avail[$count], $percent[$count], $mount[$count]) = split(" +", $diskfree[$count]);
+		list($drive[$count], $typex[$count], $size[$count], $used[$count], $avail[$count], $percent[$count], $mount[$count]) = preg_split("/[\s,]+/", $diskfree[$count]);
 		$percent_part[$count] = str_replace( "%", "", 
 $percent[$count]);
 		$count++;

@@ -48,7 +48,7 @@ include('_includes/header.php');
 				</ul>
 			</div>
 
-			<?php echo $alert; ?>
+			<?php if (isset($alert)) { echo $alert; } ?>
 
 			<div class="alert alert-info"><p><strong>Caution About Setting Up Uncoordinated Repeaters:</strong> Having two repeaters operate on the same radio frequencies is problematic as they can interfere with each other, even with selective calling methods enabled. To help minimize this issue, regional repeater coordination organizations have been created. In some jurisdictions, coordination may be required by law or regulation. In the USA, coordination is optional and done on a voluntary basis, but Part 97 rule 205(c) prefers a coordinated repeater over an uncoordinated repeater in disputes over interference. Coordination in the USA is overseen by the National Frequency Coordinators' Council (NFCC), a non-profit organization that certifies regional coordinators.</p><p>When setting up a temporary uncoordinated repeater, it is best to research and check the frequencies first before putting the repeater on the air. This can be done by both listening to the frequencies for repeater activity and checking current repeater directory resources for repeaters in the area you plan to operate. If you do happen to encounter interference, please be respectful and move to another frequency. If you plan to setup a permanent/fixed repeater installation, coordination is highly advised.</p></div>
 

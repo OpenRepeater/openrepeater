@@ -9,7 +9,7 @@ $results = mysql_query("SELECT * FROM  ctcss")or die();
 
 $ctcss = array();
 while($row = mysql_fetch_assoc($results)) {
-	$ctcss[$row['toneFreqHz']] = $row['$key'];
+	$ctcss[$row['toneFreqHz']] = $row['code'];
 }
 mysql_close($dbConnection);
 

@@ -102,7 +102,7 @@ include('_includes/header.php');
 			</div>
 
 			
-			<?php echo $alert; ?>
+			<?php if (isset($alert)) { echo $alert; } ?>
 
 
 			<div class="row-fluid sortable">
@@ -296,7 +296,7 @@ $html_modal .= '
 			</div><!--/row-->
 
 			
-<?php echo $html_modal;	?>
+<?php if (isset($html_modal)) { echo $html_modal; }	?>
     
 <?php include('_includes/footer.php'); ?>
 

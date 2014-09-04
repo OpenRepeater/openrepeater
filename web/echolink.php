@@ -67,7 +67,7 @@ include('_includes/header.php');
 				</ul>
 			</div>
 
-			<?php echo $alert; ?>
+			<?php if (isset($alert)) { echo $alert; } ?>
 
 
 

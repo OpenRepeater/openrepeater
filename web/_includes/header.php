@@ -40,11 +40,11 @@
 	<!-- The fav icon -->
 	<link rel="shortcut icon" href="img/favicon.ico">
 
-	<?php if ($header_scripts) { echo $header_scripts; } ?>
+	<?php if (isset($header_scripts)) { echo $header_scripts; } ?>
 		
 </head>
 
-<body<?php if ($body_onload) { echo ' ' . $body_onload; } ?>>
+<body<?php if (isset($body_onload)) { echo ' ' . $body_onload; } ?>>
 	<?php if(!isset($no_visible_elements) || !$no_visible_elements)	{ ?>
 
 	<!-- Server Notifications -->
