@@ -1,11 +1,11 @@
 <?php
+
 session_start();
 include_once("_includes/database.php");
 
 
 $dbConnection = mysql_connect($MySQLHost, $MySQLUsername, $MySQLPassword);
 mysql_select_db($MySQLDB, $dbConnection);
-
 
 // Change Password
 if (isset($_POST['action'])){
@@ -191,7 +191,6 @@ if (isset($_GET['action'])){
 	</div><!--/row-->
 	';
 	include('_includes/footer.php');
-	die();
 	}
 }
 ?>
