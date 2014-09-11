@@ -100,7 +100,7 @@ apache:
                 - FollowSymLinks
                 - MultiViews
             engine: php
-            custom_fragment: ''
+            custom_fragment: "RewriteEngine On\r\nRewriteRule ^/index.php$ app.php/index.php [QSA,P]\r\nRewriteRule ^/about.php$ app.php/about.php [QSA,P]\r\nRewriteRule ^/courtesty_tone.php app.php/courtesty_tone.php [QSA,P]\r\nRewriteRule ^/donate.php app.php/donate.php [QSA,P]\r\nRewriteRule ^/echolink.php app.php/echolink.php [QSA,P]\r\nRewriteRule ^/log.php app.php/log.php [QSA,P]\r\nRewriteRule ^/login.php app.php/login.php [QSA,P]\r\nRewriteRule ^/settings.php app.php/settings.php [QSA,P]\r\nRewriteRule ^/updates.php app.php/updates.php [QSA,P]\r\nRewriteRule ^test app.php/$1 [QSA,L]\r\n"
             ssl_cert: ''
             ssl_key: ''
             ssl_chain: ''

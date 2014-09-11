@@ -1,0 +1,39 @@
+homepage:
+    path: /
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: index.php }
+
+home:
+    path: /index.php
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: index.php }
+
+about:
+    path: /about.php
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: about.php }
+
+courtesy_tone:
+    path: /courtesy_tone.php
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: courtesy_tone.php }
+
+donate:
+    path: /donate.php
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: donate.php }
+
+echolink:
+    path: /echolink.php
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: echolink.php }
+
+log:
+    path: /log.php
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: log.php }
+
+login:
+    path: /login.php
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: login.php }
+
+settings:
+    path: /settings.php
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: settings.php }
+
+updates:
+    path: /updates.php
+    defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: updates.php }
