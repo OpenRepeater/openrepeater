@@ -4,3 +4,4 @@ activity.log
 .vagrant
 vendor/
 web/_includes/database.php
+app/config/parameters.yml

@@ -11,10 +11,20 @@ $app = new Silex\Application();
 $env = getenv('SYMFONY_ENV') ?: 'dev';
 $app['debug'] = in_array($env, ['dev', 'development', 'testing', 'test']);
 
+$app->register(new DerAlex\Silex\YamlConfigServiceProvider(__DIR__.'/config/parameters.yml'));
 $app->register(new Silex\Provider\ServiceControllerServiceProvider());
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
-
+$app->register(new Silex\Provider\DoctrineServiceProvider(), [
+    'dbs.options' => [
+        'driver'   => $app['config']['parameters']['database_driver'],
+        'host'     => $app['config']['parameters']['database_host'],
+        'port'     => $app['config']['parameters']['database_port'],
+        'dbname'   => $app['config']['parameters']['database_name'],
+        'user'     => $app['config']['parameters']['database_user'],
+        'password' => $app['config']['parameters']['database_password']
+    ]
+]);
 $app->register(new \OpenRepeater\Legacy\Provider\LegacyProvider());
 
 /**
