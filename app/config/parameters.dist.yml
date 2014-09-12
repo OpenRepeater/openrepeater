@@ -2,7 +2,7 @@ parameters:
     database_driver: pdo_mysql
     database_host: localhost
     database_port: null
-    database_name: ssm
+    database_name: openrepeater
     database_user: root
     database_password: root
     redis_dsn: 'redis://localhost'
