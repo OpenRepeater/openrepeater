@@ -5,7 +5,7 @@ RewriteEngine On
 
 #RewriteRule ^/index.php$ app.php/index.php [QSA,P]
 #RewriteRule ^/about.php$ app.php/about.php [QSA,P]
-#RewriteRule ^/courtesty_tone.php app.php/courtesty_tone.php [QSA,P]
+#RewriteRule ^/courtesy_tone.php app.php/courtesy_tone.php [QSA,P]
 #RewriteRule ^/donate.php app.php/donate.php [QSA,P]
 #RewriteRule ^/echolink.php app.php/echolink.php [QSA,P]
 #RewriteRule ^/log.php app.php/log.php [QSA,P]
