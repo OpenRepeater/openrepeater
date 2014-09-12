@@ -16,7 +16,7 @@ $app->register(new Silex\Provider\ServiceControllerServiceProvider());
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
-    'dbs.options' => [
+    'db.options' => [
         'driver'   => $app['config']['parameters']['database_driver'],
         'host'     => $app['config']['parameters']['database_host'],
         'port'     => $app['config']['parameters']['database_port'],
