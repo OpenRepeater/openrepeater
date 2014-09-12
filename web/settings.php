@@ -9,16 +9,13 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 
 
 if (isset($_POST['action'])){
-	include_once("_includes/database.php");
-	$dbUpdateSetting = mysql_connect($MySQLHost, $MySQLUsername, $MySQLPassword);
-	mysql_select_db($MySQLDB, $dbUpdateSetting);
 
 	foreach($_POST as $key=>$value){  
 		if ($key != "action") {
-			mysql_query("UPDATE settings SET value='$value' WHERE keyID='$key'");
+            $query = "UPDATE settings SET value='$value' WHERE keyID=?";
+			$GLOBALS['app']['db']->executeUpdate($query, [$key]);
 		}
 	}
-	mysql_close($dbUpdateSetting);
 
 	$msgText = "The settings have been updated successfully!";
 	$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
@@ -29,11 +26,7 @@ if (isset($_POST['action'])){
 	$memcache_obj->connect('localhost', 11211);
 	$memcache_obj->set('update_settings_flag', 1, false, 0);
 }
-?>
 
-
-
-<?php
 $pageTitle = "General Settings"; 
 include_once("_includes/get_settings.php");
 include_once("_includes/get_ctcss.php");

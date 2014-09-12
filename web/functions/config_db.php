@@ -15,4 +15,3 @@ switch($worked){
 	echo 'There was an error during import. Please make sure that your settings are correct.';
 	break;
 }
-?>

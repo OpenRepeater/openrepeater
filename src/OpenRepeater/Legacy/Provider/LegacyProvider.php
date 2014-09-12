@@ -19,7 +19,9 @@ class LegacyProvider implements  ServiceProviderInterface
     public function register(Application $app)
     {
         $app['openrepeater.legacy.controller'] = $app->share(function() use ($app) {
-            return new LegacyController();
+            return new LegacyController(
+                $app['db']
+            );
         });
     }
 

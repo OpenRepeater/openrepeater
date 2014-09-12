@@ -13,12 +13,9 @@ if (isset($_POST['action'])){
 		$fileName = $_POST['file'];
 		$fileTitle = str_replace('.wav','',$_POST['file']);
 
-		include_once("_includes/database.php");
-		$dbUpdateSetting = mysql_connect($MySQLHost, $MySQLUsername, $MySQLPassword);
-		mysql_select_db($MySQLDB, $dbUpdateSetting);
-		mysql_query("UPDATE settings SET value='$fileName' WHERE keyID='courtesy'");
-		mysql_close($dbUpdateSetting);
-		
+		$query = 'UPDATE settings SET value=? WHERE keyID= ?';
+        $GLOBALS['app']['db']->executeUpdate($query, [$fileName, 'courtesy']);
+
 		$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>Select: '.$fileTitle.'</div>';
 
 		/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */

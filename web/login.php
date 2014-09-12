@@ -1,11 +1,6 @@
 <?php
 
 session_start();
-include_once("_includes/database.php");
-
-
-$dbConnection = mysql_connect($MySQLHost, $MySQLUsername, $MySQLPassword);
-mysql_select_db($MySQLDB, $dbConnection);
 
 // Change Password
 if (isset($_POST['action'])){
@@ -20,33 +15,25 @@ if (isset($_POST['action'])){
 		}
 
 		// password is too long
-		$password = mysql_real_escape_string($_POST['password1']);
+		$password = trim($_POST['password1']);
 		if (strlen($password) > 28) {
-			mysql_close();
 			header('location: login.php?action=setPassword&error=toolong');
 			die();
 		}
 
 		// password is too short
 		if (strlen($password) < 8) {
-			mysql_close();
 			header('location: login.php?action=setPassword&error=tooshort');
 			die();
 		}
 
-// write new pw to database
-//print "write new pw";
-
 		$resetQuery = "SELECT username, salt FROM users WHERE username = 'admin';";
-		$resetResult = mysql_query($resetQuery);
+        $resetData = $GLOBALS['app']['db']->executeQuery($resetQuery)->fetch();
 
-
-		if (mysql_num_rows($resetResult) < 1){
-			mysql_close();
+		if (count($resetData) < 1){
 			header('location: login.php?action=setPassword');
 		}
 
-		$resetData = mysql_fetch_array($resetResult, MYSQL_ASSOC);
 		$resetHash = hash('sha256', $salt . hash('sha256', $password));
 		$hash = hash('sha256', $password);
 
@@ -57,9 +44,8 @@ if (isset($_POST['action'])){
 
 		$salt = createSalt();
 		$hash = hash('sha256', $salt . $hash);
-		mysql_query("UPDATE users SET salt='$salt' WHERE username='admin'");
-		mysql_query("UPDATE users SET password='$hash' WHERE username='admin'");
-		mysql_close();
+        $query = "UPDATE users SET salt=?, password=? WHERE username='admin'";
+		$GLOBALS['app']['db']->executeUpdate($query, [$salt, $hash]);
 		header('location: index.php');
 	}
 }
@@ -67,24 +53,22 @@ if (isset($_POST['action'])){
 
 // Process User Login
 if ((isset($_POST['username'])) && (isset($_POST['password']))){
-	$username = mysql_real_escape_string($_POST['username']);
-	$password = mysql_real_escape_string($_POST['password']);
-	$loginQuery = "SELECT UserID, password, salt FROM users WHERE username = '$username';";
-	$loginResult = mysql_query($loginQuery);
-	if (mysql_num_rows($loginResult) < 1){
-		mysql_close();
+	$username = trim($_POST['username']);
+	$password = trim($_POST['password']);
+	$loginQuery = "SELECT UserID, password, salt FROM users WHERE username = ?;";
+    $loginData = $GLOBALS['app']['db']->executeQuery($loginQuery, [$username])->fetch();
+
+	if (count($loginData) < 1){
 		header('location: login.php?error=incorrectLogin');
 	}
-	$loginData = mysql_fetch_array($loginResult, MYSQL_ASSOC);
+
 	$loginHash = hash('sha256', $loginData['salt'] . hash('sha256', $password));
 	if ($loginHash != $loginData['password']){
-		mysql_close();
 		header('location: login.php?error=incorrectLogin');
 	} else {
 		session_regenerate_id();
 		$_SESSION['username'] = $username;
 		$_SESSION['userID'] = $loginData['UserID'];
-		mysql_close();
 		header('location: index.php');
 	}
 }
