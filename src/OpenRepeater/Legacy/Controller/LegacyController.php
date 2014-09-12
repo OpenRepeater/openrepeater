@@ -2,11 +2,22 @@
 
 namespace OpenRepeater\Legacy\Controller;
 
+use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class LegacyController
 {
+    /**
+     * @var \Doctrine\DBAL\Connection
+     */
+    protected $doctrine_connection;
+
+    public function __construct(Connection $doctrine_connection)
+    {
+        $this->doctrine_connection = $doctrine_connection;
+    }
+
     /**
      * @param Request $request
      * @param string  $file
@@ -22,6 +33,8 @@ class LegacyController
             throw new \Exception('File not found.', 404);
         }
 
+        $this->registerGlobals();
+
         ob_start();
         require_once($legacy_file);
         $body = ob_get_contents();
@@ -31,5 +44,12 @@ class LegacyController
         $response->headers->add(['X-Framework'=> 'Silex']);
 
         return $response;
+    }
+
+    protected function registerGlobals()
+    {
+        $GLOBALS['app'] = [
+            'db' => $this->doctrine_connection
+        ];
     }
 }
