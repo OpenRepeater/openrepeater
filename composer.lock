@@ -4,8 +4,184 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0d0d16df005583f4dda4c792d21f0aa6",
+    "hash": "36a862fe746c220efbdaea3cfa79a8db",
     "packages": [
+        {
+            "name": "deralex/yaml-config-service-provider",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/deralex/YamlConfigServiceProvider.git",
+                "reference": "08ce96bf19f0014feaeb9606ef29c164bd4a43de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/deralex/YamlConfigServiceProvider/zipball/08ce96bf19f0014feaeb9606ef29c164bd4a43de",
+                "reference": "08ce96bf19f0014feaeb9606ef29c164bd4a43de",
+                "shasum": ""
+            },
+            "require": {
+                "silex/silex": ">=1.0",
+                "symfony/yaml": "~2.4"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "2.0.*@dev",
+                "symfony/yaml": "~2.4"
+            },
+            "suggest": {
+                "symfony/yaml": "~2.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "DerAlex\\Silex": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Kluth",
+                    "email": "contact@alexanderkluth.com"
+                }
+            ],
+            "description": "Silex ServiceProvider for using YAML configuration files",
+            "keywords": [
+                "silex"
+            ],
+            "time": "2014-01-29 15:54:57"
+        },
+        {
+            "name": "doctrine/common",
+            "version": "2.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/common.git",
+                "reference": "9e13facbacb001d324d71a0f6d25d8d7f12346b6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/common/zipball/9e13facbacb001d324d71a0f6d25d8d7f12346b6",
+                "reference": "9e13facbacb001d324d71a0f6d25d8d7f12346b6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Doctrine\\Common": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "authors": [
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com",
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
+                },
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com",
+                    "homepage": "http://www.instaclick.com"
+                },
+                {
+                    "name": "Roman Borschel",
+                    "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Johannes Schmitt",
+                    "email": "schmittjoh@gmail.com",
+                    "homepage": "https://github.com/schmittjoh",
+                    "role": "Developer of wrapped JMSSerializerBundle"
+                }
+            ],
+            "description": "Common Library for Doctrine projects",
+            "homepage": "http://www.doctrine-project.org",
+            "keywords": [
+                "annotations",
+                "collections",
+                "eventmanager",
+                "persistence",
+                "spl"
+            ],
+            "time": "2012-08-29 08:04:14"
+        },
+        {
+            "name": "doctrine/dbal",
+            "version": "2.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/dbal.git",
+                "reference": "ee8f64111d03df2dbf3c106214514fce4a9857ab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/ee8f64111d03df2dbf3c106214514fce4a9857ab",
+                "reference": "ee8f64111d03df2dbf3c106214514fce4a9857ab",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/common": ">=2.2.0,<=2.2.99",
+                "php": ">=5.3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Doctrine\\DBAL": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "authors": [
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com",
+                    "homepage": "http://www.jwage.com/",
+                    "role": "Creator"
+                },
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com",
+                    "homepage": "http://www.instaclick.com"
+                },
+                {
+                    "name": "Roman Borschel",
+                    "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                }
+            ],
+            "description": "Database Abstraction Layer",
+            "homepage": "http://www.doctrine-project.org",
+            "keywords": [
+                "database",
+                "dbal",
+                "persistence",
+                "queryobject"
+            ],
+            "time": "2012-04-13 07:56:12"
+        },
         {
             "name": "pimple/pimple",
             "version": "v1.1.1",
@@ -626,7 +802,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "deralex/yaml-config-service-provider": 20
+    },
     "prefer-stable": false,
     "platform": [],
     "platform-dev": []
