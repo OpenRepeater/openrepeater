@@ -1,0 +1,17 @@
+DirectoryIndex app.php
+
+# These rewrite rules are not compatible with mod_proxy
+RewriteEngine On
+
+#RewriteRule ^/index.php$ app.php/index.php [QSA,P]
+#RewriteRule ^/about.php$ app.php/about.php [QSA,P]
+#RewriteRule ^/courtesty_tone.php app.php/courtesty_tone.php [QSA,P]
+#RewriteRule ^/donate.php app.php/donate.php [QSA,P]
+#RewriteRule ^/echolink.php app.php/echolink.php [QSA,P]
+#RewriteRule ^/log.php app.php/log.php [QSA,P]
+#RewriteRule ^/login.php app.php/login.php [QSA,P]
+#RewriteRule ^/settings.php app.php/settings.php [QSA,P]
+#RewriteRule ^/updates.php app.php/updates.php [QSA,P]
+#RewriteRule ^test app.php/$1 [QSA,L]
+
+FallbackResource /app.php

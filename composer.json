@@ -1,0 +1,26 @@
+{
+    "name": "openrepeater/webapp",
+    "license": "GPL-3.0",
+    "type": "project",
+    "description": "",
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+    "require": {
+        "silex/silex": "~1.2",
+        "symfony/yaml": "~2.4",
+        "symfony/config": "~2.4"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-web-dir": "web",
+        "symfony-assets-install": "symlink",
+        "branch-alias": {
+            "dev-alpha": "1.0.x-alpha"
+        }
+    }
+}
