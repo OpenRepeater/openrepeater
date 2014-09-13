@@ -20,7 +20,8 @@ class LegacyProvider implements  ServiceProviderInterface
     {
         $app['openrepeater.legacy.controller'] = $app->share(function() use ($app) {
             return new LegacyController(
-                $app['db']
+                $app['db'],
+                $app['session']
             );
         });
     }
@@ -37,4 +38,3 @@ class LegacyProvider implements  ServiceProviderInterface
         // no op
     }
 }
- 

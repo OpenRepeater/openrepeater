@@ -1,5 +1,6 @@
 <?php
 
+use PimpleAwareEventDispatcher\PimpleAwareEventDispatcher;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\RouteCollection;
@@ -25,8 +26,14 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), [
         'password' => $app['config']['parameters']['database_password']
     ]
 ]);
-$app->register(new \OpenRepeater\Legacy\Provider\LegacyProvider());
+$app['dispatcher'] = $app['pimple_aware_dispatcher'] = $app->share(
+    $app->extend('dispatcher', function($dispatcher) use ($app) {
+        return new PimpleAwareEventDispatcher($dispatcher, $app);
+    }
+));
 
+$app->register(new \OpenRepeater\Legacy\Provider\LegacyProvider());
+$app->register(new \OpenRepeater\Legacy\Provider\AuthenticationProvider());
 /**
  * @see http://gonzalo123.com/2013/03/04/scaling-silex-applications-part-ii-using-routecollection/
  */
@@ -38,5 +45,7 @@ $app['routes'] = $app->extend('routes', function (RouteCollection $routes, Silex
 
     return $routes;
 });
+
+$app->mount('/', new \OpenRepeater\Legacy\Provider\AuthenticationProvider());
 
 return $app;

@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 // Change Password
 if (isset($_POST['action'])){
 	if ($_POST['action'] == "setPassword"){
@@ -50,29 +48,6 @@ if (isset($_POST['action'])){
 	}
 }
 
-
-// Process User Login
-if ((isset($_POST['username'])) && (isset($_POST['password']))){
-	$username = trim($_POST['username']);
-	$password = trim($_POST['password']);
-	$loginQuery = "SELECT UserID, password, salt FROM users WHERE username = ?;";
-    $loginData = $GLOBALS['app']['db']->executeQuery($loginQuery, [$username])->fetch();
-
-	if (count($loginData) < 1){
-		header('location: login.php?error=incorrectLogin');
-	}
-
-	$loginHash = hash('sha256', $loginData['salt'] . hash('sha256', $password));
-	if ($loginHash != $loginData['password']){
-		header('location: login.php?error=incorrectLogin');
-	} else {
-		session_regenerate_id();
-		$_SESSION['username'] = $username;
-		$_SESSION['userID'] = $loginData['UserID'];
-		header('location: index.php');
-	}
-}
-
 //Display Login Form
 if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	if (isset($_GET['error']) && $_GET['error'] == 'incorrectLogin'){
@@ -93,7 +68,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	<div class="row-fluid">
 		<div class="well span5 center login-box">
 			'.$login_msg.'
-			<form name="login" action="login.php" method="post" class="form-horizontal">
+			<form name="login" action="/auth/login" method="post" class="form-horizontal">
 				<fieldset>
 					<div class="input-prepend" title="Username" data-rel="tooltip">
 						<span class="add-on"><i class="icon-user"></i></span><input autofocus class="input-large span10" name="username" id="username" type="text" placeholder="Username" />

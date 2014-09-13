@@ -51,7 +51,7 @@
 
 <?php
 	/* CHECK FOR MEMCACHE FLAG AND NOTIFY USER IF SERVER NEEDS RESTARTED */
-	$current_page_url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	$current_page_url = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 	$memcache_obj = new Memcache;
 	$memcache_obj->connect('localhost', 11211);
 	$var = $memcache_obj->get('update_settings_flag');
@@ -98,9 +98,6 @@
 		';	
 	}
 ?>		
-	
-		
-		
 
 	<!-- topbar starts -->
 	<div class="navbar">
@@ -116,13 +113,13 @@
 				<!-- user dropdown starts -->
 				<div class="btn-group pull-right" >
 					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-						<i class="icon-user"></i><span class="hidden-phone"> <?php echo $_SESSION['username'];?></span>
+						<i class="icon-user"></i><span class="hidden-phone"> <?php echo $GLOBALS['app']['session']->get('username');?></span>
 						<span class="caret"></span>
 					</a>
 					<ul class="dropdown-menu">
 						<li><a href="login.php?action=setPassword">Change Password</a></li>
 						<li class="divider"></li>
-						<li><a href="login.php?action=logout">Logout</a></li>
+						<li><a href="/auth/logout">Logout</a></li>
 					</ul>
 				</div>
 				<!-- user dropdown ends -->

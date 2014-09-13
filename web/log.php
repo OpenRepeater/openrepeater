@@ -1,15 +1,5 @@
 <?php
-// --------------------------------------------------------
-// SESSION CHECK TO SEE IF USER IS LOGGED IN.
-session_start();
-if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
-	header('location: login.php');
-} else { // If they are, show the page.
-// --------------------------------------------------------
-?>
-
-<?php
-$pageTitle = "Updates"; 
+$pageTitle = "Updates";
 include('_includes/header.php');
 ?>
 
@@ -43,11 +33,3 @@ include('_includes/header.php');
 
     
 <?php include('_includes/footer.php'); ?>
-
-
-<?php
-// --------------------------------------------------------
-// SESSION CHECK TO SEE IF USER IS LOGGED IN.
- } // close ELSE to end login check from top of page
-// --------------------------------------------------------
-?>
