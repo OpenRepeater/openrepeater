@@ -4,8 +4,51 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "36a862fe746c220efbdaea3cfa79a8db",
+    "hash": "7cb1e467569cc14ad39b1a854de84241",
     "packages": [
+        {
+            "name": "davedevelopment/pimple-aware-event-dispatcher",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/davedevelopment/pimple-aware-event-dispatcher.git",
+                "reference": "55fec42d5677515070a7639512bbff2777a2b1a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/davedevelopment/pimple-aware-event-dispatcher/zipball/55fec42d5677515070a7639512bbff2777a2b1a4",
+                "reference": "55fec42d5677515070a7639512bbff2777a2b1a4",
+                "shasum": ""
+            },
+            "require": {
+                "pimple/pimple": "1.*",
+                "symfony/event-dispatcher": "~2.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "PimpleAwareEventDispatcher": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Dave Marshall",
+                    "email": "dave.marshall@atstsolutions.co.uk",
+                    "homepage": "http://davedevelopment.co.uk"
+                }
+            ],
+            "description": "A Symfony compatible event dispatcher that allows services to be lazy loaded from an instance of the Pimple DI container",
+            "time": "2013-04-20 23:19:29"
+        },
         {
             "name": "deralex/yaml-config-service-provider",
             "version": "dev-master",
@@ -752,6 +795,80 @@
             "time": "2014-08-26 14:16:33"
         },
         {
+            "name": "symfony/security",
+            "version": "v2.5.4",
+            "target-dir": "Symfony/Component/Security",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Security.git",
+                "reference": "1b9e95cbb20689db16a5c309faf6fae362417d92"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Security/zipball/1b9e95cbb20689db16a5c309faf6fae362417d92",
+                "reference": "1b9e95cbb20689db16a5c309faf6fae362417d92",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "symfony/event-dispatcher": "~2.1",
+                "symfony/http-foundation": "~2.1",
+                "symfony/http-kernel": "~2.4"
+            },
+            "replace": {
+                "symfony/security-acl": "self.version",
+                "symfony/security-core": "self.version",
+                "symfony/security-csrf": "self.version",
+                "symfony/security-http": "self.version"
+            },
+            "require-dev": {
+                "doctrine/common": "~2.2",
+                "doctrine/dbal": "~2.2",
+                "ircmaxell/password-compat": "1.0.*",
+                "psr/log": "~1.0",
+                "symfony/expression-language": "~2.4",
+                "symfony/routing": "~2.2",
+                "symfony/validator": "~2.2"
+            },
+            "suggest": {
+                "doctrine/dbal": "For using the built-in ACL implementation",
+                "ircmaxell/password-compat": "For using the BCrypt password encoder in PHP <5.5",
+                "symfony/class-loader": "For using the ACL generateSql script",
+                "symfony/expression-language": "For using the expression voter",
+                "symfony/finder": "For using the ACL generateSql script",
+                "symfony/routing": "For using the HttpUtils class to create sub-requests, redirect the user, and match URLs",
+                "symfony/validator": "For using the user password constraint"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Security\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Symfony Security Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-09-03 09:22:15"
+        },
+        {
             "name": "symfony/yaml",
             "version": "v2.5.4",
             "target-dir": "Symfony/Component/Yaml",
@@ -803,7 +920,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "deralex/yaml-config-service-provider": 20
+        "deralex/yaml-config-service-provider": 20,
+        "davedevelopment/pimple-aware-event-dispatcher": 20
     },
     "prefer-stable": false,
     "platform": [],
