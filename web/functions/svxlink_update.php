@@ -10,18 +10,6 @@ files for SVXLink. It currently builds the following configuration files:
 */
 
 
-// --------------------------------------------------------
-// SESSION CHECK TO SEE IF USER IS LOGGED IN.
-session_start();
-if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
-	header('location: login.php');
-} else { // If they are, show the page.
-// --------------------------------------------------------
-
-
-
-
-
 
 //UNUSED VARIABLES IN DATABASE...FROM OLD PROGRAM, NOT YET IMPLEMENTED WITH SVXLINK
 // phoneticCallSign
@@ -496,12 +484,4 @@ $memcache_obj->set('update_settings_flag', 0, false, 0);
 echo '
 <h1>Done Building Server Configuration</h1>
 <a href="'.$_POST['return_url'].'">Return to Admin Page</a>';
-?>
-
-
-<?php
-// --------------------------------------------------------
-// SESSION CHECK TO SEE IF USER IS LOGGED IN.
- } // close ELSE to end login check from top of page
-// --------------------------------------------------------
 ?>

@@ -37,3 +37,11 @@ settings:
 updates:
     path: /updates.php
     defaults: { _controller: openrepeater.legacy.controller:legacyAction, file: updates.php }
+
+auth_login:
+    path: /auth/login
+    defaults: { _controller: openrepeater.legacy.authentication.controller:loginAction }
+
+auth_logout:
+    path: /auth/logout
+    defaults: { _controller: openrepeater.legacy.authentication.controller:logoutAction }

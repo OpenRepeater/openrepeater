@@ -8,10 +8,12 @@
     },
     "require": {
         "silex/silex": "~1.2",
-        "symfony/yaml": "~2.4",
         "symfony/config": "~2.4",
+        "symfony/security": "~2.4",
+        "symfony/yaml": "~2.4",
         "doctrine/dbal": "2.2.*",
-        "deralex/yaml-config-service-provider": "1.0.x-dev"
+        "deralex/yaml-config-service-provider": "1.0.x-dev",
+        "davedevelopment/pimple-aware-event-dispatcher": "2.0.x-dev"
     },
     "config": {
         "bin-dir": "bin"

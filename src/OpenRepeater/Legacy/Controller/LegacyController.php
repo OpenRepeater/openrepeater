@@ -5,6 +5,7 @@ namespace OpenRepeater\Legacy\Controller;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class LegacyController
 {
@@ -13,9 +14,15 @@ class LegacyController
      */
     protected $doctrine_connection;
 
-    public function __construct(Connection $doctrine_connection)
+    /**
+     * @var \Symfony\Component\HttpFoundation\Session\SessionInterface
+     */
+    protected $session;
+
+    public function __construct(Connection $doctrine_connection, SessionInterface $session)
     {
         $this->doctrine_connection = $doctrine_connection;
+        $this->session             = $session;
     }
 
     /**
@@ -49,7 +56,8 @@ class LegacyController
     protected function registerGlobals()
     {
         $GLOBALS['app'] = [
-            'db' => $this->doctrine_connection
+            'db'      => $this->doctrine_connection,
+            'session' => $this->session
         ];
     }
 }
