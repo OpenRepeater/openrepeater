@@ -9,20 +9,18 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 
 
 if (isset($_POST['action'])){
-	include_once("_includes/database.php");
-	$dbUpdateSetting = mysql_connect($MySQLHost, $MySQLUsername, $MySQLPassword);
-	mysql_select_db($MySQLDB, $dbUpdateSetting);
 
+	$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');
+	
 	foreach($_POST as $key=>$value){  
 		if ($key != "action") {
-			mysql_query("UPDATE settings SET value='$value' WHERE keyID='$key'");
+			$query = $db->exec("UPDATE settings SET value='$value' WHERE keyID='$key'");
 		}
 	}
-	mysql_close($dbUpdateSetting);
-
+   $db->close();
+	
 	$msgText = "The settings have been updated successfully!";
 	$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
-
 
 	/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
 	$memcache_obj = new Memcache;
@@ -31,22 +29,15 @@ if (isset($_POST['action'])){
 }
 ?>
 
-
-
 <?php
 $pageTitle = "General Settings"; 
-include_once("_includes/get_settings.php");
-include_once("_includes/get_ctcss.php");
-include('_includes/header.php'); 
+include_once("includes/get_settings.php");
+include_once("includes/get_ctcss.php");
+$dbConnection->close();
+
+include('includes/header.php');
+
 ?>
-
-
-			<div>
-				<ul class="breadcrumb">
-					<li><a href="index.php">Home</a> <span class="divider">/</span></li>
-					<li class="active"><?php echo $pageTitle; ?></li>
-				</ul>
-			</div>
 
 			<?php echo $alert; ?>
 
@@ -57,7 +48,7 @@ include('_includes/header.php');
 			<div class="row-fluid sortable">
 				<div class="box span12">
 					<div class="box-header well" data-original-title>
-						<h2><i class="icon-wrench"></i> General Settings</h2>
+						<h2><i class="icon-wrench"></i> General Repeater Settings</h2>
 					</div>
 					<div class="box-content">
 
@@ -259,7 +250,7 @@ include('_includes/header.php');
 			<div class="row-fluid sortable">
 				<div class="box span12">
 					<div class="box-header well" data-original-title>
-						<h2><i class="icon-wrench"></i> Module Settings</h2>
+						<h2><i class="icon-wrench"></i> Module Settings Enable/Disable</h2>
 					</div>
 					<div class="box-content">
 
@@ -327,7 +318,6 @@ include('_includes/header.php');
 								</div>
 							  </div>
 
-
 							<div class="form-actions">
 							  <input type="hidden" name="action" value="update">		
 							  <button type="submit" class="btn btn-primary">Update</button>
@@ -341,10 +331,8 @@ include('_includes/header.php');
 			</div><!--/row-->
 
 			</form>   
-
     
-<?php include('_includes/footer.php'); ?>
-
+<?php include('includes/footer.php'); ?>
 
 <?php
 // --------------------------------------------------------

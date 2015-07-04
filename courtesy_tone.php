@@ -12,14 +12,13 @@ if (isset($_POST['action'])){
 	if ($_POST['action'] == "select_file") {
 		$fileName = $_POST['file'];
 		$fileTitle = str_replace('.wav','',$_POST['file']);
-
-		include_once("_includes/database.php");
-		$dbUpdateSetting = mysql_connect($MySQLHost, $MySQLUsername, $MySQLPassword);
-		mysql_select_db($MySQLDB, $dbUpdateSetting);
-		mysql_query("UPDATE settings SET value='$fileName' WHERE keyID='courtesy'");
-		mysql_close($dbUpdateSetting);
 		
-		$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>Select: '.$fileTitle.'</div>';
+		$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');	
+		$query = $db->exec("UPDATE settings SET value='$fileName' WHERE keyID='courtesy'");
+		$db->close();
+		
+		
+		$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>New Courtesy Tone Selected: <strong>'.$fileTitle.'</strong></div>';
 
 		/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
 		$memcache_obj = new Memcache;
@@ -28,10 +27,10 @@ if (isset($_POST['action'])){
 
 	} else if ($_POST['action'] == "upload_file") {
 		// This is the handler for file uploads. It uploads the file to a temporary path then
-		// convert is to the appropriate WAV formate and puts it in the courtesy tones folder.
+		// converts it to the appropriate WAV formate and puts it in the courtesy tones folder.
 		
-		$temp_dir = "/var/www/admin/temp_uploads/";
-		$final_file_dir = "/var/www/admin/courtesy_tones/";
+		$temp_dir = "/tmp/";
+		$final_file_dir = "/usr/share/openrepeater/sounds/courtesy_tones/";
 		$maxFileSize = 45000000; // size in bytes
 
 		$allowedExts = array("wav", "mp3");
@@ -90,20 +89,12 @@ if (isset($_POST['action'])){
 
 <?php
 $pageTitle = "Courtesy Tones"; 
-include_once("_includes/get_settings.php");
-include('_includes/header.php'); 
+include_once("includes/get_settings.php");
+include('includes/header.php');
+$dbConnection->close();
 ?>
 
-			<div>
-				<ul class="breadcrumb">
-					<li><a href="index.php">Home</a> <span class="divider">/</span></li>
-					<li class="active">Courtesy Tones</li>
-				</ul>
-			</div>
-
-			
 			<?php echo $alert; ?>
-
 
 			<div class="row-fluid sortable">
 
@@ -115,7 +106,6 @@ include('_includes/header.php');
 					<h2><?php echo str_replace('.wav','',$settings['courtesy']);?></h2>
 					</div>
 				</div><!--/span-->
-
 				
 				<div class="box span6">
 					<div class="box-header well">
@@ -134,11 +124,6 @@ include('_includes/header.php');
 				
 			</div><!--/row-->
 
-
-
-
-
-
 			<div class="row-fluid sortable">		
 				<div class="box span12">
 					<div class="box-header well" data-original-title>
@@ -156,13 +141,13 @@ include('_includes/header.php');
 						  </thead>   
 						  <tbody>
 
-
 <?php
 
-$url = 'http'.(empty($_SERVER['HTTPS'])?'':'s').'://'.$_SERVER['SERVER_NAME'].'/admin/courtesy_tones/';
+$url = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/courtesy_tones/';
+
 $files = array();
 
-if ($handle = opendir("./courtesy_tones")) {
+if ($handle = opendir("/usr/share/openrepeater/sounds/courtesy_tones")) {
 	
 	while (false !== ($file = readdir($handle))) {
 		if ('.' === $file) continue;
@@ -222,14 +207,10 @@ if ($handle = opendir("./courtesy_tones")) {
 				<i class="icon-trash icon-white"></i> 
 				Delete
 			</button>
-
-
 		</td>
 	</tr>';
 
-
 $html_modal .= '
-
 
 	<!-- Modal - RENAME DIALOG -->
 	<form action="courtesy_tone.php" method="post">
@@ -257,7 +238,6 @@ $html_modal .= '
 	</div>
 	</form>									
 	<!-- /.modal -->
-
 
 	<!-- Modal - DELETE DIALOG -->
 	<form action="courtesy_tone.php" method="post">
@@ -292,14 +272,11 @@ $html_modal .= '
 					  </table>            
 					</div>
 				</div><!--/span-->
-			
 			</div><!--/row-->
-
 			
 <?php echo $html_modal;	?>
     
-<?php include('_includes/footer.php'); ?>
-
+<?php include('includes/footer.php'); ?>
 
 <?php
 // --------------------------------------------------------

@@ -1,0 +1,86 @@
+/* @override 
+	https://192.168.1.131/theme/css/sys_info.css
+*/
+
+/* @group System Info */
+
+#info_label {
+	float: left;
+	width: 40%;
+	min-width: 125px;
+	font-weight: bold;
+}
+
+#info_value {
+	float: left;
+	width: 57%;
+	min-width: 140px;
+	overflow: auto;
+	margin-bottom: 10px;
+}
+
+#info_clear {
+	clear: both;
+}
+
+/* @end */
+
+
+
+
+
+/* @group Memory Usage */
+
+#mem_group {
+	padding: 5px 5px 11px;
+}
+
+#total_mem {
+	padding: 10px 5px;
+	text-align: center;
+	font-weight: bold;
+}
+
+span#mem_percent {
+	float: right;
+	font-weight: bold;
+}
+
+#bar_wrap {
+width:10px;border:1px solid silver;width:100%;
+}
+
+div#bar1, div#bar2, div#bar3, div#bar4, 
+div#bar5, div#bar6 {
+	height: 5px;
+	width:2%;
+	transition:width 2s;
+		
+}
+div#bar1 { background-color:#006838; }
+div#bar2 { background-color:#006838; }
+div#bar3 { background-color: #006838; }
+div#bar4 { background-color:#006838; }
+div#bar5 { background-color:#006838; }
+div#bar6 { background-color:#006838; }
+
+/* @end */
+
+
+
+
+/* @group Disk Usage */
+
+#drive_label {
+	font-weight: bold;
+}
+
+span#drive_size {
+	float: right;
+}
+
+.pieLabel div {
+	font-size: 12px!important;
+}
+
+/* @end */

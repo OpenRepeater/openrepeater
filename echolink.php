@@ -9,16 +9,13 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 
 
 if (isset($_POST['action'])){
-	include_once("_includes/database.php");
-	$dbUpdateSetting = mysql_connect($MySQLHost, $MySQLUsername, $MySQLPassword);
-	mysql_select_db($MySQLDB, $dbUpdateSetting);
-
+	$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');	
 	foreach($_POST as $key=>$value){  
 		if ($key != "action") {
-			mysql_query("UPDATE settings SET value='$value' WHERE keyID='$key'");
+			$query = $db->exec("UPDATE settings SET value='$value' WHERE keyID='$key'");
 		}
 	}
-	mysql_close($dbUpdateSetting);
+   $db->close();
 
 	$msgText = "The settings have been updated successfully!";
 	$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
@@ -31,11 +28,9 @@ if (isset($_POST['action'])){
 }
 ?>
 
-
-
 <?php
-include_once("_includes/get_settings.php");
-include_once("_includes/get_ctcss.php");
+include_once("includes/get_settings.php");
+$dbConnection->close();
 /*
 $header_scripts = '
 	<script type="text/javascript"> 
@@ -56,29 +51,17 @@ if ($settings['echolink_enabled'] == "False") {
 }
 */
 $pageTitle = "EchoLink Settings"; 
-include('_includes/header.php'); 
+include('includes/header.php'); 
 ?>
 
-
-			<div>
-				<ul class="breadcrumb">
-					<li><a href="index.php">Home</a> <span class="divider">/</span></li>
-					<li class="active"><?php echo $pageTitle; ?></li>
-				</ul>
-			</div>
-
 			<?php echo $alert; ?>
-
-
 
 			<div class="row-fluid sortable">
 				<div class="box span12">
 					<div class="box-header well" data-original-title>
-						<h2><i class="icon-wrench"></i> EchoLink Settings</h2>
+						<h2><i class="icon-signal"></i> EchoLink Settings</h2>
 					</div>
 					<div class="box-content">
-
-
 
 						<form name="update" action="echolink.php" method="post" class="form-horizontal">
 						  <fieldset>
@@ -179,7 +162,7 @@ include('_includes/header.php');
 			</div><!--/row-->
 
     
-<?php include('_includes/footer.php'); ?>
+<?php include('includes/footer.php'); ?>
 
 
 <?php

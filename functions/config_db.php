@@ -1,8 +1,10 @@
 <?php
 // WRITE NEW TABLES TO DATABASE
-include_once("/var/www/admin/_includes/database.php");
 
-$mysqlImportFilename ='/var/www/admin/functions/default.sql';
+/*
+include_once("/etc/openrepeater/database.php");
+
+$sqliteImportFilename ='/usr/share/examples/openrepeater/install/sql/default.sql';
 
 //Export the database and output the status
 $command='mysql -h' .$MySQLHost .' -u' .$MySQLUsername .' -p' .$MySQLPassword .' ' .$MySQLDB .' < ' .$mysqlImportFilename;
@@ -15,4 +17,7 @@ switch($worked){
 	echo 'There was an error during import. Please make sure that your settings are correct.';
 	break;
 }
+*/
+
+echo "NEEDS WRITEN FOR SQLITE."
 ?>

@@ -1,54 +1,53 @@
 <?php
 session_start();
-include_once("_includes/database.php");
 
+include_once("/etc/openrepeater/database.php");
 
-$dbConnection = mysql_connect($MySQLHost, $MySQLUsername, $MySQLPassword);
-mysql_select_db($MySQLDB, $dbConnection);
+$getVer = $dbConnection->query("SELECT version_num FROM version_info;");
+$vertData = $getVer->fetchArray(SQLITE3_ASSOC);
 
-
+// ----------------------------------------------------------------------------------------------------------------------------------
 // Change Password
+// ----------------------------------------------------------------------------------------------------------------------------------
 if (isset($_POST['action'])){
 	if ($_POST['action'] == "setPassword"){
-		$password1 = $_POST['password1'];
-		$password2 = $_POST['password2'];
+
+		$password1 = SQLite3::escapeString($_POST['password1']);
+		$password2 = SQLite3::escapeString($_POST['password2']);
 
 		// passwords don't match
 		if ($password1 != $password2) {
+			$dbConnection->close();
 			header('location: login.php?action=setPassword&error=mismatch');
 			die();
 		}
 
 		// password is too long
-		$password = mysql_real_escape_string($_POST['password1']);
-		if (strlen($password) > 28) {
-			mysql_close();
+		if (strlen($password1) > 28) {
+			$dbConnection->close();
 			header('location: login.php?action=setPassword&error=toolong');
 			die();
 		}
 
 		// password is too short
-		if (strlen($password) < 8) {
-			mysql_close();
+		if (strlen($password1) < 8) {
+			$dbConnection->close();
 			header('location: login.php?action=setPassword&error=tooshort');
 			die();
 		}
 
-// write new pw to database
-//print "write new pw";
+		$usr = $_SESSION['username'];
+		$resetQuery = "SELECT username, salt FROM users WHERE username = '$usr';";
+		$resetResult = $dbConnection->query($resetQuery);
+		$resetData = $resetResult->fetchArray(SQLITE3_ASSOC);
 
-		$resetQuery = "SELECT username, salt FROM users WHERE username = 'admin';";
-		$resetResult = mysql_query($resetQuery);
-
-
-		if (mysql_num_rows($resetResult) < 1){
-			mysql_close();
+		if (!$resetData['salt']){
+			$dbConnection->close();
 			header('location: login.php?action=setPassword');
 		}
 
-		$resetData = mysql_fetch_array($resetResult, MYSQL_ASSOC);
-		$resetHash = hash('sha256', $salt . hash('sha256', $password));
-		$hash = hash('sha256', $password);
+		$resetHash = hash('sha256', $salt . hash('sha256', $password1));
+		$hash = hash('sha256', $password1);
 
 		function createSalt(){
 			$string = md5(uniqid(rand(), true));
@@ -57,55 +56,71 @@ if (isset($_POST['action'])){
 
 		$salt = createSalt();
 		$hash = hash('sha256', $salt . $hash);
-		mysql_query("UPDATE users SET salt='$salt' WHERE username='admin'");
-		mysql_query("UPDATE users SET password='$hash' WHERE username='admin'");
-		mysql_close();
-		header('location: index.php');
+
+		$dbConnection->query("UPDATE users SET salt='$salt' WHERE username='$usr'") or die();
+		$dbConnection->query("UPDATE users SET password='$hash' WHERE username='$usr'") or die();
+		$dbConnection->close();
+
+		$_SESSION = array();
+		session_destroy();
+		header('location: login.php?error=pwOK');
 	}
 }
 
-
+// ----------------------------------------------------------------------------------------------------------------------------------
 // Process User Login
+// ----------------------------------------------------------------------------------------------------------------------------------
 if ((isset($_POST['username'])) && (isset($_POST['password']))){
-	$username = mysql_real_escape_string($_POST['username']);
-	$password = mysql_real_escape_string($_POST['password']);
+	$username = SQLite3::escapeString($_POST['username']);
+	$password = SQLite3::escapeString($_POST['password']);
+
 	$loginQuery = "SELECT UserID, password, salt FROM users WHERE username = '$username';";
-	$loginResult = mysql_query($loginQuery);
-	if (mysql_num_rows($loginResult) < 1){
-		mysql_close();
+	$loginResult = $dbConnection->query($loginQuery)or die();
+	$loginData = $loginResult->fetchArray(SQLITE3_ASSOC);
+	
+	// User Doesn't Exist
+	if (!$loginData['salt']){
+		$dbConnection->close();
 		header('location: login.php?error=incorrectLogin');
 	}
-	$loginData = mysql_fetch_array($loginResult, MYSQL_ASSOC);
+
+	// User Exists - pull info from DB to compare to submitted credentials
 	$loginHash = hash('sha256', $loginData['salt'] . hash('sha256', $password));
 	if ($loginHash != $loginData['password']){
-		mysql_close();
+		$dbConnection->close();
 		header('location: login.php?error=incorrectLogin');
+
 	} else {
 		session_regenerate_id();
 		$_SESSION['username'] = $username;
-		$_SESSION['userID'] = $loginData['UserID'];
-		mysql_close();
-		header('location: index.php');
+		$_SESSION['userID'] = $loginData['userID'];
+		$_SESSION['version_num'] = $vertData['version_num'];
+		$dbConnection->close();
+		header('location: dashboard.php');
 	}
 }
 
+// ----------------------------------------------------------------------------------------------------------------------------------
 //Display Login Form
+// ----------------------------------------------------------------------------------------------------------------------------------
 if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
-	if ($_GET['error'] == 'incorrectLogin'){
+	if ($_GET['error'] == 'incorrectLogin') {
 		$login_msg = '<div class="alert alert-error">Sorry, the Username and Password combination did not match</div>';
+	} elseif ($_GET['error'] == 'pwOK') {
+		$login_msg = '<div class="alert alert-info">Your Password has been updated successfully!<br>Please login with your Username and Password.</div>';
 	} else {
 		$login_msg = '<div class="alert alert-info">Please login with your Username and Password.</div>';
 	}
 
 	$no_visible_elements=true;
-	include('_includes/header.php');
+	include('includes/header.php');
 	print '
 	<div class="row-fluid">
 		<div class="span12 center login-header">
-			<h2>Welcome</h2>
+			<img src="theme/img/OpenRepeaterLogo-Login.png" title="OpenRepeater" class="login-logo">
 		</div><!--/span-->
 	</div><!--/row-->
-
+	
 	<div class="row-fluid">
 		<div class="well span5 center login-box">
 			'.$login_msg.'
@@ -132,19 +147,27 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 				</fieldset>
 			</form>
 		</div><!--/span-->
+
+		<center><p><a href="http://openrepeater.com" target="_blank">OpenRepeater</a> ver: ' . $vertData['version_num'] . '</p></center>
+
 	</div><!--/row-->
 	';
-	include('_includes/footer.php');
+	include('includes/footer.php');
 	die();
 }
 
-
-// Display Change Password Form
+// ----------------------------------------------------------------------------------------------------------------------------------
+// Logout and Destroy Session
+// ----------------------------------------------------------------------------------------------------------------------------------
 if (isset($_GET['action'])){
 	if ($_GET['action'] == "logout"){
 		$_SESSION = array();
 		session_destroy();
 		header('Location: login.php');
+
+// ----------------------------------------------------------------------------------------------------------------------------------
+// Display Change Password Form
+// ----------------------------------------------------------------------------------------------------------------------------------
 	} else if ($_GET['action'] == "setPassword"){
 
 	if ($_GET['error'] == 'mismatch') {
@@ -158,11 +181,12 @@ if (isset($_GET['action'])){
 	}
 
 	$no_visible_elements=true;
-	include('_includes/header.php');
+	include('includes/header.php');
 	print '
+
 	<div class="row-fluid">
 		<div class="span12 center login-header">
-			<h2>Change Password</h2>
+			<img src="theme/img/OpenRepeaterLogo-Login.png" title="OpenRepeater" class="login-logo">
 		</div><!--/span-->
 	</div><!--/row-->
 
@@ -170,7 +194,9 @@ if (isset($_GET['action'])){
 		<div class="well span5 center login-box">
 			'.$login_msg.'
 			<form name="changePassword" action="login.php" method="post" class="form-horizontal">
+			<h3>Change Password</h3><br>
 				<fieldset>
+
 					<input type="hidden" name="action" value="setPassword">		
 					<div class="input-prepend" title="Username" data-rel="tooltip">
 						<span class="add-on"><i class="icon-lock"></i></span><input autofocus class="input-large span10" name="password1" id="username" type="password" placeholder="New Password" />
@@ -188,9 +214,12 @@ if (isset($_GET['action'])){
 				</fieldset>
 			</form>
 		</div><!--/span-->
+
+		<center><p><a href="http://openrepeater.com" target="_blank">OpenRepeater</a> ver: ' . $vertData['version_num'] . '</p></center>
+
 	</div><!--/row-->
 	';
-	include('_includes/footer.php');
+	include('includes/footer.php');
 	die();
 	}
 }
