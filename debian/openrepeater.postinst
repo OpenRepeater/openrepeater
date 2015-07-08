@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+  configure)
+    for w in \
+        /etc/openrepeater \
+        /usr/share/openrepeater \
+        /var/lib/openrepeater \
+        /var/www/openrepeater;
+    do
+      chown -R www-data:www-data $w
+    done
+    ;;
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+    ;;
+esac
+
+#DEBHELPER#
+exit 0
+
+

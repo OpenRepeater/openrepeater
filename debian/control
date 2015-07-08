@@ -1,0 +1,12 @@
+Source: openrepeater
+Section: user/www
+Priority: extra
+Maintainer: Richard Neese <kb3vgw@gmail.com>
+Standards-Version: 3.7.2
+#XSBC-Bugtracker: mailto:kb3vgw@gmail.com
+
+Package: openrepeater
+Architecture: all
+Depends: ${misc:Depends}
+Description: openrepeater: OpenRepeater Web gui for controlling/administrating svxlink as a repeater & echolink node 
+#XSBC-Bugtracker: mailto:kb3vgw@gmail.com
