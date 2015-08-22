@@ -62,7 +62,7 @@ if (isset($_POST['action'])){
 				}
 			}
 		} else {
-			echo "Invalid file";
+			$alert = '<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">×</button><strong>' . $filename_no_ext . '</strong> is in an invalid file format. Please try again.</div>';
 		}
 
 	} else if ($_POST['action'] == "rename_file") {
