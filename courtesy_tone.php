@@ -68,7 +68,7 @@ if (isset($_POST['action'])){
 	} else if ($_POST['action'] == "rename_file") {
 		// NEED TO VALIDATE ACCEPTABLE CHARACTERS
 
-		$path = "courtesy_tones/";
+		$path = "sounds/courtesy_tones/";
 		$oldfile = $path . $_POST["oldfile"] . ".wav"; 
 		$newfile = $path . $_POST["newfile"] . ".wav";
 		rename($oldfile, $newfile);
@@ -79,7 +79,7 @@ if (isset($_POST['action'])){
 		// COURTESY TONE. IF IT IS RETURN AND ERROR.
 
 		$file = $_POST["delfile"].".wav"; 
-		$path = "courtesy_tones/";
+		$path = "sounds/courtesy_tones/";
 		unlink($path . $file);
 		$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>File Deleted: ' . $file . '</div>';
 	}
@@ -143,7 +143,7 @@ $dbConnection->close();
 
 <?php
 
-$url = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/courtesy_tones/';
+$url = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/sounds/courtesy_tones/';
 
 $files = array();
 
