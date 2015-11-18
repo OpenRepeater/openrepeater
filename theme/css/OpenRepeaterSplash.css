@@ -1,0 +1,64 @@
+/* @override http://192.168.1.74css/OpenRepeaterSplash.css */
+
+body#splash {
+	margin: 0;
+	padding: 0;
+	font: 12px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}
+
+#splash a {
+	color: #006838;
+	text-decoration: none;
+}
+
+#splash .splash_logo {
+	width: 702px;
+	height: 195px;
+	margin-left: auto;
+	margin-right: auto;
+	background: transparent url(../img/OpenRepeaterLogo-Splash.png) no-repeat center center;
+	margin-top: 75px;
+}
+
+#splash .splash_content {
+	width: 700px;
+	overflow: visible;
+	text-align: center;
+	padding-top: 0;
+	padding-left: 0;
+	padding-right: 0;
+	margin: 30px auto 40px;
+}
+
+#splash  p.footer_text {
+	margin-top: 50px;
+	margin-bottom: 0;
+}
+
+#splash .btn {
+  background: #acf04d;
+  background-image: -webkit-linear-gradient(top, #acf04d, #8dc63f);
+  background-image: -moz-linear-gradient(top, #acf04d, #8dc63f);
+  background-image: -ms-linear-gradient(top, #acf04d, #8dc63f);
+  background-image: -o-linear-gradient(top, #acf04d, #8dc63f);
+  background-image: linear-gradient(to bottom, #acf04d, #8dc63f);
+  -webkit-border-radius: 14;
+  -moz-border-radius: 14;
+  border-radius: 14px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+	position: relative;
+}
+
+#splash .btn:hover {
+  background: #006838;
+  background-image: -webkit-linear-gradient(top, #006838, #006838);
+  background-image: -moz-linear-gradient(top, #006838, #006838);
+  background-image: -ms-linear-gradient(top, #006838, #006838);
+  background-image: -o-linear-gradient(top, #006838, #006838);
+  background-image: linear-gradient(to bottom, #006838, #006838);
+  text-decoration: none;
+}

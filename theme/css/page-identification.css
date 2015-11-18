@@ -1,0 +1,67 @@
+/* @override https://192.168.1.132/theme/css/identification.css */
+
+/* @group ID Mode Controls */
+
+.controls.mode {
+	background-color: black;
+	padding: 8px 15px;
+}
+
+.controls.mode span {
+	margin-right: 10px;
+	font-weight: bold;
+	color: white;
+}
+
+/* @end */
+
+input#ID_Short_IntervalMin, input#ID_Long_IntervalMin {
+	width: 25px;
+}
+
+/* @group Append Box Options */
+
+.appendGrp {
+	overflow: auto;
+	margin-top: 20px;
+}
+
+.appendOption {
+	float: left;
+	background-color: #d5d5d5;
+	padding: 8px;
+	margin-right: 8px;
+	border: 1px solid #929292;
+}
+
+.appendOption label {
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+.appendOption select {
+	width: 65px;
+}
+
+/* @end */
+
+/* @group Mods to File Upload Field */
+
+
+#uniform-file.uploader {
+	width: 400px;
+}
+
+#uniform-file span.filename {
+	width: 292px;
+}
+
+#uniform-file span.action {
+	float: right;
+}
+
+input#file {
+	width: 400px;
+}
+
+/* @end */

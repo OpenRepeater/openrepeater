@@ -1,0 +1,43 @@
+/* @override https://192.168.1.132/wizard/wizard.css */
+
+
+div.row-fluid {
+	max-width: 800px;
+	min-width: 300px;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+div#content.span10 {
+	width: 100%;
+}
+
+.btn {
+	float: right;
+}
+
+button.btn.btn-primary {
+	margin-left: 10px;
+}
+
+div.form-actions {
+	margin-bottom: 0;
+}
+
+
+
+
+label.control-label {
+	float: left;
+	margin-top: 4px;
+	font-weight: bold;
+	width: 200px;
+}
+
+.control-group span.help {
+	margin-left: 202px;
+}
+
+#rxVOX_warn {
+	margin-top: 5px;
+}

@@ -1,0 +1,9 @@
+/* @override https://192.168.1.132/theme/css/page-echolink.css */
+
+.alert-danger a {
+	color: #b84a47;
+}
+
+.alert-danger a:hover {
+	color: #cb5350;
+}

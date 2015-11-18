@@ -1,0 +1,35 @@
+/* @override https://192.168.1.132/theme/css/page-courtesy_tone.css */
+
+
+h2.current_tone {
+	float: left;
+	margin-bottom: 10px;
+}
+
+button.btn.upload {
+	float: right;
+	margin-top: 3px;
+	margin-right: 6px;
+}
+
+
+/* @group Mods to File Upload Field */
+
+#uniform-file.uploader {
+	width: 400px;
+}
+
+#uniform-file span.filename {
+	width: 292px;
+}
+
+#uniform-file span.action {
+	float: right;
+}
+
+input#file {
+	width: 400px;
+}
+
+/* @end */
+
