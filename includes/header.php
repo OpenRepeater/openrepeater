@@ -70,14 +70,14 @@
 	$memcache_obj->connect('localhost', 11211);
 	$var = $memcache_obj->get('update_settings_flag');
 
-	if ($var == 1) {
-		echo '
-		<div class="server_bar" style="">
-			<span>SVXLink Configs Rebuild & Restart: </span>
+?>
+	<div class="server_bar"<?php if ($var != 1) { echo ' style="display: none;"'; } ?>>
+		<span>SVXLink Configs Rebuild & Restart: </span>
 
-			<!-- Button triggered modal -->
-			<button class="btn" data-toggle="modal" data-target="#restartServer"><i class="icon-refresh"></i> Rebuild Configs & Restart SVXLink</button>
-		</div>
+		<!-- Button triggered modal -->
+		<button class="btn" data-toggle="modal" data-target="#restartServer"><i class="icon-refresh"></i> Rebuild Configs & Restart SVXLink</button>
+	</div>
+
 
 	<!-- Modal - RESTART SERVER -->
 
@@ -93,7 +93,7 @@
 	      </div>
 	      <div class="modal-footer">
 			<form action="functions/svxlink_update.php" method="post" style="margin:0;">
-				<input type="hidden" name="return_url" value="'.$current_page_url.'">
+				<input type="hidden" name="return_url" value="<?php echo $current_page_url; ?>">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				<button type="submit" class="btn btn-success"><i class="icon-refresh icon-white"></i> Restart</button>
 			</form>
@@ -103,9 +103,8 @@
 	</div>
 	<!-- /.modal -->
 
-		';
-	}
-?>
+
+
 
 	<!-- topbar starts -->
 	<div class="navbar">
