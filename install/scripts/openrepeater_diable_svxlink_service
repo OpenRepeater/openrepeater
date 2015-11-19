@@ -1,0 +1,6 @@
+#!/bin/bash
+SERVICE=svxlink
+
+sudo service $SERVICE stop
+sudo systemctl disable svxlink.service
+

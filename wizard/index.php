@@ -12,7 +12,7 @@ session_name("open_repeater_wizard");   // In case there are several session bas
 if (!isset($_POST["page"])) {
 	// Default Settings are not visiable to the user. They will get written into database as defaults that they can change later on.
 	$default_settings = array(
-		"courtesy"				=>		"4 Up.wav",
+		"courtesy"				=>		"4_Up.wav",
 		"echolink_callSign"		=>		"",
 		"echolink_desc"			=>		"Welcome to an Open Repeater Server!",
 		"echolink_enabled"		=>		"False",

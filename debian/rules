@@ -9,94 +9,24 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-APPNAME := openrepeater
-
-CFLAGS = -Wall -g
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2
-endif
-
-build: build-stamp
-
-build-stamp: 
-	dh_testdir
-
-	# Add here commands to compile the package.
-	#cd builddir && $(MAKE)
-
-	touch $@
-
-clean:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp
-	rm -rf builddir
-	rm -rf debian/lookup-dbg
-
-	# Add here commands to clean up after the build process.
-	#-$(MAKE) clean
-
-	dh_clean 
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_prep
-	dh_installdirs
-	# Add here commands to install the package into debian/lookup.
-	# cd builddir && $(MAKE) INSTALL_ROOT=$(CURDIR)/debian/$(APPNAME) install
-	#rm -rf $(CURDIR)/debian/lookup-dbg
-	mkdir -p debian/openrepeater/etc/openrepeater/svxlink
+override_dh_installinit:
+	mkdir -p debian/openrepeater/etc/openrepeater
+	mkdir -p debian/openrepeater/usr/bin
 	mkdir -p debian/openrepeater/usr/share/openrepeater/sounds
 	mkdir -p debian/openrepeater/usr/share/examples/openrepeater/install
 	mkdir -p debian/openrepeater/var/lib/openrepeater/db
-	mkdir -p debian/openrepeater/var/lib/openrepeater/recordings
-	mkdir -p debian/openrepeater/var/lib/openrepeater/macros
 	mkdir -p debian/openrepeater/var/www/openrepeater
-	cp -rp install/sql debian/openrepeater/usr/share/examples/openrepeater/install
-	cp -rp install/svxlink debian/openrepeater/usr/share/examples/openrepeater/install
+	cp -rp install debian/openrepeater/usr/share/openrepeater
+	cp -rp install/svxlink-conf debian/openrepeater/etc/openrepeater/svxlink
+	cp -rp install/scripts/* debian/openrepeater/usr/bin
 	cp -rp install/courtesy_tones debian/openrepeater/usr/share/openrepeater/sounds
-	cp -rp  theme functions dev includes *.php debian/openrepeater/var/www/openrepeater
-		
-build-indep: build install
+	cp -rp theme functions includes *.php debian/openrepeater/var/www/openrepeater
 
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
-
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs 
-	dh_installdocs
-	dh_installexamples
-#	dh_install
-#	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_python
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-	dh_installman
-	dh_link
-#	dh_strip --dbg-package=lookup-dbg
-	dh_compress
+override_dh_fixperms:
 	dh_fixperms
-#	dh_perl
-	dh_installdeb
-#	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-#	maemo-optify
-	dh_builddeb
+	chmod a+x debian/openrepeater/usr/bin/*
 
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install configure
+%:
+	dh $@ 
+
+.PHONY: build
