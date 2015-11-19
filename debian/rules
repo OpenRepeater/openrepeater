@@ -20,7 +20,7 @@ override_dh_installinit:
 	cp -rp install/svxlink-conf debian/openrepeater/etc/openrepeater/svxlink
 	cp -rp install/scripts/* debian/openrepeater/usr/bin
 	cp -rp install/courtesy_tones debian/openrepeater/usr/share/openrepeater/sounds
-	cp -rp  theme functions includes *.php debian/openrepeater/var/www/openrepeater
+	cp -rp theme functions includes *.php debian/openrepeater/var/www/openrepeater
 
 override_dh_fixperms:
 	dh_fixperms
