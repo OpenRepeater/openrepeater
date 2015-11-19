@@ -1,6 +1,6 @@
-openrepeater (1.0.0-16) stable; urgency=low
+openrepeater (1.0.0.b3-1) UNRELEASED; urgency=low
 
-  * Initial release new openrepeater "1.0.0"
+  * Initial release new openrepeater "1.0.0 Beta 3"
 
  -- Richard Neese <kb3vgw@gmail.com>  Thur, 11 June 2015 15:19:23 -0500
 

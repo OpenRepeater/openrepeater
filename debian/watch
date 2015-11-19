@@ -1,0 +1,3 @@
+version=3
+https://github.com/rneese45/openrepeater/tags .*/archive/(.*)\.tar\.gz
+

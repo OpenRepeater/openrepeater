@@ -1,0 +1,147 @@
+#!/usr/bin/python2
+#
+# This is a simple serial programmer for the 818 VHF/UHF modules.
+#    by w0anm
+# This code was created from examples on the web.
+#
+# $Id: 818-prog 12 2014-12-27 18:27:47Z w0anm $
+
+import time
+import serial
+
+# configure the serial connections (the parameters differs on the device 
+# you are connecting to)
+ser = serial.Serial(
+    port='/dev/ttyUSB0',
+    baudrate=9600,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS
+)
+
+# ser.open()
+ser.isOpen()
+print '\r\n\n'
+print 'Programing DRA818x and SA818x Module \r\n\n'
+print 'Device name:'
+print '      ' + ser.portstr       # check which port was really used
+
+key=1
+while key == 1:
+    print '------------------------------------------------------'
+    Spacing=raw_input('Enter Channel Spacing (0 or 1): ')
+    FreqTx=raw_input('Enter Tx Frequency (xxx.xxxx): ')
+    FreqRx=raw_input('Enter Rx Frequency (xxx.xxxx): ')
+    tx_ctcss=raw_input('Enter Tx ctcss Code Value (xxxx): ')
+    rx_ctcss=raw_input('Enter Rx ctcss Code Value (xxxx): ')
+    squelch=raw_input ('Enter Squelch Value (1-9): ')
+    Volume=raw_input('Enter Volume (0-8): ')
+    PreEmphasis=raw_input('Enable Pre/De-Emphasis (y/[n]): ')
+    if PreEmphasis == "":
+        PreEmphasis="n"
+
+    HighPass=raw_input('Enable High Pass Filter (y/[n]): ')
+    if HighPass == "":
+        HighPass="n"
+
+    LowPass=raw_input('Enable Low Pass Filter (y/[n]): ')
+    if LowPass == "":
+        LowPass="n"
+
+    #
+    print ''
+    print 'Verify:'
+    print '------------------------------------------------------'
+    print '     Channel Spacing: ' + Spacing + ' '
+    print '        Tx Frequency: ' + FreqTx + ' '
+    print '        Rx Frequency: ' + FreqRx + ' '
+    print '       Tx CTCSS code: ' + tx_ctcss + ' '
+    print '       Rx CTCSS code: ' + rx_ctcss + ' '
+    print '       Squelch Value: ' + squelch + ' '
+    print '        Volume Value: ' + Volume + ' '
+    print ' PreEmphasis Enabled: ' + PreEmphasis + ' '
+    print '   High Pass Enabled: ' + HighPass + ' '
+    print '    Low Pass Enabled: ' + LowPass + ' '
+
+    print '------------------------------------------------------'
+    Answer=""
+    Answer=raw_input(' Is this correct ([y]/n, or a to abort) ?')
+    if Answer == "":
+          Answer = "y"
+
+    if Answer == "y":
+          break
+
+    if Answer == "a":
+          exit()
+ 
+
+# print 'Enter your commands below.\r\nInsert "exit" to leave the application.'
+
+# Example of the command:
+#     ser.write("AT+DMOSETGROUP=1,446.0500,446.0500,0020,4,0020\r\n")
+
+# Set Freq/Group
+print 'Sending Freq Information...'
+ser.write("AT+DMOSETGROUP=" + Spacing + "," + FreqTx + "," + FreqRx + "," + tx_ctcss + "," + squelch + "," + rx_ctcss + "\r\n")
+time.sleep(1.00)
+
+#evaluate response
+raw_serial = ser.readline()
+response = raw_serial[:-2]
+
+# Bad response --> +DMOSETGROUP:1
+if response == '+DMOSETGROUP:1':
+    print "    Error, invalid information (" + response + "). Check input format.."
+    print " Command Sent:"
+    print "        AT+DMOSETGROUP=1," + FreqTx + "," + FreqRx + "," + tx_ctcss + "," + squelch + "," + rx_ctcss + "\r\n"
+    exit()
+
+# Set Volume
+print "Setting Volume - " + Volume + " " 
+ser.write("AT+DMOSETVOLUME=" + Volume + "\r\n")
+time.sleep(1.00)
+
+#evaluate response
+raw_serial = ser.readline()
+response = raw_serial[:-2]
+
+# Bad response --> +DMOSETVOLUME:1
+if response == '+DMOSETVOLUME:1':
+    print "    Error, invalid information (" + response + ")..."
+    print " Command Sent:"
+    print "    AT+DMOSETVOLUME=" + Volume + "\r\n"
+    exit()
+
+# Set Filters:
+# convert filters values, 0 is enable, and 1 is disable
+if PreEmphasis == "n":
+    PreEmpFilter='1'
+else:
+    PreEmpFilter='0'
+
+if HighPass == "n":
+    HPass='1'
+else:
+    HPass='0'
+
+if LowPass == "n":
+    LPass='1'
+else:
+    LPass='0'
+
+print 'Setting Filters'
+ser.write("AT+SETFILTER=" + PreEmpFilter + "," + HPass + "," + LPass + "\r\n")
+time.sleep(1.00)
+
+#evaluate response
+raw_serial = ser.readline()
+response = raw_serial[:-2]
+
+# Bad response --> +DMOSETFILTER:1
+if response == '+DMOSETFILTER:1':
+    print "    Error, invalid information (" + response + ")..."
+    print " Command Sent:"
+    print "    AT+SETFILTER=" + PreEmpFilter + "," + HPass + "," + LPass + "\r\n"
+    exit()
+

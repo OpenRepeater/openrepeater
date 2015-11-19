@@ -1,0 +1,15 @@
+#!/bin/bash
+SERVICE=svxlink
+
+ps -u $SERVICE | grep -v grep | grep $SERVICE > /dev/null
+result=$?
+echo "exit code: ${result}"
+if [ "${result}" -eq "0" ] ; then
+    echo "$(date): $SERVICE service running"
+    echo "$(date): Restarting svxlink service with updated configuration"
+    sudo service svxlink restart
+else
+    echo "$(date): $SERVICE is not running"
+    echo "$(date): Starting svxlink up with first time new configuration"
+    sudo service svxlink restart
+fi

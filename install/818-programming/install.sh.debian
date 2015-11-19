@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# Serial Programmer for DRA818/SA818 Modules install script
+
+# $Id: install.sh 8 2014-12-07 20:03:55Z w0anm $
+
+
+cat << _EOF
+
+This script installs the Python script for the DRA818/SA818 RF Modules.
+
+This also installs the required dependencies if needed.  The packages are:
+     python2
+     python-pyserial
+
+The following files will be installed:
+
+    /usr/local/sbin/818-prog
+    /usr/local/sbin/818cli-prog
+
+Press <enter>  key now to continue or control-c to abort.
+_EOF
+
+read dummy
+
+# Package Dependencies:
+PKG_REQ="python2 python2-pyserial"
+
+for PKG in $PKG_REQ ; do
+    echo "checking for $PKG package..."
+    if ! dpkg -l $PKG &> /dev/null 2>&1) ; then
+        echo "Installing $PKG Package..."
+        apt-get install $PKG
+    else
+        echo "$PKG package is installed..."
+    fi
+    echo
+
+done
+
+#
+echo "Copying the source files to $INSTALLDIR ..."
+echo
+
+cp -p src/* /usr/local/sbin/.
+
+
+echo "Installation completed..."
+echo
+

@@ -1,0 +1,142 @@
+#!/usr/bin/python2
+# This is a simple serial programmer for the 818 VHF/UHF modules.
+#  Supported command line interfaces, non-interactive
+#    by w0anm
+# This code was created from examples on the web.
+#
+# $Id: 818cli-prog 12 2014-12-27 18:27:47Z w0anm $
+
+
+import sys, getopt
+import time, serial
+
+def main(argv):
+   mode = '0'       # 0 for NFM, 1 for FM
+   group = '446.0500,446.0500,0020,4,0020'
+   volume = '4'
+   filter = '1,1,1'
+   device = '/dev/ttyUSB0'
+
+   try:
+      opts, args = getopt.getopt(argv,"hd:m:g:v:f")
+   except getopt.GetoptError:
+      print '\n818cli-prog [-d <device>] [-m <mode> -g <group> -v <volume> -f <filter>'
+      sys.exit(2)
+   for opt, arg in opts:
+      if opt == '-h':
+         print '\n818cli-prog [-d <device>] [-m <mode>] -g <group> [-v <volume>] [-f <filter>]'
+         print ' device = serial device, default /dev/ttyUSB0'
+         print '          e.g., -d /dev/ttyUSB0'
+         print ' mode  =  0 - 12.5 Khz Ch Space, 1 - 25 Khz Ch Space, default 0'
+         print '          e.g., -m 0'
+         print ' group =  <RxFreq>,<TxFreq>,<Rxct>,<Squelch>,<Txct>'
+         print '                  <RxFreq> and <TxFreq> format: xxx.xxxx '
+         print '                  <Rxct> and <Txct> format:'
+         print '                        xxxx (tones) '
+         print '                        xxx[N,I] (DTCS) '
+         print '                  <Squelch> value is 0-8'
+         print '          e.g., -g 446.0500,446.0500,754N,6,754N '
+         print ' volume = Value is  0-8, default 4'
+         print '          e.g., -v 4 '
+         print ' filter = <pre-emphasis>,<low-pass>,<high-pass>'
+         print '          default is all filters disable (1,1,1)'
+         print '          to enable a filter, use 0 for the value '
+         print '          to disable a filter, use 1 for the value'
+         print '          e.g., -f 0,0,0  (enables all filters) '
+         print ' '
+         print 'Command line example:'
+         print '   818cli-prog -d /dev/ttyUSB0 -m 0 -g 446.0500,446.0500,754N,6,754N -v 4 -f 0,0,0 '
+         sys.exit()
+      elif opt in ("-d"):
+         device = arg
+      elif opt in ("-g"):
+         group = arg
+      elif opt in ("-m"):
+         mode = arg
+      elif opt in ("-v"):
+         volume = arg
+      elif opt in ("-a"):
+         filter = arg
+
+   ############################################################################
+
+   # configure the serial connections (the parameters differs on the device 
+   # you are connecting to)
+   ser = serial.Serial(
+       port=device,
+       baudrate=9600,
+       parity=serial.PARITY_NONE,
+       stopbits=serial.STOPBITS_ONE,
+       bytesize=serial.EIGHTBITS
+   )
+
+   # ser.open()
+   ser.isOpen()
+   print '\r\n\n'
+   print 'Programing DRA818x and SA818x Module \r\n\n'
+   print 'Device name:'
+   print '      ' + ser.portstr       # check which port was really used
+
+   # Set Freq/Group
+   print 'Sending Freq Information...'
+   ser.write("AT+DMOSETGROUP=" + mode + "," + group + "\r\n")
+   time.sleep(1.00)
+
+   #evaluate response
+   raw_serial = ser.readline()
+   response = raw_serial[:-2]
+
+   # Bad response --> +DMOSETGROUP:1
+   if response == '+DMOSETGROUP:1':
+       print "    Error, invalid information (" + response + "). Check input format.."
+       print " Command Sent:"
+       print "        AT+DMOSETGROUP=" + mode + "," + group + "\r\n"
+       print '        group usage:'
+       print '           <mode> = Channel Space (0 or 1)'
+       print '           <group> =  RxFreq,TxFreq,Rxct,Squelch,Txct'
+       print '           Using this format: '
+       print '           xxx.xxxx,yyy.yyyy,rrrr,s,tttt\n'
+       print '        For example:'
+       print '           -g 446.0500,446.0500,754N,6,754N '
+       print '                 RxFreq and TxFreq xxx.xxxx '
+       print '                 Rxct and Txct format xxxx (tones) '
+       print '                   or xxx[N,I] (DTCS) \n '
+       print '           Squelch value range: 0-8'
+       exit()
+
+   # Set Volume
+   print "Setting Volume - " + volume + " " 
+   ser.write("AT+DMOSETVOLUME=" + volume + "\r\n")
+   time.sleep(1.00)
+
+   #evaluate response
+   raw_serial = ser.readline()
+   response = raw_serial[:-2]
+
+   # Bad response --> +DMOSETVOLUME:1
+   if response == '+DMOSETVOLUME:1':
+       print "    Error, invalid information (" + response + ")..."
+       print " Command Sent:"
+       print "    AT+DMOSETVOLUME=" + volume + "\r\n"
+       exit()
+
+   print 'Setting Filters'
+   ser.write("AT+SETFILTER=" + filter + "\r\n")
+   time.sleep(1.00)
+
+   #evaluate response
+   raw_serial = ser.readline()
+   response = raw_serial[:-2]
+
+   # Bad response --> +DMOSETFILTER:1
+   if response == '+DMOSETFILTER:1':
+       print "    Error, invalid information (" + response + ")..."
+       print " Command Sent:"
+       print "    AT+SETFILTER=" + filter + "\r\n"
+       exit()
+
+   print 'Setup Complete'
+
+
+if __name__ == "__main__":
+   main(sys.argv[1:])
