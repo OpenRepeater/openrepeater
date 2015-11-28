@@ -9,62 +9,23 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
+include_once("functions/audio_functions.php");
 
 if (isset($_POST['action'])){
 	if ($_POST['action'] == "upload_file") {
 		// This is the handler for file uploads. It uploads the file to a temporary path then
 		// converts it to the appropriate WAV formate and puts it in the custom identifications folder.
+
+		$results = audio_upload_files('identification', $_FILES['file']);
+		$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
 		
-		$temp_dir = "/tmp/";
-		$final_file_dir = "/usr/share/openrepeater/sounds/identification/";
-		$maxFileSize = 45000000; // size in bytes
-
-		$allowedExts = array("wav", "mp3");
-		$temp_ext = explode(".", $_FILES["file"]["name"]);
-		$extension = end($temp_ext);
-		$filename_no_ext = pathinfo($_FILES["file"]["name"], PATHINFO_FILENAME);
-
-		if ((($_FILES["file"]["type"] == "audio/wav") || ($_FILES["file"]["type"] == "audio/mpeg") || ($_FILES["file"]["type"] == "audio/mp3")) && ($_FILES["file"]["size"] < $maxFileSize) && in_array($extension, $allowedExts)) {
-			if ($_FILES["file"]["error"] > 0) {
-				echo "Return Code: " . $_FILES["file"]["error"] . "<br>";
-			} else {
-
-				$soxInFile = $temp_dir . $_FILES["file"]["name"];
-				$soxOutFile = $final_file_dir . $filename_no_ext . ".wav";
-
-				if (file_exists($soxOutFile)) {
-					$alert = '<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">×</button>' . $filename_no_ext . ' already exists.</div>';
-				} else {
-					move_uploaded_file($_FILES["file"]["tmp_name"], $temp_dir . $_FILES["file"]["name"]);
-
-					$soxCommand = 'sox "'.$soxInFile.'" -r16000 -b16 -esigned-integer -c1 "'.$soxOutPath.$soxOutFile.'"';
-					exec($soxCommand);
-
-					unlink($temp_dir . $_FILES["file"]["name"]);
-
-					$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>You have successfully uploaded '.$_FILES["file"]["name"].' and it has been converted to the proper sound format.</div>';
-				}
-			}
-		} else {
-			$alert = '<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">×</button><strong>' . $filename_no_ext . '</strong> is in an invalid file format. Please try again.</div>';
-		}
-
 	} else if ($_POST['action'] == "rename_file") {
-		// NEED TO VALIDATE ACCEPTABLE CHARACTERS
+		$results = audio_rename_file('identification',$_POST['oldFileName'],$_POST['newFileLabel']);
+		$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
 
-		$path = "sounds/identification/";
-		$oldfile = $path . $_POST["oldfile"] . ".wav"; 
-		$newfile = $path . $_POST["newfile"] . ".wav";
-		rename($oldfile, $newfile);
-		$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>Rename ' . $oldfile . ' to ' . $newfile . '.</div>';
 	} else if ($_POST['action'] == "delete_file") {
-		// NEED TO BUILD IN CHECK TO SEE IF FILE IS CURRENTLY SELECTED 
-		// IF IT IS RETURN AND ERROR.
-
-		$file = $_POST["delfile"].".wav"; 
-		$path = "sounds/identification/";
-		unlink($path . $file);
-		$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>File Deleted: ' . $file . '</div>';
+		$results = audio_delete_files('identification',$_POST["delfile"]);
+		$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
 	}
 }
 
@@ -143,94 +104,85 @@ $dbConnection->close();
 									
 									<table class="table table-striped table-condensed bootstrap-datatable">
 									  <thead>
-										  <tr>
+										  <tr class="audio_row">
 											  <th>Name</th>
 											  <th>Preview</th>
-											  <th>Status</th>
-											  <th>Actions</th>
+											  <th class="button_grp">Actions</th>
 										  </tr>
 									  </thead>   
 									  <tbody>
 			
 			<?php
 			
-			$url = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/sounds/identification/';
+			$audioLib = audio_get_files('identification');
 			
-			$files = array();
-			
-			if ($handle = opendir("/usr/share/openrepeater/sounds/identification")) {
+			if ($audioLib) {
 				
-				$totalFiles = 0;
-				while (false !== ($file = readdir($handle))) {
-					if ('.' === $file) continue;
-					if ('..' === $file) continue;
-					$files[] = $file;
-					$totalFiles++;
-				}
-				closedir($handle);
-			
-				
-				natsort($files);
-			
 				$file_counter = 0;
-			
-				foreach($files as $file) {	
-			
-				$file_counter++;
-				$fullurl = $url . $file;
-						
-				$html_string = '
-				<tr>
-					<td><h2>' . str_replace('.wav','',$file) . '</h2></td>
-			
-					<td class="center">
-					<audio controls>
-						<source src="'.$fullurl.'" type=audio/mpeg>
-						Your browser does not support the audio element.
-					</audio>
-					</td>
-			
-					<td class="center">';
-					
-				if ($settings['ID_Short_CustomFile'] == $file) {	
-					$html_string .= '<span id="shortIDstatus'.$file_counter.'"class="label label-success">Active</span>';
-				} else {
-					//created the active flag and hides it so it can be show by javascript/ajax upon selection
-					$html_string .= '<span id="shortIDstatus'.$file_counter.'"class="label label-success" style="display:none;">Active</span>';						}
+				$html_modal = '';
+				$totalFiles = count($audioLib);
 
-				$html_string .= '
-					</td>
 			
-					<td class="center">
+				foreach($audioLib as $fileArray) {	
 			
-						<button type="button" class="btn btn-success" name="ID_Long_CustomFile" onclick="setCustomShortID(\''.$file.'\','.$file_counter.','.$totalFiles.'); return false;"><i class="icon-ok icon-white"></i> Select</button>
-
-						<!-- Button triggered modal -->
-						<button id="shortRenameBtn'.$file_counter.'" class="btn" data-toggle="modal" data-target="#renameFile'.$file_counter.'">
-							<i class="icon-pencil"></i> Rename</button>';
-			
-				if ($settings['ID_Short_CustomFile'] == $file) {	
-					// Disable delete button if currently active
-					$html_string .= '
-						<!-- Button triggered modal -->
-						<button id="shortDeleteBtn'.$file_counter.'" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile'.$file_counter.'" disabled>
-							<i class="icon-trash icon-white"></i> Delete</button>';
-				} else {
-					$html_string .= '
-						<!-- Button triggered modal -->
-						<button id="shortDeleteBtn'.$file_counter.'" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile'.$file_counter.'">
-							<i class="icon-trash icon-white"></i> Delete</button>';
-				}
-
-				$html_string .= '
-					</td>
-				</tr>';
+					$file_counter++;
 				
-				// Note that modal dialogs will be generated in long ID section below.
-			
-				echo $html_string;
+					// Check Status
+					$status = "";	
+					if ($settings['courtesy'] == $fileArray['fileName']) {	
+						$status = ' class="active"';
+					}
+	
+
+					// START TABLE ROW
+					if ($settings['ID_Short_CustomFile'] == $fileArray['fileName']) {	
+						$html_string = '<tr id="shortIDsoundRow'.$file_counter.'" class="audio_row active">';
+					} else {
+						$html_string = '<tr id="shortIDsoundRow'.$file_counter.'" class="audio_row">';
+					}
+
+					$html_string .= '
+						<td><h2>' . $fileArray['fileLabel'] . '</h2></td>
+				
+						<td class="center">
+						<audio controls>
+							<source src="' . $fileArray['fileURL'] . '" type=audio/mpeg>
+							Your browser does not support the audio element.
+						</audio>
+						</td>
+
+						<td class="button_grp">
+				
+							<button type="button" class="btn btn-success" name="ID_Long_CustomFile" onclick="setCustomShortID(\''.$fileArray['fileName'] .'\','.$file_counter.','.$totalFiles.'); return false;"><i class="icon-ok icon-white"></i> Select</button>
+	
+							<!-- Button triggered modal -->
+							<button id="shortRenameBtn'.$file_counter.'" class="btn" data-toggle="modal" data-target="#renameFile'.$file_counter.'">
+								<i class="icon-pencil"></i> Rename</button>';
+				
+					if ($settings['ID_Short_CustomFile'] == $file) {	
+						// Disable delete button if currently active
+						$html_string .= '
+							<!-- Button triggered modal -->
+							<button id="shortDeleteBtn'.$file_counter.'" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile'.$file_counter.'" disabled>
+								<i class="icon-trash icon-white"></i> Delete</button>';
+					} else {
+						$html_string .= '
+							<!-- Button triggered modal -->
+							<button id="shortDeleteBtn'.$file_counter.'" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile'.$file_counter.'">
+								<i class="icon-trash icon-white"></i> Delete</button>';
+					}
+	
+					$html_string .= '
+						</td>
+					</tr>';
+					
+					// Note that modal dialogs will be generated in long ID section below.
+				
+					echo $html_string;
 			    }
 
+			} else {
+				echo "no files";
 			}
 			?>
 									  </tbody>
@@ -322,150 +274,137 @@ $dbConnection->close();
 									
 									<table class="table table-striped table-condensed bootstrap-datatable">
 									  <thead>
-										  <tr>
+										  <tr class="audio_row">
 											  <th>Name</th>
 											  <th>Preview</th>
-											  <th>Status</th>
-											  <th>Actions</th>
+											  <th class="button_grp">Actions</th>
 										  </tr>
 									  </thead>   
 									  <tbody>
 			
 			<?php
 			
-			$url = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/sounds/identification/';
-			
-			$files = array();
-			
-			if ($handle = opendir("/usr/share/openrepeater/sounds/identification")) {
+			if ($audioLib) {
 				
-				$totalFiles = 0;
-				while (false !== ($file = readdir($handle))) {
-					if ('.' === $file) continue;
-					if ('..' === $file) continue;
-					$files[] = $file;
-					$totalFiles++;
-				}
-				closedir($handle);
-			
-				
-				natsort($files);
-			
 				$file_counter = 0;
 				$html_modal = '';
+				$totalFiles = count($audioLib);
+			
+				foreach($audioLib as $fileArray) {	
+			
+					$file_counter++;
+				
+					// Check Status
+					$status = "";	
+					if ($settings['courtesy'] == $fileArray['fileName']) {	
+						$status = ' class="active"';
+					}
+	
 
-			
-				foreach($files as $file) {	
-			
-				$file_counter++;
-				$fullurl = $url . $file;
 						
-				$html_string = '
-				<tr>
-					<td><h2>' . str_replace('.wav','',$file) . '</h2></td>
-			
-					<td class="center">
-					<audio controls>
-						<source src="'.$fullurl.'" type=audio/mpeg>
-						Your browser does not support the audio element.
-					</audio>
-					</td>
-			
-					<td class="center">';
-
-					if ($settings['ID_Long_CustomFile'] == $file) {	
-						$html_string .= '<span id="longIDstatus'.$file_counter.'"class="label label-success">Active</span>';
+					// START TABLE ROW
+					if ($settings['ID_Long_CustomFile'] == $fileArray['fileName']) {	
+						$html_string = '<tr id="longIDsoundRow'.$file_counter.'" class="audio_row active">';
 					} else {
-						//created the active flag and hides it so it can be show by javascript/ajax upon selection
-						$html_string .= '<span id="longIDstatus'.$file_counter.'"class="label label-success" style="display:none;">Active</span>';						}
-
-				$html_string .= '
-					</td>
-			
-					<td class="center">
-			
-						<button type="button" class="btn btn-success" name="ID_Long_CustomFile" onclick="setCustomLongID(\''.$file.'\','.$file_counter.','.$totalFiles.'); return false;"><i class="icon-ok icon-white"></i> Select</button>
-			
-						<!-- Button triggered modal -->
-						<button class="btn" data-toggle="modal" data-target="#renameFile'.$file_counter.'">
-							<i class="icon-pencil"></i> 
-							Rename
-						</button>';
-			
-					if ($settings['ID_Long_CustomFile'] == $file) {	
-						// Disable delete button if currently active
-						$html_string .= '
-						<!-- Button triggered modal -->
-						<button id="longDeleteBtn'.$file_counter.'" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile'.$file_counter.'" disabled>
-							<i class="icon-trash icon-white"></i> Delete</button>';
-					} else {
-						$html_string .= '
-						<!-- Button triggered modal -->
-						<button id="longDeleteBtn'.$file_counter.'" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile'.$file_counter.'">
-							<i class="icon-trash icon-white"></i> Delete</button>';
+						$html_string = '<tr id="longIDsoundRow'.$file_counter.'" class="audio_row">';
 					}
 
-				$html_string .= '
-					</td>
-				</tr>';
-			
-				$html_modal .= '
-			
-				<!-- Modal - RENAME DIALOG -->
-				<form action="identification.php" method="post">
-			
-				<div class="modal fade" id="renameFile'.$file_counter.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				  <div class="modal-dialog">
-				    <div class="modal-content">
-				      <div class="modal-header">
-					<h3 class="modal-title" id="myModalLabel">Rename Custom Identification Clip</h3>
-				      </div>
-				      <div class="modal-body">
-					<input type="hidden" name="action" value="rename_file">
-					<input class="input disabled" id="disabledInput" type="text" placeholder="' . str_replace('.wav','',$file) . '" disabled="">
-					<input type="hidden" name="oldfile" value="' . str_replace('.wav','',$file) . '">
-					<span style="margin-right:5px;margin-left:5px;margin-top:-12px;" class="icon32 icon-arrowthick-e"/></span>		
-					<input type="text" name="newfile" value="' . str_replace('.wav','',$file) . '">
-				      </div>
-				      <div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-					<button type="submit" class="btn btn-success"><i class="icon-pencil icon-white"></i> Rename</button>
-			
-				      </div>
-				    </div><!-- /.modal-content -->
-				  </div><!-- /.modal-dialog -->
-				</div>
-				</form>									
-				<!-- /.modal -->
-			
-				<!-- Modal - DELETE DIALOG -->
-				<form action="identification.php" method="post">
-			
-				<div class="modal fade" id="deleteFile'.$file_counter.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				  <div class="modal-dialog">
-				    <div class="modal-content">
-				      <div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h3 class="modal-title" id="myModalLabel">Delete Custom Identification Clip</h3>
-				      </div>
-				      <div class="modal-body">
-					Are you sure that you want to delete the custom identification clip <strong>' . str_replace('.wav','',$file) . '</strong>? This cannot be undo!
-					<input type="hidden" name="delfile" value="' . str_replace('.wav','',$file) . '">
-					<input type="hidden" name="action" value="delete_file">
-				      </div>
-				      <div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-					<button type="submit" class="btn btn-danger"><i class="icon-trash icon-white"></i> Delete</button>
-				      </div>
-				    </div><!-- /.modal-content -->
-				  </div><!-- /.modal-dialog -->
-				</div>
-				</form>
-				<!-- /.modal -->';
-			
-				echo $html_string;
-			    }
+					$html_string .= '
+						<td><h2>' . $fileArray['fileLabel'] . '</h2></td>
+				
+						<td class="center">
+						<audio controls>
+							<source src="' . $fileArray['fileURL'] . '" type=audio/mpeg>
+							Your browser does not support the audio element.
+						</audio>
+						</td>
+				
+						<td class="button_grp">
+				
+							<button type="button" class="btn btn-success" name="ID_Long_CustomFile" onclick="setCustomLongID(\''. $fileArray['fileName'] .'\','.$file_counter.','.$totalFiles.'); return false;"><i class="icon-ok icon-white"></i> Select</button>
+				
+							<!-- Button triggered modal -->
+							<button class="btn" data-toggle="modal" data-target="#renameFile'.$file_counter.'">
+								<i class="icon-pencil"></i> 
+								Rename
+							</button>';
+				
+						if ($settings['ID_Long_CustomFile'] == $file) {	
+							// Disable delete button if currently active
+							$html_string .= '
+							<!-- Button triggered modal -->
+							<button id="longDeleteBtn'.$file_counter.'" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile'.$file_counter.'" disabled>
+								<i class="icon-trash icon-white"></i> Delete</button>';
+						} else {
+							$html_string .= '
+							<!-- Button triggered modal -->
+							<button id="longDeleteBtn'.$file_counter.'" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile'.$file_counter.'">
+								<i class="icon-trash icon-white"></i> Delete</button>';
+						}
+	
+					$html_string .= '
+						</td>
+					</tr>';
+				
+					$html_modal .= '
+				
+					<!-- Modal - RENAME DIALOG -->
+					<form action="identification.php" method="post">
+				
+					<div class="modal fade" id="renameFile'.$file_counter.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					      <div class="modal-header">
+						<h3 class="modal-title" id="myModalLabel">Rename Custom Identification Clip</h3>
+					      </div>
+					      <div class="modal-body">
+						<input type="hidden" name="action" value="rename_file">
+						<input class="input disabled" id="disabledInput" type="text" placeholder="' . $fileArray['fileLabel'] . '" disabled="">
+						<input type="hidden" name="oldFileName" value="' . $fileArray['fileName'] . '">
+						<span style="margin-right:5px;margin-left:5px;margin-top:-12px;" class="icon32 icon-arrowthick-e"/></span>		
+						<input type="text" name="newFileLabel" value="' . $fileArray['fileLabel'] . '">
+					      </div>
+					      <div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button type="submit" class="btn btn-success"><i class="icon-pencil icon-white"></i> Rename</button>
+				
+					      </div>
+					    </div><!-- /.modal-content -->
+					  </div><!-- /.modal-dialog -->
+					</div>
+					</form>									
+					<!-- /.modal -->
 
+
+					<!-- Modal - DELETE DIALOG -->
+					<form action="identification.php" method="post">
+				
+					<div class="modal fade" id="deleteFile'.$file_counter.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					      <div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h3 class="modal-title" id="myModalLabel">Delete Custom Identification Clip</h3>
+					      </div>
+					      <div class="modal-body">
+						Are you sure that you want to delete the custom identification clip <strong>' . $fileArray['fileLabel'] . '</strong>? This cannot be undo!
+						<input type="hidden" name="delfile[]" value="' . $fileArray['fileName'] . '">
+						<input type="hidden" name="action" value="delete_file">
+					      </div>
+					      <div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button type="submit" class="btn btn-danger"><i class="icon-trash icon-white"></i> Delete</button>
+					      </div>
+					    </div><!-- /.modal-content -->
+					  </div><!-- /.modal-dialog -->
+					</div>
+					</form>
+					<!-- /.modal -->';
+				
+					echo $html_string;
+			    }
+			} else {
+				echo "no files";
 			}
 			?>
 									  </tbody>
@@ -599,7 +538,7 @@ $dbConnection->close();
       <div class="modal-body">
 		<p>Upload your own custom recorded audio files for identification. The file should be in MP3 or WAV format and any excess 'dead air' should be trimmed off of the clip and audio levels normalized.</p>
 		<input type="hidden" name="action" value="upload_file">
-		<input type="file" name="file" id="file" required>
+		<input type="file" name="file[]" id="file" required>
 		<p><em><br>DO NOT UPLOAD FILES THAT CONTAIN MUSIC, CLIPS OF MUSIC, OR OTHER COPYRIGHTED MATERIAL...IT'S ILLEGAL.</em></p>
       </div>
       <div class="modal-footer">

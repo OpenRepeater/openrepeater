@@ -2,12 +2,10 @@ function setCustomShortID (fileName, activeNum, totalFiles) {
 	$('#ID_Short_CustomFile').val(fileName);
 
 	for (i = 1; i <= totalFiles; i++) {
-		$('#shortIDstatus'+i).hide();
-		$("#shortDeleteBtn"+i).prop("disabled",false);
+		$('#shortIDsoundRow'+i).removeClass('active');
 	}
 
-	$('#shortIDstatus'+activeNum).show();
-	$("#shortDeleteBtn"+activeNum).prop("disabled",true);
+	$('#shortIDsoundRow'+activeNum).addClass('active');
 	updateShortIdSettings ();
 }
 
@@ -16,12 +14,10 @@ function setCustomLongID (fileName, activeNum, totalFiles) {
 	$('#ID_Long_CustomFile').val(fileName);
 
 	for (i = 1; i <= totalFiles; i++) {
-		$('#longIDstatus'+i).hide();
-		$("#longDeleteBtn"+i).prop("disabled",false);
+		$('#longIDsoundRow'+i).removeClass('active');
 	}
 
-	$('#longIDstatus'+activeNum).show();
-	$("#longDeleteBtn"+activeNum).prop("disabled",true);
+	$('#longIDsoundRow'+activeNum).addClass('active');
 	updateLongIdSettings ();
 }
 

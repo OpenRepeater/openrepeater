@@ -1,5 +1,5 @@
 /* @override 
-	https://192.168.1.132/theme/css/charisma-app.css
+	https://192.168.1.132/theme/css/openrepeater.css
 */
 
 @import url(https://fonts.googleapis.com/css?family=Shojumaru);
@@ -652,4 +652,34 @@ fieldset .control-group label {
 	font-style: italic;
 	font-weight: bold;
 }
+
+/* @group Audio Table Customizations */
+
+tr.audio_row.active td {
+	background: #def0d7!important;
+}
+
+tr.audio_row.active .button_grp button {
+	display: none;
+}
+
+tr.audio_row audio {
+	margin: 3px;
+}
+
+tr.audio_row form {
+	margin: 0;
+}
+
+tr.audio_row .button_grp button {
+	margin: 4px;
+}
+
+tr.audio_row .button_grp {
+	width: 274px;
+}
+
+/* @end */
+
+
 
