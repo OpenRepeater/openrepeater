@@ -1,12 +1,30 @@
 Source: openrepeater
-Section: user/www
-Priority: extra
-Maintainer: Richard Neese <kb3vgw@gmail.com>
-Standards-Version: 3.7.2
-#XSBC-Bugtracker: mailto:kb3vgw@gmail.com
+Section: hamradio
+Priority: optional
+Maintainer: Richard Neese <kb3vw@gmail.com>
+Build-Depends: debhelper (>= 9), 
+Standards-Version: 3.9.6
+Homepage: http://www.openrepeater.com
+Vcs-Browser: https://github.com/openrepeater/webap
+Vcs-Git: https://github.com/openrepeater/webapp.git
 
 Package: openrepeater
-Architecture: all
-Depends: ${misc:Depends}
-Description: openrepeater: OpenRepeater Web gui for controlling/administrating svxlink as a repeater & echolink node 
-#XSBC-Bugtracker: mailto:kb3vgw@gmail.com
+Architecture: any
+Recommends: svxlink-server(= ${binary:Version})
+Description: Web GUi interface for Svxlink Radio-over-IP Repeater server for ham radio operators
+ .           
+ The OpenRepeare Web UI for SvxLink server provides access to configure a svxlink 
+ ham radio Repeaters config files and EchoLink® protocol config files.
+ .
+ EchoLink® allows licensed amateur radio operators to communicate
+ over the Internet, including remote access to station equipment.
+ The server can act as a repeater controller or operate on a simplex
+ channel. Based on a modular design, the server can be configured to
+ provide voice mail and echo (talkback) service.
+ .
+ svxlink-server is normally used together with the 'remotetrx'
+ package, which allows the remote control of a radio transceiver.
+ .
+ EchoLink® is a registered trademark of Synergenics, LLC.
+ 
+

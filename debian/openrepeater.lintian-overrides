@@ -1,0 +1,2 @@
+# pkg has empty dir as the db is generated after first install run
+openrepeater: package-contains-empty-directory var/lib/openrepeater/db

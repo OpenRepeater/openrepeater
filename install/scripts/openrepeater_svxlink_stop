@@ -1,0 +1,12 @@
+#!/bin/bash
+SERVICE=svxlink
+
+ps -u $SERVICE | grep -v grep | grep $SERVICE > /dev/null
+result=$?
+echo "exit code: ${result}"
+if [ "${result}" -eq "0" ] ; then
+    echo "$(date): $SERVICE service running, Stopping svxlink service"
+    sudo svxlink stop
+else
+    echo "$(date): $SERVICE is not running"
+fi
