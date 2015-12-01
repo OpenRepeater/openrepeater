@@ -109,7 +109,7 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 	PREEMPHASIS=0
 	DTMF_TONE_LENGTH=100
 	DTMF_TONE_SPACING=50
-	DTMF_TONE_AMP=-18
+	DTMF_TONE_PWR=-18
 
 	';
 	return $tx_section;
@@ -118,7 +118,7 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 /* --- GLOBAL SETTINGS --- */
 
 	$svx_global = '[GLOBAL]
-	MODULE_PATH=/usr/lib/svxlink
+	MODULE_PATH=/usr/lib/arm-linux-gnueabihf/svxlink
 	LOGICS=RepeaterLogic
 	CFG_DIR=svxlink.d
 	TIMESTAMP_FORMAT="%c"
