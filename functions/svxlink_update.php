@@ -365,19 +365,24 @@ $tclOverride .= '
 ';
 
 /* ---------------------------------------------------------- */
-/* WRITE GPIO PINS TO STARTUP FILE */
+/* WRITE GPIO CONFIGURATION FILE */
 
 $gpioRxString = implode(" ", $gpioRxArray);
 $gpioTxString = implode(" ", $gpioTxArray);
 
 $gpioConfigFile = '
-	# GPIO_PTT_PIN="<num> <num>"
-	#     <num> defines the GPIO pin(s) used for PTT / TX.
-	# GPIO_SQL_PIN="<num> <num>"
-	#     <num> defines the GPIO pin(s) used for Squelch (COS) / RX.
-	 
-	GPIO_PTT_PIN="'.$gpioTxString.'"
-	GPIO_SQL_PIN="'.$gpioRxString.'"
+	###############################################################################
+	#                                                                             #
+	#           Configuration file for the SvxLink server GPIO Pins               #
+	#                                                                             #
+	###############################################################################
+	
+	#Set what gpio pins point out 
+	GPIO_OUT_PIN="'.$gpioTxString.'"
+	#Set what gpio pins point in 
+	GPIO_IN_PIN="'.$gpioRxString.'"
+	#Set what gpio pins need to be set low
+	GPIO_LOW_PIN="'.$gpioRxString.'" #LOW STATE IS CURRENTLY HARD CODE FOR INPUT/COS PINS
 ';		
 
 // TODO: Need to add function to check existing GPIO pins in /sys/class/gpio 
