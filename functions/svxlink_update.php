@@ -413,8 +413,7 @@ $memcache_obj = new Memcache;
 $memcache_obj->connect('localhost', 11211);
 $memcache_obj->set('update_settings_flag', 0, false, 0);
 
-$shellout = shell_exec('sudo /usr/local/bin/svxlink_restart');
-
+$shellout = shell_exec('sudo /usr/bin/openrepeater_svxlink_restart');
 
 if ($_POST["return_url"]) {
 	// Return to page that sent here
