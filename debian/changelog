@@ -1,6 +1,6 @@
-openrepeater (1.1.0.1-1) UNRELEASED; urgency=low
+openrepeater (1.1.0.1-1) stable; urgency=low
 
   * Initial release new openrepeater "1.1.0.1"
 
- -- Richard Neese <kb3vgw@gmail.com>  Mon, 23 Nov 2015 11:23:23 -0600
+ -- Richard Neese <kb3vgw@gmail.com>  Wed, 02 Dec 2015 10:02:23 -0600
 
