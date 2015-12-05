@@ -1,7 +1,7 @@
 <?php
 // This is a sub-function file and gets included into svxlink_update.php
 
-$idPath = "/usr/share/openrepeater/sounds/identification/";
+$idPath = "/var/lib/openrepeater/sounds/identification/";
 
 /* ---------------------------------------------------------- */
 /* ID FUNCTIONS */

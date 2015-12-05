@@ -7,7 +7,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are, show the page.
 // --------------------------------------------------------
 	
-$path = "/usr/share/openrepeater/sounds/";
+$path = "/var/lib/openrepeater/sounds/";
 $temp_dir = "/tmp/";
 $sound_dir = '/sounds/';
 $dbLoc = '/var/lib/openrepeater/db/openrepeater.db';

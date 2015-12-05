@@ -12,7 +12,6 @@
 override_dh_installinit:
 	mkdir -p debian/openrepeater/etc/openrepeater/svxlink
 	mkdir -p debian/openrepeater/usr/bin
-	mkdir -p debian/openrepeater/usr/share/openrepeater
 	mkdir -p debian/openrepeater/usr/share/examples/openrepeater
 	mkdir -p debian/openrepeater/var/lib/openrepeater/db
 	mkdir -p debian/openrepeater/var/www/openrepeater
@@ -20,10 +19,10 @@ override_dh_installinit:
 	cp -rp install/svxlink-conf/* debian/openrepeater/etc/openrepeater/svxlink
 	cp -rp install/sql/database.php debian/openrepeater/etc/openrepeater
 	cp -rp install/sql/openrepeater.db debian/openrepeater/var/lib/openrepeater/db
+	cp -rp install/sounds debian/openrepeater/var/lib/openrepeater
 	cp -rp install/scripts/* debian/openrepeater/usr/bin
-	cp -rp install/sounds debian/openrepeater/usr/share/openrepeater
 	cp -rp theme functions includes wizard *.php debian/openrepeater/var/www/openrepeater
-
+    
 override_dh_fixperms:
 	dh_fixperms
 	chmod a+x debian/openrepeater/usr/bin/*

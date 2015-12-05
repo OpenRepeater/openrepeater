@@ -1,3 +1,11 @@
+openrepeater (1.1.0.2-1) stable; urgency=low
+
+  * Moved Sounds to /var/lib/openrepeater/sounds
+  * css fixes
+  * other "1.1.0.2" updates
+
+ -- Richard Neese <kb3vgw@gmail.com>  Wed, 05 Dec 2015 10:02:23 -0600
+ 
 openrepeater (1.1.0.1-1) stable; urgency=low
 
   * Initial release new openrepeater "1.1.0.1"

@@ -27,7 +27,7 @@ function playBeep() {
 function playCustomTone($filename) {
 	$playTone = '
 		proc send_rgr_sound {} {
-		  playFile "/usr/share/openrepeater/sounds/courtesy_tones/'.$filename.'"
+		  playFile "/var/lib/openrepeater/sounds/courtesy_tones/'.$filename.'"
 		  playSilence 200
 		}
 		';

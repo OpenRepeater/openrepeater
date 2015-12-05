@@ -5,7 +5,6 @@ case "$1" in
   configure)
     for w in \
         /etc/openrepeater \
-        /usr/share/openrepeater \
         /var/lib/openrepeater \
         /var/www/openrepeater;
     do
