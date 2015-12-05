@@ -683,3 +683,189 @@ tr.audio_row .button_grp {
 
 
 
+
+
+
+
+
+
+
+@media (max-width: 480px) {
+}
+
+@media (max-width: 767px) {
+
+	body {
+		padding: 0;
+	}
+
+	.container-fluid {
+		margin-right: 20px;
+		margin-left: 20px;
+	}
+
+
+	/* HEADER */
+
+	.server_bar {
+		padding-right: 0;
+		padding-left: 0;
+		z-index: 9999;
+	}
+
+
+
+	.server_bar span {
+		display: none;
+	}
+	
+	.server_bar button {
+		margin-right: auto;
+		margin-left: auto;
+		display: block;
+	}
+
+
+	.navbar {
+		margin-bottom: 0;
+	}
+	
+	.navbar .container-fluid {
+		margin: 0;
+		padding: 0;	
+		height: 60px!important;
+	
+	}
+	
+	.navbar a.btn.btn-navbar {
+		float: left!important;
+		padding: 10px;
+		position: relative;
+		left: 0;
+		top: 11px;
+		z-index: 1000;
+	
+	}
+	
+	.navbar .header-logo {
+		min-width: 150px;
+		width: 150px;
+		float: center;
+		position: relative;
+		margin-right: auto;
+		margin-left: auto;
+		top: 6px;
+	}
+	
+	.navbar .header-logo img {
+		height: auto;
+		width: auto;
+	}
+	
+	.navbar .header-logo span {
+		display: none;
+	}
+	
+	.navbar .btn-group.pull-right {
+		float: right!important;
+		position: relative;
+		top: -49px;
+		right: 0;
+		z-index: 1000;
+	
+	}
+	
+	.navbar a.btn.dropdown-toggle {
+		padding: 6px;
+	}
+
+
+	/* RESPONSIVE MENU */
+
+	.span2.main-menu-span {
+		top: -35px;
+		position: relative;
+		overflow: visible;
+		bottom: 0;
+		margin-bottom: -41px;
+	}
+
+
+	/* FOOTER */
+
+	.container-fluid hr {
+		display: none;
+	}
+	
+	footer p.pull-left {
+		display: none;
+		float: none;
+	}
+	
+	footer p.pull-right {
+		float: none!important;
+		width: 100%;
+		font-size: .9em;
+		text-align: center;
+		margin-top: 10px;
+		margin-bottom: 20px;
+	}
+
+	/* IDENTIFICATIONS PAGE */
+
+	#append div.appendOption {
+		float: none;
+		margin: 10px 0 0;
+		overflow: auto;
+	}
+	
+	#append div.appendOption label {
+		float: left;
+		margin-top: 5px;
+	}
+	
+	#append div.appendOption select {
+		float: right;
+		width: 80px;
+	}
+
+
+	#morse_ID_settings select {
+		width: 100%;
+		margin-bottom: 10px;
+	}
+	
+	#play {
+		margin-bottom: 10px;
+	}
+
+.field input:not([type="radio"]) {
+    width: 50%;
+    margin: 0px;
+  }
+
+
+	/* COURESTY TONES PAGE */
+
+	#custom .box-content {
+		overflow: auto;
+	}
+
+	h2.current_tone {
+		font-size: 14px;
+		margin-bottom: 0!important;
+	}
+
+		
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+}
+
+@media (min-width: 1200px) {
+}
+
+@media (min-width: 768px) {
+}
+
+
