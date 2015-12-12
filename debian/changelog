@@ -1,10 +1,16 @@
-openrepeater (1.1.0.2-1) stable; urgency=low
+openrepeater (1.1.0.3-1) stable; urgency=low
+
+  * Make fixes for Firefox GUI bugs
+
+ -- Richard Neese <kb3vgw@gmail.com>  Sat, 12 Dec 2015 10:02:23 -0600
+ 
+ openrepeater (1.1.0.2-1) stable; urgency=low
 
   * Moved Sounds to /var/lib/openrepeater/sounds
   * css fixes
   * other "1.1.0.2" updates
 
- -- Richard Neese <kb3vgw@gmail.com>  Wed, 05 Dec 2015 10:02:23 -0600
+ -- Richard Neese <kb3vgw@gmail.com>  Sat, 05 Dec 2015 10:02:23 -0600
  
 openrepeater (1.1.0.1-1) stable; urgency=low
 
