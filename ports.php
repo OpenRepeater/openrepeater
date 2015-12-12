@@ -77,7 +77,7 @@ $dbConnection->close();
 										<option value="vox" <?php if ($cur_port['rxMode'] == 'vox') { echo "selected"; } ?>>VOX</option>
 										<option value="gpio" <?php if ($cur_port['rxMode'] == 'gpio') { echo "selected"; } ?>>COS</option>
 									</select>
-									<input id="rxGPIO<?php echo $idNum; ?>" type="text" required="required" name="rxGPIO[]" placeholder="rxGPIO"  value="<?php echo $cur_port['rxGPIO']; ?>" class="rxGPIO">
+									<input id="rxGPIO<?php echo $idNum; ?>" type="text" required="required" name="rxGPIO[]" placeholder="GPIO"  value="<?php echo $cur_port['rxGPIO']; ?>" class="rxGPIO">
 									<select id="rxAudioDev<?php echo $idNum; ?>" name="rxAudioDev[]" class="rxAudioDev">
 										<option>---</option>
 										<?php
@@ -93,7 +93,7 @@ $dbConnection->close();
 									</select>
 									</span>
 									<span class="tx">
-									<input id="txGPIO<?php echo $idNum; ?>" type="text" required="required" name="txGPIO[]" placeholder="txGPIO" value="<?php echo $cur_port['txGPIO']; ?>" class="txGPIO">
+									<input id="txGPIO<?php echo $idNum; ?>" type="text" required="required" name="txGPIO[]" placeholder="GPIO" value="<?php echo $cur_port['txGPIO']; ?>" class="txGPIO">
 									<select id="txAudioDev<?php echo $idNum; ?>" name="txAudioDev[]" class="txAudioDev">
 										<option>---</option>
 										<?php
