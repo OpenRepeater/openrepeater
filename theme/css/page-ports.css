@@ -1,4 +1,7 @@
-/* @override https://192.168.1.132/theme/css/page-ports.css */
+/* @override 
+	https://192.168.1.132/theme/css/page-ports.css
+	https://192.168.1.101/theme/css/page-ports.css
+*/
 
 #portsWrap {
 	overflow: hidden;
@@ -54,10 +57,12 @@ input, select {
 
 .rxMode {
 	width: 80px;
+	margin-right: 3px;
 }
 
 .rxGPIO {
 	width: 40px;	
+	margin-right: 3px;
 }
 
 .rxAudioDev {
@@ -66,6 +71,7 @@ input, select {
 
 .txGPIO {
 	width: 40px;
+	margin-right: 3px;
 }
 
 .txAudioDev {
@@ -77,35 +83,38 @@ input, select {
 
 /* Field Colors */
 .rxMode, .rxGPIO, .rxAudioDev {
-	background-color: #cffccf;
+	background-color: #cffccf!important;
 }
 
 .txGPIO, .txAudioDev {
-	background-color: #ffc9d1;	
+	background-color: #ffc9d1!important;	
+
 }
 
 
 
-
-@media screen and (-webkit-min-device-pixel-ratio:0) {  /*safari and chrome*/
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {  
+safari and chrome
     select {
         height:30px;
         line-height:30px;
         background:#f4f4f4;
     } 
 }
-select::-moz-focus-inner { /*Remove button padding in FF*/ 
+select::-moz-focus-inner { Remove button padding in FF
     border: 0;
     padding: 0;
 }
-@-moz-document url-prefix() { /* targets Firefox only */
+@-moz-document url-prefix() {  targets Firefox only 
     select {
         padding: 15px 0!important;
     }
 }        
-@media screen\0 { /* IE Hacks: targets IE 8, 9 and 10 */        
+@media screen\0 {  IE Hacks: targets IE 8, 9 and 10
     select {
         height:30px;
         line-height:30px;
     }     
 }
+*/
