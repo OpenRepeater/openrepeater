@@ -44,10 +44,11 @@ if($('#rxMode').val() == 'gpio') {
 });
 
 
-
+/*     ---Disabled because of firefox issues
 // RX GPIO Validation
 $("#rxGPIO").keypress(function(event) {
-	return /\d/.test(String.fromCharCode(event.keyCode));
+	var text = event.charCode || event.keyCode;
+	return /\d/.test(String.fromCharCode(text));
 });
 
 $( "#rxGPIO" ).blur(function() {
@@ -61,7 +62,8 @@ $( "#rxGPIO" ).blur(function() {
 
 // TX GPIO Validation
 $("#txGPIO").keypress(function(event) {
-	return /\d/.test(String.fromCharCode(event.keyCode));
+	var text = event.charCode || event.keyCode;
+	return /\d/.test(String.fromCharCode(text));
 });
 
 $( "#txGPIO" ).blur(function() {
@@ -71,3 +73,4 @@ $( "#txGPIO" ).blur(function() {
 		$('#txGPIO').focus();
 	}
 });
+*/
