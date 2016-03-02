@@ -113,7 +113,17 @@ include('includes/sys_info.php');
 					<div class="box-content">
 						<?php
 						for ($i = 1; $i < $count; $i++) {
-							$capacity = number_format(intval(preg_replace("/[^0-9]/", "", trim($size[$i])))) . " MB";
+							$clean_size = intval(trim($size[$i]));
+							if ($clean_size > 1000000000 ) {
+								$capacity = number_format(($clean_size * .000000001), 2, '.', ',') . " PB";
+							} elseif ($clean_size > 1000000 ) {
+								$capacity = number_format(($clean_size * .000001), 2, '.', ',') . " TB";
+							} elseif ($clean_size > 1000 ) {
+								$capacity = number_format(($clean_size * .001), 1, '.', ',') . " GB";
+							} else {
+								$capacity = number_format($clean_size, 1, '.', ',') . " MB";
+							}
+
 							$drive = $mount[$i] . " (" . $typex[$i] . ")";
 						}
 						?>
