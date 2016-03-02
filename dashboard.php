@@ -55,7 +55,7 @@ include('includes/sys_info.php');
 						<div id="info_clear"></div>
 					
 						<div id="info_label">CPU Temperature:</div>
-						<div id="info_value"><?php echo getCPU_Temp('C'); ?></div>
+						<div id="info_value"><?php echo getCPU_Temp('F'); ?> / <?php echo getCPU_Temp('C'); ?></div>
 						<div id="info_clear"></div>
 					
 						<div id="info_label">Uptime:</div>

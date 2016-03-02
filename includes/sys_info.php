@@ -46,7 +46,7 @@
 	}
 
 	function getCPU_Temp($unit) {
-		$unit = 'F';
+		if(!$unit) { $unit = 'F'; }
 
 		$celsius = round(exec("cat /sys/class/thermal/thermal_zone0/temp ") / 1000, 1);
 		$fahrenheit = $celsius * 1.8 + 32;
