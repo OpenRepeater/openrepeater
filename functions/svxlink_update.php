@@ -7,29 +7,31 @@ files for SVXLink. It currently builds the following configuration files:
 - svxlink.conf
 - ModuleEchoLink.conf
 - local TCL overrides
+- svxlink_gpio.conf
 */
 
-// --------------------------------------------------------
-// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+/* ---------------------------------------------------------- */
+/* SESSION CHECK TO SEE IF USER IS LOGGED IN. */
 session_start();
 if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	header('location: login.php');
 } else { // If they are, show the page.
-// --------------------------------------------------------
+/* ---------------------------------------------------------- */
 
-//UNUSED VARIABLES IN DATABASE...FROM OLD PROGRAM, NOT YET IMPLEMENTED WITH SVXLINK
-// phoneticCallSign
-// repeaterTimeoutSec
-// rxFreq
-// timeoutMsg
-// txFreq
-// voiceID
+
+// This will need to be added to the database as one of the settings.
+$orp_Mode = "repeater"; // Options are: repeater or simplex
+
+
 
 // Get Settings from SQLite
 include_once("../includes/get_settings.php");
 
 // Get Port Settings from SQLite
 include_once("../includes/get_ports.php");
+
+// Get GPIOs from SQLite that need to be set for OS (/sys/class/gpio/)
+include_once("../includes/get_gpios.php");
 
 /* ---------------------------------------------------------- */
 /* SVXLINK CONFIGURATION SETTINGS */
@@ -117,9 +119,19 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 
 /* --- GLOBAL SETTINGS --- */
 
+	switch ($orp_Mode) {
+	    case "repeater":
+			$useLogic = 'RepeaterLogic';
+	        break;
+	    case "simplex":
+			$useLogic = 'SimplexLogic';
+	        break;
+	}
+
+
 	$svx_global = '[GLOBAL]
 	MODULE_PATH=/usr/lib/arm-linux-gnueabihf/svxlink
-	LOGICS=RepeaterLogic
+	LOGICS='.$useLogic.'
 	CFG_DIR=svxlink.d
 	TIMESTAMP_FORMAT="%c"
 	CARD_SAMPLE_RATE=16000
@@ -128,6 +140,9 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 
 	';
 
+
+
+/* ---------------------------------------------------------- */
 /* --- REPEATER LOGIC SETTINGS --- */
 
 	// Build List of Modules to run
@@ -139,51 +154,35 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 
 	if(!empty($modulesArray)) {
 		$modulesList = 'MODULES=' . implode(",", $modulesArray);
+
+// TEST -- APPEND REMOTE RELAY MODULE TO LIST
+//$modulesList .= ',ModuleRemoteRelay';
+
 	} else {
 		$modulesList = '#MODULES=NONE';
 	}
 
-	$svx_repeaterLogic = '[RepeaterLogic]
-	TYPE=Repeater
-	RX=Rx1
-	TX=Tx1
-	'.$modulesList.'
-	CALLSIGN='.$settings['callSign'].'
-	SHORT_IDENT_INTERVAL='.$settings['ID_Short_IntervalMin'].'
-	LONG_IDENT_INTERVAL='.$settings['ID_Long_IntervalMin'].'
-	EVENT_HANDLER=/usr/share/svxlink/events.tcl
-	DEFAULT_LANG=en_US
-	RGR_SOUND_DELAY=1
-	REPORT_CTCSS='.$settings['rxTone'].'
-	TX_CTCSS=ALWAYS
-	MACROS=Macros
-	FX_GAIN_NORMAL=0
-	FX_GAIN_LOW=-12
-	IDLE_TIMEOUT=1
-	OPEN_ON_SQL=1
-	OPEN_SQL_FLANK=OPEN
-	IDLE_SOUND_INTERVAL=0
 
-	';
+switch ($orp_Mode) {
+    case "repeater":
+		include('svxlink_update_functions/main_repeater_logic.php');
+        break;
+    case "simplex":
+		include('svxlink_update_functions/main_simplex_logic.php');
+        break;
+}
 
+/* ---------------------------------------------------------- */
 /* --- PORT SETTINGS - Generates RX & TX sections for each port --- */
 
-
-// Define GPIO pin arrays
-$gpioRxArray = array();
-$gpioTxArray = array();
-
 $svx_ports = '';
+
 foreach ($ports as $key => $val) {
 	$svx_ports .= built_rx($key, $ports);
 	$svx_ports .= built_tx($key, $ports, $settings);
-	
-	//Define GPIO pins in arrays for later writing to config file.
-	$gpioRxArray[] = $ports[$key]['rxGPIO'];
-	$gpioTxArray[] = $ports[$key]['txGPIO'];
 }
 
-//Note that while this section can build multipe TX & RX sections from ports table, there is no utilization of this feature yet in other logic.
+// Note that while this section can build multipe TX & RX sections from ports table, there is no utilization of this feature yet in other logic.
 
 /* ---------------------------------------------------------- */
 /* MODULE: ECHOLINK CONFIGURATION SETTINGS */
@@ -211,186 +210,107 @@ if ($settings['echolink_enabled'] == "True") {
 }
 
 /* ---------------------------------------------------------- */
-/* BUILD CUSTOM TCL OVERRIDES...ie COURTESY TONES, ETC */
+/* BUILD CUSTOM TCL OVERRIDES...ie COURTESY TONES, IDENTIFICATION, ETC */
 
+// Define Strings Variables for TCL Namespaces. 
+$tclLogicNameSpace = '';
+$tclRepeaterLogicNameSpace = '';
 
-// FILE HEADER
-$tclOverride = '
-###############################################################################
-#
-# Overridden generic Logic event handlers
-#
-###############################################################################
-';
-
-// LOGIC NAME SPACE
-$tclOverride .= '
-#
-# This is the namespace in which all functions and variables below will exist.
-#
-namespace eval Logic {
-';
-
-// --------------------------------------------------------------
-
+// Include PHP files that build custom TCL Logic for the namespaces below
 include('svxlink_update_functions/tcl_identification.php');
-
-// --------------------------------------------------------------
-
-		$tclOverride .= '
-
-			# Call the "status_report" function in all modules if no module is active
-		  if {$active_module == ""} {
-			foreach module [split $loaded_modules " "] {
-			  set func "::";
-			  append func $module "::status_report";
-			  if {"[info procs $func]" ne ""} {
-				$func;
-			  }
-			}
-		  }
-		  playSilence 500;
-		}
-';
-// --------------------------------------------------------------
-
 include('svxlink_update_functions/tcl_courtesy_tones.php');
+include('svxlink_update_functions/tcl_TEMP.php');
 
-// LOGIC NAME SPACE - END
-$tclOverride .= '
+
+// TCL Logic Namespace Override
+$tclOverride = '
+### Overridden Core Logic event handlers created by OpenRepeater
+namespace eval Logic {
+' . $tclLogicNameSpace . '
 # end of namespace
 }
+
+
+### Overridden Repeater Logic event handlers created by OpenRepeater
+namespace eval RepeaterLogic {
+' . $tclRepeaterLogicNameSpace . '
+# end of namespace
+}
+
 ';
 
-// --------------------------------------------------------------
+/*
+namespace eval EchoLink {
 
-// RepeaterLogic Override
-$tclOverride .= '
-		namespace eval RepeaterLogic {
-
-			proc repeater_up {reason} {
-			  global mycall;
-			  global active_module;
-			  variable repeater_is_up;
-
-			  set repeater_is_up 1;
-
-			  if {($reason != "SQL_OPEN") && ($reason != "CTCSS_OPEN") &&
-				  ($reason != "SQL_RPT_REOPEN")} {
-				set now [clock seconds];
-				if {$now-$Logic::prev_ident < $Logic::min_time_between_ident} {
-				  return;
-				}
-				set Logic::prev_ident $now;
-				playSilence 250;
-
-			  ';
-
-			  if ($settings['ID_Long_Mode'] != "disabled") {
-				// If Long ID is enable use first and load setting from previously define string in included file
-				$tclOverride .= $longIdString;
-			  } else if ($settings['ID_Short_Mode'] != 'disabled') {
-				// Otherwise load Short ID setting from previously define string in included file
-				$tclOverride .= $shortIdString;
-			  } else {
-				// If both are disabled, play morse ID 
-				$tclOverride .= buildMorseID($settings['ID_Morse_Amplitude'], $settings['ID_Morse_WPM'], $settings['ID_Morse_Pitch'], $settings['ID_Morse_Suffix']);  
-			  }
-
-			  $tclOverride .= '
-
-				if {$active_module != ""} {
-				  playMsg "Core" "active_module";
-				  playMsg $active_module "name";
-				}
-			  }
-			}
-
-			#
-			# Executed when the repeater is deactivated
-			#   reason  - The reason why the repeater was deactivated
-			#             IDLE         - The idle timeout occured
-			#             SQL_FLAP_SUP - Closed due to interference
-			#
-			proc repeater_down {reason} {
-			  global mycall;
-			  variable repeater_is_up;
-
-			  set repeater_is_up 0;
-
-			  if {$reason == "SQL_FLAP_SUP"} {
-				playSilence 500;
-				playMsg "Core" "interference";
-				playSilence 500;
-				return;
-			  }
-
-			  set now [clock seconds];
-			  if {$now-$Logic::prev_ident < $Logic::min_time_between_ident} {
-#				playTone 400 900 50
-#				playSilence 100
-#				playTone 360 900 50
-				playSilence 500
-				return;
-			  }
-			  set Logic::prev_ident $now;
-
-			  playSilence 250;
-
-			  ';
-
-			  if ($settings['ID_Short_Mode'] != 'disabled') {
-				// If not disabled, load Short ID setting from previously define string in included file
-				$tclOverride .= $shortIdString;
-			  } else {
-				// If disabled, play morse ID 
-				$tclOverride .= buildMorseID($settings['ID_Morse_Amplitude'], $settings['ID_Morse_WPM'], $settings['ID_Morse_Pitch'], $settings['ID_Morse_Suffix']);  
-			  }
-
-			  $tclOverride .= '
-
-			  #playMsg "../extra-sounds" "shutdown";
-			}
-
-
-		# end of namespace
+		# Executed when an incoming connection is accepted
+		proc remote_greeting {call} {
+			playSilence 1000;
+			playFile "/usr/share/svxlink/sounds/en_US/EchoLink/greeting.wav"
+#			playMsg "greeting";
 		}
-';
 
-// --------------------------------------------------------------
-$tclOverride .= '
-#
-# This file has not been truncated
-#
-';
+ end of namespace
+}
+*/
 
 /* ---------------------------------------------------------- */
 /* WRITE GPIO CONFIGURATION FILE */
 
-$gpioRxString = implode(" ", $gpioRxArray);
-$gpioTxString = implode(" ", $gpioTxArray);
+// Define GPIO pin arrays
+$gpioInHighArray = array();
+$gpioInLowArray = array();
+$gpioOutHighArray = array();
+$gpioOutLowArray = array();
 
+// Loop through each GPIO in database and assign to appropriate arrays
+foreach ($gpio as $key => $val) {	
+	if ($gpio[$key]['direction'] == "in") {
+		if ($gpio[$key]['active'] == "low") {
+			$gpioInLowArray[] = $gpio[$key]['gpio_num'];		
+		} else {
+			$gpioInHighArray[] = $gpio[$key]['gpio_num'];					
+		}
+	}
+
+	if ($gpio[$key]['direction'] == "out") {
+		if ($gpio[$key]['active'] == "low") {
+			$gpioOutLowArray[] = $gpio[$key]['gpio_num'];		
+		} else {
+			$gpioOutHighArray[] = $gpio[$key]['gpio_num'];					
+		}
+	}
+
+}
+
+// Reformat arrays into space delminated lists of gpio pin numbers
+$gpioInHighString = implode(" ", $gpioInHighArray);
+$gpioInLowString = implode(" ", $gpioInLowArray);
+$gpioOutHighString = implode(" ", $gpioOutHighArray);
+$gpioOutLowString = implode(" ", $gpioOutLowArray);
+
+// Build File Contents
 $gpioConfigFile = '
-	###############################################################################
-	#                                                                             #
-	#           Configuration file for the SvxLink server GPIO Pins               #
-	#                                                                             #
-	###############################################################################
+	# Configuration file for the SVXLink server GPIO Pins
 	
-	#Set what gpio pins point out 
-	GPIO_OUT_PIN="'.$gpioTxString.'"
-	#Set what gpio pins point in 
-	GPIO_IN_PIN="'.$gpioRxString.'"
-	#Set what gpio pins need to be set low
-	GPIO_LOW_PIN="'.$gpioRxString.'" #LOW STATE IS CURRENTLY HARD CODE FOR INPUT/COS PINS
-';		
+	#Set what GPIO pins point IN and have an Active HIGH state (3.3v = ON, 0v = OFF)
+	GPIO_IN_HIGH="'.$gpioInHighString.'"
+
+	#Set what GPIO pins point IN and have an Active LOW state (0v = ON, 3.3v = OFF)
+	GPIO_IN_LOW="'.$gpioInLowString.'"
+
+	#Set what GPIO pins point OUT and have an Active HIGH state (3.3v = ON, 0v = OFF)
+	GPIO_OUT_HIGH="'.$gpioOutHighString.'"
+
+	#Set what GPIO pins point OUT and have an Active LOW state (0v = ON, 3.3v = OFF) 
+	GPIO_OUT_LOW="'.$gpioOutLowString.'"
+';	
 
 // TODO: Need to add function to check existing GPIO pins in /sys/class/gpio 
 // and see if new pins in ports table exist since system boot and if not add them.
 
 #Clean up tabs/white spaces
 $svx_global = preg_replace('/\t+/', '', $svx_global);
-$svx_repeaterLogic = preg_replace('/\t+/', '', $svx_repeaterLogic);
+$svx_logic = preg_replace('/\t+/', '', $svx_logic);
 $svx_ports = preg_replace('/\t+/', '', $svx_ports);
 if (isset($moduleEchoLink)) { $moduleEchoLink = trim(preg_replace('/\t+/', '', $moduleEchoLink)); }
 $gpioConfigFile = trim(preg_replace('/\t+/', '', $gpioConfigFile));
@@ -398,10 +318,21 @@ $gpioConfigFile = trim(preg_replace('/\t+/', '', $gpioConfigFile));
 /* ---------------------------------------------------------- */
 /* WRITE CONFIGURATION & TCL FILES */
 
-file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $svx_global . $svx_repeaterLogic . $svx_ports);
-if (isset($moduleEchoLink)) { file_put_contents('/etc/openrepeater/svxlink/svxlink.d/ModuleEchoLink.conf', $moduleEchoLink); }
-file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $tclOverride);
-file_put_contents('/etc/openrepeater/svxlink/svxlink_gpio.conf', $gpioConfigFile);
+
+// Generate header message for top of ALL files output.
+$orpFileHeader = '
+###############################################################################
+#
+#  This file was auto generated by OpenRepeater. 
+#  DO NOT MAKE CHANGES IN THIS FILE AS THEY WILL BE OVERWRITTEN
+#
+###############################################################################
+';
+
+file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $svx_global . $svx_logic . $svx_ports);
+if (isset($moduleEchoLink)) { file_put_contents('/etc/openrepeater/svxlink/svxlink.d/ModuleEchoLink.conf', $orpFileHeader . $moduleEchoLink); }
+file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride);
+file_put_contents('/etc/openrepeater/svxlink/svxlink_gpio.conf', $orpFileHeader . $gpioConfigFile);
 
 
 /* CLOSE DATABSE CONNECTION */
@@ -426,12 +357,11 @@ if ($_POST["return_url"]) {
 	// Otherwise just go to dashboard
 	header('location: ../dashboard.php');	
 }	
-	
 ?>
 
 <?php
-// --------------------------------------------------------
+/* ---------------------------------------------------------- */
 // SESSION CHECK TO SEE IF USER IS LOGGED IN.
  } // close ELSE to end login check from top of page
-// --------------------------------------------------------
+/* ---------------------------------------------------------- */
 ?>
