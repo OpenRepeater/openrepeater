@@ -43,6 +43,12 @@
 		  echo "\t<link href='../theme/css/".$cssfile."' rel='stylesheet'>\n";
 		}
 	}
+
+	// Display module admin CSS if defined
+	if (isset($moduleCSS)) {
+		echo "<!-- custom CSS for module admin page -->\n";
+		echo "\t<link href='".$moduleCSS."' rel='stylesheet'>\n";
+	}
 	?>
 
 
@@ -67,9 +73,13 @@
 	$current_page_url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
 	/* CHECK FOR MEMCACHE FLAG AND NOTIFY USER IF SERVER NEEDS RESTARTED */
+/*
 	$memcache_obj = new Memcache;
 	$memcache_obj->connect('localhost', 11211);
 	$var = $memcache_obj->get('update_settings_flag');
+*/
+$var = 0;
+
 
 ?>
 	<div class="server_bar_wrap"<?php if ($var != 1) { echo ' style="display: none;"'; } ?>>
@@ -156,6 +166,12 @@
 						<li><a class="ajax-link" href="identification.php"><i class="icon-bullhorn"></i><span class="hidden-tablet"> Identification</span></a></li>
 						<li><a class="ajax-link" href="courtesy_tone.php"><i class="icon-music"></i><span class="hidden-tablet"> Courtesy Tones</span></a></li>
 						<li><a class="ajax-link" href="echolink.php"><i class="icon-signal"></i><span class="hidden-tablet"> EchoLink</span></a></li>
+						<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>
+							<ul class="nav nav-pills nav-stacked">
+								<li><a href="#">Child Menu 1</a></li>
+								<li><a href="#">Child Menu 2</a></li>
+							</ul>						
+						</li>
 						<li><a class="ajax-link" href="ports.php"><i class="icon-cog"></i><span class="hidden-tablet"> TX/RX Ports</span></a></li>
 						<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>
 						<li><a class="ajax-link" href="dtmf.php"><i class="icon-th"></i><span class="hidden-tablet"> DTMF Reference</span></a></li>
