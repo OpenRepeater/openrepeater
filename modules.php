@@ -1,10 +1,15 @@
 <?php
-/* 
-	LOGIN CHECK GOES HERE **********************************************************************************
-*/
-?>
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: login.php'); // If they aren't logged in, send them to login page.
+} elseif (!isset($_SESSION['callsign'])) {
+	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
+} else { // If they are logged in and have set a callsign, show the page.
+// --------------------------------------------------------
 
-<?php
+
 
 //$customCSS = "logtail.css"; // "file1.css, file2.css, ... "
 //$customJS = "logtail.js"; // "file1.js, file2.js, ... "
@@ -92,7 +97,8 @@ include_once("includes/get_modules.php");
 							</thead>
 							
 							<tbody>
-								<?php foreach($module as $cur_mod) { 
+								<?php
+								foreach($module as $cur_mod) { 
 									$mod_ini_file = 'modules/'.$cur_mod['svxlinkName'].'/info.ini';
 									$mod_settings_file = 'modules/'.$cur_mod['svxlinkName'].'/settings.php';
 									$dtmf_help_file = 'modules/'.$cur_mod['svxlinkName'].'/dtmf.php';
@@ -138,7 +144,7 @@ include_once("includes/get_modules.php");
 										?>
 									</td>
 								</tr>
-								<?	} /* End Current Module */ ?>
+								<?php } /* End Current Module */ ?>
 						
 							</tbody>
 						</table>
@@ -159,7 +165,8 @@ $dbConnection->close();
 ?>
 
 <?php
-/* 
-	LOGIN CHECK GOES HERE **********************************************************************************
-*/
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
 ?>

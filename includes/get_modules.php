@@ -1,7 +1,7 @@
 <?php
 // Read all the Ports from SQLite into a PHP array
 
-include_once("/Volumes/Macintosh HD/Users/aaroncrawford/Downloads/OpenRepeater Dev/db/database.php");
+include_once("/etc/openrepeater/database.php");
 
 $module_results = $dbConnection->query('SELECT * FROM "modules" ORDER BY "svxlinkID" ASC')or die();
 
