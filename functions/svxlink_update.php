@@ -18,12 +18,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are, show the page.
 /* ---------------------------------------------------------- */
 
-
-// This will need to be added to the database as one of the settings.
-$orp_Mode = "repeater"; // Options are: repeater or simplex
-
-
-
 // Get Settings from SQLite
 include_once("../includes/get_settings.php");
 
@@ -122,7 +116,7 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 
 /* --- GLOBAL SETTINGS --- */
 
-	switch ($orp_Mode) {
+	switch ($settings['orp_Mode']) {
 	    case "repeater":
 			$useLogic = 'RepeaterLogic';
 	        break;
@@ -171,18 +165,6 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 
 
 /* ---------------------------------------------------------- */
-/* --- LOGIC SETTINGS --- */
-
-switch ($orp_Mode) {
-    case "repeater":
-		include('svxlink_update_functions/main_repeater_logic.php');
-        break;
-    case "simplex":
-		include('svxlink_update_functions/main_simplex_logic.php');
-        break;
-}
-
-/* ---------------------------------------------------------- */
 /* --- PORT SETTINGS - Generates RX & TX sections for each port --- */
 
 $svx_ports = '';
@@ -193,6 +175,18 @@ foreach ($ports as $key => $val) {
 }
 
 // Note that while this section can build multipe TX & RX sections from ports table, there is no utilization of this feature yet in other logic.
+
+/* ---------------------------------------------------------- */
+/* --- LOGIC SETTINGS --- */
+
+switch ($settings['orp_Mode']) {
+    case "repeater":
+		include('svxlink_update_functions/main_repeater_logic.php');
+        break;
+    case "simplex":
+		include('svxlink_update_functions/main_simplex_logic.php');
+        break;
+}
 
 /* ---------------------------------------------------------- */
 /* MODULE: ECHOLINK CONFIGURATION SETTINGS */
