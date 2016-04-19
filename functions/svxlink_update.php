@@ -27,6 +27,9 @@ $orp_Mode = "repeater"; // Options are: repeater or simplex
 // Get Settings from SQLite
 include_once("../includes/get_settings.php");
 
+// Get Modules from SQLite
+include_once("../includes/get_modules.php");
+
 // Get Port Settings from SQLite
 include_once("../includes/get_ports.php");
 
@@ -143,25 +146,32 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 
 
 /* ---------------------------------------------------------- */
-/* --- REPEATER LOGIC SETTINGS --- */
+/* --- BUILD MODULE SETTINGS --- */
 
-	// Build List of Modules to run
+
 	$modulesArray = array();
-	if ($settings['help_enabled'] == "True") { $modulesArray[] = 'ModuleHelp'; }
-	if ($settings['parrot_enabled'] == "True") { $modulesArray[] = 'ModuleParrot'; }
-	if ($settings['echolink_enabled'] == "True") { $modulesArray[] = 'ModuleEchoLink'; }
-	if ($settings['voicemail_enabled'] == "True") { $modulesArray[] = 'ModuleTclVoiceMail'; }
-
+	foreach($module as $cur_mod) { 
+		//$mod_settings_file = 'modules/'.$cur_mod['svxlinkName'].'/settings.php';
+		if ($cur_mod['moduleEnabled']==1) {
+			
+			// Add Module name to array to output list in logic section
+			$modulesArray[] = 'Module'.$cur_mod['svxlinkName'];
+			
+			// INCLUDE MODULE BUILD FILES HERE...IF THEY EXIST
+			
+		} 
+	}
+	
+	// Buil Module List from Array
 	if(!empty($modulesArray)) {
 		$modulesList = 'MODULES=' . implode(",", $modulesArray);
-
-// TEST -- APPEND REMOTE RELAY MODULE TO LIST
-//$modulesList .= ',ModuleRemoteRelay';
-
 	} else {
 		$modulesList = '#MODULES=NONE';
 	}
 
+
+/* ---------------------------------------------------------- */
+/* --- LOGIC SETTINGS --- */
 
 switch ($orp_Mode) {
     case "repeater":
@@ -346,11 +356,13 @@ $memcache_obj->set('update_settings_flag', 0, false, 0);
 
 $shellout = shell_exec('sudo /usr/bin/openrepeater_svxlink_restart');
 
+/* WHAT PAGE TO GO BACK TO */
 if ($_POST["return_url"]) {
 	// Return to page that sent here
-	header('location: '.$_POST["return_url"]);	
+	$url = strtok($_POST["return_url"], '?'); //Clean parameters from URL
+	header('location: '.$url);	
 } else if (isset($_SESSION["new_repeater_settings"])) {
-	// Wizard was run. Go ahead and destroy seccsion and logout
+	// Wizard was run. Go ahead and destroy session and logout
 	session_destroy();
 	header('location: ../login.php');		
 } else {

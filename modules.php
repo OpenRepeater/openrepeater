@@ -25,6 +25,11 @@ include_once("includes/get_modules.php");
 			$sql = 'UPDATE modules SET moduleEnabled=0 WHERE moduleKey='.$module_id;
 			$dbConnection->exec($sql);
 
+			/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
+			$memcache_obj = new Memcache;
+			$memcache_obj->connect('localhost', 11211);
+			$memcache_obj->set('update_settings_flag', 1, false, 0);
+
 			$msgText = "The ".$module[$module_id]['moduleName']." Module has been successfully <strong>deactivated</strong>.";
 			$alert = '<div class="alert alert-success">'.$msgText.'</div>';
 		}
@@ -35,6 +40,11 @@ include_once("includes/get_modules.php");
 
 			$sql = 'UPDATE modules SET moduleEnabled=1 WHERE moduleKey='.$module_id;
 			$dbConnection->exec($sql);
+
+			/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
+			$memcache_obj = new Memcache;
+			$memcache_obj->connect('localhost', 11211);
+			$memcache_obj->set('update_settings_flag', 1, false, 0);
 
 			$msgText = "The ".$module[$module_id]['moduleName']." Module has been successfully <strong>activated</strong>.";
 			$alert = '<div class="alert alert-success">'.$msgText.'</div>';
