@@ -16,6 +16,7 @@ function htmlTemplate(n) {
 	'	<option value="gpio" selected>COS</option>'+
 	'</select> '+
 	'<input type="text" required="required" name="rxGPIO[]" placeholder="rxGPIO" class="rxGPIO"> '+
+	'<input type="hidden" name="rxGPIO_active[]" value="low"> '+
 	'<select name="rxAudioDev[]" class="rxAudioDev">'+
 	'	<option>---</option>'+
 	'	<option value="alsa:plughw:1|0">INPUT: USB PnP Sound Device (Left)</option>'+
@@ -24,6 +25,7 @@ function htmlTemplate(n) {
 	'</span>'+
 	'<span class="tx">'+
 	'<input type="text" required="required" name="txGPIO[]" placeholder="txGPIO" class="txGPIO"> '+
+	'<input type="hidden" name="txGPIO_active[]" value="high"> '+
 	'<select name="txAudioDev[]" class="txAudioDev">'+
 	'	<option>---</option>'+
 	'	<option value="alsa:plughw:1|0">OUTPUT: USB PnP Sound Device (Left)</option>'+
