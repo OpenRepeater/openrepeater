@@ -2,11 +2,6 @@
 
 /* Module CSS */
 
-input#access_attempts_allowed.input-xlarge {
-	background-color: red;
-}
-
-
 
 #relaysWrap {
 	overflow: hidden;

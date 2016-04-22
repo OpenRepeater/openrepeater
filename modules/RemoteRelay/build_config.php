@@ -1,13 +1,7 @@
 <?php
 
-// REMOVE THESE LINES WHEN INCLUDED IN SVXLINK_UPDATE.PHP
-include_once("../../includes/get_modules.php");
-$module_id = 4;
-
-
-$options = unserialize($module[$module_id]['moduleOptions']);
+$options = unserialize($cur_mod['moduleOptions']);
 print_r($options);
-
 
 
 $module_config_output = "
@@ -23,10 +17,10 @@ $module_config_output = "
 #  Visit the project at OpenRepeater.com
 ###############################################################################
 
-[Module".$module[$module_id]['svxlinkName']."]
-NAME=".$module[$module_id]['svxlinkName']."
+[Module".$cur_mod['svxlinkName']."]
+NAME=".$cur_mod['svxlinkName']."
 PLUGIN_NAME=Tcl
-ID=".$module[$module_id]['svxlinkID']."
+ID=".$cur_mod['svxlinkID']."
 TIMEOUT=".$options['timeout']."
 ";
 
@@ -70,12 +64,4 @@ $cur_child_array['label'].")\n";
 	}	
 }
 
-// Clean up tabs/white spaces
-$module_config_output = preg_replace('/\t+/', '', $module_config_output);
-
-
-//if (isset($moduleEchoLink)) { file_put_contents('/etc/openrepeater/svxlink/svxlink.d/ModuleEchoLink.conf', $orpFileHeader . $moduleEchoLink); }
 ?>
-
-<hr>
-<pre><?php echo $module_config_output; ?></pre>
