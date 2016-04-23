@@ -84,13 +84,13 @@ $settings_array = unserialize($options);
 
 								<p class="relayRow<?php if ($idNum == 1) { echo ' first'; } else { echo ' additional'; } ?>">
 									<span class="num">
-										<input type="hidden" name="relayNum[]" value="<?php echo $cur_parent_array; ?>">
+										<input type="hidden" name="relayNum[]" value="<?php echo $idNum; ?>">
 										<?php echo $idNum; ?>
 									</span>
 									
 									<span>									
-										<input id="relayLabel<?php echo $idNum; ?>" type="text" required="required" name="relayLabel[]" placeholder="Relay Label" value="<?php echo $cur_child_array['label']; ?>" class="relayLabel">
-										<input id="relayGPIO<?php echo $idNum; ?>" type="text" required="required" name="relayGPIO[]" placeholder="GPIO"  value="<?php echo $cur_child_array['gpio']; ?>" class="relayGPIO">
+										<input id="relayLabel<?php echo $idNum; ?>" type="text" name="relayLabel[]" placeholder="Relay Label" value="<?php echo $cur_child_array['label']; ?>" class="relayLabel" required>
+										<input id="relayGPIO<?php echo $idNum; ?>" type="text" name="relayGPIO[]" placeholder="GPIO"  value="<?php echo $cur_child_array['gpio']; ?>" class="relayGPIO" required>
 									</span>
 
 									<?php if ($idNum == 1) { 

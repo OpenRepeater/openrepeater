@@ -12,31 +12,14 @@ var minReqRelays = 1;
 // Sub Functions
 function htmlTemplate(n) {
 	var html = '<p class="relayRow additional">'+
+	'<span class="num">'+
+	'  <input type="hidden" name="relayNum[]" value="' + n +'">' + n +
+	'</span>'+
 	'<span>'+
-	'<input type="text" name="relayNum[]" value="' + n +'" style="width:15px;display:none;"> '+
-	'<input type="text" required="required" name="relayLabel[]" placeholder="Relay Label" class="relayLabel"> '+
+	'  <input id="relayLabel' + n +'" type="text" name="relayLabel[]" placeholder="Relay Label" class="relayLabel" Value="Relay '+n+'" required>'+
+	'  <input id="relayGPIO' + n +'" type="text" name="relayGPIO[]" placeholder="GPIO" class="relayGPIO" required>'+
 	'</span>'+
-	'<span class="rx">'+
-	'<select name="rxMode[]" class="rxMode">'+
-	'	<option value="vox" >VOX</option>'+
-	'	<option value="gpio" selected>COS</option>'+
-	'</select> '+
-	'<input type="text" required="required" name="rxGPIO[]" placeholder="rxGPIO" class="rxGPIO"> '+
-	'<select name="rxAudioDev[]" class="rxAudioDev">'+
-	'	<option>---</option>'+
-	'	<option value="alsa:plughw:1|0">INPUT: USB PnP Sound Device (Left)</option>'+
-	'	<option value="alsa:plughw:1|1">INPUT: USB PnP Sound Device (Right)</option>'+
-	'</select> '+
-	'</span>'+
-	'<span class="tx">'+
-	'<input type="text" required="required" name="txGPIO[]" placeholder="txGPIO" class="txGPIO"> '+
-	'<select name="txAudioDev[]" class="txAudioDev">'+
-	'	<option>---</option>'+
-	'	<option value="alsa:plughw:1|0">OUTPUT: USB PnP Sound Device (Left)</option>'+
-	'	<option value="alsa:plughw:1|1">OUTPUT: USB PnP Sound Device (Right)</option>'+
-	'</select> '+
-	'</span>'+
-	'<a href="#" id="removeRelay">Remove</a>'+
+	'<a href="#" id="removeRelay" title="Remove this relay"><i class="icon-minus-sign"></i></a>'+
 	'</p>';
 	return html;
 }
