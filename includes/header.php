@@ -1,5 +1,5 @@
 <?php
-	include_once("includes/get_modules.php"); 
+include_once("includes/get_modules.php"); 
 
 	$modulesActive = array();
 	foreach($module as $cur_mod) { 

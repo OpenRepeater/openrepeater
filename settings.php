@@ -38,9 +38,9 @@ $customJS = "page-settings.js"; // "file1.js, file2.js, ... "
 
 include_once("includes/get_settings.php");
 include_once("includes/get_ctcss.php");
-$dbConnection->close();
 
 include('includes/header.php');
+$dbConnection->close();
 
 ?>
 
@@ -60,7 +60,7 @@ include('includes/header.php');
 							  <div class="control-group">
 								<label class="control-label" for="callSign">Call Sign</label>
 								<div class="controls">
-								  <input class="input-xlarge" style="text-tran: uppercase" id="callSign" type="text" name="callSign" value="<?php echo $settings['callSign']; ?>" required>
+								  <input class="input-xlarge" style="text-transform: uppercase" id="callSign" type="text" name="callSign" value="<?php echo $settings['callSign']; ?>" required>
 								  <span class="help-inline">This call sign will be used for identification.</span>
 								</div>
 							  </div>
@@ -145,92 +145,6 @@ include('includes/header.php');
 								  <span class="help-inline">The CTCSS tone you need to hear the repeater.</span>
 								</div>
 							  </div>
-
-						  </fieldset>
-
-					</div>
-				</div><!--/span-->			
-			</div><!--/row-->
-			</form>   
-
-
-			<form class="form-horizontal" role="form" action="settings.php" method="post" id="modulesUpdate" name="modulesUpdate" >
-			<div class="row-fluid sortable">
-				<div class="box span12">
-					<div class="box-header well" data-original-title>
-						<h2><i class="icon-wrench"></i> Module Settings Enable/Disable</h2>
-					</div>
-					<div class="box-content">
-
-						  <fieldset>
-						  	<a name="modules"></a>
-
-							<legend>Modules</legend>
-
-							  <div class="control-group">
-								<label class="control-label">Enable EchoLink</label>
-								<div class="controls">
-									<?php
-										$checkbox_name = "echolink_enabled";
-										$checkbox_string = '<input type="hidden" name="'.$checkbox_name.'" value="False" />';
-										if ($settings[$checkbox_name] == "True") {
-											$checkbox_string .= '<input type="checkbox" name="'.$checkbox_name.'" value="True" class="iphone-toggle" data-no-uniform="true" checked />';
-										} else {
-											$checkbox_string .= '<input type="checkbox" name="'.$checkbox_name.'" value="True" class="iphone-toggle" data-no-uniform="true" />';
-										}
-										echo $checkbox_string;
-									?>
-								  <span class="help-inline">The EchoLink module and it's associated settings can be edited on this page: <a href="echolink.php">EchoLink</a>.</span>
-								</div>
-							  </div>
-
-							  <div class="control-group">
-								<label class="control-label">Enable Help</label>
-								<div class="controls">
-									<?php
-										$checkbox_name = "help_enabled";
-										$checkbox_string = '<input type="hidden" name="'.$checkbox_name.'" value="False" />';
-										if ($settings[$checkbox_name] == "True") {
-											$checkbox_string .= '<input type="checkbox" name="'.$checkbox_name.'" value="True" class="iphone-toggle" data-no-uniform="true" checked />';
-										} else {
-											$checkbox_string .= '<input type="checkbox" name="'.$checkbox_name.'" value="True" class="iphone-toggle" data-no-uniform="true" />';
-										}
-										echo $checkbox_string;
-									?>
-								</div>
-							  </div>
-
-							  <div class="control-group">
-								<label class="control-label">Enable Parrot</label>
-								<div class="controls">
-									<?php
-										$checkbox_name = "parrot_enabled";
-										$checkbox_string = '<input type="hidden" name="'.$checkbox_name.'" value="False" />';
-										if ($settings[$checkbox_name] == "True") {
-											$checkbox_string .= '<input type="checkbox" name="'.$checkbox_name.'" value="True" class="iphone-toggle" data-no-uniform="true" checked />';
-										} else {
-											$checkbox_string .= '<input type="checkbox" name="'.$checkbox_name.'" value="True" class="iphone-toggle" data-no-uniform="true" />';
-										}
-										echo $checkbox_string;
-									?>
-								</div>
-							  </div>
-
-							  <?php /*
-							  <div class="control-group">
-								<label class="control-label">Enable Voicemail</label>
-								<div class="controls">
-									<input type="hidden" name="voicemail_enabled" value="False" />
-									<input type="checkbox" name="voicemail_enabled" value="True." />
-								</div>
-							  </div>
-							  */ ?>
-
-							<div class="form-actions">
-							  <input type="hidden" name="action" value="update">		
-							  <button type="submit" class="btn btn-primary">Update</button>
-							  <button type="reset" class="btn">Cancel</button>
-							</div>
 
 						  </fieldset>
 
