@@ -474,15 +474,17 @@ $dbConnection->close();
 
 							<p>Use the following callsign variation for ALL morse code identification.</p>
 							
+							<label class="radio-inline" for="suffix1" style="margin-right: 50px;">
 							<input type="radio" name="ID_Morse_Suffix" id="suffix1" value="" <?php if ($settings['ID_Morse_Suffix'] == '') { echo "checked"; } ?>>
-							<label class="radio-inline" for="suffix1" style="margin-right: 50px;"> <?php echo strtoupper($settings['callSign']); ?></label>
-							
+							<?php echo strtoupper($settings['callSign']); ?></label>
+
+							<label class="radio-inline" for="suffix2" style="margin-right: 50px;">
 							<input type="radio" name="ID_Morse_Suffix" id="suffix2" value="/R" <?php if ($settings['ID_Morse_Suffix'] == '/R') { echo "checked"; } ?>>
-							<label class="radio-inline" for="suffix2" style="margin-right: 50px;"> <?php echo strtoupper($settings['callSign']); ?><strong>/R</strong></label>
-							
+							<?php echo strtoupper($settings['callSign']); ?><strong>/R</strong></label>
+
+							<label class="radio-inline" for="suffix3" style="margin-right: 50px;">
 							<input type="radio" name="ID_Morse_Suffix" id="suffix3" value="/RPT" <?php if ($settings['ID_Morse_Suffix'] == '/RPT') { echo "checked"; } ?>>
-							<label class="radio-inline" for="suffix3" style="margin-right: 50px;"> <?php echo strtoupper($settings['callSign']); ?><strong>/RPT</strong></label>	
-							
+							<?php echo strtoupper($settings['callSign']); ?><strong>/RPT</strong></label>							
 
 							<hr>
 							<p>Set the speed (WPM) and tone of ALL morse code identification.</p>
