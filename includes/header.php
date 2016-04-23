@@ -1,3 +1,18 @@
+<?php
+	include_once("includes/get_modules.php"); 
+
+	$modulesActive = array();
+	foreach($module as $cur_mod) { 
+		if ($cur_mod['moduleEnabled']==1) {
+			$module_settings_file = 'modules/'.$cur_mod['svxlinkName'].'/settings.php';
+			if (file_exists($module_settings_file)) {
+				$modulesActive[$cur_mod['moduleKey']] = $cur_mod['moduleName'];
+			}
+		} 
+	}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,12 +88,15 @@
 	$current_page_url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
 	/* CHECK FOR MEMCACHE FLAG AND NOTIFY USER IF SERVER NEEDS RESTARTED */
-
+/*
 	$memcache_obj = new Memcache;
 	$memcache_obj->connect('localhost', 11211);
 	$var = $memcache_obj->get('update_settings_flag');
-?>
+*/
+$var = 0;
 
+
+?>
 	<div class="server_bar_wrap"<?php if ($var != 1) { echo ' style="display: none;"'; } ?>>
 	<div class="server_bar">
 		<span>Repeater Configuration Files Rebuild & Restart Required: </span>
@@ -162,13 +180,21 @@
 						<li><a class="ajax-link" href="settings.php"><i class="icon-wrench"></i><span class="hidden-tablet"> General Settings</span></a></li>
 						<li><a class="ajax-link" href="identification.php"><i class="icon-bullhorn"></i><span class="hidden-tablet"> Identification</span></a></li>
 						<li><a class="ajax-link" href="courtesy_tone.php"><i class="icon-music"></i><span class="hidden-tablet"> Courtesy Tones</span></a></li>
-						<li><a class="ajax-link" href="echolink.php"><i class="icon-signal"></i><span class="hidden-tablet"> EchoLink</span></a></li>
-						<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>
-							<ul class="nav nav-pills nav-stacked">
-								<li><a href="#">Child Menu 1</a></li>
-								<li><a href="#">Child Menu 2</a></li>
-							</ul>						
-						</li>
+						<?php
+							if (!empty($modulesActive)) {
+								// Render Parent and Child menus
+								echo '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>';
+								echo ' <ul class="nav nav-pills nav-stacked">';
+								foreach ($modulesActive as $mod_id => $mod_name) {
+									echo '<li><a href="modules.php?settings='.$mod_id.'">&nbsp;&nbsp;&nbsp;<i class="icon-chevron-right"></i><span class="hidden-tablet"> '.$mod_name.'</span></a></li>';
+								}
+								echo '  </ul>';
+								echo '</li>';
+							} else {
+								// Render Parent menu only
+								echo '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a></li>';
+							}
+						?>	
 						<li><a class="ajax-link" href="ports.php"><i class="icon-cog"></i><span class="hidden-tablet"> TX/RX Ports</span></a></li>
 						<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>
 						<li><a class="ajax-link" href="dtmf.php"><i class="icon-th"></i><span class="hidden-tablet"> DTMF Reference</span></a></li>
