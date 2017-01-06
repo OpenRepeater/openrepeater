@@ -12,12 +12,16 @@
 override_dh_installinit:
 	mkdir -p debian/openrepeater/etc/openrepeater/svxlink
 	mkdir -p debian/openrepeater/usr/bin
-	mkdir -p debian/openrepeater/usr/share/examples/openrepeater
+	mkdir -p debian/openrepeater/usr/share/examples/openrepeater/install
 	mkdir -p debian/openrepeater/var/lib/openrepeater/db
 	mkdir -p debian/openrepeater/var/www/openrepeater
-	cp -rp install debian/openrepeater/usr/share/examples/openrepeater
-	cp -rp install/svxlink-conf/* debian/openrepeater/etc/openrepeater/svxlink
+	cp -rp install/nginx/openrepeater /debian/openrepeater/etc/nginx/sites-avaible
+	cp -rp install/nginx/nginx.conf /debian/openrepeater/etc/nginx
+	cp -rp install/php5/fpm/php5-fpm.conf /debian/openrepeater/etc/php/fpm/php5-fpm.conf
+	cp -rp install/php5/fpm/pool.d/www.conf /debian/openrepeater/etc/php/fpm/pool.d/www.conf
+	cp -rp install/dev debian/openrepeater/usr/share/examples/openrepeater/install
 	cp -rp install/sql/database.php debian/openrepeater/etc/openrepeater
+	cp -rp install/svxlink-conf debian/openrepeater/etc/svxlink/openrepeater
 	cp -rp install/sql/openrepeater.db debian/openrepeater/var/lib/openrepeater/db
 	cp -rp install/sounds debian/openrepeater/var/lib/openrepeater
 	cp -rp install/scripts/* debian/openrepeater/usr/bin
