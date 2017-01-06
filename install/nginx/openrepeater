@@ -1,0 +1,111 @@
+server{
+	listen 127.0.0.1:80;
+	server_name 127.0.0.1;
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	client_max_body_size 10M;
+	client_body_buffer_size 128k;
+
+	location / {
+		root /var/www/openrepeater;
+		index index.php;
+	}
+
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		#fastcgi_pass 127.0.0.1:9000;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param   SCRIPT_FILENAME /var/www/openrepeater$fastcgi_script_name;
+	}
+
+	# Disable viewing .htaccess & .htpassword & .db
+	location ~ .htaccess {
+			deny all;
+	}
+	location ~ .htpassword {
+			deny all;
+	}
+	location ~^.+.(db)$ {
+			deny all;
+	}
+}
+
+server {
+	listen 80;
+	server_name openrepeater;
+	if ($uri !~* ^.*provision.*$) {
+		rewrite ^(.*) https://$host$1 permanent;
+		break;
+	}
+
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	client_max_body_size 10M;
+	client_body_buffer_size 128k;
+
+	location / {
+		root /var/www/openrepeater;
+		index index.php;
+	}
+
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		#fastcgi_pass 127.0.0.1:9000;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param   SCRIPT_FILENAME /var/www/openrepeater$fastcgi_script_name;
+	}
+
+	# Disable viewing .htaccess & .htpassword & .db
+	location ~ .htaccess {
+		deny all;
+	}
+	location ~ .htpassword {
+		deny all;
+	}
+	location ~^.+.(db)$ {
+		deny all;
+	}
+}
+
+server {
+	listen 443;
+	server_name openrepeater;
+	ssl                     on;
+	ssl_certificate         /etc/ssl/certs/nginx.crt;
+	ssl_certificate_key     /etc/ssl/private/nginx.key;
+	ssl_protocols           TLSv1 TLSv1.1 TLSv1.2;
+	ssl_ciphers             HIGH:!ADH:!MD5;
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	client_max_body_size 10M;
+	client_body_buffer_size 128k;
+
+	location / {
+		root /var/www/openrepeater;
+		index index.php;
+	}
+
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		#fastcgi_pass 127.0.0.1:9000;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param   SCRIPT_FILENAME /var/www/openrepeater$fastcgi_script_name;
+	}
+
+	# Disable viewing .htaccess & .htpassword & .db
+	location ~ .htaccess {
+		deny all;
+	}
+	location ~ .htpassword {
+		deny all;
+	}
+	location ~^.+.(db)$ {
+		deny all;
+	}
+}
