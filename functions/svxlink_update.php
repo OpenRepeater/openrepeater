@@ -1,7 +1,5 @@
 <?php
-
 /*
-
 This script reads settings from the OpenRepeater database and builds new configuration
 files for SVXLink. It currently builds the following configuration files:
 - svxlink.conf
@@ -18,7 +16,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are, show the page.
 /* ---------------------------------------------------------- */
 
-
 // Generate header message for top of ALL files output.
 $orpFileHeader = '
 ###############################################################################
@@ -28,7 +25,6 @@ $orpFileHeader = '
 #
 ###############################################################################
 ';
-
 
 // Get Settings from SQLite
 include_once("../includes/get_settings.php");
@@ -149,8 +145,6 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 
 	';
 
-
-
 /* ---------------------------------------------------------- */
 /* --- BUILD MODULE SETTINGS --- */
 
@@ -194,7 +188,6 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 		$modulesList = '#MODULES=NONE';
 	}
 
-
 /* ---------------------------------------------------------- */
 /* --- PORT SETTINGS - Generates RX & TX sections for each port --- */
 
@@ -219,7 +212,6 @@ switch ($settings['orp_Mode']) {
         break;
 }
 
-
 /* ---------------------------------------------------------- */
 /* BUILD CUSTOM TCL OVERRIDES...ie COURTESY TONES, IDENTIFICATION, ETC */
 
@@ -231,7 +223,6 @@ $tclRepeaterLogicNameSpace = '';
 include('svxlink_update_functions/tcl_identification.php');
 include('svxlink_update_functions/tcl_courtesy_tones.php');
 include('svxlink_update_functions/tcl_TEMP.php');
-
 
 // TCL Logic Namespace Override
 $tclOverride = '
