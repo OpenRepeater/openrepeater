@@ -5,33 +5,33 @@
 
 SERVICE=svxlink
 
-disable)
+disable() {
 sudo service $SERVICE stop
 sudo systemctl disable svxlink.service
-;;
+}
 
-enable)
+enable() {
 sudo systemctl enable svxlink.service
-sudo service $SERVICE start 
-;;
-
-start)
 sudo service $SERVICE start
-;;
+}
 
-restart) 
+start() {
+sudo service $SERVICE start
+}
+
+restart() {
 sudo service $SERVICE restart
-;;
+}
 
-stop) 
+stop() {
 sudo service $SERVICE stop
-;;
+}
 
-*)
-echo "Usage: $0 {start|stop|restart|enabld|disable|status}"
+*() {
+echo "Usage: $0 {start|stop|restart|enable|disable|status}"
 exit 2
-;;
+}
 
-status)
+status() {
 sudo service $SERVICE status
-;;
+}
