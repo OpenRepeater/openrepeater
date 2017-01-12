@@ -9,7 +9,7 @@ Vcs-Browser: https://github.com/kb3vgw/openrepeater/webap
 Vcs-Git: https://github.com/kb3vgw/openrepeater/webapp.git
 
 Package: openrepeater
-Architecture: any
+Architecture: all
 Recommends: svxlink-server(= ${binary:Version})
 Description: Web GUi interface for Svxlink Radio-over-IP Repeater server for ham radio operators
  .           
