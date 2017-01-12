@@ -25,7 +25,7 @@ override_dh_installinit:
 	cp -rp install/php5/fpm/pool.d/www.conf debian/openrepeater/etc/php/fpm/pool.d/www.conf
 	cp -rp install/dev debian/openrepeater/usr/share/examples/openrepeater/install
 	cp -rp install/sql/database.php debian/openrepeater/etc/openrepeater
-	cp -rp install/svxlink-conf debian/openrepeater/etc/svxlink/openrepeater
+	cp -rp install/svxlink-conf debian/openrepeater/etc/openrepeater/svxlink
 	cp -rp install/sql/openrepeater.db debian/openrepeater/var/lib/openrepeater/db
 	cp -rp install/sounds debian/openrepeater/var/lib/openrepeater
 	cp -rp install/scripts/* debian/openrepeater/usr/bin
