@@ -476,9 +476,14 @@ $dbConnection->close();
 							
 							<label class="radio-inline" for="suffix1" style="margin-right: 50px;">
 							<input type="radio" name="ID_Morse_Suffix" id="suffix1" value="" <?php if ($settings['ID_Morse_Suffix'] == '') { echo "checked"; } ?>>
+<<<<<<< HEAD
 							<?php echo strtoupper($settings['callSign']); ?></label>
 
 							<label class="radio-inline" for="suffix2" style="margin-right: 50px;">
+=======
+							<label class="radio-inline" for="suffix1" style="margin-right: 50px;"> <?php echo strtoupper($settings['callSign']); ?></label>
+							
+>>>>>>> refs/remotes/OpenRepeater/1.1.0
 							<input type="radio" name="ID_Morse_Suffix" id="suffix2" value="/R" <?php if ($settings['ID_Morse_Suffix'] == '/R') { echo "checked"; } ?>>
 							<?php echo strtoupper($settings['callSign']); ?><strong>/R</strong></label>
 
