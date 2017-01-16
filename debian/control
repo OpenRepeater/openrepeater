@@ -5,11 +5,11 @@ Maintainer: Richard Neese <kb3vw@gmail.com>
 Build-Depends: debhelper (>= 9), 
 Standards-Version: 3.9.6
 Homepage: http://www.openrepeater.com
-Vcs-Browser: https://github.com/openrepeater/webap
-Vcs-Git: https://github.com/openrepeater/webapp.git
+Vcs-Browser: https://github.com/kb3vgw/openrepeater/webap
+Vcs-Git: https://github.com/kb3vgw/openrepeater/webapp.git
 
 Package: openrepeater
-Architecture: any
+Architecture: all
 Recommends: svxlink-server(= ${binary:Version})
 Description: Web GUi interface for Svxlink Radio-over-IP Repeater server for ham radio operators
  .           
