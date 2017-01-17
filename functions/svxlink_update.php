@@ -1,4 +1,7 @@
 <?php
+# Copyright ©2017 - Aaron Crawford - info(at)openrepeater(dot)com
+# Licended under GPL v2 or later
+
 /*
 This script reads settings from the OpenRepeater database and builds new configuration
 files for SVXLink. It currently builds the following configuration files:
