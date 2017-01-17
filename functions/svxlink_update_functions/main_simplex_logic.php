@@ -1,4 +1,7 @@
 <?php
+# Copyright ©2017 - Aaron Crawford, N3MBH - info(at)openrepeater(dot)com
+# Licended under GPL v2 or later
+
 // This is a sub-function file and gets included into svxlink_update.php
 
 $svx_logic = '[SimplexLogic]
