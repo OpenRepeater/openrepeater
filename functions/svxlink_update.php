@@ -337,7 +337,7 @@ $memcache_obj = new Memcache;
 $memcache_obj->connect('localhost', 11211);
 $memcache_obj->set('update_settings_flag', 0, false, 0);
 
-$shellout = shell_exec('sudo /usr/bin/orp-helper restart');
+$shellout = shell_exec('sudo /usr/bin/orp_helper svxlink restart');
 
 /* WHAT PAGE TO GO BACK TO */
 if ($_POST["return_url"]) {

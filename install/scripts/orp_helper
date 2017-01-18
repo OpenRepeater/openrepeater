@@ -1,0 +1,158 @@
+#!/bin/bash
+# Copyright ©2017 OpenRepeater Project - Aaron Crawford, N3MBH & Richard Neese KB3VGW
+# Licended under GPL v2 or later
+
+# This is a helper script for OpenRepeater. This script is primarily intended
+# to extend the functionality of the of the ORP web user interface and allow it
+# to execute specific system commands that it would not normally be able to
+# perform due to security reasons in Linux. DO NOT INCLUDE commands in this
+# script that a potential hacker could utilize to compromise the system if the
+# web server were to be compromised. This script should be a delicate balance
+# between needed functionality in the web interface and security. 
+
+
+####### WORK IN PROGRESS........
+
+###############################################################################
+# DEFINE FUNCTIONS
+###############################################################################
+
+function display_help {
+	echo "OPEN REPEATER HELPER"
+	echo "This is a helper script for OpenRepeater. This script is primarily intended"
+	echo "to extend the functionality of the of the ORP web user interface and allow it"
+	echo "to execute specific system commands that it would not normally be able to"
+	echo "perform due to security reasons in Linux."
+	echo ""
+	echo "USAGE: orp_helper [service] [option]"
+}
+
+function svxlink_disable {
+	echo "SVXLink Disable"
+	sudo service svxlink stop
+	sudo systemctl disable svxlink.service
+}
+
+function svxlink_enable {
+	echo "SVXLink Enable"
+	sudo systemctl enable svxlink.service
+	sudo service svxlink start
+}
+
+function svxlink_restart {
+	echo "SVXLink Restart"
+	sudo service svxlink restart
+}
+
+function svxlink_stop {
+	echo "SVXLink Stop"
+	sudo service svxlink stop
+}
+
+function svxlink_start {
+	echo "SVXLink Start"
+	sudo service svxlink start
+}
+
+function svxlink_status {
+	echo "Check SVXLink Service Status..."
+	sudo service svxlink status
+}
+
+function system_reboot {
+	echo "Restart entire system"
+}
+
+function system_shutdown {
+	echo "System Shutdown"
+}
+
+function network_read {
+	echo "Read Network Config for external parsing"
+}
+
+function network_write {
+	echo "Write New Network Config"
+}
+
+function www_stop {
+	echo "Webserver / ORP GUI Stop"
+	service nginx stop
+}
+
+function www_start {
+	echo "Webserver / ORP GUI Start"
+	service nginx start
+}
+
+function www_restart {
+	echo "Webserver / ORP GUI Restart"
+	service nginx restart
+}
+
+function www_disable {
+	echo "Webserver / ORP GUI Disable"
+	systemctl disable nginx
+}
+
+function www_enable {
+	echo "Webserver / ORP GUI Enable"
+	systemctl enable nginx
+	service nginx restart
+}
+
+
+# TODO LIST
+# Setting Timezone
+# Expanding Filesystem
+
+
+
+
+###############################################################################
+# READ COMMAND LINE OPTIONS AND EXECUTE (Calls Functions Above)
+###############################################################################
+
+while :; do
+    case $1 in
+        svxlink)
+			if [ "$2" == "start" ]; then svxlink_start
+			elif [ "$2" == "stop" ]; then svxlink_stop
+			elif [ "$2" == "restart" ]; then svxlink_restart
+			elif [ "$2" == "status" ]; then svxlink_status
+			elif [ "$2" == "enable" ]; then svxlink_enable
+			elif [ "$2" == "disable" ]; then svxlink_disable
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper svxlink (start|stop|restart|status|enable|disable)"
+			fi
+			exit;;
+        system)
+			if [ "$2" == "stop" ]; then system_shutdown
+			elif [ "$2" == "restart" ]; then system_reboot
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper system (stop|restart)"
+			fi
+			exit;;
+        www)
+			if [ "$2" == "stop" ]; then www_stop
+			elif [ "$2" == "start" ]; then www_start
+			elif [ "$2" == "restart" ]; then www_restart
+			elif [ "$2" == "disable" ]; then www_disable
+			elif [ "$2" == "enable" ]; then www_enable
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper www (stop|start|restart|disable|enable)"
+			fi
+			exit;;
+        network)
+			if [ "$2" == "read" ]; then network_read
+			elif [ "$2" == "write" ]; then network_write
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper network (read|write)"
+			fi
+			exit;;
+
+        TEST)
+			echo "Testing..."
+			exit;;
+
+        -h|-\?|--help|*)   # Display general help/info.
+			display_help
+			exit;;
+    esac
+done
