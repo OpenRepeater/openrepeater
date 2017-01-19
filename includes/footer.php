@@ -22,8 +22,8 @@
 		</div>
 
 		<footer>
-			<p class="pull-left">Designed by: Aaron Crawford, N3MBH (<a href="http://alleghenycreative.com" target="_blank">Allegheny Creative, LLC</a>)</p>
-			<p class="pull-right">Powered by: <a href="http://www.svxlink.org/" target="_blank">SvxLink</a> | <a href="http://openrepeater.com" target="_blank">OpenRepeater</a> ver: <?php echo $_SESSION['version_num']; ?></p>
+			<p class="pull-left">Designed by: Aaron Crawford, N3MBH (<a href="https://alleghenycreative.com" target="_blank">Allegheny Creative, LLC</a>)</p>
+			<p class="pull-right">Powered by: <a href="http://www.svxlink.org/" target="_blank">SvxLink</a> | <a href="https://openrepeater.com" target="_blank">OpenRepeater</a> ver: <?php echo $_SESSION['version_num']; ?></p>
 		</footer>
 		<?php } ?>
 
