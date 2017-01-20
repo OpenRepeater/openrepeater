@@ -27,4 +27,9 @@ IDLE_SOUND_INTERVAL=0
 
 ';
 
+if ($settings['repeaterDTMF_disable'] == 'True') {
+$svx_logic .= 'ONLINE_CMD=' . $settings['repeaterDTMF_disable_pin'] . '
+
+';
+}
 ?>

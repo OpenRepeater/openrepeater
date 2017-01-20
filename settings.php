@@ -89,13 +89,36 @@ $dbConnection->close();
 								</div>
 							  </div>
 
+							<legend>DTMF Remote Disable</legend>
 
+							  <div class="control-group">
+								<label class="control-label" for="repeaterDTMF_disable">Use Remote Disable?</label>
+								<div class="controls">
+								  <select id="repeaterDTMF_disable" name="repeaterDTMF_disable">
+								  	<option value="False"<?php if ($settings['repeaterDTMF_disable'] == 'False') { echo ' selected'; } ?>>Disable Function</option>
+								  	<option value="True"<?php if ($settings['repeaterDTMF_disable'] == 'True') { echo ' selected'; } ?>>Enable Function</option>
+								  </select>
+								  <span class="help-inline">Enable this to be able to disable the transmitter by entering DTMF command.</span>
+								</div>
+							  </div>
+ 
+							  <div id="dtmf_disable" style="display: none;"> <!-- Expand Setting -->
+ 
+							  <div class="control-group">
+								<label class="control-label" for="repeaterDTMF_disable_pin">Pin Code</label>
+								<div class="controls">
+								  <input class="input-xlarge" id="repeaterDTMF_disable_pin" type="text" name="repeaterDTMF_disable_pin" value="<?php echo $settings['repeaterDTMF_disable_pin']; ?>" maxlength="10" required>
+								  <span class="help-inline">The pin will be used at part of DTMF command. This should be unique and the longer the better.</span>
+								</div>
+							  </div>
+							  
+							  </div> <!-- END Expand Setting -->
 
 							<legend>CTCSS Settings</legend>
 							<p>These are settings experimental. It is recommend that you leave these set to none and set your CTCSS tones in your radios.<br></p>
 
 							  <div class="control-group">
-								<label class="control-label" for="selectError">RX Tone (Hz)</label>
+								<label class="control-label" for="rxTone">RX Tone (Hz)</label>
 								<div class="controls">
 								  <select id="rxTone" name="rxTone" data-rel="chosen">
 									<?php 
@@ -121,7 +144,7 @@ $dbConnection->close();
 							  </div>
 
 							  <div class="control-group">
-								<label class="control-label" for="selectError">TX Tone (Hz)</label>
+								<label class="control-label" for="txTone">TX Tone (Hz)</label>
 								<div class="controls">
 								  <select id="txTone" name="txTone" data-rel="chosen">
 									<?php 

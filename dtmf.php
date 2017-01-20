@@ -36,6 +36,21 @@ include('includes/header.php');
 							<legend>* - Force ID</legend>
 							<p>By pressing the star key (*), this will cause the repeater to identify.</p>
 							<br>
+
+							
+							<?php if ($settings['repeaterDTMF_disable'] == 'True') { ?>
+							<legend>Remote DMTF Disable</legend>
+							<p>You have chosen to enable the ability to remotely disable the transmitter via DTMF commands. This is useful to control operators to stop system abuse or to simple make the system inactive. Note that the pin your selected is part of the codes below</p>
+
+							<p><strong><?php echo $settings['repeaterDTMF_disable_pin'] ?> + 0#</strong> - <span style="color:red;">Disable Transmitter</span> <br><em>Your code + 0 (Disable) + # (Execute Command)</em></p>
+
+							<p><strong><?php echo $settings['repeaterDTMF_disable_pin'] ?> + 1#</strong> - <span style="color:green;">Enable Transmitter</span> <br><em>Your code + 1 (Enable) + # (Execute Command)</em></p>
+
+							<p>NOTE: If a module is running while you wish to disable the transmitter, you must first disable the module OR force the disable command by prefixing with a star (*). So, the disable command would become <strong>* + <?php echo $settings['repeaterDTMF_disable_pin'] ?> + 0#</p>
+							
+							<br>
+							<?php } ?>
+							
 							
 							
 							<?php 
