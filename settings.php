@@ -112,6 +112,8 @@ $dbConnection->close();
 								</div>
 							  </div>
 							  
+							  <p>For command detials, visit the <a href="dtmf.php#remoteDisable">Remote DMTF Disable</a> section on the DTMF Reference page.</p>
+							  
 							  </div> <!-- END Expand Setting -->
 
 							<legend>CTCSS Settings</legend>

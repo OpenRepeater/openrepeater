@@ -39,6 +39,7 @@ include('includes/header.php');
 
 							
 							<?php if ($settings['repeaterDTMF_disable'] == 'True') { ?>
+							<a name="remoteDisable"></a>
 							<legend>Remote DMTF Disable</legend>
 							<p>You have chosen to enable the ability to remotely disable the transmitter via DTMF commands. This is useful to control operators to stop system abuse or to simple make the system inactive. Note that the pin your selected is part of the codes below</p>
 
