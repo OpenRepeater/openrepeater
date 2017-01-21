@@ -20,8 +20,36 @@ include('includes/header.php');
 include('includes/get_ports.php');
 $dbConnection->close();
 
+
+#### PHP LOOPS TO READ AUDIO DEVICES AND SAVE TO PHP VARIABLES AS SELECT OPTIONS TO PASS TO JAVASCRIPT
+// Inputs
+$phpAudioInputOptions = null;
+for ($device = 0; $device <  count($device_list); $device++) {
+   if ($device_list[$device]['direction'] == "IN") {
+		$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
+		$currentRX = $cur_port['rxAudioDev'];
+		if ($rxValue == $currentRX) { $rxSelected = " selected"; } else { $rxSelected = ""; }
+		$phpAudioInputOptions .= '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT: '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+	}
+}
+
+// Outputs
+$phpAudioOutputOptions = null;
+for ($device = 0; $device <  count($device_list); $device++) {
+   if ($device_list[$device]['direction'] == "OUT") {
+		$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
+		$currentTX = $cur_port['txAudioDev'];
+		if ($txValue == $currentTX) { $txSelected = " selected"; } else { $txSelected = ""; }
+		$phpAudioOutputOptions .= '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT: '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+	}
+}
 ?>
 
+<!-- PASS PHP VARIABLES ABOVE INTO JAVASCRIPT VARIABLES, USED WHEN NEW PORT FIELDS ARE ADDED DYNAMICALLY -->
+<script type="text/javascript">
+var jsAudioInputOptions='<?php echo $phpAudioInputOptions; ?>';
+var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
+</script>
 
 
 			<div id="alertWrap"></div>
@@ -49,12 +77,7 @@ $dbConnection->close();
 									<input id="portLabel<?php echo $idNum; ?>" type="text" required="required" name="portLabel[]" placeholder="Port Label" value="<?php echo $cur_port['portLabel']; ?>" class="portLabel">
 									</span>
 									<span class="rx">
-									<select id="rxMode<?php echo $idNum; ?>" name="rxMode[]" class="rxMode">
-										<option value="vox" <?php if ($cur_port['rxMode'] == 'vox') { echo "selected"; } ?>>VOX</option>
-										<option value="gpio" <?php if ($cur_port['rxMode'] == 'gpio') { echo "selected"; } ?>>COS</option>
-									</select>
 									<input id="rxGPIO<?php echo $idNum; ?>" type="text" required="required" name="rxGPIO[]" placeholder="GPIO"  value="<?php echo $cur_port['rxGPIO']; ?>" class="rxGPIO">
-									<input type="hidden" name="rxGPIO_active[]" value="low">
 									<select id="rxAudioDev<?php echo $idNum; ?>" name="rxAudioDev[]" class="rxAudioDev">
 										<option>---</option>
 										<?php
@@ -71,7 +94,6 @@ $dbConnection->close();
 									</span>
 									<span class="tx">
 									<input id="txGPIO<?php echo $idNum; ?>" type="text" required="required" name="txGPIO[]" placeholder="GPIO" value="<?php echo $cur_port['txGPIO']; ?>" class="txGPIO">
-									<input type="hidden" name="txGPIO_active[]" value="high">
 									<select id="txAudioDev<?php echo $idNum; ?>" name="txAudioDev[]" class="txAudioDev">
 										<option>---</option>
 										<?php
@@ -86,12 +108,73 @@ $dbConnection->close();
 										?>
 									</select>
 									</span>
+
+									<!-- Button triggered modal -->
+									<button class="btn port_settings" data-toggle="modal" data-target="#portDetails<?php echo $idNum; ?>" title="Extra settings for this port"><i class="icon-cog"></i></button>
+
 									<?php if ($idNum == 1) { 
 										echo '<a href="#" id="addPort">Add</a>';
 									} else {
 										echo '<a href="#" id="removePort">Remove</a>';
-									} ?>
+									} ?>								
 								</p>
+
+								<!-- Modal - ADVANCED DETAIL DIALOG -->
+								<div class="modal fade" id="portDetails<?php echo $idNum; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								  <div class="modal-dialog">
+								    <div class="modal-content">
+								      <div class="modal-header">
+									  <h3 class="modal-title" id="myModalLabel">Extra Settings (Port <?php echo $idNum; ?>)</h3>
+								      </div>
+								      <div class="modal-body">
+									  	<fieldset>
+										  <div class="control-group">
+											<label class="control-label" for="rxGPIO_active<?php echo $idNum; ?>">RX Control Mode</label>
+											<div class="controls">
+												<select id="rxMode<?php echo $idNum; ?>" name="rxMode[]" class="rxMode">
+													<option value="gpio" <?php if ($cur_port['rxMode'] == 'gpio') { echo "selected"; } ?>>COS</option>
+													<option value="vox" <?php if ($cur_port['rxMode'] == 'vox') { echo "selected"; } ?>>VOX</option>
+												</select>
+											</div>
+										  </div>
+										  <div style="clear: both;"></div>
+
+										  <br>
+										  <div class="alert alert-danger">
+											<strong>WARNING:</strong> The VOX receive mode is experimental. It may provide unpredictable results and keying of the system due to spurious noise and audio levels. It strongly recommended that you use the COS Mode if at all possible. 
+										  </div>
+
+										  <div class="control-group">
+											<label class="control-label" for="rxGPIO_active<?php echo $idNum; ?>">RX Active GPIO State</label>
+											<div class="controls">
+											  <select id="rxGPIO_active<?php echo $idNum; ?>" name="rxGPIO_active[]" class="rxGPIO_active">
+											  	<option value="high" <?php if ($cur_port['rxGPIO_active'] == 'high') { echo ' selected'; } ?>>Active High</option>
+											  	<option value="low" <?php if ($cur_port['rxGPIO_active'] == 'low') { echo ' selected'; } ?>>Active Low</option>
+											  </select>
+											</div>
+										  </div>
+										  <div style="clear: both;"></div>
+										  
+										  <hr>
+										  <div class="control-group">
+											<label class="control-label" for="txGPIO_active<?php echo $idNum; ?>">TX Active GPIO State</label>
+											<div class="controls">
+											  <select id="txGPIO_active<?php echo $idNum; ?>" name="txGPIO_active[]" class="txGPIO_active">
+											  	<option value="high" <?php if ($cur_port['txGPIO_active'] == 'high') { echo ' selected'; } ?>>Active High</option>
+											  	<option value="low" <?php if ($cur_port['txGPIO_active'] == 'low') { echo ' selected'; } ?>>Active Low</option>
+											  </select>
+											</div>
+										  </div>
+									  	</fieldset>
+								      </div>
+								      <div class="modal-footer">
+									  	<button type="button" class="btn btn-default" data-dismiss="modal"><i class="icon-remove"></i> Close</button>
+								      </div>
+								    </div><!-- /.modal-content -->
+								  </div><!-- /.modal-dialog -->
+								</div>
+								<!-- /.modal -->
+
 
 
 							<?php 
@@ -110,10 +193,6 @@ $dbConnection->close();
 						
 						<div class="alert alert-info">
 						<strong>NOTE: </strong> While you can set more than one port in here, only the first port is currently supported. We are waiting on some updates to the core code so we can build our logic to handle more than one port.
-						</div>
-
-						<div class="alert alert-danger">
-						<strong>WARNING:</strong> The VOX receive mode is experimental. It may provide unpredictable results and keying of the system due to spurious noise and audio levels. It strongly recommended that you use the COS Mode if at all possible. 
 						</div>
 
 

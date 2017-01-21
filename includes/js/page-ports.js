@@ -7,33 +7,79 @@ var minReqPorts = 1;
 function htmlTemplate(n) {
 	var html = '<p class="portRow additional">'+
 	'<span>'+
-	'<input type="text" name="portNum[]" value="' + n +'" style="width:15px;display:none;"> '+
-	'<input type="text" required="required" name="portLabel[]" placeholder="Port Label" class="portLabel"> '+
+	'<input type="text" name="portNum[]" value="' + n + '" style="width:15px;display:none;"> '+
+	'<input type="text" required="required" name="portLabel[]" placeholder="Port Label" class="portLabel" value="Port ' + n + '"> '+
 	'</span>'+
 	'<span class="rx">'+
-	'<select name="rxMode[]" class="rxMode">'+
-	'	<option value="vox" >VOX</option>'+
-	'	<option value="gpio" selected>COS</option>'+
-	'</select> '+
 	'<input type="text" required="required" name="rxGPIO[]" placeholder="rxGPIO" class="rxGPIO"> '+
-	'<input type="hidden" name="rxGPIO_active[]" value="low"> '+
 	'<select name="rxAudioDev[]" class="rxAudioDev">'+
-	'	<option>---</option>'+
-	'	<option value="alsa:plughw:1|0">INPUT: USB PnP Sound Device (Left)</option>'+
-	'	<option value="alsa:plughw:1|1">INPUT: USB PnP Sound Device (Right)</option>'+
+	'	<option>---</option>'+ jsAudioInputOptions +
 	'</select> '+
 	'</span>'+
 	'<span class="tx">'+
 	'<input type="text" required="required" name="txGPIO[]" placeholder="txGPIO" class="txGPIO"> '+
-	'<input type="hidden" name="txGPIO_active[]" value="high"> '+
 	'<select name="txAudioDev[]" class="txAudioDev">'+
-	'	<option>---</option>'+
-	'	<option value="alsa:plughw:1|0">OUTPUT: USB PnP Sound Device (Left)</option>'+
-	'	<option value="alsa:plughw:1|1">OUTPUT: USB PnP Sound Device (Right)</option>'+
+	'	<option>---</option>'+ jsAudioOutputOptions +
 	'</select> '+
 	'</span>'+
+
+	'<!-- Button triggered modal -->'+
+	'<button class="btn port_settings" data-toggle="modal" data-target="#portDetails' + n + '" title="Extra settings for this port"><i class="icon-cog"></i></button>'+
 	'<a href="#" id="removePort">Remove</a>'+
-	'</p>';
+	'</p>'+
+	
+	'<!-- Modal - ADVANCED DETAIL DIALOG -->'+
+	'<div class="modal fade" id="portDetails' + n + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'+
+	'<div class="modal-dialog">'+
+	'<div class="modal-content">'+
+	'<div class="modal-header">'+
+	'<h3 class="modal-title" id="myModalLabel">Extra Settings (Port ' + n + ')</h3>'+
+	'</div>'+
+	'<div class="modal-body">'+
+	'<fieldset>'+
+	'<div class="control-group">'+
+	'<label class="control-label" for="rxGPIO_active' + n + '">RX Control Mode</label>'+
+	'<div class="controls">'+
+	'	<select id="rxMode' + n + '" name="rxMode[]" class="rxMode">'+
+	'		<option value="gpio" selected>COS</option>'+
+	'		<option value="vox">VOX</option>'+
+	'	</select>'+
+	'</div>'+
+	'</div>'+
+	'<div style="clear: both;"></div>'+
+	'<br>'+
+	'<div class="alert alert-danger">'+
+	'<strong>WARNING:</strong> The VOX receive mode is experimental. It may provide unpredictable results and keying of the system due to spurious noise and audio levels. It strongly recommended that you use the COS Mode if at all possible.'+
+	'</div>'+
+	'<div class="control-group">'+
+	'<label class="control-label" for="rxGPIO_active' + n + '">RX Active GPIO State</label>'+
+	'<div class="controls">'+
+	'  <select id="rxGPIO_active' + n + '" name="rxGPIO_active[]" class="rxGPIO_active">'+
+	'  	<option value="high" selected>Active High</option>'+
+	'  	<option value="low">Active Low</option>'+
+	'  </select>'+
+	'</div>'+
+	'</div>'+
+	'<div style="clear: both;"></div>'+
+	'<hr>'+
+	'<div class="control-group">'+
+	'<label class="control-label" for="txGPIO_active' + n + '">TX Active GPIO State</label>'+
+	'<div class="controls">'+
+	'  <select id="txGPIO_active' + n + '" name="txGPIO_active[]" class="txGPIO_active">'+
+	'  	<option value="high" selected>Active High</option>'+
+	'  	<option value="low">Active Low</option>'+
+	'  </select>'+
+	'</div>'+
+	'</div>'+
+	'</fieldset>'+
+	'</div>'+
+	'<div class="modal-footer">'+
+	'<button type="button" class="btn btn-default" data-dismiss="modal"><i class="icon-remove"></i> Close</button>'+
+	'</div>'+
+	'</div><!-- /.modal-content -->'+
+	'</div><!-- /.modal-dialog -->'+
+	'</div>'+
+	'<!-- /.modal -->';
 	return html;
 }
 
