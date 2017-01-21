@@ -10,6 +10,7 @@
 # web server were to be compromised. This script should be a delicate balance
 # between needed functionality in the web interface and security. 
 
+# NOTE: NO NEED TO PREFIX COMMANDS WITH SUDO AS THIS SCRIPT IS INTENDED TO BE RUN AS ROOT USING SUDO COMMAND
 
 ####### WORK IN PROGRESS........
 
@@ -17,6 +18,7 @@
 # DEFINE FUNCTIONS
 ###############################################################################
 
+### SVXLINK FUNCTIONS ###
 function display_help {
 	echo "OPEN REPEATER HELPER"
 	echo "This is a helper script for OpenRepeater. This script is primarily intended"
@@ -29,44 +31,67 @@ function display_help {
 
 function svxlink_disable {
 	echo "SVXLink Disable"
-	sudo service svxlink stop
-	sudo systemctl disable svxlink.service
+	service svxlink stop
+	systemctl disable svxlink.service
 }
 
 function svxlink_enable {
 	echo "SVXLink Enable"
-	sudo systemctl enable svxlink.service
-	sudo service svxlink start
+	systemctl enable svxlink.service
+	service svxlink start
 }
 
 function svxlink_restart {
 	echo "SVXLink Restart"
-	sudo service svxlink restart
+	service svxlink restart
 }
 
 function svxlink_stop {
 	echo "SVXLink Stop"
-	sudo service svxlink stop
+	service svxlink stop
 }
 
 function svxlink_start {
 	echo "SVXLink Start"
-	sudo service svxlink start
+	service svxlink start
 }
 
 function svxlink_status {
 	echo "Check SVXLink Service Status..."
-	sudo service svxlink status
+	service svxlink status
 }
 
+### SYSTEM FUNCTIONS ###
 function system_reboot {
-	echo "Restart entire system"
+	shutdown -r now
 }
 
 function system_shutdown {
-	echo "System Shutdown"
+	shutdown -h now
 }
 
+function system_uptime {
+	uptime
+}
+
+function system_user {
+	whoami
+}
+
+### AUDIO FUNCTIONS ###
+function audio_inputs {
+	arecord -l
+}
+
+function audio_outputs {
+	aplay -l
+}
+
+function audio_version {
+	cat /proc/asound/version 2>&1
+}
+
+### NETWORK FUNCTIONS ###
 function network_read {
 	echo "Read Network Config for external parsing"
 }
@@ -75,6 +100,7 @@ function network_write {
 	echo "Write New Network Config"
 }
 
+### WEBSERVER FUNCTIONS ###
 function www_stop {
 	echo "Webserver / ORP GUI Stop"
 	service nginx stop
@@ -107,7 +133,6 @@ function www_enable {
 # Expanding Filesystem
 
 
-
 ###############################################################################
 # READ COMMAND LINE OPTIONS AND EXECUTE (Calls Functions Above)
 ###############################################################################
@@ -127,7 +152,9 @@ while :; do
         system)
 			if [ "$2" == "stop" ]; then system_shutdown
 			elif [ "$2" == "restart" ]; then system_reboot
-			else echo "INVALID OPTION"; echo "USAGE: orp_helper system (stop|restart)"
+			elif [ "$2" == "uptime" ]; then system_uptime
+			elif [ "$2" == "user" ]; then system_user
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper system (stop|restart|uptime|user)"
 			fi
 			exit;;
         www)
@@ -137,6 +164,13 @@ while :; do
 			elif [ "$2" == "disable" ]; then www_disable
 			elif [ "$2" == "enable" ]; then www_enable
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper www (stop|start|restart|disable|enable)"
+			fi
+			exit;;
+        audio)
+			if [ "$2" == "inputs" ]; then audio_inputs
+			elif [ "$2" == "outputs" ]; then audio_outputs
+			elif [ "$2" == "version" ]; then audio_version
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper audio (inputs|outputs|version)"
 			fi
 			exit;;
         network)
