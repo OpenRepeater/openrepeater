@@ -1,28 +1,14 @@
 <?php
-//ob_start();
-//passthru("/var/www/openrepeater/dev/orp_helper.sh --help");
-//$arecord_results = ob_get_clean();
-?>
-
-<?php
 if (!empty($_POST)) {
-    //echo htmlspecialchars($_POST["option"]);	
-
 	$option = $_POST["option"];	
 
 	ob_start();
 	passthru('sudo /usr/bin/orp_helper ' . $option);
 	$script_results = ob_get_clean();
-
-		
-//	$script_results = exec('/var/www/openrepeater/dev/orp_helper.sh ' . $option);
-	
-
 }
-
-
-
 ?>
+
+
 
 <form action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> method="post">
 	<select name="option" onchange="this.form.submit()">
@@ -31,9 +17,9 @@ if (!empty($_POST)) {
 			<option value="/usr/bin/orp_helper help">Help</option>
 		</optgroup>
 		<optgroup label="SVXLink">		
-			<option value="start">Start</option> <!-- FIX -->
-			<option value="stop">Stop</option> <!-- FIX -->
-			<option value="restart">Restart</option> <!-- FIX -->
+			<option value="svxlink start">Start</option> <!-- FIX -->
+			<option value="svxlink stop">Stop</option> <!-- FIX -->
+			<option value="svxlink restart">Restart</option> <!-- FIX -->
 			<option value="svxlink status">Status</option>
 			<option value="enable">Enable</option> <!-- FIX -->
 			<option value="disable">Disable</option> <!-- FIX -->
@@ -55,4 +41,7 @@ if (!empty($_POST)) {
 </form>
 
 <hr>
+
+
+
 <?php echo "<pre>".$script_results."</pre>"; ?>

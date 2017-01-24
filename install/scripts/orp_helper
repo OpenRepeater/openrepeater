@@ -42,23 +42,22 @@ function svxlink_enable {
 }
 
 function svxlink_restart {
-	echo "SVXLink Restart"
 	service svxlink restart
+	svxlink_status
 }
 
 function svxlink_stop {
-	echo "SVXLink Stop"
 	service svxlink stop
+	svxlink_status
 }
 
 function svxlink_start {
-	echo "SVXLink Start"
 	service svxlink start
+	svxlink_status
 }
 
 function svxlink_status {
-	echo "Check SVXLink Service Status..."
-	service svxlink status
+	systemctl is-active svxlink
 }
 
 ### SYSTEM FUNCTIONS ###
