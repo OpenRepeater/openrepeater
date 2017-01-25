@@ -7,6 +7,7 @@
 
 	function getCPU_Type() {
 		$processor = str_replace("-compatible processor", "", explode(": ", exec("cat /proc/cpuinfo | grep processor"))[1]);
+		$processor++; //Increment by 1 since processors start numbering at zero
 		return $processor;
 	}
 

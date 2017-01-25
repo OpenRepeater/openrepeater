@@ -43,7 +43,7 @@ include('functions/ajax_system.php');
 						<div id="info_value"><?php echo $system . ' ' . $kernel; ?></div>
 						<div id="info_clear"></div>
 					
-						<div id="info_label">Processor:</div>
+						<div id="info_label">CPUs/Cores:</div>
 						<div id="info_value"><?php echo getCPU_Type(); ?></div>
 						<div id="info_clear"></div>
 					
