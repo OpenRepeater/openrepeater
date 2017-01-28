@@ -9,16 +9,16 @@ $device_in_count = 0;
 $device_out_count = 0;
 
 // Get ALSA Version from System
-exec("sudo /usr/bin/orp_helper audio version", $version);
+exec("sudo /usr/sbin/orp_helper audio version", $version);
 
 // Capture Input Devices from System
 ob_start();
-passthru("sudo /usr/bin/orp_helper audio inputs");
+passthru("sudo /usr/sbin/orp_helper audio inputs");
 $arecord_results = ob_get_clean();
 
 // Capture Output Devices from System
 ob_start();
-passthru("sudo /usr/bin/orp_helper audio outputs");
+passthru("sudo /usr/sbin/orp_helper audio outputs");
 $aplay_results = ob_get_clean();
 
 // Build Advance Details Results
