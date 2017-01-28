@@ -24,7 +24,7 @@ override_dh_installinit:
 	cp -rp install/sql/database.php debian/openrepeater/etc/openrepeater
 	cp -rp install/sql/openrepeater.db debian/openrepeater/var/lib/openrepeater/db
 	cp -rp install/sounds debian/openrepeater/var/lib/openrepeater
-	cp -rp install/scripts/* debian/openrepeater/usr/bin
+	cp -rp install/scripts/* debian/openrepeater/usr/sbin
 	cp -rp theme functions includes wizard *.php debian/openrepeater/var/www/openrepeater
  
 override_dh_fixperms:
