@@ -3,7 +3,7 @@ if (!empty($_POST)) {
 	$option = $_POST["option"];	
 
 	ob_start();
-	passthru('sudo /usr/sbin/orp_helper ' . $option);
+	passthru('sudo /usr/bin/orp_helper ' . $option);
 	$script_results = ob_get_clean();
 }
 ?>
@@ -14,7 +14,7 @@ if (!empty($_POST)) {
 	<select name="option" onchange="this.form.submit()">
 		<option>...</option>
 		<optgroup label="General">		
-			<option value="/usr/sbin/orp_helper help">Help</option>
+			<option value="/usr/bin/orp_helper help">Help</option>
 		</optgroup>
 		<optgroup label="SVXLink">		
 			<option value="svxlink start">Start</option> <!-- FIX -->
@@ -36,7 +36,7 @@ if (!empty($_POST)) {
 			<option value="audio version">Get ALSA Version</option>
 		</optgroup>
 
-		<option value="sudo /usr/sbin/orp_helper svxlink status">SVXLink Status</option>
+		<option value="sudo /usr/bin/orp_helper svxlink status">SVXLink Status</option>
 	</select>
 </form>
 
