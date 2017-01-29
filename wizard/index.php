@@ -12,20 +12,12 @@ session_name("open_repeater_wizard");   // In case there are several session bas
 if (!isset($_POST["page"])) {
 	// Default Settings are not visiable to the user. They will get written into database as defaults that they can change later on.
 	$default_settings = array(
+		"orp_Mode"				=>		"repeater",
 		"courtesy"				=>		"4_Up.wav",
-		"echolink_callSign"		=>		"",
-		"echolink_desc"			=>		"Welcome to an Open Repeater Server!",
-		"echolink_enabled"		=>		"False",
-		"echolink_location"		=>		"",
-		"echolink_password"		=>		"",
-		"echolink_sysop"		=>		"OpenRepeater",
-		"help_enabled"			=>		"False",
-		"parrot_enabled"		=>		"False",
 		"repeaterTimeoutSec"	=>		"230",
 		"rxTone"				=>		"",
 		"txTailValueSec"		=>		"4",
 		"txTone"				=>		"",
-		"voicemail_enabled"		=>		"False",
 		"courtesyMode"			=>		"beep",
 		"ID_Short_Mode"			=>		"morse",
 		"ID_Long_Mode"			=>		"voice",
@@ -40,7 +32,9 @@ if (!isset($_POST["page"])) {
 		"ID_Short_IntervalMin"	=>		"10",
 		"ID_Short_AppendMorse"	=>		"False",
 		"ID_Short_CustomFile"	=>		"Sample_Short_ID_Clip.wav",
-		"ID_Morse_Amplitude"	=>		"200"
+		"ID_Morse_Amplitude"	=>		"200",
+		"repeaterDTMF_disable"	=>		"False",
+		"repeaterDTMF_disable_pin"	=>	"1234"
 		);
 
 	$process_page = "not_set";

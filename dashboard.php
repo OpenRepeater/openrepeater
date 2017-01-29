@@ -54,10 +54,20 @@ include('functions/ajax_system.php');
 						<div id="info_label">CPU Load:</div>
 						<div id="info_value"><?php echo getCPU_Load(); ?></div>
 						<div id="info_clear"></div>
-					
-						<div id="info_label">CPU Temperature:</div>
-						<div id="info_value"><?php echo getCPU_Temp('F'); ?> / <?php echo getCPU_Temp('C'); ?></div>
-						<div id="info_clear"></div>
+						
+						<?php
+							// Hide on boards that don't support this
+							$cpuTempF = getCPU_Temp('F');
+							$cpuTempC = getCPU_Temp('C');
+							
+							if ($cpuTempF != '32°F') { ?>
+								<div id="info_label">CPU Temperature:</div>
+								<div id="info_value"><?php echo $cpuTempF; ?> / <?php echo $cpuTempC; ?></div>
+								<div id="info_clear"></div>
+							<?php	
+							} // close if
+						?>
+							
 					
 						<div id="info_label">Uptime:</div>
 						<div id="info_value"><?php echo getUptime(); ?></div>
