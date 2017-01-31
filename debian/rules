@@ -12,7 +12,7 @@
 override_dh_installinit:
 	mkdir -p debian/openrepeater/etc/nginx/sites-avaible
 	mkdir -p debian/openrepeater/etc/openrepeater/svxlink
-	mkdir -p debian/openrepeater/usr/bin
+	mkdir -p debian/openrepeater/usr/sbin
 	mkdir -p debian/openrepeater/usr/share/examples/openrepeater
 	mkdir -p debian/openrepeater/var/lib/openrepeater/db
 	mkdir -p debian/openrepeater/var/www/openrepeater
@@ -30,8 +30,8 @@ override_dh_installinit:
 override_dh_fixperms:
 	dh_fixperms
 	chown root:www-data debian/openrepeater/etc/openrepeater
-	chmod a+x debian/openrepeater/usr/bin/*
-    chown root:root debian/openrepeater/usr/bin/*
+	chmod a+x debian/openrepeater/usr/sbin/*
+    chown root:root debian/openrepeater/usr/sbin/*
     
 %:
 	dh $@ 
