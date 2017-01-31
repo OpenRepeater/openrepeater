@@ -1,2 +1,3 @@
 version=3
-https://github.com/openrepeater/openrepeater/tags .*/archive/(.*)\.tar\.gz
+
+https://github.com/kb3vgw/openrepeater/tags .*/archive/(.*)\.tar\.gz

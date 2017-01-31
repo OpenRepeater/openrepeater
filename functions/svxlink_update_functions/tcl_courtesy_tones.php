@@ -8,29 +8,29 @@
 function playSilence() {
 	$playSilence = '
 		proc send_rgr_sound {} {
-		  playSilence 200
+			playSilence 200
 		}
-		';
+	';
 	return $playSilence;
 }
 
 function playBeep() {
 	$playBeep = '
 		proc send_rgr_sound {} {
-		  playTone 660 500 200;
-		  playSilence 200
+			playTone 660 500 200;
+			playSilence 200
 		}
-		';
+	';
 	return $playBeep;
 }
 
 function playCustomTone($filename) {
 	$playTone = '
 		proc send_rgr_sound {} {
-		  playFile "/var/lib/openrepeater/sounds/courtesy_tones/'.$filename.'"
-		  playSilence 200
+			playFile "/var/lib/openrepeater/sounds/courtesy_tones/'.$filename.'"
+			playSilence 200
 		}
-		';
+	';
 	return $playTone;
 }
 
@@ -38,29 +38,25 @@ function playCustomTone($filename) {
 /* COURTESY TONES */
 
 
-		$tclOverride .= '
-		#
-		# Executed when the squelch just have closed and the RGR_SOUND_DELAY timer has
-		# expired.
-		#
-		';
+		$tclLogicNameSpace .= '
+		# Executed when the squelch has closed and the RGR_SOUND_DELAY timer has expired.';
 
 
 switch ($settings['courtesyMode']) {
 
     case "disabled":
 		// No Courtesy Tone Played 
-		$tclOverride .= playSilence();
+		$tclLogicNameSpace .= playSilence();
         break;
 
     case "beep":
 		// Generic Beep Played
-		$tclOverride .= playBeep();
+		$tclLogicNameSpace .= playBeep();
         break;
 
     case "custom":
 		// Play Custom Courtesy Tone
-		$tclOverride .= playCustomTone($settings['courtesy']);
+		$tclLogicNameSpace .= playCustomTone($settings['courtesy']);
         break;
 }
 

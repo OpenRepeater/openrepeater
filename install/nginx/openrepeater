@@ -1,0 +1,83 @@
+server {
+	listen 127.0.0.1:80;
+	server_name 127.0.0.1;
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	client_max_body_size 10M;
+	client_body_buffer_size 128k;
+
+	location / {
+		root /var/www/openrepeater;
+		index index.php;
+	}
+
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		#fastcgi_pass 127.0.0.1:9000;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param   SCRIPT_FILENAME /var/www/openrepeater$fastcgi_script_name;
+	}
+
+	# Disable viewing .htaccess & .htpassword & .db
+	location ~ .htaccess {
+			deny all;
+	}
+	location ~ .htpassword {
+			deny all;
+	}
+	location ~^.+.(db)$ {
+			deny all;
+	}
+}
+
+server {
+	listen  80;
+	listen [::]:80 default_server ipv6only=on;
+	if ($ssl_protocol = "") {
+		rewrite     ^   https://$server_addr$request_uri? permanent;
+		break;
+	}
+}
+
+server {
+	listen 443;
+	listen [::]:443 default_server ipv6only=on;
+	
+	include snippets/snakeoil.conf;
+	ssl  on;
+	
+	root /var/www/openrepeater;
+	index index.php;
+	
+	error_page 404 /404.php;
+	
+	client_max_body_size 25M;
+	client_body_buffer_size 128k;
+	
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+	
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		include fastcgi_params;
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_param   SCRIPT_FILENAME /var/www/openrepeater/$fastcgi_script_name;
+		error_page  404   404.php;
+		fastcgi_intercept_errors on;		
+	}
+	
+	# Disable viewing .htaccess & .htpassword & .db
+	location ~ .htaccess {
+		deny all;
+	}
+
+	location ~ .htpassword {
+		deny all;
+	}
+
+	location ~^.+.(db)$ {
+		deny all;
+	}
+}

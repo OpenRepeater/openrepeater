@@ -113,6 +113,12 @@
 		  echo "\t<script src='includes/js/".$jsfile."'></script>\n";
 		}
 	}
+
+	// Display module admin JavaScript if defined
+	if (isset($moduleJS)) {
+		echo "<!-- custom JavaScript for module admin page -->\n";
+		echo "\t<script src='".$moduleJS."'></script>\n";
+	}	
 	?>
 	
 </body>

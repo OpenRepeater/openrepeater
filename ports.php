@@ -9,31 +9,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-if (isset($_POST['action'])){
 
-	$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');
-	
-	foreach($_POST as $key=>$value){  
-		if ($key != "action") {
-//			$query = $db->exec("UPDATE set SET value='$value' WHERE keyID='$key'");
-			$query = $db->exec("UPDATE ports SET $key = '$value' WHERE portNum = 1;");
-		}
-	}
-   $db->close();
-	
-
-	$msgText = "The port settings have been updated successfully!";
-	$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
-
-
-	/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
-	$memcache_obj = new Memcache;
-	$memcache_obj->connect('localhost', 11211);
-	$memcache_obj->set('update_settings_flag', 1, false, 0);
-}
-?>
-
-<?php
 $pageTitle = "Ports"; 
 
 $customJS = "page-ports.js"; // "file1.js, file2.js, ... "
@@ -78,6 +54,7 @@ $dbConnection->close();
 										<option value="gpio" <?php if ($cur_port['rxMode'] == 'gpio') { echo "selected"; } ?>>COS</option>
 									</select>
 									<input id="rxGPIO<?php echo $idNum; ?>" type="text" required="required" name="rxGPIO[]" placeholder="GPIO"  value="<?php echo $cur_port['rxGPIO']; ?>" class="rxGPIO">
+									<input type="hidden" name="rxGPIO_active[]" value="low">
 									<select id="rxAudioDev<?php echo $idNum; ?>" name="rxAudioDev[]" class="rxAudioDev">
 										<option>---</option>
 										<?php
@@ -94,6 +71,7 @@ $dbConnection->close();
 									</span>
 									<span class="tx">
 									<input id="txGPIO<?php echo $idNum; ?>" type="text" required="required" name="txGPIO[]" placeholder="GPIO" value="<?php echo $cur_port['txGPIO']; ?>" class="txGPIO">
+									<input type="hidden" name="txGPIO_active[]" value="high">
 									<select id="txAudioDev<?php echo $idNum; ?>" name="txAudioDev[]" class="txAudioDev">
 										<option>---</option>
 										<?php

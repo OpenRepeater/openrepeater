@@ -17,6 +17,7 @@ function buildMorseID($amplitue, $wpm, $pitch,  $suffix) {
 	return $morseID;
 }
 
+
 function buildVoiceID() {
 	$voiceID = '
 			spellWord $mycall;
@@ -32,17 +33,17 @@ function buildCustomID($path, $file) {
 	$customID = '
 			playFile "'.$path.$file.'"
 			playSilence 500
-			';
+	';
 	return $customID;
 }
 
 function buildTime() {
 	$time = '
-		    playMsg "Core" "the_time_is";
-		    playSilence 100;
-		    playTime $hour $minute;
-		    playSilence 500;
-			';
+			playMsg "Core" "the_time_is";
+			playSilence 100;
+			playTime $hour $minute;
+			playSilence 500;
+	';
 	return $time;
 }
 
@@ -50,17 +51,14 @@ function buildTime() {
 /* SHORT ID OVERRIDES */
 
 
-		$tclOverride .= '
-		#
+
+		$tclLogicNameSpace .= '
 		# Executed when a short identification should be sent
-		#   hour    - The hour on which this identification occur
-		#   minute  - The hour on which this identification occur
-		#
 		proc send_short_ident {{hour -1} {minute -1}} {
-		  global mycall;
-		  variable CFG_TYPE;
-		  playSilence 200;
-		  ';
+			global mycall;
+			variable CFG_TYPE;
+			playSilence 200;
+		';
 
 
 $shortIdString ='';
@@ -93,26 +91,24 @@ switch ($settings['ID_Short_Mode']) {
 }
 
 
-$tclOverride .= $shortIdString;
+$tclLogicNameSpace .= $shortIdString;
+
+$tclLogicNameSpace .= '
+		}
+';
 
 /* ---------------------------------------------------------- */
 /* LONG ID OVERRIDES */
 
-		$tclOverride .= '
-		}
-
-		#
+		$tclLogicNameSpace .= '
 		# Executed when a long identification (e.g. hourly) should be sent
-		#   hour    - The hour on which this identification occur
-		#   minute  - The hour on which this identification occur
-		#
 		proc send_long_ident {hour minute} {
-		  global mycall;
-		  global loaded_modules;
-		  global active_module;
-		  variable CFG_TYPE;
-		  playSilence 200;
-		  ';
+			global mycall;
+			global loaded_modules;
+			global active_module;
+			variable CFG_TYPE;
+			playSilence 200;
+			';
 
 $longIdString = '';
 
@@ -156,7 +152,10 @@ switch ($settings['ID_Long_Mode']) {
 }
 
 
-$tclOverride .= $longIdString;	
+$tclLogicNameSpace .= $longIdString;
+
+$tclLogicNameSpace .= '
+		}
+';
+
 ?>
-
-

@@ -1,28 +1,16 @@
 <?php
-// --------------------------------------------------------
-// SESSION CHECK TO SEE IF USER IS LOGGED IN.
-session_start();
-if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
-	header('location: login.php'); // If they aren't logged in, send them to login page.
-} elseif (!isset($_SESSION['callsign'])) {
-	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
-} else { // If they are logged in and have set a callsign, show the page.
-// --------------------------------------------------------
-
-
-include_once("includes/get_settings.php");
-$dbConnection->close();
-
-
-$pageTitle = "EchoLink Settings"; 
-
-$customJS = "page-echolink.js"; // "file1.js, file2.js, ... "
-$customCSS = "page-echolink.css";
-
-include('includes/header.php'); 
+/* 
+ *	Settings Page for Module 
+ *	
+ *	This is included into a full page wrapper to be displayed. 
+ */
+			
+$mod_function_file = 'modules/'.$module[$module_id]['svxlinkName'].'/functions.php';
+$options = $module[$module_id]['moduleOptions'];
+$settings_array = unserialize($options);
 ?>
 
-			<form class="form-horizontal" role="form" action="functions/ajax_db_update.php" method="post" id="echolinkSettings">
+			<form class="form-horizontal" role="form" action="<?php echo $mod_function_file; ?>" method="post" id="echolinkSettings">
 			<div class="row-fluid sortable">
 				<div class="box span12">
 					<div class="box-header well" data-original-title>
@@ -31,9 +19,6 @@ include('includes/header.php');
 					<div class="box-content">
 				
 						  <fieldset>
-						  <?php if ($settings['echolink_enabled'] != 'True') {
-							  echo '<div class="alert alert-danger"><strong>Oh snap!</strong> It doesn\'t look like you have EchoLink enabled. You must enable the EchoLink Module first to see the settings. You can do that here: <a href="settings.php#modules">Modules</a></div>';
-						  } else { ?>
 							<legend>EchoLink Module Information</legend>
 
 								<div class="alert alert-info"><p><strong>Note About EchoLink:</strong> 
@@ -50,65 +35,77 @@ include('includes/header.php');
 							<legend>Basic Settings</legend>
 
 							  <div class="control-group">
-								<label class="control-label" for="prependedInput">EchoLink Callsign</label>
+								<label class="control-label" for="timeout">Module Timeout</label>
+								<div class="controls">
+								  <div class="input-append">
+									<input id="timeout" name="timeout" size="16" type="text" value="<?php echo $settings_array['timeout']; ?>" required><span class="add-on">secs</span>
+									<span class="help-inline">This is how many seconds of inactivity to wait for until the module is disabled.</span>
+								  </div>
+								</div>
+							  </div>
+
+
+							  <div class="control-group">
+								<label class="control-label" for="callSign">EchoLink Callsign</label>
 								<div class="controls">
 								  <div class="input-prepend">
-									<span class="add-on"><i class="icon-user"></i></span><input id="prependedInput" style="text-transform: uppercase" size="16" type="text" name="echolink_callSign" value="<?php echo $settings['echolink_callSign']; ?>" required>
+									<span class="add-on"><i class="icon-user"></i></span><input id="callSign" style="text-transform: uppercase" size="16" type="text" name="callSign" value="<?php echo $settings_array['callSign']; ?>" required>
  								    <span class="help-inline">The callsign to use to login to the EchoLink directory server.</span>
 								  </div>
 								</div>
 							  </div>
 
 							  <div class="control-group">
-								<label class="control-label" for="prependedInput">EchoLink Password</label>
+								<label class="control-label" for="password">EchoLink Password</label>
 								<div class="controls">
 								  <div class="input-prepend">
-									<span class="add-on"><i class="icon-lock"></i></span><input id="prependedInput" size="16"  type="password" placeholder="Password" name="echolink_password" value="<?php echo $settings['echolink_password']; ?>" required>
+									<span class="add-on"><i class="icon-lock"></i></span><input id="password" size="16"  type="password" placeholder="Password" name="password" value="<?php echo $settings_array['password']; ?>" required>
  								    <span class="help-inline">The EchoLink directory server password to use.</span>
 								  </div>
 								</div>
 							  </div>
 
 							  <div class="control-group">
-								<label class="control-label" for="callSign">Sysop Name</label>
+								<label class="control-label" for="sysop">Sysop Name</label>
 								<div class="controls">
-								  <input class="input-xlarge" id="callSign" type="text" name="echolink_sysop" value="<?php echo $settings['echolink_sysop']; ?>" required>
+								  <input class="input-xlarge" id="sysop" type="text" name="sysop" value="<?php echo $settings_array['sysop']; ?>" required>
 								  <span class="help-inline">The name of the person or club that is responsible for this system.</span>
 								</div>
 							  </div>
 
 							  <div class="control-group">
-								<label class="control-label" for="callSign">Location</label>
+								<label class="control-label" for="location">Location</label>
 								<div class="controls">
-								  <input class="input-xlarge" id="callSign" type="text" name="echolink_location" value="<?php echo $settings['echolink_location']; ?>" required>
+								  <input class="input-xlarge" id="location" type="text" name="location" value="<?php echo $settings_array['location']; ?>" required>
 								  <span class="help-inline">The location of the station.</span>
 								</div>
 							  </div>
 
 							  <div class="control-group">
-								<label class="control-label" for="timeoutMsg">Description</label>
+								<label class="control-label" for="description">Description</label>
 								<div class="controls">
-								  <textarea class="input-xlarge disabled" id="timeoutMsg" name="echolink_desc" required><?php echo $settings['echolink_desc']; ?></textarea>
+								  <textarea class="input-xlarge disabled" id="description" name="description" rows="4" required><?php echo $settings_array['description']; ?></textarea>
 								  <span class="help-inline">A longer description that is sent to remote stations upon connection. This description should typically include detailed station information like QTH, transceiver frequency/power, antenna, CTCSS tone frequency etc.</span>
 								</div>
 							  </div>
 							  
-						  <?php } // End check for echolink enabled ?>
+							  <input type="hidden" name="server" value="servers.echolink.org">
+							  <input type="hidden" name="max_qsos" value="4">
+							  <input type="hidden" name="connections" value="4">
+							  <input type="hidden" name="idle_timeout" value="300">
+
+							  <!-- PASS MODULE KEY FOR UPDATE DATABASE AND REDIRECT BACK TO SETTINGS PAGE -->
+							  <input type="hidden" name="moduleKey" value="<?php echo $module[$module_id]['moduleKey']; ?>">
 
 						  </fieldset>
+
+						<div class="form-actions">
+						  <input type="hidden" name="action" value="update">
+						  <input type="submit">
+						</div>
+
 
 					</div>
 				</div><!--/span-->
 			</div><!--/row-->
-			</form>   
-
-    
-<?php include('includes/footer.php'); ?>
-
-
-<?php
-// --------------------------------------------------------
-// SESSION CHECK TO SEE IF USER IS LOGGED IN.
- } // close ELSE to end login check from top of page
-// --------------------------------------------------------
-?>
+			</form>
