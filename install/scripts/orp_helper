@@ -60,6 +60,99 @@ function svxlink_status {
 	systemctl is-active svxlink
 }
 
+function svxserver_disable {
+	echo "svxserver Disable"
+	service svxserver stop
+	systemctl disable svxserver.service
+}
+
+function svxserver_enable {
+	echo "svxserver Enable"
+	systemctl enable svxserver.service
+	service svxserver start
+}
+
+function svxserver_restart {
+	service svxserver restart
+	svxserver_status
+}
+
+function svxserver_stop {
+	service svxserver stop
+	svxserver_status
+}
+
+function svxserver_start {
+	service svxserver start
+	svxserver_status
+}
+
+function svxserver_status {
+	systemctl is-active svxserver
+}
+
+function remotetrx_disable {
+	echo "remotetrx Disable"
+	service remotetrx stop
+	systemctl disable remotetrx.service
+}
+
+function remotetrx_enable {
+	echo "remotetrx Enable"
+	systemctl enable remotetrx.service
+	service remotetrx start
+}
+
+function remotetrx_restart {
+	service remotetrx restart
+	remotetrx_status
+}
+
+function remotetrx_stop {
+	service remotetrx stop
+	remotetrx_status
+}
+
+function remotetrx_start {
+	service remotetrx start
+	remotetrx_status
+}
+
+function remotetrx_status {
+	systemctl is-active remotetrx
+}
+
+function svxlink_gpio_setup_disable {
+	echo "svxlink_gpio_setup Disable"
+	service svxlink_gpio_setup stop
+	systemctl disable svxlink_gpio_setup.service
+}
+
+function svxlink_gpio_setup_enable {
+	echo "svxlink_gpio_setup Enable"
+	systemctl enable svxlink_gpio_setup.service
+	service svxlink_gpio_setup start
+}
+
+function svxlink_gpio_setup_restart {
+	service svxlink_gpio_setup restart
+	svxlink_gpio_setup_status
+}
+
+function svxlink_gpio_setup_stop {
+	service svxlink_gpio_setup stop
+	svxlink_gpio_setup_status
+}
+
+function svxlink_gpio_setup_start {
+	service svxlink_gpio_setup start
+	svxlink_gpio_setup_status
+}
+
+function svxlink_gpio_setup_status {
+	systemctl is-active svxlink_gpio_setup
+}
+
 ### SYSTEM FUNCTIONS ###
 function system_reboot {
 	shutdown -r now
