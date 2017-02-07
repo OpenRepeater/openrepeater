@@ -336,17 +336,18 @@ file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $sv
 file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride);
 file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $orpFileHeader . $gpioConfigFile);
 
-
 /* CLOSE DATABSE CONNECTION */
 $dbConnection->close();
-
 
 /* CLEAR SETTINGS UPDATE FLAG TO CLEAR BANNER AT TOP OF PAGE */
 $memcache_obj = new Memcache;
 $memcache_obj->connect('localhost', 11211);
 $memcache_obj->set('update_settings_flag', 0, false, 0);
 
+/* appply changes to the gpio.conf and restart the service */
 $shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink_gpio_setup restart');
+
+/* apply changes to svxlink.conf and restart the service */
 $shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
 
 /* WHAT PAGE TO GO BACK TO */
