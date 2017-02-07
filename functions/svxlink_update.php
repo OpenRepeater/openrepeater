@@ -8,7 +8,7 @@ files for SVXLink. It currently builds the following configuration files:
 - svxlink.conf
 - ModuleEchoLink.conf
 - local TCL overrides
-- svxlink_gpio.conf
+- gpio.conf
 */
 
 /* ---------------------------------------------------------- */
@@ -309,6 +309,15 @@ $gpioConfigFile = '
 
 	#Set what GPIO pins point OUT and have an Active LOW state (0v = ON, 3.3v = OFF) 
 	GPIO_OUT_LOW="'.$gpioOutLowString.'"
+	
+	# User that should own the GPIO device files
+	GPIO_USER="svxlink"
+
+	# Group for the GPIO device files
+	GPIO_GROUP="svxlink"
+
+	# File access mode for the GPIO device files
+	GPIO_MODE="0664"
 ';	
 
 // TODO: Need to add function to check existing GPIO pins in /sys/class/gpio 
@@ -325,7 +334,7 @@ $gpioConfigFile = trim(preg_replace('/\t+/', '', $gpioConfigFile));
 
 file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $svx_global . $svx_logic . $svx_ports);
 file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride);
-file_put_contents('/etc/openrepeater/svxlink/svxlink_gpio.conf', $orpFileHeader . $gpioConfigFile);
+file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $orpFileHeader . $gpioConfigFile);
 
 
 /* CLOSE DATABSE CONNECTION */
