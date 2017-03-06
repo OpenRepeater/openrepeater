@@ -49,7 +49,9 @@ include_once("../includes/get_gpios.php");
 function built_rx($curPort, $portsArray) {
 	$audio_dev = explode("|", $portsArray[$curPort]['rxAudioDev']);
 	
-	$rx_section = '# '.$portsArray[$curPort]['portLabel'].' Receive
+	$rx_section = '###############################################################################
+	# Receive Port: "' . trim($portsArray[$curPort]['portLabel']) . '"
+	###############################################################################
 	[Rx'.$curPort.']
 	TYPE=Local
 	AUDIO_DEV='.$audio_dev[0].'
@@ -94,7 +96,9 @@ function built_rx($curPort, $portsArray) {
 function built_tx($curPort, $portsArray, $settingsArray) {
 	$audio_dev = explode("|", $portsArray[$curPort]['txAudioDev']);
 
-	$tx_section = '# '.$portsArray[$curPort]['portLabel'].' Transmit
+	$tx_section = '###############################################################################
+	# Transmit Port: "' . trim($portsArray[$curPort]['portLabel']) . '"
+	###############################################################################
 	[Tx'.$curPort.']
 	TYPE=Local
 	AUDIO_DEV='.$audio_dev[0].'
@@ -215,6 +219,10 @@ switch ($settings['orp_Mode']) {
 		include('svxlink_update_functions/main_simplex_logic.php');
         break;
 }
+
+include('svxlink_update_functions/main_link_logic.php');
+$svx_logic .= $svx_link_logic; // Append link logic to repeater logic
+
 
 /* ---------------------------------------------------------- */
 /* BUILD CUSTOM TCL OVERRIDES...ie COURTESY TONES, IDENTIFICATION, ETC */
@@ -350,7 +358,7 @@ if ($_POST["return_url"]) {
 	header('location: ../login.php');		
 } else {
 	// Otherwise just go to dashboard
-	header('location: ../dashboard.php');	
+#	header('location: ../dashboard.php');	
 }	
 ?>
 
