@@ -110,13 +110,15 @@ case "wizard_update":
 		$merged_settings = array_merge($_SESSION["new_repeater_settings"], $_SESSION["default_settings"]);
 		$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');	
 	
+
 		// Update Settings Table
 		foreach($merged_settings as $key=>$value){  
 			$query = $db->exec("UPDATE settings SET value='$value' WHERE keyID='$key'");
 		}
+
 	
 		// Update Ports Table
-		$query = $db->exec("DELETE from PORTS;");
+		$query = $db->exec("DELETE from ports;");
 	
 		$portNum='1';
 		$portLabel=$_SESSION["new_repeater_ports"]['portLabel'];
@@ -125,10 +127,24 @@ case "wizard_update":
 		$txGPIO=$_SESSION["new_repeater_ports"]['txGPIO'];
 		$rxAudioDev=$_SESSION["new_repeater_ports"]['rxAudioDev'];
 		$txAudioDev=$_SESSION["new_repeater_ports"]['txAudioDev'];
+		$rxGPIO_active=$_SESSION["new_repeater_ports"]['rxGPIO_active'];
+		$txGPIO_active=$_SESSION["new_repeater_ports"]['txGPIO_active'];
 	
-		$sql = "INSERT INTO ports (portNum,portLabel,rxMode,rxGPIO,txGPIO,rxAudioDev,txAudioDev) VALUES ('$portNum','$portLabel','$rxMode','$rxGPIO','$txGPIO','$rxAudioDev','$txAudioDev')";
+		$sql = "INSERT INTO ports (portNum,portLabel,rxMode,rxGPIO,txGPIO,rxAudioDev,txAudioDev,rxGPIO_active,txGPIO_active) VALUES ('$portNum','$portLabel','$rxMode','$rxGPIO','$txGPIO','$rxAudioDev','$txAudioDev','$rxGPIO_active','$txGPIO_active')";
 		$query = $db->exec($sql);
-	
+
+
+		// Update GPIO Pins Table
+		$db->exec("DELETE from gpio_pins;");
+
+		if ($rxMode == "gpio") {
+			$sql_rx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$rxGPIO','in','$rxGPIO_active','PORT $portNum RX: $portLabel','Port')";
+			$db->exec($sql_rx);			
+		}
+
+		$sql_tx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$txGPIO','out','$txGPIO_active','PORT $portNum TX: $portLabel','Port')";
+		$db->exec($sql_tx);
+
 	
 		// Close DB
 		$db->close();
@@ -301,7 +317,7 @@ case "wizard_page3":
 				<span class="help">The audio input that processes receive audio.</span>
 			</div>
 
-
+			<input type="text" value="'.$_SESSION['new_repeater_ports']['rxGPIO_active'].'" class="form-control" id="rxGPIO_active" name="rxGPIO_active" placeholder="low or high">
 			
 		';
 
@@ -338,6 +354,9 @@ case "wizard_page3":
 				</div>
 				<span class="help">The audio output that sends audio to transmitter.</span>
 			</div>		
+
+			<input type="text" value="'.$_SESSION['new_repeater_ports']['txGPIO_active'].'" class="form-control" id="txGPIO_active" name="txGPIO_active" placeholder="low or high">
+
 		';
 
 
