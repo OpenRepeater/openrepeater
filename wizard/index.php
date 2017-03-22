@@ -145,7 +145,28 @@ case "wizard_update":
 		$sql_tx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$txGPIO','out','$txGPIO_active','PORT $portNum TX: $portLabel','Port')";
 		$db->exec($sql_tx);
 
-	
+
+		// Update Modules Table
+		$db->exec("DELETE from modules;");
+
+		// Help Module
+		$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('1','Help','1','Help','0','')";
+		$db->exec($sql_module);
+
+		// Parrot Module
+		$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('2','Parrot','1','Parrot','1','')";
+		$db->exec($sql_module);
+
+		// EchoLink Module
+		$serialized_options = 'a:10:{s:7:"timeout";s:2:"60";s:8:"callSign";s:0:"";s:8:"password";s:0:"";s:5:"sysop";s:12:"OpenRepeater";s:8:"location";s:0:"";s:11:"description";s:34:"Welcome to an Open Repeater Server";s:6:"server";s:20:"servers.echolink.org";s:8:"max_qsos";s:1:"4";s:11:"connections";s:1:"4";s:12:"idle_timeout";s:3:"300";}';
+		$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('3','EchoLink','0','EchoLink','2','$serialized_options')";
+		$db->exec($sql_module);
+
+		// Remote Relay Module
+		$serialized_options = 'a:7:{s:7:"timeout";s:3:"120";s:15:"momentary_delay";s:3:"200";s:10:"access_pin";s:4:"1234";s:23:"access_attempts_allowed";s:1:"3";s:23:"relays_off_deactivation";s:1:"1";s:24:"relays_gpio_active_state";s:4:"high";s:5:"relay";a:1:{i:1;a:2:{s:4:"gpio";s:0:"";s:5:"label";s:7:"Relay 1";}}}';
+		$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('4','Remote Relay','0','RemoteRelay','9','$serialized_options')";
+		$db->exec($sql_module);
+
 		// Close DB
 		$db->close();
 	
@@ -277,6 +298,21 @@ case "wizard_page3":
 
 			<input type="hidden" value="Port 1" name="portLabel">';
 
+
+
+		if ($_SESSION['new_repeater_ports']['rxGPIO_active'] == 'low' || '') {
+			$rxGPIO_active_options = '<option value = "low" selected>Active Low</option><option value = "high">Active High</option>';			
+		} else {
+			$rxGPIO_active_options = '<option value = "low">Active Low</option><option value = "high" selected>Active High</option>';			
+		}
+
+		if ($_SESSION['new_repeater_ports']['txGPIO_active'] == 'high' || '') {
+			$txGPIO_active_options = '<option value = "low">Active Low</option><option value = "high" selected>Active High</option>';			
+		} else {
+			$txGPIO_active_options = '<option value = "low" selected>Active Low</option><option value = "high">Active High</option>';			
+		}
+
+
         $wizardContent .= '
 			<p>The receiver settings are what interface the OpenRepeater controller with your receive radio, or the input of the repeater. The most common and most reliable receive mode would be COS (Carrier Operated Switch). When the repeater’s squelch opens (or tone squelch if you have a receive tone set in the radio) an electronic trigger from the radio interfaces with some basic circuitry to trigger an input GPIO pin on the OpenRepeater Controller to go low to ground (active state) and pull high when the squelch is closed. Audio from the output of the receiver is routed into the selected audio input for the port. Together these will make up the input side of the port and be repeated to the transmit side of the port and other ports or Echolink if enabled.</p>
 
@@ -301,9 +337,11 @@ case "wizard_page3":
 			<div class="control-group">
 				<label class="control-label" for="rxGPIO">Receive GPIO Pin</label>
 				<div class="controls">
-					<input type="text" value="'.$_SESSION['new_repeater_ports']['rxGPIO'].'" class="form-control" id="rxGPIO" name="rxGPIO" maxlength="3" style="width:110px;">
+					<input type="text" value="'.$_SESSION['new_repeater_ports']['rxGPIO'].'" class="form-control" id="rxGPIO" name="rxGPIO" maxlength="3" style="width:143px;" placeholder="PIN #">
+					<select id="rxGPIO_active" name="rxGPIO_active" style="width:143px;">'.$rxGPIO_active_options.'</select>					
 				</div>
-				<span class="help">The GPIO input pin that will trigger the COS. See online documentation for wiring.</span>
+				<span class="help">The GPIO input pin that will trigger the COS and whether it should be active high or low.</span>
+				<span class="help">See online documentation for wiring.</span>
 			</div>
 			</div>
 
@@ -316,9 +354,6 @@ case "wizard_page3":
 				</div>
 				<span class="help">The audio input that processes receive audio.</span>
 			</div>
-
-			<input type="text" value="'.$_SESSION['new_repeater_ports']['rxGPIO_active'].'" class="form-control" id="rxGPIO_active" name="rxGPIO_active" placeholder="low or high">
-			
 		';
 
 
@@ -340,9 +375,11 @@ case "wizard_page3":
 			<div class="control-group">
 				<label class="control-label" for="txGPIO">Transmit GPIO Pin</label>
 				<div class="controls">
-					<input type="text" value="'.$_SESSION['new_repeater_ports']['txGPIO'].'" class="form-control" id="txGPIO" name="txGPIO" maxlength="3" style="width:110px;" required>
+					<input type="text" value="'.$_SESSION['new_repeater_ports']['txGPIO'].'" class="form-control" id="txGPIO" name="txGPIO" maxlength="3" style="width:143px;" placeholder="PIN #" required>
+					<select id="txGPIO_active" name="txGPIO_active" style="width:143px;">'.$txGPIO_active_options.'</select>					
 				</div>
-				<span class="help">The GPIO output pin that controls PTT on the transmitter. See online documentation for wiring.</span>
+				<span class="help">The GPIO output pin that controls PTT on the transmitter and whether it should be active</span>
+				<span class="help">high or low. See online documentation for wiring.</span>
 			</div>
 
 			<div class="control-group">
@@ -353,10 +390,7 @@ case "wizard_page3":
 					</select>
 				</div>
 				<span class="help">The audio output that sends audio to transmitter.</span>
-			</div>		
-
-			<input type="text" value="'.$_SESSION['new_repeater_ports']['txGPIO_active'].'" class="form-control" id="txGPIO_active" name="txGPIO_active" placeholder="low or high">
-
+			</div>
 		';
 
 
@@ -388,7 +422,7 @@ case "wizard_confirmation":
 		if ($_SESSION["new_repeater_ports"]['rxMode'] == "gpio") {
 	        $wizardContent .= 'Receive Mode: <strong>COS (Carrier Operated Switch)</strong>';
 	        $wizardContent .= '<br>';
-	        $wizardContent .= 'Receive GPIO Pin: <strong>'.$_SESSION["new_repeater_ports"]['rxGPIO'].'</strong>';
+	        $wizardContent .= 'Receive GPIO Pin: <strong>'.$_SESSION["new_repeater_ports"]['rxGPIO'].' </strong> ('.$_SESSION["new_repeater_ports"]['rxGPIO_active'].')';
 			$wizardContent .= '<br>';
         } else 	if ($_SESSION["new_repeater_ports"]['rxMode'] == "vox") {
 	        $wizardContent .= 'Receive Mode: <strong>VOX (Voice Operated Transmit)</strong>';
@@ -407,7 +441,7 @@ case "wizard_confirmation":
         $wizardContent .= '<hr>';
 
 
-        $wizardContent .= 'Transmit GPIO Pin: <strong>'.$_SESSION["new_repeater_ports"]['txGPIO'].'</strong>';
+        $wizardContent .= 'Transmit GPIO Pin: <strong>'.$_SESSION["new_repeater_ports"]['txGPIO'].'</strong> ('.$_SESSION["new_repeater_ports"]['txGPIO_active'].')';
         $wizardContent .= '<br>';
 
 		for ($device = 0; $device <  count($_SESSION["sound_devices"]); $device++) {
