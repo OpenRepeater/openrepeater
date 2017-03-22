@@ -4,7 +4,10 @@
 
 // This is a sub-function file and gets included into svxlink_update.php
 
-$svx_logic = '[RepeaterLogic]
+$svx_logic = '###############################################################################
+# Main Repeater Logic: "' . trim($ports['1']['portLabel']) . '"
+###############################################################################
+[RepeaterLogic]
 TYPE=Repeater
 RX=Rx1
 TX=Tx1

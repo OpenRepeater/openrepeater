@@ -57,15 +57,11 @@ $subdirectories = false;
 $databases = array(
 	array(
 		'path'=> '/var/lib/openrepeater/db/openrepeater.db',
-		'name'=> 'OpenRepeater'
+		'name'=> 'Live DB'
 	),
 	array(
 		'path'=> '/var/www/openrepeater/install/sql/openrepeater.db',
-		'name'=> 'DB2'
-	),
-	array(
-		'path'=> '/var/www/openrepeater/install/sql/database.db',
-		'name'=> 'DB1'
+		'name'=> 'Install DB'
 	)
 );
 

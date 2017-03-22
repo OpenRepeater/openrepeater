@@ -4,7 +4,10 @@
 
 // This is a sub-function file and gets included into svxlink_update.php
 
-$svx_logic = '[SimplexLogic]
+$svx_logic = '###############################################################################
+# Main Simplex Logic "' . trim($ports['1']['portLabel']) . '"
+###############################################################################
+[SimplexLogic]
 TYPE=Simplex
 RX=Rx1
 TX=Tx1
