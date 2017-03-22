@@ -29,7 +29,7 @@ for ($device = 0; $device <  count($device_list); $device++) {
 		$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
 		$currentRX = $cur_port['rxAudioDev'];
 		if ($rxValue == $currentRX) { $rxSelected = " selected"; } else { $rxSelected = ""; }
-		$phpAudioInputOptions .= '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT: '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+		$phpAudioInputOptions .= '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
 	}
 }
 
@@ -40,7 +40,7 @@ for ($device = 0; $device <  count($device_list); $device++) {
 		$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
 		$currentTX = $cur_port['txAudioDev'];
 		if ($txValue == $currentTX) { $txSelected = " selected"; } else { $txSelected = ""; }
-		$phpAudioOutputOptions .= '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT: '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+		$phpAudioOutputOptions .= '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
 	}
 }
 ?>
@@ -86,7 +86,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 												$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
 												$currentRX = $cur_port['rxAudioDev'];
 												if ($rxValue == $currentRX) { $rxSelected = " selected"; } else { $rxSelected = ""; }
-												echo '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT: '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+												echo '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
 											}
 										}
 										?>
@@ -102,7 +102,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 												$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
 												$currentTX = $cur_port['txAudioDev'];
 												if ($txValue == $currentTX) { $txSelected = " selected"; } else { $txSelected = ""; }
-												echo '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT: '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+												echo '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
 											}
 										}
 										?>
