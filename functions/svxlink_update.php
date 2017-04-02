@@ -130,29 +130,6 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 	return $tx_section;
 }
 
-/* --- GLOBAL SETTINGS --- */
-
-	switch ($settings['orp_Mode']) {
-	    case "repeater":
-			$useLogic = 'RepeaterLogic';
-	        break;
-	    case "simplex":
-			$useLogic = 'SimplexLogic';
-	        break;
-	}
-
-
-	$svx_global = '[GLOBAL]
-	MODULE_PATH=/usr/lib/arm-linux-gnueabihf/svxlink
-	LOGICS='.$useLogic.'
-	CFG_DIR=svxlink.d
-	TIMESTAMP_FORMAT="%c"
-	CARD_SAMPLE_RATE=16000
-	#LOCATION_INFO=LocationInfo
-	#LINKS=LinkToR4
-
-	';
-
 /* ---------------------------------------------------------- */
 /* --- BUILD MODULE SETTINGS --- */
 
@@ -222,6 +199,35 @@ switch ($settings['orp_Mode']) {
 
 include('svxlink_update_functions/main_link_logic.php');
 $svx_logic .= $svx_link_logic; // Append link logic to repeater logic
+
+
+/* --- GLOBAL SETTINGS --- */
+
+	switch ($settings['orp_Mode']) {
+	    case "repeater":
+			$useLogic = 'RepeaterLogic';
+	        break;
+	    case "simplex":
+			$useLogic = 'SimplexLogic';
+	        break;
+	}
+
+	// If there are Link Sections, append to included logics
+	if ($logicsArrayLinks) {
+		$useLogic .= ",".implode(",", $logicsArrayLinks);		
+	}
+
+
+	$svx_global = '[GLOBAL]
+	MODULE_PATH=/usr/lib/arm-linux-gnueabihf/svxlink
+	LOGICS='.$useLogic.'
+	CFG_DIR=svxlink.d
+	TIMESTAMP_FORMAT="%c"
+	CARD_SAMPLE_RATE=16000
+	#LOCATION_INFO=LocationInfo
+	#LINKS=LinkToR4
+
+	';
 
 
 /* ---------------------------------------------------------- */
