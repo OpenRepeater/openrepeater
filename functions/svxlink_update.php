@@ -310,6 +310,16 @@ $gpioOutLowString = implode(" ", $gpioOutLowArray);
 
 // Build File Contents
 $gpioConfigFile = '
+	###############################################################################
+	#
+	# Configuration file for the SvxLink server GPIO Pins
+	#
+	###############################################################################
+
+	# GPIO system pin path
+	# RPi/odroid/nanopi/pine64 = /sys/class/gpio, orangpi = /sys/class/gpio_sw
+	GPIO_PATH=/sys/class/gpio
+
 	# Configuration file for the SVXLink server GPIO Pins
 	
 	#Set what GPIO pins point IN and have an Active HIGH state (3.3v = ON, 0v = OFF)
