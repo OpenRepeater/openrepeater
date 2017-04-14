@@ -32,6 +32,8 @@ override_dh_fixperms:
 	chown root:www-data debian/openrepeater/etc/openrepeater
 	chmod a+x debian/openrepeater/usr/bin/*
     chown root:root debian/openrepeater/usr/bin/*
+    chmod +x debian/openrepeater/usr/sbin/*
+    chown root:root debian/openrepeater/usr/sbin/*    
     
 %:
 	dh $@ 
