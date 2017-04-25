@@ -16,7 +16,7 @@ override_dh_installinit:
 	mkdir -p debian/openrepeater/usr/share/examples/openrepeater
 	mkdir -p debian/openrepeater/var/lib/openrepeater/db
 	mkdir -p debian/openrepeater/var/www/openrepeater
-	cp -rp install/nginx/openrepeater debian/openrepeater/etc/nginx/sites-avaible
+	cp -rp install/nginx/openrepeater debian/openrepeater/etc/nginx/sites-available
 	cp -rp install/default debian/openrepeater/usr/share/examples/openrepeater
 	cp -rp install/nginx debian/openrepeater/usr/share/examples/openrepeater
 	cp -rp install/php5 debian/openrepeater/usr/share/examples/openrepeater
@@ -25,15 +25,13 @@ override_dh_installinit:
 	cp -rp install/sql/openrepeater.db debian/openrepeater/var/lib/openrepeater/db
 	cp -rp install/sounds debian/openrepeater/var/lib/openrepeater
 	cp -rp install/scripts/* debian/openrepeater/usr/sbin
-	cp -rp theme functions includes wizard *.php debian/openrepeater/var/www/openrepeater
+	cp -rp functions includes modules theme wizard *.php debian/openrepeater/var/www/openrepeater
  
 override_dh_fixperms:
 	dh_fixperms
 	chown root:www-data debian/openrepeater/etc/openrepeater
 	chmod a+x debian/openrepeater/usr/bin/*
     chown root:root debian/openrepeater/usr/bin/*
-    chmod +x debian/openrepeater/usr/sbin/*
-    chown root:root debian/openrepeater/usr/sbin/*    
     
 %:
 	dh $@ 
