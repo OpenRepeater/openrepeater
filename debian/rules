@@ -10,13 +10,13 @@
 #export DH_VERBOSE=1
 
 override_dh_installinit:
-	mkdir -p debian/openrepeater/etc/nginx/sites-avaible
+	mkdir -p debian/usr/share/examples/openrepeater/sites-available
 	mkdir -p debian/openrepeater/etc/openrepeater/svxlink
 	mkdir -p debian/openrepeater/usr/sbin
 	mkdir -p debian/openrepeater/usr/share/examples/openrepeater
 	mkdir -p debian/openrepeater/var/lib/openrepeater/db
 	mkdir -p debian/openrepeater/var/www/openrepeater
-	cp -rp install/nginx/openrepeater debian/usr/share/examples/openrepeater/sites-available/
+	cp -rp install/nginx/openrepeater debian/usr/share/examples/openrepeater/sites-available
 	cp -rp install/default debian/openrepeater/usr/share/examples/openrepeater
 	cp -rp install/nginx debian/openrepeater/usr/share/examples/openrepeater
 	cp -rp install/php5 debian/openrepeater/usr/share/examples/openrepeater
