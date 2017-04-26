@@ -310,19 +310,40 @@ $gpioOutLowString = implode(" ", $gpioOutLowArray);
 
 // Build File Contents
 $gpioConfigFile = '
-	# Configuration file for the SVXLink server GPIO Pins
-	
-	#Set what GPIO pins point IN and have an Active HIGH state (3.3v = ON, 0v = OFF)
-	GPIO_IN_HIGH="'.$gpioInHighString.'"
+	###############################################################################
+	#
+	# Configuration file for the SvxLink server GPIO Pins
+	#
+	###############################################################################
 
-	#Set what GPIO pins point IN and have an Active LOW state (0v = ON, 3.3v = OFF)
-	GPIO_IN_LOW="'.$gpioInLowString.'"
+	# GPIO system pin path
+	# RPi/odroid/nanopi/pine64 = /sys/class/gpio, orangpi = /sys/class/gpio_sw	
+	GPIO_PATH=/sys/class/gpio
 
-	#Set what GPIO pins point OUT and have an Active HIGH state (3.3v = ON, 0v = OFF)
-	GPIO_OUT_HIGH="'.$gpioOutHighString.'"
+	# Space separated list of GPIO pins that point IN and have an
+	# Active HIGH state (3.3v = ON, 0v = OFF)
+	GPIO_IN_HIGH=""
 
-	#Set what GPIO pins point OUT and have an Active LOW state (0v = ON, 3.3v = OFF) 
-	GPIO_OUT_LOW="'.$gpioOutLowString.'"
+	# Space separated list of GPIO pins that point IN and have an
+	# Active LOW state (0v = ON, 3.3v = OFF)
+	GPIO_IN_LOW=""
+
+	# Space separated list of GPIO pins that point OUT and have an
+	# Active HIGH state (3.3v = ON, 0v = OFF)
+	GPIO_OUT_HIGH=""
+
+	# Space separated list of GPIO pins that point OUT and have an
+	# Active LOW state (0v = ON, 3.3v = OFF)
+	GPIO_OUT_LOW=""
+
+	# User that should own the GPIO device files
+	GPIO_USER="svxlink"
+
+	# Group for the GPIO device files
+	GPIO_GROUP="daemony"
+
+	# File access mode for the GPIO device files
+	GPIO_MODE="0664"
 ';	
 
 // TODO: Need to add function to check existing GPIO pins in /sys/class/gpio 
