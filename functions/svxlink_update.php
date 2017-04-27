@@ -340,7 +340,7 @@ $gpioConfigFile = '
 	GPIO_USER="svxlink"
 
 	# Group for the GPIO device files
-	GPIO_GROUP="daemony"
+	GPIO_GROUP="daemon"
 
 	# File access mode for the GPIO device files
 	GPIO_MODE="0664"
