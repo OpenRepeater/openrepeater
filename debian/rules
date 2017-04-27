@@ -20,9 +20,8 @@ override_dh_installinit:
 	cp -rp install/default debian/openrepeater/usr/share/examples/openrepeater
 	cp -rp install/nginx debian/openrepeater/usr/share/examples/openrepeater
 	cp -rp install/php5 debian/openrepeater/usr/share/examples/openrepeater
+	cp -rp install/sql debian/openrepeater/usr/share/examples/openrepeater
 	cp -rp install/svxlink-conf/* debian/openrepeater/etc/openrepeater/svxlink
-	cp -rp install/sql/database.php debian/openrepeater/etc/openrepeater
-	cp -rp install/sql/openrepeater.db debian/openrepeater/var/lib/openrepeater/db
 	cp -rp install/sounds debian/openrepeater/var/lib/openrepeater
 	cp -rp install/scripts/* debian/openrepeater/usr/sbin
 	cp -rp functions includes modules theme wizard *.php debian/openrepeater/var/www/openrepeater
