@@ -322,25 +322,25 @@ $gpioConfigFile = '
 
 	# Space separated list of GPIO pins that point IN and have an
 	# Active HIGH state (3.3v = ON, 0v = OFF)
-	GPIO_IN_HIGH=""
+	GPIO_IN_HIGH="'.$gpioInHighString.'"
 
 	# Space separated list of GPIO pins that point IN and have an
 	# Active LOW state (0v = ON, 3.3v = OFF)
-	GPIO_IN_LOW=""
+	GPIO_IN_LOW="'.$gpioInLowString.'"
 
 	# Space separated list of GPIO pins that point OUT and have an
 	# Active HIGH state (3.3v = ON, 0v = OFF)
-	GPIO_OUT_HIGH=""
+	GPIO_OUT_HIGH="'.$gpioOutHighString.'"
 
 	# Space separated list of GPIO pins that point OUT and have an
 	# Active LOW state (0v = ON, 3.3v = OFF)
-	GPIO_OUT_LOW=""
+	GPIO_OUT_LOW="'.$gpioOutLowString.'"
 
 	# User that should own the GPIO device files
 	GPIO_USER="svxlink"
 
 	# Group for the GPIO device files
-	GPIO_GROUP="daemony"
+	GPIO_GROUP="daemon"
 
 	# File access mode for the GPIO device files
 	GPIO_MODE="0664"
@@ -360,7 +360,7 @@ $gpioConfigFile = trim(preg_replace('/\t+/', '', $gpioConfigFile));
 
 file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $svx_global . $svx_logic . $svx_ports);
 file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride);
-file_put_contents('/etc/openrepeater/svxlink/svxlink_gpio.conf', $orpFileHeader . $gpioConfigFile);
+file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $orpFileHeader . $gpioConfigFile);
 
 
 /* CLOSE DATABSE CONNECTION */
