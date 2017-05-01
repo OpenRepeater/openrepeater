@@ -110,7 +110,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 									</span>
 
 									<!-- Button triggered modal -->
-									<button class="btn port_settings" data-toggle="modal" data-target="#portDetails<?php echo $idNum; ?>" title="Extra settings for this port"><i class="icon-cog"></i></button>
+									<button type="button" class="btn port_settings" data-toggle="modal" data-target="#portDetails<?php echo $idNum; ?>" title="Extra settings for this port"><i class="icon-cog"></i></button>
 
 									<?php if ($idNum == 1) { 
 										echo '<a href="#" id="addPort">Add</a>';
@@ -216,7 +216,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 
 
 			<!-- Button triggered modal -->
-			<button class="btn" data-toggle="modal" data-target="#advancedDetails"><i class="icon-list-alt"></i> Advanced Details</button>
+			<button type="button" class="btn" data-toggle="modal" data-target="#advancedDetails"><i class="icon-list-alt"></i> Advanced Details</button>
 			
 			<!-- Modal - ADVANCED DETAIL DIALOG -->
 			<div class="modal fade" id="advancedDetails" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
