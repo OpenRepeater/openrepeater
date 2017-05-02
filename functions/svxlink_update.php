@@ -140,7 +140,6 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 			// Add Module name to array to output list in logic section
 			$modulesArray[] = 'Module'.$cur_mod['svxlinkName'];
 
-			
 			// Build Module Configuration
 			$mod_build_file = '../modules/'.$cur_mod['svxlinkName'].'/build_config.php';
 			if (file_exists($mod_build_file)) {
@@ -156,14 +155,14 @@ function built_tx($curPort, $portsArray, $settingsArray) {
 				TIMEOUT=60
 				";							
 			}
-			
+
 			// Clean up tabs/white spaces
 			$module_config_output = preg_replace('/\t+/', '', $module_config_output);
 
 			// Write out Module Config File for SVXLink
 			file_put_contents('/etc/openrepeater/svxlink/svxlink.d/Module'.$cur_mod['svxlinkName'].'.conf', $orpFileHeader . $module_config_output);
 
-		} 
+		}
 	}
 	
 	// Build Module List from Array
@@ -200,7 +199,6 @@ switch ($settings['orp_Mode']) {
 include('svxlink_update_functions/main_link_logic.php');
 $svx_logic .= $svx_link_logic; // Append link logic to repeater logic
 
-
 /* --- GLOBAL SETTINGS --- */
 
 	switch ($settings['orp_Mode']) {
@@ -217,18 +215,16 @@ $svx_logic .= $svx_link_logic; // Append link logic to repeater logic
 		$useLogic .= ",".implode(",", $logicsArrayLinks);		
 	}
 
-
 	$svx_global = '[GLOBAL]
 	MODULE_PATH=/usr/lib/arm-linux-gnueabihf/svxlink
 	LOGICS='.$useLogic.'
 	CFG_DIR=svxlink.d
 	TIMESTAMP_FORMAT="%c"
-	CARD_SAMPLE_RATE=16000
+	CARD_SAMPLE_RATE=48000
 	#LOCATION_INFO=LocationInfo
 	#LINKS=LinkToR4
 
 	';
-
 
 /* ---------------------------------------------------------- */
 /* BUILD CUSTOM TCL OVERRIDES...ie COURTESY TONES, IDENTIFICATION, ETC */
@@ -249,7 +245,6 @@ namespace eval Logic {
 ' . $tclLogicNameSpace . '
 # end of namespace
 }
-
 
 ### Overridden Repeater Logic event handlers created by OpenRepeater
 namespace eval RepeaterLogic {
@@ -362,10 +357,8 @@ file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $sv
 file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride);
 file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $orpFileHeader . $gpioConfigFile);
 
-
 /* CLOSE DATABSE CONNECTION */
 $dbConnection->close();
-
 
 /* CLEAR SETTINGS UPDATE FLAG TO CLEAR BANNER AT TOP OF PAGE */
 $memcache_obj = new Memcache;
