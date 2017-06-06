@@ -45,17 +45,17 @@ foreach($input_dev_grps as $in_val) {
 	preg_match('/card\s.*?\[(.*?)\]/', $in_val, $in_label);
 	preg_match('/card\s.*?\[.*?\].*?\[(.*?)\]/', $in_val, $in_type);
 
-/*
+
 	// Write Left & Right Channels to Array
 	$device_list[] = array('card' => $in_cardnum[1], 'label' => $in_label[1], 'type' => $in_type[1], 'direction' => "IN", 'channel' => 0, 'channel_label' => "Left");
 	$device_list[] = array('card' => $in_cardnum[1], 'label' => $in_label[1], 'type' => $in_type[1], 'direction' => "IN", 'channel' => 1, 'channel_label' => "Right");
 	$device_in_count = $device_in_count + 2; // this is because left and right are currently hard coded
-*/
+
 
 	// Write Mono Input Channel to Array
-	$device_list[] = array('card' => $in_cardnum[1], 'label' => $in_label[1], 'type' => $in_type[1], 'direction' => "IN", 'channel' => 0, 'channel_label' => "Mono");
+/*	$device_list[] = array('card' => $in_cardnum[1], 'label' => $in_label[1], 'type' => $in_type[1], 'direction' => "IN", 'channel' => 0, 'channel_label' => "Mono");
 	$device_in_count = $device_in_count + 1; // this is because left and right are currently hard coded
-
+*/
 }
 
 // Loop through ouputs and add to device array
