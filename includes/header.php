@@ -99,7 +99,7 @@ include_once("includes/get_modules.php");
 		<span>Repeater Configuration Files Rebuild & Restart Required: </span>
 
 		<!-- Button triggered modal -->
-		<button class="btn" data-toggle="modal" data-target="#restartServer"><i class="icon-refresh"></i> Rebuild & Restart Repeater</button>
+		<button class="rebuild_button" data-toggle="modal" data-target="#restartServer"><i class="icon-refresh icon-white"></i> Rebuild & Restart Repeater</button>
 	</div>
 	<div class="server_bar_spacer"></div>
 	</div>

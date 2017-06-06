@@ -24,7 +24,7 @@ function htmlTemplate(n) {
 	'</span>'+
 
 	'<!-- Button triggered modal -->'+
-	'<button class="btn port_settings" data-toggle="modal" data-target="#portDetails' + n + '" title="Extra settings for this port"><i class="icon-cog"></i></button>'+
+	'<button type="button" class="btn port_settings" data-toggle="modal" data-target="#portDetails' + n + '" title="Extra settings for this port"><i class="icon-cog"></i></button>'+
 	'<a href="#" id="removePort">Remove</a>'+
 	'</p>'+
 	

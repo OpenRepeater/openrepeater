@@ -1,8 +1,12 @@
+/* @override https://192.168.1.200/theme/css/openrepeater.css */
+
 /* @override 
-	https://192.168.1.132/theme/css/openrepeater.css
+	https://192.168.1.200/theme/css/openrepeater.css
 */
 
+/* 
 @import url(https://fonts.googleapis.com/css?family=Shojumaru);
+*/
 
 
 a, a:visited {
@@ -557,11 +561,11 @@ min-height:297px;
 
 	.server_bar {
 		background-color: #c61a00;
-		padding: 10px 20px;
+		padding: 10px 20px 8px;
 		
 		background-image:-webkit-linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);background-image:-o-linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);background-image:linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);background-size:40px 40px;
 	border-bottom: 3px solid #99230f;
-	overflow: auto;
+	overflow: hidden	;
 	height: 35px;
 	position: fixed;
 	width: 100%;
@@ -575,16 +579,34 @@ min-height:297px;
 	display: block;
 	float: left;
 	margin-right: 10px;
-	text-shadow: black 2px 2px 0;
+	text-shadow: #921000 2px 2px 0;
 	background: url(../img/alert-icon.png) no-repeat;
 	padding-left: 39px;
-	padding-top: 7px;
+	padding-top: 5px;
 	height: 25px;
 }
 
-.server_bar button {
-	margin-top: 3px;
+.server_bar .rebuild_button {
+	background-color: #921000!important;
+	border-style: none!important;
+	padding: 7px 15px!important;
+	color: #ffffff!important;
+	font-weight: bold!important;
+	font-size: 15px!important;
+	width: auto!important;
+	height: 35px!important;
+	margin: 0!important;
 }
+
+.server_bar .rebuild_button i {
+	color: #ffffff!important;
+	margin-top: 2px!important;
+}
+
+.server_bar .rebuild_button:hover {
+	background-color: #760d00!important;
+}
+
 
 .server_bar_spacer {
 	width: 100%;
@@ -691,6 +713,12 @@ tr.audio_row .button_grp {
 
 
 @media (max-width: 480px) {
+
+	.header-logo img {
+		display: none;
+	}
+
+
 }
 
 @media (max-width: 767px) {
@@ -713,17 +741,16 @@ tr.audio_row .button_grp {
 		z-index: 9999;
 	}
 
-
-
 	.server_bar span {
 		display: none;
 	}
 	
-	.server_bar button {
-		margin-right: auto;
-		margin-left: auto;
+	.server_bar .rebuild_button {
+		margin-right: auto!important;
+		margin-left: auto!important;
 		display: block;
 	}
+
 
 
 	.navbar {
@@ -743,33 +770,18 @@ tr.audio_row .button_grp {
 		position: relative;
 		left: 0;
 		top: 11px;
-		z-index: 1000;
-	
+		z-index: 1000;	
 	}
 	
 	.navbar .header-logo {
-		min-width: 150px;
-		width: 150px;
-		float: center;
-		position: relative;
-		margin-right: auto;
-		margin-left: auto;
-		top: 6px;
-	}
-	
-	.navbar .header-logo img {
-		height: auto;
-		width: auto;
-	}
-	
-	.navbar .header-logo span {
 		display: none;
 	}
+
+
 	
 	.navbar .btn-group.pull-right {
 		float: right!important;
 		position: relative;
-		top: -49px;
 		right: 0;
 		z-index: 1000;
 	
@@ -780,15 +792,41 @@ tr.audio_row .button_grp {
 	}
 
 
-	/* RESPONSIVE MENU */
-
+	/* @group RESPONSIVE MENU */
+	
 	.span2.main-menu-span {
-		top: -35px;
-		position: relative;
 		overflow: visible;
-		bottom: 0;
-		margin-bottom: -41px;
+		height: 0;
+		padding: 0;
+		margin: 0;
 	}
+
+	li.nav-header.hidden-tablet {
+		display: none;
+	}
+	
+	ul.nav.nav-tabs.nav-stacked.main-menu li {
+		font-size: 18px;
+	}
+	
+	ul.nav.nav-tabs.nav-stacked.main-menu li i {
+		margin-top: 4px;
+	}
+	
+	ul.nav.nav-tabs.nav-stacked.main-menu a {
+		padding: 12px;
+		margin: 0;
+		color: #006836;
+	}
+
+	/* Fix for Input Boxes that overlap responsive menes */
+	.input-append, .input-append input {
+		z-index: -1;
+	}
+
+	
+	/* @end */
+
 
 
 	/* FOOTER */
@@ -860,6 +898,21 @@ tr.audio_row .button_grp {
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
+
+.server_bar span {
+	display: none;
+}
+
+.server_bar .rebuild_button {
+	margin-right: auto!important;
+	margin-left: auto!important;
+	display: block;
+}
+
+
+
+
+
 }
 
 @media (min-width: 1200px) {
@@ -869,3 +922,7 @@ tr.audio_row .button_grp {
 }
 
 
+/* Hide modal initally to prevent overlapping issues of responsive menu */
+.modal {
+	display: none;	
+}
