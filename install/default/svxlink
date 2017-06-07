@@ -17,6 +17,6 @@ ENV="ASYNC_AUDIO_NOTRIGGER=1"
 # AUDIO_SETTINGS_ONSTOP="<string>"
 #   <string>: shell script command(s)
 
-if [ -r /etc/openrepeater/svxlink/svxlink_gpio.conf ]; then
-        . /etc/openrepeater/svxlink/svxlink_gpio.conf
+if [ -r /etc/openrepeater/svxlink/gpio.conf ]; then
+        . /etc/openrepeater/svxlink/gpio.conf
 fi
