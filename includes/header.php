@@ -1,4 +1,6 @@
 <?php
+include_once("includes/get_settings.php");
+	
 include_once("includes/get_modules.php"); 
 
 	$modulesActive = array();
@@ -172,28 +174,44 @@ include_once("includes/get_modules.php");
 				<div class="well nav-collapse sidebar-nav">
 					<ul class="nav nav-tabs nav-stacked main-menu">
 						<li class="nav-header hidden-tablet">Main</li>
-						<li><a class="ajax-link" href="dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
-						<li><a class="ajax-link" href="settings.php"><i class="icon-wrench"></i><span class="hidden-tablet"> General Settings</span></a></li>
-						<li><a class="ajax-link" href="identification.php"><i class="icon-bullhorn"></i><span class="hidden-tablet"> Identification</span></a></li>
-						<li><a class="ajax-link" href="courtesy_tone.php"><i class="icon-music"></i><span class="hidden-tablet"> Courtesy Tones</span></a></li>
 						<?php
-							if (!empty($modulesActive)) {
-								// Render Parent and Child menus
-								echo '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>';
-								echo ' <ul class="nav nav-pills nav-stacked">';
-								foreach ($modulesActive as $mod_id => $mod_name) {
-									echo '<li><a href="modules.php?settings='.$mod_id.'">&nbsp;&nbsp;&nbsp;<i class="icon-chevron-right"></i><span class="hidden-tablet"> '.$mod_name.'</span></a></li>';
-								}
-								echo '  </ul>';
-								echo '</li>';
-							} else {
-								// Render Parent menu only
-								echo '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a></li>';
-							}
-						?>	
-						<li><a class="ajax-link" href="ports.php"><i class="icon-cog"></i><span class="hidden-tablet"> TX/RX Ports</span></a></li>
-						<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>
-						<li><a class="ajax-link" href="dtmf.php"><i class="icon-th"></i><span class="hidden-tablet"> DTMF Reference</span></a></li>
+						switch ($settings['orp_Mode']) {
+						    case "repeater":
+						    	?>
+									<li><a class="ajax-link" href="dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
+									<li><a class="ajax-link" href="settings.php"><i class="icon-wrench"></i><span class="hidden-tablet"> General Settings</span></a></li>
+									<li><a class="ajax-link" href="identification.php"><i class="icon-bullhorn"></i><span class="hidden-tablet"> Identification</span></a></li>
+									<li><a class="ajax-link" href="courtesy_tone.php"><i class="icon-music"></i><span class="hidden-tablet"> Courtesy Tones</span></a></li>
+									<?php
+										if (!empty($modulesActive)) {
+											// Render Parent and Child menus
+											echo '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>';
+											echo ' <ul class="nav nav-pills nav-stacked">';
+											foreach ($modulesActive as $mod_id => $mod_name) {
+												echo '<li><a href="modules.php?settings='.$mod_id.'">&nbsp;&nbsp;&nbsp;<i class="icon-chevron-right"></i><span class="hidden-tablet"> '.$mod_name.'</span></a></li>';
+											}
+											echo '  </ul>';
+											echo '</li>';
+										} else {
+											// Render Parent menu only
+											echo '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a></li>';
+										}
+									?>	
+									<li><a class="ajax-link" href="ports.php"><i class="icon-cog"></i><span class="hidden-tablet"> TX/RX Ports</span></a></li>
+									<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>
+									<li><a class="ajax-link" href="dtmf.php"><i class="icon-th"></i><span class="hidden-tablet"> DTMF Reference</span></a></li>
+								<?php
+						        break;
+
+						    case "advanced":
+						    	?>
+									<li><a class="ajax-link" href="dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
+									<li><a class="ajax-link" href="advanced.php"><i class="icon-wrench"></i><span class="hidden-tablet"> Advanced</span></a></li>
+									<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>
+								<?php
+						        break;
+						}
+						?>
 					</ul>
 				</div><!--/.well -->
 			</div><!--/span-->
