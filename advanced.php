@@ -54,7 +54,6 @@ if (isset($_POST['action'])){
 
 
 	} else if ($_POST['action'] == "update_advanced") {
-		echo "UPDATE";
 		$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');
 		
 		foreach($_POST as $key=>$value){  
@@ -119,7 +118,7 @@ switch ($settings['orp_Mode']) {
 		if ($advanced['gpio_config']) {
 			$gpio_config_value = $advanced['gpio_config'];
 		} else {
-			$gpio_config_value = file_get_contents( "/etc/openrepeater/svxlink/svxlink_gpio.conf" );			
+			$gpio_config_value = file_get_contents( "/etc/openrepeater/svxlink/gpio.conf" );			
 		}
 
     	?>
@@ -143,6 +142,8 @@ switch ($settings['orp_Mode']) {
 							  </div>
 
 							<legend>Custom GPIO Config</legend>
+								  	<p>When defining your GPIO ports below, make sure to reference them in the correct locations above. Below they are just refer to by number (i.e. "22") and above they are prefixed with "gpio" (i.e. "gpio22").</p>
+
 							  <div class="control-group">
 								  <div style="width: auto; margin-right: 10px;">
 								  	<textarea name="gpio_config" class="autogrow" style="width:100%;"><?php echo $gpio_config_value; ?></textarea>
@@ -160,6 +161,25 @@ switch ($settings['orp_Mode']) {
 				</div><!--/span-->			
 			</div><!--/row-->
 			</form>   
+
+
+			<div class="row-fluid sortable">
+				<div class="box span12">
+					<div class="box-header well" data-original-title>
+						<h2><i class="icon-wrench"></i> TCL Override Notes</h2>
+					</div>
+
+					<div class="box-content">
+
+					<p>The are some sections in ORP that are handled by custom TCL override functions such as the Identification and Courtesy Tones. The advance mode does not currently have provisions to override this custom file. You can still go to those pages by clicking on the links below and updating settings as desired; however, these TCL functions currently only affect RepeaterLogic. With other logics, results might not be as expected.</p>
+					<p><a href="identification.php">Identification</a> | <a href="courtesy_tone.php">Courtesy Tones</a></p>
+
+					</div>
+
+
+				</div><!--/span-->
+			</div><!--/row-->
+
 
 
 			<form role="form" action="advanced.php" method="post" id="modeUpdate" name="modeUpdate" >
