@@ -358,9 +358,18 @@ $gpioConfigFile = trim(preg_replace('/\t+/', '', $gpioConfigFile));
 /* ---------------------------------------------------------- */
 /* WRITE CONFIGURATION & TCL FILES */
 
-file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $svx_global . $svx_logic . $svx_ports);
-file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride);
-file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $orpFileHeader . $gpioConfigFile);
+if ($settings['orp_Mode'] == 'advanced') {
+	// Process advanced mode overrides
+	include_once("../includes/get_advanced.php");
+	file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $advanced['svxlink_config']); // Overridden svxlink.confg
+	file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride); // Standard custom TCL
+	file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $advanced['gpio_config']); // Overridden GPIO config
+} else {
+	// Otherwise process as usual
+	file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $svx_global . $svx_logic . $svx_ports);
+	file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride);
+	file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $orpFileHeader . $gpioConfigFile);	
+}
 
 
 /* CLOSE DATABSE CONNECTION */
@@ -385,7 +394,7 @@ if ($_POST["return_url"]) {
 	header('location: ../login.php');		
 } else {
 	// Otherwise just go to dashboard
-#	header('location: ../dashboard.php');	
+	header('location: ../dashboard.php');	
 }	
 ?>
 
