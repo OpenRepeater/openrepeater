@@ -361,9 +361,12 @@ $gpioConfigFile = trim(preg_replace('/\t+/', '', $gpioConfigFile));
 if ($settings['orp_Mode'] == 'advanced') {
 	// Process advanced mode overrides
 	include_once("../includes/get_advanced.php");
+
 	file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $advanced['svxlink_config']); // Overridden svxlink.confg
-	file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride); // Standard custom TCL
+// 	file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride); // Standard custom TCL
+	unlink('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl'); // Delete custom TCL overrides if they exist
 	file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $advanced['gpio_config']); // Overridden GPIO config
+
 } else {
 	// Otherwise process as usual
 	file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $svx_global . $svx_logic . $svx_ports);

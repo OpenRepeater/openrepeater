@@ -163,6 +163,7 @@ switch ($settings['orp_Mode']) {
 			</form>   
 
 
+<?php /*
 			<div class="row-fluid sortable">
 				<div class="box span12">
 					<div class="box-header well" data-original-title>
@@ -179,7 +180,7 @@ switch ($settings['orp_Mode']) {
 
 				</div><!--/span-->
 			</div><!--/row-->
-
+*/ ?>
 
 
 			<form role="form" action="advanced.php" method="post" id="modeUpdate" name="modeUpdate" >
