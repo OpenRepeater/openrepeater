@@ -28,7 +28,7 @@ include('includes/header.php');
 						<h2><i class="icon-th"></i> DTMF Reference</h2>
 					</div>
 					<div class="box-content">
-						<p>This provides a quick reference of available DTMF commands that can be sent to the repeater from another radio. This list will change depending on the modules that you have enabled.</p>
+						<p>This provides a quick reference of available DTMF commands that can be sent to the repeater from another radio. This list will change depending on the modules that you have enabled. You may print this page for your own reference.</p>
 						<br>
 
 						<fieldset>
@@ -41,7 +41,7 @@ include('includes/header.php');
 							<?php if ($settings['repeaterDTMF_disable'] == 'True') { ?>
 							<a name="remoteDisable"></a>
 							<legend>Remote DMTF Disable</legend>
-							<p>You have chosen to enable the ability to remotely disable the transmitter via DTMF commands. This is useful to control operators to stop system abuse or to simple make the system inactive. Note that the pin your selected is part of the codes below</p>
+							<p>You have chosen to enable the ability to remotely disable the transmitter via DTMF commands. This is useful for control operators to stop system abuse or to simply make the system inactive. Note that the pin your selected is part of the codes below.</p>
 
 							<p><strong><?php echo $settings['repeaterDTMF_disable_pin'] ?> + 0#</strong> - <span style="color:red;">Disable Transmitter</span> <br><em>Your code + 0 (Disable) + # (Execute Command)</em></p>
 
