@@ -9,6 +9,29 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
+// Include Classes
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/classes/BoardPresets.php');
+
+if ($_POST['action'] == 'loadBoardPreset'){
+	$board_selected = $_POST['board_id'];
+
+	$board_preset = new BoardPresets();
+	$board_name = $board_preset->load_board_settings($board_selected);
+
+	$msgText = "The presets have been successfully loaded for the <strong>" . $board_name . "</strong> board.";
+	$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
+
+
+	/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
+// 	$memcache_obj = new Memcache;
+// 	$memcache_obj->connect('localhost', 11211);
+// 	$memcache_obj->set('update_settings_flag', 1, false, 0);
+}
+?>
+
+<?php
+$board_presets = new BoardPresets();
+$list_of_boards = $board_presets->get_board_definitions();
 
 $pageTitle = "Ports"; 
 
@@ -18,6 +41,7 @@ $customCSS = "page-ports.css"; // "file1.css, file2.css, ... "
 include('includes/get_sound.php');
 include('includes/header.php');
 include('includes/get_ports.php');
+	
 $dbConnection->close();
 
 
@@ -52,7 +76,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 </script>
 
 
-			<div id="alertWrap"></div>
+			<div id="alertWrap"><?php if(isset($alert)) { echo $alert; } ?></div>
 
 			<form class="form-inline" role="form" action="functions/port_db_update.php" method="post" id="portsUpdate">
 
@@ -205,13 +229,63 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 				</div><!--/span-->
 			
 			</div><!--/row-->
-
 			</form>
 			
-			<!-- Hidden field for javascript to get number of detected audio devices -->
-			<input type="hidden" id="detectedRX" value="<?php echo $device_in_count; ?>">
-			<input type="hidden" id="detectedTX" value="<?php echo $device_in_count; ?>">
-			
+			<form class="form-horizontal" role="form" action="ports.php" method="post" id="loadBoardPreset" name="loadBoardPreset" >
+			<div class="row-fluid sortable">
+				<div class="box span12">
+					<div class="box-header well" data-original-title>
+						<h2><i class="icon-tasks"></i> Board Presets</h2>
+					</div>
+					<div class="box-content">
+
+						<fieldset>
+							<div class="control-group">
+								<label class="control-label" for="board_id">Select Board Preset:</label>
+								<div class="controls">
+									<select id="board_id" name="board_id" required>
+										<option value="" selected>Select One...</option>
+										<?php
+										foreach ($list_of_boards as $boardID => $boardValues) {
+										    echo '<option value="' . $boardID . '">' . $boardValues['manufacturer'] . ' - ' . $boardValues['model'] . ' (v' . $boardValues['version'] . ')</option>';
+										}
+										?>
+									</select>
+									<input type="hidden" name="action" value="loadBoardPreset">											
+									<span class="help-inline"> Choose a supported interface board to load presets.</span>
+								</div>
+							</div>
+						</fieldset>
+
+
+						<!-- Button triggered modal -->
+						<button type="button" class="btn" data-toggle="modal" data-target="#loadPreset"><i class="icon-circle-arrow-up"></i> Load Preset</button>
+						
+						<!-- Modal - LOAD BOARD PRESET DIALOG -->
+						<div class="modal fade" id="loadPreset" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						  <div class="modal-dialog">
+						    <div class="modal-content">
+						      <div class="modal-header">
+							<h3 class="modal-title" id="myModalLabel">Load Presets?</h3>
+						      </div>
+						      <div class="modal-body">
+									Are you sure that you would like to load these presets? All the current ports will be removed and replaced by the settings of your selected board. Note that loading a preset will disable any modules that you currently have enabled. If the board that you have selected has any custom module settings, existing settings for that module may be overwrite by new settings. Proceed only if you are certain this is OK.						      </div>
+						      <div class="modal-footer">
+								<button class="btn btn-default" data-dismiss="modal">Cancel</button>
+								<button class="btn btn-success" onclick="loadBoardPreset();"><i class="icon-circle-arrow-up icon-white"></i> Load</button>
+						      </div>
+						    </div><!-- /.modal-content -->
+						  </div><!-- /.modal-dialog -->
+						</div>
+						<!-- /.modal -->
+
+					</div>
+				</div><!--/span-->			
+			</div><!--/row-->
+			</form>
+
+
+
 			
 
 
@@ -236,6 +310,11 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 			</div>
 			<!-- /.modal -->
 
+
+
+			<!-- Hidden field for javascript to get number of detected audio devices -->
+			<input type="hidden" id="detectedRX" value="<?php echo $device_in_count; ?>">
+			<input type="hidden" id="detectedTX" value="<?php echo $device_in_count; ?>">
 
 			
 <?php include('includes/footer.php'); ?>

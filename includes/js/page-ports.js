@@ -131,6 +131,13 @@ function updateDB() {
 	$('#alertWrap').html('<div class="alert alert-success">'+msgText+'</div>');
 }
 
+function loadBoardPreset() {
+	document.getElementById('loadBoardPreset').submit();
+
+	alert('submit form');
+}
+
+
 // Main Scripts
 $(window).load(function(){
 $(function() {
