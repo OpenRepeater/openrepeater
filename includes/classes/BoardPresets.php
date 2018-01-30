@@ -118,6 +118,8 @@ class BoardPresets {
 
 		$classDB->deactive_module();
 		if (count($build_module_table) > 0) { $classDB->update_preset_modules($build_module_table); }
+		
+		$classDB->set_update_flag(true);
 
 
 		return $fullBoardName;

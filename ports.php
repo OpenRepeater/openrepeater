@@ -20,18 +20,12 @@ if ($_POST['action'] == 'loadBoardPreset'){
 
 	$msgText = "The presets have been successfully loaded for the <strong>" . $board_name . "</strong> board.";
 	$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
-
-
-	/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
-// 	$memcache_obj = new Memcache;
-// 	$memcache_obj->connect('localhost', 11211);
-// 	$memcache_obj->set('update_settings_flag', 1, false, 0);
 }
 ?>
 
 <?php
 $board_presets = new BoardPresets();
-$list_of_boards = $board_presets->get_board_definitions();
+$list_of_boards = $board_presets->get_board_definitions(null);
 
 $pageTitle = "Ports"; 
 
@@ -268,8 +262,10 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 						      <div class="modal-header">
 							<h3 class="modal-title" id="myModalLabel">Load Presets?</h3>
 						      </div>
-						      <div class="modal-body">
-									Are you sure that you would like to load these presets? All the current ports will be removed and replaced by the settings of your selected board. Note that loading a preset will disable any modules that you currently have enabled. If the board that you have selected has any custom module settings, existing settings for that module may be overwrite by new settings. Proceed only if you are certain this is OK.						      </div>
+							      <div class="modal-body">
+								  	<p>Are you sure that you would like to load these presets? All the current ports will be removed and replaced by the settings of your selected board. Note that loading a preset will disable any modules that you currently have enabled. If the board that you have selected has any custom module settings, existing settings for that module may be overwrite by new settings. Proceed only if you are certain this is OK.</p>
+								  	<p><strong>Note: If you board does not have onboard sound and uses more than one USB sound card, you may need to adjust your sound settings depending on how you have the USB devices plugged into your USB ports and/or how they are detected by Linux.</strong></p>
+								</div>
 						      <div class="modal-footer">
 								<button class="btn btn-default" data-dismiss="modal">Cancel</button>
 								<button class="btn btn-success" onclick="loadBoardPreset();"><i class="icon-circle-arrow-up icon-white"></i> Load</button>

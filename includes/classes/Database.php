@@ -9,7 +9,7 @@ class Database {
 
 
 	###############################################
-	# Ports Table Functions
+	# Ports Table
 	###############################################
 
 	public function clear_ports_table() {
@@ -40,7 +40,7 @@ class Database {
 
 
 	###############################################
-	# GPIO Table Functions
+	# GPIO Table
 	###############################################
 
 	public function clear_gpio_table() {
@@ -70,7 +70,7 @@ class Database {
 
 
 	###############################################
-	# Module Table Functions
+	# Module Table
 	###############################################
 
 	public function deactive_module($id) {
@@ -100,14 +100,18 @@ class Database {
 
 
 	###############################################
-	# Memcache Flag Functions
+	# Memcache Flag
 	###############################################
 
-	public function set_flag() {
+	public function set_update_flag($flag) {
 		/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
 		$memcache_obj = new Memcache;
 		$memcache_obj->connect('localhost', 11211);
-		$memcache_obj->set('update_settings_flag', 1, false, 0);
+		if(isset($flag)) {
+			$memcache_obj->set('update_settings_flag', 1, false, 0); // Set Flag
+		} else {
+			$memcache_obj->set('update_settings_flag', 0, false, 0); // Clear Flag			
+		}
 	}
 
 
