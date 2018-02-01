@@ -30,7 +30,7 @@ foreach($module as $cur_mod) {
 		}
 		
 		// Write out Module Config File for SVXLink
-		file_put_contents('/etc/openrepeater/svxlink/svxlink.d/Module'.$cur_mod['svxlinkName'].'.conf', $orpFileHeader . build_ini($module_config_array) );
+		file_put_contents('/etc/openrepeater/svxlink/svxlink.d/Module'.$cur_mod['svxlinkName'].'.conf', $orpFileHeader . $classSVXLink->build_ini($module_config_array) );
 
 	} 
 }

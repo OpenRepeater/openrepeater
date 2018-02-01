@@ -46,9 +46,15 @@ include_once("../includes/get_ports.php");
 include_once("../includes/get_gpios.php");
 
 /* ---------------------------------------------------------- */
-/* --- FUNCTIONS --- */
+/* --- LOAD CLASSES --- */
 
-include('svxlink_update_functions/functions.php');
+require_once('../includes/classes/Database.php');
+require_once('../includes/classes/SVXLink.php');
+require_once('../includes/classes/SVXLink_GPIO.php');
+
+$classDB = new Database();
+$classSVXLink = new SVXLink($settings, $ports);
+$classSVXLinkGPIO = new SVXLink_GPIO($gpio);
 
 /* ---------------------------------------------------------- */
 /* --- BUILD MODULE SETTINGS --- */
@@ -59,8 +65,8 @@ include('svxlink_update_functions/modules_build_configs.php');
 /* --- PORT SETTINGS - Generates RX & TX sections for each port --- */
 
 foreach ($ports as $key => $val) {
-	$config_array['Rx'.$key] = built_rx($key, $ports);
-	$config_array['Tx'.$key] = built_tx($key, $ports, $settings);
+	$config_array += $classSVXLink->build_rx($key); // Build RX
+	$config_array += $classSVXLink->build_tx($key); // Build TX
 }
 
 // Note that while this section can build multipe TX & RX sections from ports table, there is no utilization of this feature yet in other logic.
@@ -148,83 +154,9 @@ namespace eval EchoLink {
 */
 
 /* ---------------------------------------------------------- */
-/* WRITE GPIO CONFIGURATION FILE */
+/* BUILD GPIO CONFIGURATION FILE */
 
-// Define GPIO pin arrays
-$gpioInHighArray = array();
-$gpioInLowArray = array();
-$gpioOutHighArray = array();
-$gpioOutLowArray = array();
-
-// Loop through each GPIO in database and assign to appropriate arrays
-foreach ($gpio as $key => $val) {	
-	if ($gpio[$key]['direction'] == "in") {
-		if ($gpio[$key]['active'] == "low") {
-			$gpioInLowArray[] = $gpio[$key]['gpio_num'];		
-		} else {
-			$gpioInHighArray[] = $gpio[$key]['gpio_num'];					
-		}
-	}
-
-	if ($gpio[$key]['direction'] == "out") {
-		if ($gpio[$key]['active'] == "low") {
-			$gpioOutLowArray[] = $gpio[$key]['gpio_num'];		
-		} else {
-			$gpioOutHighArray[] = $gpio[$key]['gpio_num'];					
-		}
-	}
-
-}
-
-// Reformat arrays into space delminated lists of gpio pin numbers
-$gpioInHighString = implode(" ", $gpioInHighArray);
-$gpioInLowString = implode(" ", $gpioInLowArray);
-$gpioOutHighString = implode(" ", $gpioOutHighArray);
-$gpioOutLowString = implode(" ", $gpioOutLowArray);
-
-// Build File Contents
-$gpioConfigFile = '
-	###############################################################################
-	#
-	# Configuration file for the SvxLink server GPIO Pins
-	#
-	###############################################################################
-
-	# GPIO system pin path
-	# RPi/odroid/nanopi/pine64 = /sys/class/gpio, orangpi = /sys/class/gpio_sw	
-	GPIO_PATH=/sys/class/gpio
-
-	# Space separated list of GPIO pins that point IN and have an
-	# Active HIGH state (3.3v = ON, 0v = OFF)
-	GPIO_IN_HIGH="'.$gpioInHighString.'"
-
-	# Space separated list of GPIO pins that point IN and have an
-	# Active LOW state (0v = ON, 3.3v = OFF)
-	GPIO_IN_LOW="'.$gpioInLowString.'"
-
-	# Space separated list of GPIO pins that point OUT and have an
-	# Active HIGH state (3.3v = ON, 0v = OFF)
-	GPIO_OUT_HIGH="'.$gpioOutHighString.'"
-
-	# Space separated list of GPIO pins that point OUT and have an
-	# Active LOW state (0v = ON, 3.3v = OFF)
-	GPIO_OUT_LOW="'.$gpioOutLowString.'"
-
-	# User that should own the GPIO device files
-	GPIO_USER="svxlink"
-
-	# Group for the GPIO device files
-	GPIO_GROUP="daemon"
-
-	# File access mode for the GPIO device files
-	GPIO_MODE="0664"
-';	
-
-// TODO: Need to add function to check existing GPIO pins in /sys/class/gpio 
-// and see if new pins in ports table exist since system boot and if not add them.
-
-#Clean up tabs/white spaces
-$gpioConfigFile = trim(preg_replace('/\t+/', '', $gpioConfigFile));
+$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();
 
 /* ---------------------------------------------------------- */
 /* WRITE CONFIGURATION & TCL FILES */
@@ -240,7 +172,7 @@ if ($settings['orp_Mode'] == 'advanced') {
 
 } else {
 	// Otherwise process as usual
-	file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . build_ini($config_array));
+	file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $classSVXLink->build_ini($config_array));
 	file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride);
 	file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $orpFileHeader . $gpioConfigFile);	
 }
@@ -248,17 +180,14 @@ if ($settings['orp_Mode'] == 'advanced') {
 
 
 
-// echo '<pre>' . $orpFileHeader . build_ini($config_array) . '</pre>';
-
-
 /* CLOSE DATABSE CONNECTION */
 $dbConnection->close();
 
 
 /* CLEAR SETTINGS UPDATE FLAG TO CLEAR BANNER AT TOP OF PAGE */
-$memcache_obj = new Memcache;
-$memcache_obj->connect('localhost', 11211);
-$memcache_obj->set('update_settings_flag', 0, false, 0);
+$classDB->set_update_flag(false);
+
+
 
 $shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
 
