@@ -53,13 +53,8 @@ require_once('../includes/classes/SVXLink.php');
 require_once('../includes/classes/SVXLink_GPIO.php');
 
 $classDB = new Database();
-$classSVXLink = new SVXLink($settings, $ports);
+$classSVXLink = new SVXLink($settings, $ports, $module);
 $classSVXLinkGPIO = new SVXLink_GPIO($gpio);
-
-/* ---------------------------------------------------------- */
-/* --- BUILD MODULE SETTINGS --- */
-
-include('svxlink_update_functions/modules_build_configs.php');
 
 /* ---------------------------------------------------------- */
 /* --- PORT SETTINGS - Generates RX & TX sections for each port --- */
@@ -165,16 +160,15 @@ if ($settings['orp_Mode'] == 'advanced') {
 	// Process advanced mode overrides
 	include_once("../includes/get_advanced.php");
 
-	file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $advanced['svxlink_config']); // Overridden svxlink.confg
-// 	file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride); // Standard custom TCL
+	$classSVXLink->write_config($advanced['svxlink_config'], 'svxlink.conf', 'text'); // Overridden svxlink.confg
 	unlink('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl'); // Delete custom TCL overrides if they exist
-	file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $advanced['gpio_config']); // Overridden GPIO config
+	$classSVXLink->write_config($advanced['gpio_config'], 'gpio.conf', 'text'); // Overridden GPIO config
 
 } else {
 	// Otherwise process as usual
-	file_put_contents('/etc/openrepeater/svxlink/svxlink.conf', $orpFileHeader . $classSVXLink->build_ini($config_array));
-	file_put_contents('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl', $orpFileHeader . $tclOverride);
-	file_put_contents('/etc/openrepeater/svxlink/gpio.conf', $orpFileHeader . $gpioConfigFile);	
+	$classSVXLink->write_config($config_array, 'svxlink.conf', 'ini');
+	$classSVXLink->write_config($tclOverride, 'CustomLogic.tcl', 'text');
+	$classSVXLink->write_config($gpioConfigFile, 'gpio.conf', 'text');
 }
 
 

@@ -7,7 +7,8 @@
 $config_array[$useLogic]['TYPE'] = 'Repeater';
 $config_array[$useLogic]['RX'] = 'Rx1';
 $config_array[$useLogic]['TX'] = 'Tx1';
-$config_array[$useLogic][$modulesListKey] = $modulesListValue;
+//$config_array[$useLogic][$modulesListKey] = $modulesListValue;
+$config_array[$useLogic] += $classSVXLink->build_module_list();
 $config_array[$useLogic]['CALLSIGN'] = $settings['callSign'];
 $config_array[$useLogic]['SHORT_IDENT_INTERVAL'] = $settings['ID_Short_IntervalMin'];
 $config_array[$useLogic]['LONG_IDENT_INTERVAL'] = $settings['ID_Long_IntervalMin'];
