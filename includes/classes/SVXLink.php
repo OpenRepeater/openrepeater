@@ -72,16 +72,32 @@ class SVXLink {
 						'TIMEOUT' => '60',				
 					];
 				}
-
-					print_r($module_config_array);
-					echo '<hr>';
-				
 								
 				// Write out Module Config File for SVXLink
 				$this->write_config($module_config_array, 'Module'.$cur_mod['svxlinkName'].'.conf', 'ini');
 		
 			} 
 		}
+	}
+	
+	
+	
+	###############################################
+	# Build Global Section
+	###############################################
+
+	public function build_global($logics) {
+		if (is_array($logics)) { $logics = implode(",", $logics); } // Convert array to CSV.
+		
+		$global_array['MODULE_PATH'] = '/usr/lib/arm-linux-gnueabihf/svxlink';
+		$global_array['LOGICS'] = $logics;
+		$global_array['CFG_DIR'] = 'svxlink.d';
+		$global_array['TIMESTAMP_FORMAT'] = '"%c"';
+		$global_array['CARD_SAMPLE_RATE'] = '16000';
+		//$global_array['LOCATION_INFO'] = 'LocationInfo';
+		//$global_array['LINKS'] = 'LinkToR4';
+		
+		return $global_array;
 	}
 	
 	
