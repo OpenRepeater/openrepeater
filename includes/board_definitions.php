@@ -16,9 +16,9 @@ $board_definitions[] = [
 			'rxGPIO' => '26',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '506',
-			'txGPIO_active' => 'low',
-			'rxAudioDev' => 'alsa:plughw:1|0',
-			'txAudioDev' => 'alsa:plughw:1|1',
+			'txGPIO_active' => 'high',
+			'rxAudioDev' => 'alsa:plughw:0|1',
+			'txAudioDev' => 'alsa:plughw:0|1',
 		],
 		2 => [
 			'portLabel' => 'Port 2',
@@ -26,9 +26,9 @@ $board_definitions[] = [
 			'rxGPIO' => '23',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '507',
-			'txGPIO_active' => 'low',
-			'rxAudioDev' => 'alsa:plughw:1|0',
-			'txAudioDev' => 'alsa:plughw:1|1',
+			'txGPIO_active' => 'high',
+			'rxAudioDev' => 'alsa:plughw:0|0',
+			'txAudioDev' => 'alsa:plughw:0|0',
 		]
 	]
 ];
@@ -56,9 +56,9 @@ $board_definitions[] = [
 			'rxGPIO' => '26',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '506',
-			'txGPIO_active' => 'low',
-			'rxAudioDev' => 'alsa:plughw:1|0',
-			'txAudioDev' => 'alsa:plughw:1|1',
+			'txGPIO_active' => 'high',
+			'rxAudioDev' => 'alsa:plughw:0|1',
+			'txAudioDev' => 'alsa:plughw:0|1',
 		]
 	]	
 ];
@@ -163,6 +163,45 @@ Link Port TX GPIO: 18 high
 */
 
 
+
+#################################################################################
+# ICS Controllers - Pi Repeater 2X PROTOTYPE
+#################################################################################
+
+$board_definitions[] = [
+	'manufacturer' => 'ICS Controllers',
+	'model' => 'Pi Repeater 2X',
+	'version' => '2.1 - PROTOTYPE',
+	'ports' => [
+		1 => [
+			'portLabel' => 'Port 1',
+			'rxMode' => 'gpio',
+			'rxGPIO' => '26',
+			'rxGPIO_active' => 'low',
+			'txGPIO' => '506',
+			'txGPIO_active' => 'low',
+			'rxAudioDev' => 'alsa:plughw:0|1',
+			'txAudioDev' => 'alsa:plughw:0|1',
+		],
+		2 => [
+			'portLabel' => 'Port 2',
+			'rxMode' => 'gpio',
+			'rxGPIO' => '23',
+			'rxGPIO_active' => 'low',
+			'txGPIO' => '507',
+			'txGPIO_active' => 'low',
+			'rxAudioDev' => 'alsa:plughw:0|0',
+			'txAudioDev' => 'alsa:plughw:0|0',
+		]
+	]
+];
+/*
+(Not Yet Supported by ORP)
+CTCSS1: 24 low
+CTCSS2: 25 low
+CTCSS_ENC1: 13 low
+CTCSS2_ENC: 27 low
+*/
 
 
 
