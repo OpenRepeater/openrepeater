@@ -4,11 +4,7 @@
 
 /*
 This script reads settings from the OpenRepeater database and builds new configuration
-files for SVXLink. It currently builds the following configuration files:
-- svxlink.conf
-- ModuleEchoLink.conf
-- local TCL overrides
-- svxlink_gpio.conf
+files for SVXLink. 
 */
 
 /* ---------------------------------------------------------- */
@@ -40,130 +36,102 @@ include_once("../includes/get_gpios.php");
 
 require_once('../includes/classes/Database.php');
 require_once('../includes/classes/SVXLink.php');
+require_once('../includes/classes/SVXLink_TCL.php');
 require_once('../includes/classes/SVXLink_GPIO.php');
 
 $classDB = new Database();
 $classSVXLink = new SVXLink($settings, $ports, $module);
+$classSVXLinkTCL = new SVXLink_TCL($settings);
 $classSVXLinkGPIO = new SVXLink_GPIO($gpio);
-
-/* ---------------------------------------------------------- */
-/* --- PORT SETTINGS - Generates RX & TX sections for each port --- */
-
-foreach ($ports as $key => $val) {
-	$config_array += $classSVXLink->build_rx($key); // Build RX
-	$config_array += $classSVXLink->build_tx($key); // Build TX
-}
-
-// Note that while this section can build multipe TX & RX sections from ports table, there is no utilization of this feature yet in other logic.
 
 /* ---------------------------------------------------------- */
 /* --- LOGIC SETTINGS --- */
 
+$classSVXLink->delete_custom_evnets(); // Purge Previous Custom Event Files
+
+switch ($settings['orp_Mode']) {
+
+	###############################################
+	# Repeater Setup
+	###############################################
+
+    case "repeater":
+		$useLogic = 'RepeaterLogic';
+
+		foreach ($ports as $key => $val) {
+			// Build Ports
+			$config_array += $classSVXLink->build_rx($key); // Build RX
+			$config_array += $classSVXLink->build_tx($key); // Build TX
 
 
-	switch ($settings['orp_Mode']) {
-	    case "repeater":
-			$useLogic = 'RepeaterLogic';
-			include('svxlink_update_functions/main_repeater_logic.php');
-	        break;
-	    case "simplex":
-			$useLogic = 'SimplexLogic';
-			include('svxlink_update_functions/main_simplex_logic.php');
-	        break;
-	}
+			// Build Logic
+			$new_logic_name = 'ORP_' . $useLogic . $key;
+			$new_logic_filename = $new_logic_name . '.tcl';
 
-/*
-include('svxlink_update_functions/main_link_logic.php');
-$svx_logic .= $svx_link_logic; // Append link logic to repeater logic
-*/
+			$config_array += $classSVXLink->build_logic_repeater($new_logic_name, $key);
 
-
-/* --- GLOBAL SETTINGS --- */
-	$config_array['GLOBAL'] += $classSVXLink->build_global($useLogic);
-
-	
-
-/* ---------------------------------------------------------- */
-/* BUILD CUSTOM TCL OVERRIDES...ie COURTESY TONES, IDENTIFICATION, ETC */
-
-// Define Strings Variables for TCL Namespaces. 
-$tclLogicNameSpace = '';
-$tclRepeaterLogicNameSpace = '';
-
-// Include PHP files that build custom TCL Logic for the namespaces below
-include('svxlink_update_functions/tcl_identification.php');
-include('svxlink_update_functions/tcl_courtesy_tones.php');
-include('svxlink_update_functions/tcl_TEMP.php');
-
-// TCL Logic Namespace Override
-$tclOverride = '
-### Overridden Core Logic event handlers created by OpenRepeater
-namespace eval Logic {
-' . $tclLogicNameSpace . '
-# end of namespace
-}
-
-
-### Overridden Repeater Logic event handlers created by OpenRepeater
-namespace eval RepeaterLogic {
-' . $tclRepeaterLogicNameSpace . '
-# end of namespace
-}
-
-';
-
-/*
-namespace eval EchoLink {
-
-		# Executed when an incoming connection is accepted
-		proc remote_greeting {call} {
-			playSilence 1000;
-			playFile "/usr/share/svxlink/sounds/en_US/EchoLink/greeting.wav"
-#			playMsg "greeting";
+			$new_event = $classSVXLinkTCL->alias_RepeaterLogic($new_logic_name);
+			$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
 		}
 
- end of namespace
+
+
+		// GLOBAL SETTINGS
+		$config_array['GLOBAL'] += $classSVXLink->build_global();
+
+		// Build GPIO Config
+		$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();
+
+		# Insert TCL Overrides
+		$tclOverride = $classSVXLinkTCL->build_custom_tcl();
+
+
+		// WRITE CONFIGURATION & TCL FILES
+		$classSVXLink->write_config($config_array, 'svxlink.conf', 'ini');
+		$classSVXLink->write_config($tclOverride, 'CustomLogic.tcl', 'text');
+		$classSVXLink->write_config($gpioConfigFile, 'gpio.conf', 'text');
+
+        break;
+
+
+	###############################################
+	# Simplex Setup
+	###############################################
+
+    case "simplex":
+		$useLogic = 'SimplexLogic';
+		include('svxlink_update_functions/main_simplex_logic.php');
+		
+		### WORK IN PROGRESS
+		
+        break;
+
+
+	###############################################
+	# Advanced Setup
+	###############################################
+
+    case "advanced":
+		// Process advanced mode overrides
+		include_once("../includes/get_advanced.php");
+	
+		// WRITE CONFIGURATION & TCL FILES
+		$classSVXLink->write_config($advanced['svxlink_config'], 'svxlink.conf', 'text'); // Overridden svxlink.confg
+		unlink('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl'); // Delete custom TCL overrides if they exist
+		$classSVXLink->write_config($advanced['gpio_config'], 'gpio.conf', 'text'); // Overridden GPIO config
+        break;
+
 }
-*/
 
+	
 /* ---------------------------------------------------------- */
-/* BUILD GPIO CONFIGURATION FILE */
-
-$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();
-
-/* ---------------------------------------------------------- */
-/* WRITE CONFIGURATION & TCL FILES */
-
-if ($settings['orp_Mode'] == 'advanced') {
-	// Process advanced mode overrides
-	include_once("../includes/get_advanced.php");
-
-	$classSVXLink->write_config($advanced['svxlink_config'], 'svxlink.conf', 'text'); // Overridden svxlink.confg
-	unlink('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl'); // Delete custom TCL overrides if they exist
-	$classSVXLink->write_config($advanced['gpio_config'], 'gpio.conf', 'text'); // Overridden GPIO config
-
-} else {
-	// Otherwise process as usual
-	$classSVXLink->write_config($config_array, 'svxlink.conf', 'ini');
-	$classSVXLink->write_config($tclOverride, 'CustomLogic.tcl', 'text');
-	$classSVXLink->write_config($gpioConfigFile, 'gpio.conf', 'text');
-}
-
-/*
-echo '<pre>';
-print_r($config_array);
-echo '</pre>';
-*/
-
+/* FINISH UP */
 
 /* CLOSE DATABSE CONNECTION */
 $dbConnection->close();
 
-
 /* CLEAR SETTINGS UPDATE FLAG TO CLEAR BANNER AT TOP OF PAGE */
 $classDB->set_update_flag(false);
-
-
 
 $shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
 

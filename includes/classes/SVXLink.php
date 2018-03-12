@@ -9,6 +9,7 @@ class SVXLink {
     private $portsArray;
 	private $modulesArray;
 	private $modulesListArray;
+	private $logics = array();
 	private $orpFileHeader;
     private $web_path = '/var/www/openrepeater/';	
 
@@ -86,14 +87,14 @@ class SVXLink {
 	# Build Global Section
 	###############################################
 
-	public function build_global($logics) {
-		if (is_array($logics)) { $logics = implode(",", $logics); } // Convert array to CSV.
+	public function build_global() {
+		$logicsList = implode(",", $this->logics); // Convert array to CSV.
 		
 		$global_array['MODULE_PATH'] = '/usr/lib/arm-linux-gnueabihf/svxlink';
-		$global_array['LOGICS'] = $logics;
+		$global_array['LOGICS'] = $logicsList;
 		$global_array['CFG_DIR'] = 'svxlink.d';
 		$global_array['TIMESTAMP_FORMAT'] = '"%c"';
-		$global_array['CARD_SAMPLE_RATE'] = '16000';
+		$global_array['CARD_SAMPLE_RATE'] = '48000';
 		//$global_array['LOCATION_INFO'] = 'LocationInfo';
 		//$global_array['LINKS'] = 'LinkToR4';
 		
@@ -115,7 +116,7 @@ class SVXLink {
 			'AUDIO_CHANNEL' => $audio_dev[1],
 		];
 	
-		if (strtolower($portsArray[$curPort]['rxMode']) == 'vox') {
+		if (strtolower($this->portsArray[$curPort]['rxMode']) == 'vox') {
 			// VOX Squelch Mode
 			$rx_array['Rx'.$curPort] += [
 				'SQL_DET' => 'VOX',
@@ -169,7 +170,7 @@ class SVXLink {
 			'PTT_PIN' => 'gpio'.$this->portsArray[$curPort]['txGPIO'],
 			'PTT_HANGTIME' => ($this->settingsArray['txTailValueSec'] * 1000),
 			'TIMEOUT' => '300',
-			'TX_DELAY' => '500',
+			'TX_DELAY' => '50',
 		];
 	
 		if ($this->settingsArray['txTone']) {
@@ -187,6 +188,50 @@ class SVXLink {
 		];
 	
 		return $tx_array;
+	}
+
+
+
+	###############################################
+	# Build Logic - REPEATER
+	###############################################
+
+	public function build_logic_repeater($logicName,$curPort) {
+		$this->logics[] = $logicName; // Add this logic to list for Globals Section
+
+		$logic_array[$logicName] = [
+			'TYPE' => 'Repeater',
+			'RX' => 'Rx' . $curPort,
+			'TX' => 'Tx' . $curPort,
+		];
+
+		$logic_array[$logicName] += $this->build_module_list();
+
+		$logic_array[$logicName] += [
+			'CALLSIGN' => $this->settingsArray['callSign'],
+			'SHORT_IDENT_INTERVAL' => $this->settingsArray['ID_Short_IntervalMin'],
+			'LONG_IDENT_INTERVAL' => $this->settingsArray['ID_Long_IntervalMin'],
+			'EVENT_HANDLER' => '/usr/share/svxlink/events.tcl',
+			'DEFAULT_LANG' => 'en_US',
+			'RGR_SOUND_DELAY' => '1',
+			'REPORT_CTCSS' => $this->settingsArray['rxTone'],
+			'TX_CTCSS' => 'ALWAYS',
+			'MACROS' => 'Macros',
+			'FX_GAIN_NORMAL' => '0',
+			'FX_GAIN_LOW' => '-12',
+			'IDLE_TIMEOUT' => '1',
+			'OPEN_ON_SQL' => '1',
+			'OPEN_SQL_FLANK' => 'OPEN',
+			'IDLE_SOUND_INTERVAL' => '0',
+		];
+		
+		if ($this->settingsArray['repeaterDTMF_disable'] == 'True') {
+			$logic_array[$logicName] += [
+				'ONLINE_CMD' => $this->settingsArray['repeaterDTMF_disable_pin'],
+			];
+		}
+	
+		return $logic_array;
 	}
 
 
@@ -240,6 +285,9 @@ class SVXLink {
 		    case (strpos($filename, "Module") === 0): // Begins with Module
 				$filepath = '/etc/openrepeater/svxlink/svxlink.d/' . $filename;
 		        break;
+		    case (strpos($filename, "ORP_") === 0): // Event beginning with ORP_
+				$filepath = '/usr/share/svxlink/events.d/' . $filename;
+		        break;
 		}
 
 		file_put_contents($filepath, $file_output );
@@ -247,6 +295,14 @@ class SVXLink {
 
 
 
+	###############################################
+	# Delete ALL Custom Events
+	###############################################
+
+	public function delete_custom_evnets() {
+		$files = glob('/usr/share/svxlink/events.d/' . 'ORP_*');
+		array_map('unlink', $files);
+	}
 
 
 }
