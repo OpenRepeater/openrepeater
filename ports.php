@@ -210,7 +210,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 						<br>
 						
 						<div class="alert alert-info">
-						<strong>NOTE: </strong> While you can set more than one port in here, only the first port is currently supported. We are waiting on some updates to the core code so we can build our logic to handle more than one port.
+						<strong>NOTE: </strong> You may define more than one port. Currently, the 1<sup>st</sup> port will be defined as the primary repeater logic, any additional ports will be defined as simplex links. More options will be made available in upcoming versions.
 						</div>
 
 

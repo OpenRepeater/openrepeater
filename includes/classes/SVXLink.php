@@ -10,6 +10,7 @@ class SVXLink {
 	private $modulesArray;
 	private $modulesListArray;
 	private $logics = array();
+	private $links = array();
 	private $orpFileHeader;
     private $web_path = '/var/www/openrepeater/';	
 
@@ -96,7 +97,12 @@ class SVXLink {
 		$global_array['TIMESTAMP_FORMAT'] = '"%c"';
 		$global_array['CARD_SAMPLE_RATE'] = '48000';
 		//$global_array['LOCATION_INFO'] = 'LocationInfo';
-		//$global_array['LINKS'] = 'LinkToR4';
+
+		// Add Link Sections if defined
+		if (!empty($this->links)) {
+			$linksList = implode(",", $this->links); // Convert array to CSV.
+			$global_array['LINKS'] = $linksList;
+		}
 		
 		return $global_array;
 	}
@@ -110,7 +116,7 @@ class SVXLink {
 	public function build_rx($curPort) {
 		$audio_dev = explode("|", $this->portsArray[$curPort]['rxAudioDev']);
 		
-		$rx_array['Rx'.$curPort] = [
+		$rx_array['RX_Port'.$curPort] = [
 			'TYPE' => 'Local',
 			'AUDIO_DEV' => $audio_dev[0],
 			'AUDIO_CHANNEL' => $audio_dev[1],
@@ -118,7 +124,7 @@ class SVXLink {
 	
 		if (strtolower($this->portsArray[$curPort]['rxMode']) == 'vox') {
 			// VOX Squelch Mode
-			$rx_array['Rx'.$curPort] += [
+			$rx_array['RX_Port'.$curPort] += [
 				'SQL_DET' => 'VOX',
 				'VOX_FILTER_DEPTH' => '150',
 				'VOX_THRESH' => '300',
@@ -127,14 +133,14 @@ class SVXLink {
 	
 		} else {
 			// COS Squelch Mode
-			$rx_array['Rx'.$curPort] += [
+			$rx_array['RX_Port'.$curPort] += [
 				'SQL_DET' => 'GPIO',
 				'GPIO_SQL_PIN' => 'gpio' . $this->portsArray[$curPort]['rxGPIO'],
 				'SQL_HANGTIME' => '10',
 			];
 		}
 	
-		$rx_array['Rx'.$curPort] += [
+		$rx_array['RX_Port'.$curPort] += [
 			'SQL_START_DELAY' => '1',
 			'SQL_DELAY' => '10',
 			'SIGLEV_SLOPE' => '1',
@@ -161,7 +167,7 @@ class SVXLink {
 	public function build_tx($curPort) {
 		$audio_dev = explode("|", $this->portsArray[$curPort]['txAudioDev']);
 	
-		$tx_array['Tx'.$curPort] = [
+		$tx_array['TX_Port'.$curPort] = [
 			'TYPE' => 'Local',
 			'AUDIO_DEV' => $audio_dev[0],
 			'AUDIO_CHANNEL' => $audio_dev[1],
@@ -174,13 +180,13 @@ class SVXLink {
 		];
 	
 		if ($this->settingsArray['txTone']) {
-			$tx_array['Tx'.$curPort] += [
+			$tx_array['TX_Port'.$curPort] += [
 				'CTCSS_FQ' => $this->settingsArray['txTone'],
 				'CTCSS_LEVEL' => '9',
 			];
 		}
 	
-		$tx_array['Tx'.$curPort] += [
+		$tx_array['TX_Port'.$curPort] += [
 			'PREEMPHASIS' => '0',
 			'DTMF_TONE_LENGTH' => '100',
 			'DTMF_TONE_SPACING' => '50',
@@ -201,8 +207,8 @@ class SVXLink {
 
 		$logic_array[$logicName] = [
 			'TYPE' => 'Repeater',
-			'RX' => 'Rx' . $curPort,
-			'TX' => 'Tx' . $curPort,
+			'RX' => 'RX_Port' . $curPort,
+			'TX' => 'TX_Port' . $curPort,
 		];
 
 		$logic_array[$logicName] += $this->build_module_list();
@@ -231,9 +237,71 @@ class SVXLink {
 			];
 		}
 	
+	
 		return $logic_array;
 	}
 
+
+
+	###############################################
+	# Build Logic - SIMPLEX
+	###############################################
+
+	public function build_logic_simplex($logicName,$curPort) {
+		$this->logics[] = $logicName; // Add this logic to list for Globals Section
+
+		$logic_array[$logicName] = [
+			'TYPE' => 'Simplex',
+			'RX' => 'RX_Port' . $curPort,
+			'TX' => 'TX_Port' . $curPort,
+		];
+
+		// $logic_array[$logicName] += $this->build_module_list();
+
+		$logic_array[$logicName] += [
+			'CALLSIGN' => $this->settingsArray['callSign'],
+			'SHORT_IDENT_INTERVAL' => $this->settingsArray['ID_Short_IntervalMin'],
+			'LONG_IDENT_INTERVAL' => $this->settingsArray['ID_Long_IntervalMin'],
+			'EVENT_HANDLER' => '/usr/share/svxlink/events.tcl',
+			'DEFAULT_LANG' => 'en_US',
+			'RGR_SOUND_DELAY' => '1',
+			'REPORT_CTCSS' => $this->settingsArray['rxTone'],
+			'TX_CTCSS' => 'ALWAYS',
+			'MACROS' => 'Macros',
+			'FX_GAIN_NORMAL' => '0',
+			'FX_GAIN_LOW' => '-12',
+			'IDLE_TIMEOUT' => '1',
+			'OPEN_ON_SQL' => '1',
+			'OPEN_SQL_FLANK' => 'OPEN',
+			'IDLE_SOUND_INTERVAL' => '0',
+		];
+		
+		/*
+		if ($this->settingsArray['repeaterDTMF_disable'] == 'True') {
+			$logic_array[$logicName] += [
+				'ONLINE_CMD' => $this->settingsArray['repeaterDTMF_disable_pin'],
+			];
+		}
+		*/	
+	
+		return $logic_array;
+	}
+
+
+	###############################################
+	# Build LINK Section
+	###############################################
+
+	public function build_link($linkName, $logicsArray) {
+		$this->links[] = $linkName; // Add this link section to link list for declaration in Globals Section
+
+		$link_array[$linkName] = [
+			'CONNECT_LOGICS' => implode(",", $logicsArray),
+			'DEFAULT_ACTIVE' => '1',
+		];
+
+		return $link_array;
+	}
 
 
 	###############################################

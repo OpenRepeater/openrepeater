@@ -31,6 +31,20 @@ class SVXLink_TCL {
 		return $tclOverride;
 	}
 
+
+
+	###############################################
+	# Simplex Logic
+	###############################################
+
+	public function alias_SimplexLogic($new_namespace) {
+		$orig_file = file_get_contents("/usr/share/svxlink/events.d/SimplexLogic.tcl");
+		$new_file = str_replace("SimplexLogic", $new_namespace, $orig_file);
+		return $new_file;
+	}
+
+
+
 	###############################################
 	# Repeater Logic
 	###############################################

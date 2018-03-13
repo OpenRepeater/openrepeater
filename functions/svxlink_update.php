@@ -56,7 +56,6 @@ switch ($settings['orp_Mode']) {
 	###############################################
 
     case "repeater":
-		$useLogic = 'RepeaterLogic';
 
 		foreach ($ports as $key => $val) {
 			// Build Ports
@@ -64,16 +63,41 @@ switch ($settings['orp_Mode']) {
 			$config_array += $classSVXLink->build_tx($key); // Build TX
 
 
-			// Build Logic
-			$new_logic_name = 'ORP_' . $useLogic . $key;
-			$new_logic_filename = $new_logic_name . '.tcl';
+			// If there is more than one port, build 1st port as repeater, and additional ports as simplex links
+			if ($key == 1) {
+				// Build Repeater Logic
+				$new_logic_name = 'ORP_RepeaterLogic_Port' . $key;
+				$new_logic_filename = $new_logic_name . '.tcl';
+	
+				$config_array += $classSVXLink->build_logic_repeater($new_logic_name, $key);
+	
+				$new_event = $classSVXLinkTCL->alias_RepeaterLogic($new_logic_name);
+				$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
+				
+				$logicListArray = array($new_logic_name);
+			
+				
+			} else {
+				// Build Link/Simplex Logic
+				$new_logic_name = 'ORP_SimplexLogic_Port' . $key;
+				$new_logic_filename = $new_logic_name . '.tcl';
+	
+				$config_array += $classSVXLink->build_logic_simplex($new_logic_name, $key);
+	
+				$new_event = $classSVXLinkTCL->alias_SimplexLogic($new_logic_name);
+				$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
 
-			$config_array += $classSVXLink->build_logic_repeater($new_logic_name, $key);
-
-			$new_event = $classSVXLinkTCL->alias_RepeaterLogic($new_logic_name);
-			$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
+				$logicListArray[] = $new_logic_name;
+					
+			}
+			
 		}
 
+
+		if (count($logicListArray) > 1) {
+			// BUILD LINK SECTION
+			$config_array += $classSVXLink->build_link( 'LinkSection', $logicListArray );			
+		}
 
 
 		// GLOBAL SETTINGS
@@ -100,7 +124,6 @@ switch ($settings['orp_Mode']) {
 
     case "simplex":
 		$useLogic = 'SimplexLogic';
-		include('svxlink_update_functions/main_simplex_logic.php');
 		
 		### WORK IN PROGRESS
 		
