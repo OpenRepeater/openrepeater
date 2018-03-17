@@ -1,3 +1,18 @@
+function setCourtesyTone (fileName, activeNum, totalFiles, fileLabel) {
+	$('#courtesy').val(fileName);
+	$('#current_tone').html(fileLabel);
+
+	for (i = 1; i <= totalFiles; i++) {
+		$('#courtesyToneRow'+i).removeClass('active');
+	}
+
+	$('#courtesyToneRow'+activeNum).addClass('active');
+	updateCourtesyTone ();
+}
+
+
+
+
 $(function() {
     if($('#courtesyMode').val() == 'disabled') {
         $('#disabled').show(); 
@@ -46,3 +61,26 @@ $(function() {
 
     });
 });
+
+
+// UPDATE SUB FORM VIA AJAX
+// ----------------------------------------------------------
+
+function updateCourtesyTone () {
+    //submit changes to db
+    var $form = $("#courtesyToneUpdate");
+    var method = $form.attr("method") ? $form.attr("method").toUpperCase() : "GET";
+    $.ajax({
+        url: $form.attr("action"),
+        data: $form.serialize(),
+        type: method,
+        success: function() {
+			$('.server_bar_wrap').show(); 
+        }
+    });
+}
+
+$('#courtesyToneUpdate').on('change', function() {
+	updateCourtesyTone ();
+});
+
