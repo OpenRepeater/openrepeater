@@ -22,56 +22,86 @@ include('includes/header.php');
 <div id="realtimechart" style="height:190px;"></div>
 -->
 <?php 
-include('includes/sys_info.php');
+	
+require_once('includes/classes/System.php');
+$classSystem = new System();
+	
 include('functions/ajax_system.php');
 ?>
+
+
+			<?php 
+				$systemTime = $classSystem->system_time();
+				$systemArray = $classSystem->system_info();
+			?>
+			
+			<script type="text/javascript">
+				var timeString = "<?=$systemTime['datetime'];?>";
+				var startTime = new Date(timeString);
+			</script>
+
 			<div class="row-fluid sortable">
 				<div class="box span4">
 					<div class="box-header well">
 						<h2><i class="icon-globe"></i> Core System Info</h2>
 					</div>
 					<div class="box-content">
-						<div id="info_label">Hostname:</div>
-						<div id="info_value"><?php echo $host; ?></div>
-						<div id="info_clear"></div>
+
+						<div class="info_label">Hostname:</div>
+						<div class="info_value" id="host"><?php echo $systemArray['host']; ?></div>
+						<div class="info_clear"></div>
 						
-						<div id="info_label">System Time:</div>
-						<div id="info_value"><?php echo $current_time; ?></div>
-						<div id="info_clear"></div>
+						<div class="info_label">System Time:</div>
+						<div class="info_value">
+							<span id="cur_date"><?=$systemTime['date'];?></span><br>
+							<span id="cur_time"><?=$systemTime['time'];?></span> <?=$systemTime['tz_short'];?>
+						</div>
+						<div class="info_clear"></div>
 					
-						<div id="info_label">Kernel:</div>
-						<div id="info_value"><?php echo $system . ' ' . $kernel; ?></div>
-						<div id="info_clear"></div>
+						<div class="info_label">Kernel:</div>
+						<div class="info_value" id="kernel"><?php echo $systemArray['kernel']; ?></div>
+						<div class="info_clear"></div>
 					
-						<div id="info_label">CPUs/Cores:</div>
-						<div id="info_value"><?php echo getCPU_Type(); ?></div>
-						<div id="info_clear"></div>
+						<div class="info_label">CPUs/Cores:</div>
+						<div class="info_value" id="cpu_cores"><?php echo $systemArray['cpu_cores']; ?></div>
+						<div class="info_clear"></div>
 					
-						<div id="info_label">CPU Frequency:</div>
-						<div id="info_value"><?php echo getCPU_Speed(); ?></div>
-						<div id="info_clear"></div>
+						<div class="info_label">CPU Frequency:</div>
+						<div class="info_value" id="cpu_speed"><?php echo $systemArray['cpu_speed']; ?></div>
+						<div class="info_clear"></div>
 					
-						<div id="info_label">CPU Load:</div>
-						<div id="info_value"><?php echo getCPU_Load(); ?></div>
-						<div id="info_clear"></div>
+						<div class="mem_group">
+							<div>
+								<span class="bar_left">
+									<strong>CPU Load:</strong>
+								</span>
+								<span class="bar_right">
+									<span id="cpu_load"><?php echo $systemArray['cpu_load']; ?></span>
+								</span>
+							</div>
+							<div class="bar_wrap">
+								<div id="bar5" style = "width:<?php echo $systemArray['cpu_load']; ?>;"></div>
+							</div>
+						</div>
+
+
 						
 						<?php
 							// Hide on boards that don't support this
-							$cpuTempF = getCPU_Temp('F');
-							$cpuTempC = getCPU_Temp('C');
-							
-							if ($cpuTempF != '32°F') { ?>
-								<div id="info_label">CPU Temperature:</div>
-								<div id="info_value"><?php echo $cpuTempF; ?> / <?php echo $cpuTempC; ?></div>
-								<div id="info_clear"></div>
+							if ($systemArray['cpuTempF'] != '32°F') { ?>
+								<div class="info_label">CPU Temperature:</div>
+								<div class="info_value" id="cpuTempBoth"><?php echo $systemArray['cpuTempBoth']; ?></div>
+								<div class="info_clear"></div>
 							<?php	
 							} // close if
 						?>
 							
 					
-						<div id="info_label">Uptime:</div>
-						<div id="info_value"><?php echo getUptime(); ?></div>
-						<div id="info_clear"></div>
+						<div class="info_label">Uptime:</div>
+						<div class="info_value" id="uptime"><?php echo $systemArray['uptime']; ?></div>
+						<div class="info_clear"></div>
+
+
 
 						<hr>
 						<!-- Button triggered modal -->
@@ -100,10 +130,10 @@ include('functions/ajax_system.php');
 						<h2><i class="icon-retweet"></i> SVXLink</h2>
 					</div>
 					<div class="box-content">
-						<div id="info_label">SVXLink Status:</div>
-						<div id="info_value" class="rptStatus"><?php echo $status_string; ?></div>
+						<div class="info_label">SVXLink Status:</div>
+						<div class="info_value" class="rptStatus"><?php echo $status_string; ?></div>
 
-						<div id="info_clear"></div>
+						<div class="info_clear"></div>
 						
 						<button id="rptControlBtn" class="btn" onclick="toggleRepeaterState();"><?php echo $control_btn_text; ?></button>
 					</div>
@@ -153,49 +183,74 @@ include('functions/ajax_system.php');
 				<!-- /.modal -->
 
 
-
-
-
 				<div class="box span4">
 					<div class="box-header well">
 						<h2><i class="icon-tasks"></i> Memory Usage</h2>
 					</div>
 					<div class="box-content">
 
-						<div id="mem_group">
-							<?php echo '<strong>Used:</strong> ' . $used_mem . ' KB<span id="mem_percent">' . $percent_used . '%</span>'; ?>
-							<div id="bar_wrap">
-								<div id="bar1" style = "width:<?php echo $percent_used . '%'; ?>;"></div>
+						<?php $memoryArray = $classSystem->memory_usage(); ?>
+
+						<div class="mem_group">
+							<div>
+								<span class="bar_left">
+									<strong>Used:</strong> <span id="used_mem"><?php echo $memoryArray['used_mem']; ?></span> KB
+								</span>
+								<span class="bar_right">
+									<span id="percent_used"><?php echo $memoryArray['percent_used']; ?></span>%
+								</span>
+							</div>
+							<div class="bar_wrap">
+								<div id="bar1" style = "width:<?php echo $memoryArray['percent_used'] . '%'; ?>;"></div>
+							</div>
+						</div>
+
+						<div class="mem_group">
+							<div>
+								<span class="bar_left">
+									<strong>Free:</strong> <span id="free_mem"><?php echo $memoryArray['free_mem']; ?></span> KB
+								</span>
+								<span class="bar_right">
+									<span id="percent_free"><?php echo $memoryArray['percent_free']; ?></span>%
+								</span>
+							</div>
+							<div class="bar_wrap">
+								<div id="bar2" style = "width:<?php echo $memoryArray['percent_free'] . '%'; ?>;"></div>
 							</div>
 						</div>
 						
-						<div id="mem_group">
-							<?php echo '<strong>Free:</strong> ' . $free_mem . ' KB<span id="mem_percent">' . $percent_free . '%</span>'; ?>
-							<div id="bar_wrap">
-								<div id="bar2" style = "width:<?php echo $percent_free . '%'; ?>;"></div>
+						<div class="mem_group">
+							<div>
+								<span class="bar_left">
+									<strong>Buffered:</strong> <span id="buffer_mem"><?php echo $memoryArray['buffer_mem']; ?></span> KB
+								</span>
+								<span class="bar_right">
+									<span id="percent_buff"><?php echo $memoryArray['percent_buff']; ?></span>%
+								</span>
+							</div>
+							<div class="bar_wrap">
+								<div id="bar3" style = "width:<?php echo $memoryArray['percent_buff'] . '%'; ?>;"></div>
 							</div>
 						</div>
-							
-						<div id="mem_group">
-							<?php echo '<strong>Buffered:</strong> ' . $buffer_mem . ' KB<span id="mem_percent">' . $percent_buff . '%</span>'; ?>
-							<div id="bar_wrap">
-								<div id="bar3" style = "width:<?php echo $percent_buff . '%'; ?>;"></div>
+
+						<div class="mem_group">
+							<div>
+								<span class="bar_left">
+									<strong>Cached:</strong> <span id="cache_mem"><?php echo $memoryArray['cache_mem']; ?></span> KB
+								</span>
+								<span class="bar_right">
+									<span id="percent_cach"><?php echo $memoryArray['percent_cach']; ?></span>%
+								</span>
 							</div>
-							
-						</div>
-							
-						<div id="mem_group">
-							<?php echo '<strong>Cached:</strong> ' . $cache_mem . ' KB<span id="mem_percent">' . $percent_cach . '%</span>'; ?>
-							<div id="bar_wrap">
-								<div id="bar4" style = "width:<?php echo $percent_cach . '%'; ?>;"></div>
+							<div class="bar_wrap">
+								<div id="bar4" style = "width:<?php echo $memoryArray['percent_cach'] . '%'; ?>;"></div>
 							</div>
 						</div>
 						
-						<div id="total_mem">Total Memory: <?php echo $total_mem . ' KB'; ?></div>
+						<div id="total_mem">Total Memory: <span><?php echo $memoryArray['total_mem']; ?></span> KB</div>
 
 					</div>
 				</div><!--/span-->
-
 
 
 				<div class="box span4">
@@ -204,24 +259,13 @@ include('functions/ajax_system.php');
 					</div>
 					<div class="box-content">
 						<?php
-						for ($i = 1; $i < $count; $i++) {
-							$clean_size = intval(trim($size[$i]));
-							if ($clean_size > 1000000000 ) {
-								$capacity = number_format(($clean_size * .000000001), 2, '.', ',') . " PB";
-							} elseif ($clean_size > 1000000 ) {
-								$capacity = number_format(($clean_size * .000001), 2, '.', ',') . " TB";
-							} elseif ($clean_size > 1000 ) {
-								$capacity = number_format(($clean_size * .001), 1, '.', ',') . " GB";
-							} else {
-								$capacity = number_format($clean_size, 1, '.', ',') . " MB";
-							}
-
-							$drive = $mount[$i] . " (" . $typex[$i] . ")";
+						foreach ( $classSystem->disk_usage() as $driveNum => $driveValues ) {
+							if ($driveNum > 1) { echo '<hr>'; }
+							$drive = $driveValues['mount'] . " (" . $driveValues['typex'] . ")";
+							echo '<div id="drive_label">'.$drive.'<span id="drive_size">Capacity: '.$driveValues['capacity'].'</span></div>';
+							echo '<div id="donutchart'.$driveNum.'" style="height: 300px;"></div>';
 						}
 						?>
-
-						<div id="drive_label"><?php echo $drive; ?><span id="drive_size">Capacity: <?php echo $capacity; ?></span></div>
-						<div id="donutchart" style="height: 300px;"></div>
  					</div>
 				</div><!--/span-->
 

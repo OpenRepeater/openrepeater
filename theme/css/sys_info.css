@@ -4,22 +4,23 @@
 
 /* @group System Info */
 
-#info_label {
+.info_label {
 	float: left;
 	width: 40%;
 	min-width: 125px;
 	font-weight: bold;
+	padding-left: 5px;
 }
 
-#info_value {
+.info_value {
 	float: left;
-	width: 57%;
+	width: 54%;
 	min-width: 140px;
 	overflow: auto;
-	margin-bottom: 10px;
+	margin-bottom: 11px;
 }
 
-#info_clear {
+.info_clear {
 	clear: both;
 }
 
@@ -31,7 +32,7 @@
 
 /* @group Memory Usage */
 
-#mem_group {
+.mem_group {
 	padding: 5px 5px 11px;
 }
 
@@ -41,12 +42,12 @@
 	font-weight: bold;
 }
 
-span#mem_percent {
+span.bar_right {
 	float: right;
 	font-weight: bold;
 }
 
-#bar_wrap {
+.bar_wrap {
 width:10px;border:1px solid silver;width:100%;
 }
 

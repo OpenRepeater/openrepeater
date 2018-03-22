@@ -19,4 +19,16 @@ function exec_orp_helper ($opt1, $opt2) {
 	return trim(ob_get_clean());
 }
 
+
+// Pass System Info updates back to javascript
+if ($_GET['update']=='info') {
+	require_once('../includes/classes/System.php');
+	$classSystem = new System();
+	$outputArray = array_merge($classSystem->system_info(),$classSystem->memory_usage());
+	
+	header("Content-Type: application/json; charset=UTF-8");
+	echo json_encode($outputArray);
+}
+
+
 ?>
