@@ -27,7 +27,10 @@
 /* @end */
 
 
-
+.left_col, .right_col {
+	float: left;
+	width: 50%;
+}
 
 
 /* @group Memory Usage */
@@ -37,18 +40,20 @@
 }
 
 #total_mem {
-	padding: 10px 5px;
 	text-align: center;
 	font-weight: bold;
 }
 
 span.bar_right {
 	float: right;
-	font-weight: bold;
 }
 
 .bar_wrap {
 width:10px;border:1px solid silver;width:100%;
+}
+
+.bar_wrap.ram {
+	background-color: #8dc63f;
 }
 
 div#bar1, div#bar2, div#bar3, div#bar4, 
@@ -60,14 +65,12 @@ div#bar5, div#bar6 {
 }
 div#bar1 { background-color:#006838; }
 div#bar2 { background-color:#006838; }
-div#bar3 { background-color: #006838; }
+div#bar3 { background-color:#006838; }
 div#bar4 { background-color:#006838; }
 div#bar5 { background-color:#006838; }
 div#bar6 { background-color:#006838; }
 
 /* @end */
-
-
 
 
 /* @group Disk Usage */
@@ -85,3 +88,45 @@ span#drive_size {
 }
 
 /* @end */
+
+
+
+
+#overlay {
+	display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    filter:alpha(opacity=85);
+    -moz-opacity:0.85;
+    -khtml-opacity: 0.85;
+    opacity: 0.85;
+    z-index: 10000;
+	overflow: hidden;
+}
+
+#overlay .msg_box {
+	background-color: red;
+	width: 300px;
+	text-align: center;
+	position: relative;
+	padding: 20px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-top: 20px;
+}
+
+#overlay .msg_1,#overlay .msg_2 {
+	display: block;
+	color: white;
+	font-size: 24px;
+	line-height: 30px;
+}
+
+#overlay .msg_2 {
+	font-size: 60px;
+	line-height: 60px;
+}

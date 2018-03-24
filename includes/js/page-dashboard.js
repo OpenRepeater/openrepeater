@@ -1,12 +1,26 @@
 $(function() {
-  setInterval(updateTime, 1000);
-  setInterval(updateSystemInfo, 5000);
+	updateTimeInterval = setInterval(updateTime, 1000);
+	updateInfoInterval = setInterval(updateSystemInfo, 5000);
+	
+	// Timeout Functions
+	timoutMinutes = 10;
+
+	setTimeout(() => { 
+		clearInterval(updateTimeInterval); 
+		clearInterval(updateInfoInterval); 
+	}, timoutMinutes * 60000); // Timeout after number of minutes X millisections per minute;
+
+	setTimeout(() => { 
+		alert('You\'ve been on this page too long. To reduce demand on the system, auto updating of information has stopped. To start auto updating again, please reload this page.'); 
+	}, timoutMinutes * 60000 + 10000); // Timeout after number of minutes X millisections per minute + delay for alert;
+  
 });
 
 
 
 function updateTime(){
 	startTime.setSeconds(startTime.getSeconds() + 1);
+	console.log(startTime);
 	$("#cur_date").html($.datepicker.formatDate('dd M yy', startTime));
 	$("#cur_time").html( formatTime(startTime) );
 }
@@ -35,7 +49,6 @@ function formatTime(unixTimestamp){
 
 
 function updateSystemInfo(){
-	console.log('sys info');
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
@@ -83,14 +96,59 @@ var ajax_url = 'functions/ajax_system.php'; //Used by all ajax request in this s
 
 function reboot_orp_system() {
     $.ajax({ type: 'POST', dataType: 'text', url: ajax_url, data: { post_service: 'system', post_option: 'restart' } });	   
-	alert('Reboot Command Sent, Please wait up to a minute before loading/reloading pages.');
-
+	reboot_countdown();
 }
+
+function reboot_countdown() {
+	$("#overlay").show();
+	$("#overlay .msg_1").html("Rebooting");
+
+	$("#overlay .msg_2").html("60");
+
+	var doCountdown = function() {
+		$('#overlay .msg_2').each(function() {
+			var count = parseInt($(this).html());
+			if (count !== 1) {
+				$(this).html(count - 1);
+			} else {
+				$("#overlay .msg_1").html("Please Wait...<br>Reloading Page");
+				$("#overlay .msg_2").hide();
+				window.location.reload(true);
+				clearInterval(countDownInterval);
+			}
+		});
+	};
+	countDownInterval = setInterval(doCountdown, 1000);
+}
+
+
 
 function shutdown_orp_system() {
     $.ajax({ type: 'POST', dataType: 'text', url: ajax_url, data: { post_service: 'system', post_option: 'stop' } });	   
-	alert('Shutdown Command Sent.');
+	shutdown_countdown();
 }
+
+function shutdown_countdown() {
+	$("#overlay").show();
+	$("#overlay .msg_1").html("Shutdown");
+
+	$("#overlay .msg_2").html("30");
+
+	var doCountdown = function() {
+		$('#overlay .msg_2').each(function() {
+			var count = parseInt($(this).html());
+			if (count !== 1) {
+				$(this).html(count - 1);
+			} else {
+				$("#overlay .msg_1").html("<strong>System Shutdown</strong><br><em>It is now safe to power down the controller</em>");
+				$("#overlay .msg_2").hide();
+				clearInterval(countDownInterval);
+			}
+		});
+	};
+	countDownInterval = setInterval(doCountdown, 1000);
+}
+
 
 
 function toggleRepeaterState() {
@@ -136,3 +194,29 @@ function svxlink_toggle_state(service, option) {
         }
     });	   
 };
+
+
+
+/*
+function test_orp() {
+	$("#overlay").show();
+	$("#overlay .msg_1").html("Shutdown");
+
+	$("#overlay .msg_2").html("5");
+
+	var doCountdown = function() {
+		$('#overlay .msg_2').each(function() {
+			var count = parseInt($(this).html());
+			if (count !== 1) {
+				$(this).html(count - 1);
+			} else {
+				$("#overlay .msg_1").html("<strong>System Shutdown</strong><br><em>It is now safe to power down the controller</em>");
+				$("#overlay .msg_2").hide();
+// 				window.location.reload(true);
+				clearInterval(countDownInterval);
+			}
+		});
+	};
+	countDownInterval = setInterval(doCountdown, 1000);
+}
+*/

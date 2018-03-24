@@ -29,6 +29,12 @@ $classSystem = new System();
 include('functions/ajax_system.php');
 ?>
 
+	<div id="overlay">
+		<div class="msg_box">
+			<span class="msg_1"></span><span class="msg_2"></span>
+		</div>
+	</div>
+
 
 			<?php 
 				$systemTime = $classSystem->system_time();
@@ -36,7 +42,7 @@ include('functions/ajax_system.php');
 			?>
 			
 			<script type="text/javascript">
-				var timeString = "<?=$systemTime['datetime'];?>";
+				var timeString = "<?=str_replace("-","/",$systemTime['datetime']);?>";
 				var startTime = new Date(timeString);
 			</script>
 
@@ -194,61 +200,72 @@ include('functions/ajax_system.php');
 						<div class="mem_group">
 							<div>
 								<span class="bar_left">
-									<strong>Used:</strong> <span id="used_mem"><?php echo $memoryArray['used_mem']; ?></span> KB
+									<strong>Used: <span id="percent_used"><?php echo $memoryArray['percent_used']; ?></span>%</strong>
 								</span>
 								<span class="bar_right">
-									<span id="percent_used"><?php echo $memoryArray['percent_used']; ?></span>%
+									<strong>Free: <span id="percent_free"><?php echo $memoryArray['percent_free']; ?></span>%</strong>
 								</span>
 							</div>
-							<div class="bar_wrap">
+							<div class="bar_wrap ram">
 								<div id="bar1" style = "width:<?php echo $memoryArray['percent_used'] . '%'; ?>;"></div>
 							</div>
-						</div>
-
-						<div class="mem_group">
 							<div>
 								<span class="bar_left">
-									<strong>Free:</strong> <span id="free_mem"><?php echo $memoryArray['free_mem']; ?></span> KB
+									<span id="used_mem"><?php echo $memoryArray['used_mem']; ?></span>
 								</span>
 								<span class="bar_right">
-									<span id="percent_free"><?php echo $memoryArray['percent_free']; ?></span>%
+									<span id="free_mem"><?php echo $memoryArray['free_mem']; ?></span>
 								</span>
 							</div>
-							<div class="bar_wrap">
-								<div id="bar2" style = "width:<?php echo $memoryArray['percent_free'] . '%'; ?>;"></div>
+						</div>						
+						<div id="total_mem">Total Memory: <span><?php echo $memoryArray['total_mem']; ?></span></div>
+
+						<hr>
+						
+						<div class="left_col">
+							<div class="mem_group">
+								<div>
+									<span class="bar_left">
+										<strong>Buffered:</strong>
+									</span>
+									<span class="bar_right">
+										<strong><span id="percent_buff"><?php echo $memoryArray['percent_buff']; ?></span>%</strong>
+									</span>
+								</div>
+								<div class="bar_wrap">
+									<div id="bar3" style = "width:<?php echo $memoryArray['percent_buff'] . '%'; ?>;"></div>
+								</div>
+								<div>
+									<span class="bar_left">
+										<span id="buffer_mem"><?php echo $memoryArray['buffer_mem']; ?></span>
+									</span>
+								</div>
 							</div>
 						</div>
 						
-						<div class="mem_group">
-							<div>
-								<span class="bar_left">
-									<strong>Buffered:</strong> <span id="buffer_mem"><?php echo $memoryArray['buffer_mem']; ?></span> KB
-								</span>
-								<span class="bar_right">
-									<span id="percent_buff"><?php echo $memoryArray['percent_buff']; ?></span>%
-								</span>
-							</div>
-							<div class="bar_wrap">
-								<div id="bar3" style = "width:<?php echo $memoryArray['percent_buff'] . '%'; ?>;"></div>
+						<div class="right_col">
+							<div class="mem_group">
+								<div>
+									<span class="bar_left">
+										<strong>Cached:</strong>
+									</span>
+									<span class="bar_right">
+										<strong><span id="percent_cach"><?php echo $memoryArray['percent_cach']; ?></span>%</strong>
+									</span>
+								</div>
+								<div class="bar_wrap">
+									<div id="bar4" style = "width:<?php echo $memoryArray['percent_cach'] . '%'; ?>;"></div>
+								</div>
+								<div>
+									<span class="bar_left">
+										<span id="cache_mem"><?php echo $memoryArray['cache_mem']; ?></span>
+									</span>
+								</div>
 							</div>
 						</div>
 
-						<div class="mem_group">
-							<div>
-								<span class="bar_left">
-									<strong>Cached:</strong> <span id="cache_mem"><?php echo $memoryArray['cache_mem']; ?></span> KB
-								</span>
-								<span class="bar_right">
-									<span id="percent_cach"><?php echo $memoryArray['percent_cach']; ?></span>%
-								</span>
-							</div>
-							<div class="bar_wrap">
-								<div id="bar4" style = "width:<?php echo $memoryArray['percent_cach'] . '%'; ?>;"></div>
-							</div>
-						</div>
+						<div class="info_clear"></div>
 						
-						<div id="total_mem">Total Memory: <span><?php echo $memoryArray['total_mem']; ?></span> KB</div>
-
 					</div>
 				</div><!--/span-->
 

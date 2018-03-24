@@ -14,7 +14,7 @@ class System {
 		date_default_timezone_set( trim($systemTimeZone) ); 
 
 		return [
-			'datetime' => date( 'Y-m-d H:i:s', time() ),
+			'datetime' => date( 'Y/m/d H:i:s', time() ),
 			'date' => date( 'd M Y', time() ),
 			'time' => date( 'H:i:s', time() ),
 			'tz_long' => $systemTimeZone,
@@ -161,14 +161,14 @@ class System {
 			'percent_free' => round(($free_mem / $total_mem) * 100),
 			'percent_buff' => round(($buffer_mem / $total_mem) * 100),
 			'percent_cach' => round(($cache_mem / $total_mem) * 100),
-			'used_mem' => number_format($used_mem),
-			'free_mem' => number_format($free_mem),
-			'buffer_mem' => number_format($buffer_mem),
-			'cache_mem' => number_format($cache_mem),
-			'total_mem' => number_format($total_mem),
+			'used_mem' => $this->capacity($used_mem / 1000),
+			'free_mem' => $this->capacity($free_mem / 1000),
+			'buffer_mem' => $this->capacity($buffer_mem / 1000),
+			'cache_mem' => $this->capacity($cache_mem / 1000),
+			'total_mem' => $this->capacity($total_mem / 1000),
 		];
 	}
-
+	
 
 
 	###############################################
@@ -204,7 +204,7 @@ class System {
 
 
 	private function capacity($raw_size) {
-		$clean_size = intval(trim($raw_size));
+		$clean_size = trim($raw_size);
 
 		if ($clean_size > 1000000000 ) {
 			$capacity = number_format(($clean_size * .000000001), 2, '.', ',') . " PB";
