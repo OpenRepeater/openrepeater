@@ -17,11 +17,6 @@ $customCSS = "sys_info.css"; // "file1.css, file2.css, ... "
 $customJS = "sys_info_chart_data.php, page-dashboard.js"; // "file1.js, file2.js, ... "
 
 include('includes/header.php');
-?>
-<!--
-<div id="realtimechart" style="height:190px;"></div>
--->
-<?php 
 	
 require_once('includes/classes/System.php');
 $classSystem = new System();
@@ -119,6 +114,7 @@ include('functions/ajax_system.php');
 
 					<?php 
 						### Get inital SVXLink Status on page load and decide what to display below ###
+/*
 						$svxlink_status = exec_orp_helper('svxlink', 'status');
 						if ($svxlink_status == 'active') {
 							$status_string = '<span class="label label-success">Active</span>';
@@ -130,6 +126,7 @@ include('functions/ajax_system.php');
 							$status_string = '<span class="label label">Deactivated</span>';
 							$control_btn_text = '<i class="icon-play"></i> Start Repeater';
 						}
+*/
 					?>
 
 					<div class="box-header well">
@@ -137,11 +134,11 @@ include('functions/ajax_system.php');
 					</div>
 					<div class="box-content">
 						<div class="info_label">SVXLink Status:</div>
-						<div class="info_value" class="rptStatus"><?php echo $status_string; ?></div>
+						<div class="info_value" class="rptStatus"><?php //echo $status_string; ?></div>
 
 						<div class="info_clear"></div>
 						
-						<button id="rptControlBtn" class="btn" onclick="toggleRepeaterState();"><?php echo $control_btn_text; ?></button>
+						<button id="rptControlBtn" class="btn" onclick="toggleRepeaterState();"><?php //echo $control_btn_text; ?></button>
 					</div>
 
 				</div><!--/span-->

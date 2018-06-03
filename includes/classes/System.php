@@ -5,12 +5,16 @@
 
 class System {
 
+	private function orp_helper_call($section, $subfunc) {
+		return shell_exec( "sudo orp_helper " . trim($section) . " " . trim($subfunc) );
+	}
+
 	###############################################
 	# System Time
 	###############################################
 
 	public function system_time() {
-		$systemTimeZone = shell_exec("cat /etc/timezone");
+		$systemTimeZone = $this->orp_helper_call('info','timezone');
 		date_default_timezone_set( trim($systemTimeZone) ); 
 
 		return [
@@ -29,7 +33,7 @@ class System {
 	###############################################
 
 	public function system_info() {
-		list($system, $host, $kernel) = split(" ", exec("uname -a"), 4);
+ 		list($system, $host, $kernel) = explode(" ", $this->orp_helper_call('info','os'), 4);
 
 		$cpuTempF = $this->getCPU_Temp('F');
 		$cpuTempC = $this->getCPU_Temp('C');
@@ -49,52 +53,30 @@ class System {
 
 
 	private function getCPU_Type() {
-		$processor = str_replace("-compatible processor", "", explode(": ", exec("cat /proc/cpuinfo | grep processor"))[1]);
-		$processor++; //Increment by 1 since processors start numbering at zero
-		return $processor;
+		$proc_list = str_replace( "processor	: ", "", $this->orp_helper_call('info','cpu_type') );
+		$proc_array = explode( "\n", $proc_list );
+		$proc_array = array_diff($proc_array, [""]);
+		return count($proc_array);
 	}
 
 
 	private function getCPU_Speed() {
-		$frequency = number_format(exec("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq") / 1000);
+		$frequency = number_format($this->orp_helper_call('info','cpu_speed') / 1000);
 		return $frequency . 'MHz';
 	}
 
 
 	private function getCPU_Load() {
 		//CPU Usage
-		$output1 = null;
-		$output2 = null;
-		//First sample
-		exec("cat /proc/stat", $output1);
-		//Sleep before second sample
-		sleep(1);
-		//Second sample
-		exec("cat /proc/stat", $output2);
-		$cpuload = 0;
-		for ($i=0; $i < 1; $i++) {
-			//First row
-			$cpu_stat_1 = explode(" ", $output1[$i+1]);
-			$cpu_stat_2 = explode(" ", $output2[$i+1]);
-			//Init arrays
-			$info1 = array("user"=>$cpu_stat_1[1], "nice"=>$cpu_stat_1[2], "system"=>$cpu_stat_1[3], "idle"=>$cpu_stat_1[4]);
-			$info2 = array("user"=>$cpu_stat_2[1], "nice"=>$cpu_stat_2[2], "system"=>$cpu_stat_2[3], "idle"=>$cpu_stat_2[4]);
-			$idlesum = $info2["idle"] - $info1["idle"] + $info2["system"] - $info1["system"];
-			$sum1 = array_sum($info1);
-			$sum2 = array_sum($info2);
-			//Calculate the cpu usage as a percent
-			$load = (1 - ($idlesum / ($sum2 - $sum1))) * 100;
-			$cpuload += $load;
-		}
-		$cpuload = round($cpuload, 1); //One decimal place
-		return $cpuload . '%';
+		$cpuload = $this->orp_helper_call('info','cpu_load');
+		return trim($cpuload) . '%';
 	}
 
 
 	private function getCPU_Temp($unit) {
 		if(!$unit) { $unit = 'F'; }
 
-		$celsius = round(exec("cat /sys/class/thermal/thermal_zone0/temp ") / 1000, 1);
+		$celsius = round($this->orp_helper_call('info','cpu_temp') / 1000, 1);
 		$fahrenheit = $celsius * 1.8 + 32;
 
 		if ($unit == 'C') {
@@ -114,7 +96,7 @@ class System {
 
 	private function getUptime() {
 		//Uptime
-		$uptime_array = explode(" ", exec("cat /proc/uptime"));
+		$uptime_array = explode(" ", $this->orp_helper_call('info','uptime'));
 		$seconds = round($uptime_array[0], 0);
 		$minutes = $seconds / 60;
 		$hours = $minutes / 60;
@@ -138,10 +120,13 @@ class System {
 	###############################################
 
 	public function memory_usage() {
-		$meminfo = file("/proc/meminfo");
+		$meminfo = $this->orp_helper_call('info','memory_usage');
+		$meminfo = explode( "\n", $meminfo );
+		$meminfo = array_diff($meminfo, [""]);
+
 		for ($i = 0; $i < count($meminfo); $i++)
 		{
-			list($item, $data) = split(":", $meminfo[$i], 2);
+			list($item, $data) = explode(":", $meminfo[$i], 2);
 			$item = trim(chop($item));
 			$data = intval(preg_replace("/[^0-9]/", "", trim(chop($data)))); //Remove non numeric characters
 			switch($item)
@@ -176,12 +161,17 @@ class System {
 	###############################################
 
 	public function disk_usage() {
-		exec("df -T -l -BM -x tmpfs -x devtmpfs -x rootfs -x vfat", $diskfree);
+		$diskfree = $this->orp_helper_call('info','disk_usage');
+		$diskfree = explode( "\n", $diskfree );
+		$diskfree = array_diff($diskfree, [""]);
+
 		$count = 1;
 		
 		while ($count < sizeof($diskfree))
 		{
-			list($drive[$count], $typex[$count], $size[$count], $used[$count], $avail[$count], $percent[$count], $mount[$count]) = split(" +", $diskfree[$count]);
+			$parts = preg_split('/\s+/', $diskfree[$count]);
+
+			list($drive[$count], $typex[$count], $size[$count], $used[$count], $avail[$count], $percent[$count], $mount[$count]) = $parts;
 
 			$diskArray[$count] = [
 				'drive' => $drive[$count],
@@ -193,7 +183,6 @@ class System {
 				'mount' => $mount[$count],
 				'capacity' => $this->capacity($size[$count]),
 			];
-
 
 			$percent_part[$count] = $percent[$count];
 			$count++;

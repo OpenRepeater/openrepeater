@@ -60,6 +60,7 @@ function svxlink_status {
 	systemctl is-active svxlink
 }
 
+
 ### SYSTEM FUNCTIONS ###
 function system_reboot {
 	shutdown -r now
@@ -77,6 +78,7 @@ function system_user {
 	whoami
 }
 
+
 ### AUDIO FUNCTIONS ###
 function audio_inputs {
 	arecord -l
@@ -90,6 +92,7 @@ function audio_version {
 	cat /proc/asound/version 2>&1
 }
 
+
 ### NETWORK FUNCTIONS ###
 function network_read {
 	echo "Read Network Config for external parsing"
@@ -98,6 +101,7 @@ function network_read {
 function network_write {
 	echo "Write New Network Config"
 }
+
 
 ### WEBSERVER FUNCTIONS ###
 function www_stop {
@@ -126,6 +130,44 @@ function www_enable {
 	service nginx restart
 }
 
+
+
+### INFO FUNCTIONS ###
+function info_timezone {
+	cat /etc/timezone
+}
+
+function info_cpu_type {
+	cat /proc/cpuinfo | grep processor
+}
+
+function info_cpu_speed {
+	cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+}
+
+function info_cpu_load {
+	{ head -n1 /proc/stat;sleep 0.2;head -n1 /proc/stat; } | awk '/^cpu /{u=$2-u;s=$4-s;i=$5-i;w=$6-w}END{print int(0.5+100*(u+s+w)/(u+s+i+w))}'
+}
+
+function info_cpu_temp {
+	cat /sys/class/thermal/thermal_zone0/temp
+}
+
+function info_uptime {
+	cat /proc/uptime
+}
+
+function info_memory_usage {
+	cat /proc/meminfo
+}
+
+function info_disk_usage {
+	df -T -l -BM -x tmpfs -x devtmpfs -x rootfs -x vfat
+}
+
+function info_os {
+	uname -a
+}
 
 # TODO LIST
 # Setting Timezone
@@ -156,6 +198,20 @@ while :; do
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper system (stop|restart|uptime|user)"
 			fi
 			exit;;
+        info)
+			if [ "$2" == "timezone" ]; then info_timezone
+			elif [ "$2" == "cpu_type" ]; then info_cpu_type
+			elif [ "$2" == "cpu_speed" ]; then info_cpu_speed
+			elif [ "$2" == "cpu_load" ]; then info_cpu_load
+			elif [ "$2" == "cpu_temp" ]; then info_cpu_temp
+			elif [ "$2" == "uptime" ]; then info_uptime
+			elif [ "$2" == "memory_usage" ]; then info_memory_usage
+			elif [ "$2" == "disk_usage" ]; then info_disk_usage
+			elif [ "$2" == "os" ]; then info_os
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper info (timezone|cpu_type|cpu_speed|cpu_load|cpu_temp|uptime|memory_usage|disk_usage|os)"
+			fi
+			exit;;
+#info_uptime
         www)
 			if [ "$2" == "stop" ]; then www_stop
 			elif [ "$2" == "start" ]; then www_start
