@@ -18,7 +18,7 @@ include_once("includes/get_modules.php");
 ?>
 
 		<?php
-		if ($_GET['deactivate']) {
+		if ( isset($_GET['deactivate']) ) {
 			$module_id = $_GET['deactivate'];
 			$module[$module_id]['moduleEnabled'] = 0;
 
@@ -34,7 +34,7 @@ include_once("includes/get_modules.php");
 			$alert = '<div class="alert alert-success">'.$msgText.'</div>';
 		}
 
-		if ($_GET['activate']) {
+		if ( isset($_GET['activate']) ) {
 			$module_id = $_GET['activate'];
 			$module[$module_id]['moduleEnabled'] = 1;
 
@@ -50,7 +50,7 @@ include_once("includes/get_modules.php");
 			$alert = '<div class="alert alert-success">'.$msgText.'</div>';
 		}
 
-		if ($_GET['settings']) {
+		if ( isset($_GET['settings']) ) {
 			// If modules settings page is request, display that if it exist
 			$module_id = $_GET['settings'];
 

@@ -12,14 +12,16 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 // Include Classes
 require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/classes/BoardPresets.php');
 
-if ($_POST['action'] == 'loadBoardPreset'){
-	$board_selected = $_POST['board_id'];
-
-	$board_preset = new BoardPresets();
-	$board_name = $board_preset->load_board_settings($board_selected);
-
-	$msgText = "The presets have been successfully loaded for the <strong>" . $board_name . "</strong> board.";
-	$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
+if( isset($_POST['action']) ) {
+	if ($_POST['action'] == 'loadBoardPreset'){
+		$board_selected = $_POST['board_id'];
+	
+		$board_preset = new BoardPresets();
+		$board_name = $board_preset->load_board_settings($board_selected);
+	
+		$msgText = "The presets have been successfully loaded for the <strong>" . $board_name . "</strong> board.";
+		$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
+	}
 }
 ?>
 
@@ -45,8 +47,7 @@ $phpAudioInputOptions = null;
 for ($device = 0; $device <  count($device_list); $device++) {
    if ($device_list[$device]['direction'] == "IN") {
 		$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-		$currentRX = $cur_port['rxAudioDev'];
-		if ($rxValue == $currentRX) { $rxSelected = " selected"; } else { $rxSelected = ""; }
+		$rxSelected = "";
 		$phpAudioInputOptions .= '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
 	}
 }
@@ -56,8 +57,7 @@ $phpAudioOutputOptions = null;
 for ($device = 0; $device <  count($device_list); $device++) {
    if ($device_list[$device]['direction'] == "OUT") {
 		$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-		$currentTX = $cur_port['txAudioDev'];
-		if ($txValue == $currentTX) { $txSelected = " selected"; } else { $txSelected = ""; }
+		$txSelected = "";
 		$phpAudioOutputOptions .= '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
 	}
 }
