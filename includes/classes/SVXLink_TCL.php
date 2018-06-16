@@ -52,6 +52,12 @@ class SVXLink_TCL {
 	public function alias_RepeaterLogic($new_namespace) {
 		$orig_file = file_get_contents("/usr/share/svxlink/events.d/RepeaterLogic.tcl");
 		$new_file = str_replace("RepeaterLogic", $new_namespace, $orig_file);
+
+		# Replace default tones at end of roger beep
+		$search_beep = '/playTone 400 900 50[\s\S]+?playSilence 500\R/';
+		$replace_beep = '';
+		$new_file = preg_replace( $search_beep, $replace_beep, $new_file );
+
 		return $new_file;
 	}
 
