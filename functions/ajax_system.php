@@ -10,7 +10,8 @@ if (!empty($_POST)) {
 	
 // Function to pass and return commands from orp_helper script in BASH
 function exec_orp_helper ($opt1, $opt2) {
-	$command = 'sudo /usr/sbin/orp_helper ';
+// 	$command = 'sudo /usr/sbin/orp_helper ';
+	$command = 'sudo orp_helper';
 	$command .= ' ' . $opt1;
 	$command .= ' ' . $opt2;
 
