@@ -9,6 +9,7 @@ class BoardPresets {
 
     public $documentRoot;
     public $boardPresetArray;
+    public $boardManufacturerArray;
 
 
 
@@ -29,7 +30,41 @@ class BoardPresets {
 		}
 		return $this->boardPresetArray;
 	}
+
+
 	
+	public function get_manufacturers() {
+		// Check if board array has been set, if not set it.
+		if (empty($this->boardPresetArray)) { $this->get_board_definitions(); }
+
+		foreach ($this->boardPresetArray as $board) {
+			$this->boardManufacturerArray[] = $board['manufacturer'];
+		}
+		
+		$this->boardManufacturerArray = array_unique($this->boardManufacturerArray);
+		return $this->boardManufacturerArray;
+	}
+
+
+
+	public function get_select_options() {
+		// Check if Arrays have been set, if not set them.
+		if (empty($this->boardPresetArray)) { $this->get_board_definitions(); }
+		if (empty($this->boardManufacturerArray)) { $this->get_manufacturers(); }
+
+		$html_options = "";
+		foreach ($this->boardManufacturerArray as $manufacturerID => $manufacturerName) {
+			$html_options .= '<optgroup label="' . $manufacturerName . '">';
+				foreach ($this->boardPresetArray as $boardID => $boardValues) {
+					if ( $boardValues['manufacturer'] == $manufacturerName )
+				    $html_options .= '<option value="' . $boardID . '">' . $boardValues['model'] . ' (v' . $boardValues['version'] . ')</option>';
+				}
+			$html_options .= '</optgroup>';
+		}
+
+		return $html_options;
+	}
+
 
 
 	public function load_board_settings($id = null) {

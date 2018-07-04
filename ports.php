@@ -27,7 +27,8 @@ if( isset($_POST['action']) ) {
 
 <?php
 $board_presets = new BoardPresets();
-$list_of_boards = $board_presets->get_board_definitions(null);
+$board_select_options = $board_presets->get_select_options();
+
 
 $pageTitle = "Ports"; 
 
@@ -239,11 +240,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 								<div class="controls">
 									<select id="board_id" name="board_id" required>
 										<option value="" selected>Select One...</option>
-										<?php
-										foreach ($list_of_boards as $boardID => $boardValues) {
-										    echo '<option value="' . $boardID . '">' . $boardValues['manufacturer'] . ' - ' . $boardValues['model'] . ' (v' . $boardValues['version'] . ')</option>';
-										}
-										?>
+										<?php echo $board_select_options; ?>
 									</select>
 									<input type="hidden" name="action" value="loadBoardPreset">											
 									<span class="help-inline"> Choose a supported interface board to load presets.</span>
