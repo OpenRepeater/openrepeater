@@ -470,8 +470,6 @@ case "wizard_confirmation":
 			$board_presets = new BoardPresets();
 			$board_info = $board_presets->get_board_definitions($board_id);
 
-			print_r($board_info);
-
 	        $wizardContent .= '<h3>Interface Board</h3>';
 	        $wizardContent .= 'Manufacture: <strong>' . $board_info['manufacturer'] . '</strong>';
 	        $wizardContent .= '<br>';
