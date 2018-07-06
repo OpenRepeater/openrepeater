@@ -43,7 +43,8 @@ if (!isset($_POST["page"])) {
 	$_SESSION["default_settings"] = $default_settings; // Define Extra Default Settings that will be included at end of wizard
 	$_SESSION["new_repeater_settings"] = array(); // Define Settings Array
 	$_SESSION["new_repeater_ports"] = array(); // Define Ports Array
-	
+	$_SESSION["interface"] = array(); // Define Interface Settings Array
+		
 	// read sound devices into session array
 	include('../includes/get_sound.php');
 	$_SESSION["sound_devices"] = array();
@@ -93,15 +94,23 @@ case "wizard_page2": // write this pages cotents into array
 	break;
 
 case "wizard_page3": // write this pages cotents into array and go to next page
-	if (preg_match('/\S/',$_POST["txGPIO"])) {
-		foreach ($_POST as $key => $value) {
-			if (!in_array($key, array('page', 'process_page'))) { // Don't add these $_POST vars to session array
-				$_SESSION["new_repeater_ports"][$key] = $value;
+	if ($_POST["board_id"] == 'manual') {
+		$_SESSION["interface"]["type"] = 'manual';
+
+		if (preg_match('/\S/',$_POST["txGPIO"])) {
+			foreach ($_POST as $key => $value) {
+				if (!in_array($key, array('page', 'process_page'))) { // Don't add these $_POST vars to session array
+					$_SESSION["new_repeater_ports"][$key] = $value;
+				}
 			}
+		} else {
+			$alert = '<div class="alert alert-error">There was a problem with your post, please check your entry and try again.</div>';
+			$page = 'wizard_page3'; // keep on this page to fix error
 		}
+
 	} else {
-		$alert = '<div class="alert alert-error">There was a problem with your post, please check your entry and try again.</div>';
-		$page = 'wizard_page3'; // keep on this page to fix error
+		$_SESSION["interface"]["type"] = 'preset';
+		$_SESSION["interface"]["board_id"] = $_POST["board_id"];
 	}
 	break;
 
@@ -110,65 +119,74 @@ case "wizard_update":
 		$merged_settings = array_merge($_SESSION["new_repeater_settings"], $_SESSION["default_settings"]);
 		$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');	
 	
+		require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/classes/BoardPresets.php');
+		$board_presets = new BoardPresets();
 
 		// Update Settings Table
 		foreach($merged_settings as $key=>$value){  
 			$query = $db->exec("UPDATE settings SET value='$value' WHERE keyID='$key'");
 		}
 
-	
-		// Update Ports Table
-		$query = $db->exec("DELETE from ports;");
-	
-		$portNum='1';
-		$portLabel=$_SESSION["new_repeater_ports"]['portLabel'];
-		$rxMode=$_SESSION["new_repeater_ports"]['rxMode'];
-		$rxGPIO=$_SESSION["new_repeater_ports"]['rxGPIO'];
-		$txGPIO=$_SESSION["new_repeater_ports"]['txGPIO'];
-		$rxAudioDev=$_SESSION["new_repeater_ports"]['rxAudioDev'];
-		$txAudioDev=$_SESSION["new_repeater_ports"]['txAudioDev'];
-		$rxGPIO_active=$_SESSION["new_repeater_ports"]['rxGPIO_active'];
-		$txGPIO_active=$_SESSION["new_repeater_ports"]['txGPIO_active'];
-	
-		$sql = "INSERT INTO ports (portNum,portLabel,rxMode,rxGPIO,txGPIO,rxAudioDev,txAudioDev,rxGPIO_active,txGPIO_active) VALUES ('$portNum','$portLabel','$rxMode','$rxGPIO','$txGPIO','$rxAudioDev','$txAudioDev','$rxGPIO_active','$txGPIO_active')";
-		$query = $db->exec($sql);
+		if ($_SESSION["interface"]["type"] == 'preset') {
+			// Process Preset Board Settings
+			$board_select_options = $board_presets->load_board_settings($_SESSION["interface"]["board_id"]);
 
-
-		// Update GPIO Pins Table
-		$db->exec("DELETE from gpio_pins;");
-
-		if ($rxMode == "gpio") {
-			$sql_rx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$rxGPIO','in','$rxGPIO_active','PORT $portNum RX: $portLabel','Port')";
-			$db->exec($sql_rx);			
+		} else {
+			// Process Manual port setup
+		
+			// Update Ports Table
+			$query = $db->exec("DELETE from ports;");
+		
+			$portNum='1';
+			$portLabel=$_SESSION["new_repeater_ports"]['portLabel'];
+			$rxMode=$_SESSION["new_repeater_ports"]['rxMode'];
+			$rxGPIO=$_SESSION["new_repeater_ports"]['rxGPIO'];
+			$txGPIO=$_SESSION["new_repeater_ports"]['txGPIO'];
+			$rxAudioDev=$_SESSION["new_repeater_ports"]['rxAudioDev'];
+			$txAudioDev=$_SESSION["new_repeater_ports"]['txAudioDev'];
+			$rxGPIO_active=$_SESSION["new_repeater_ports"]['rxGPIO_active'];
+			$txGPIO_active=$_SESSION["new_repeater_ports"]['txGPIO_active'];
+		
+			$sql = "INSERT INTO ports (portNum,portLabel,rxMode,rxGPIO,txGPIO,rxAudioDev,txAudioDev,rxGPIO_active,txGPIO_active) VALUES ('$portNum','$portLabel','$rxMode','$rxGPIO','$txGPIO','$rxAudioDev','$txAudioDev','$rxGPIO_active','$txGPIO_active')";
+			$query = $db->exec($sql);
+	
+	
+			// Update GPIO Pins Table
+			$db->exec("DELETE from gpio_pins;");
+	
+			if ($rxMode == "gpio") {
+				$sql_rx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$rxGPIO','in','$rxGPIO_active','PORT $portNum RX: $portLabel','Port')";
+				$db->exec($sql_rx);			
+			}
+	
+			$sql_tx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$txGPIO','out','$txGPIO_active','PORT $portNum TX: $portLabel','Port')";
+			$db->exec($sql_tx);
+	
+	
+			// Update Modules Table
+			$db->exec("DELETE from modules;");
+	
+			// Help Module
+			$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('1','Help','1','Help','0','')";
+			$db->exec($sql_module);
+	
+			// Parrot Module
+			$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('2','Parrot','1','Parrot','1','')";
+			$db->exec($sql_module);
+	
+			// EchoLink Module
+			$serialized_options = 'a:10:{s:7:"timeout";s:2:"60";s:8:"callSign";s:0:"";s:8:"password";s:0:"";s:5:"sysop";s:12:"OpenRepeater";s:8:"location";s:0:"";s:11:"description";s:34:"Welcome to an Open Repeater Server";s:6:"server";s:20:"servers.echolink.org";s:8:"max_qsos";s:1:"4";s:11:"connections";s:1:"4";s:12:"idle_timeout";s:3:"300";}';
+			$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('3','EchoLink','0','EchoLink','2','$serialized_options')";
+			$db->exec($sql_module);
+	
+			// Remote Relay Module
+			$serialized_options = 'a:7:{s:7:"timeout";s:3:"120";s:15:"momentary_delay";s:3:"200";s:10:"access_pin";s:4:"1234";s:23:"access_attempts_allowed";s:1:"3";s:23:"relays_off_deactivation";s:1:"1";s:24:"relays_gpio_active_state";s:4:"high";s:5:"relay";a:1:{i:1;a:2:{s:4:"gpio";s:0:"";s:5:"label";s:7:"Relay 1";}}}';
+			$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('4','Remote Relay','0','RemoteRelay','9','$serialized_options')";
+			$db->exec($sql_module);
+	
+			// Close DB
+			$db->close();
 		}
-
-		$sql_tx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$txGPIO','out','$txGPIO_active','PORT $portNum TX: $portLabel','Port')";
-		$db->exec($sql_tx);
-
-
-		// Update Modules Table
-		$db->exec("DELETE from modules;");
-
-		// Help Module
-		$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('1','Help','1','Help','0','')";
-		$db->exec($sql_module);
-
-		// Parrot Module
-		$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('2','Parrot','1','Parrot','1','')";
-		$db->exec($sql_module);
-
-		// EchoLink Module
-		$serialized_options = 'a:10:{s:7:"timeout";s:2:"60";s:8:"callSign";s:0:"";s:8:"password";s:0:"";s:5:"sysop";s:12:"OpenRepeater";s:8:"location";s:0:"";s:11:"description";s:34:"Welcome to an Open Repeater Server";s:6:"server";s:20:"servers.echolink.org";s:8:"max_qsos";s:1:"4";s:11:"connections";s:1:"4";s:12:"idle_timeout";s:3:"300";}';
-		$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('3','EchoLink','0','EchoLink','2','$serialized_options')";
-		$db->exec($sql_module);
-
-		// Remote Relay Module
-		$serialized_options = 'a:7:{s:7:"timeout";s:3:"120";s:15:"momentary_delay";s:3:"200";s:10:"access_pin";s:4:"1234";s:23:"access_attempts_allowed";s:1:"3";s:23:"relays_off_deactivation";s:1:"1";s:24:"relays_gpio_active_state";s:4:"high";s:5:"relay";a:1:{i:1;a:2:{s:4:"gpio";s:0:"";s:5:"label";s:7:"Relay 1";}}}';
-		$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('4','Remote Relay','0','RemoteRelay','9','$serialized_options')";
-		$db->exec($sql_module);
-
-		// Close DB
-		$db->close();
 	
 // ******** REBUILD CONFIG FILES ****************
 
@@ -270,18 +288,44 @@ case "wizard_page2":
 case "wizard_page3":
 		$stepCurrent = 3;
 
+		// Load Board Presets
+		require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/classes/BoardPresets.php');
+		$board_presets = new BoardPresets();
+		$board_select_options = $board_presets->get_select_options();
+
         $title = "Setup Your Ports";
-        $wizardContent = '
-			<legend>Setting Up the 1<sup>st</sup> Port</legend>
-			<p>Ports are the audio and logic I/Os that interface the OpenRepeater controller with the transmitter and receiver to make the repeater function. This is done through other external circuitry. It utilizes both a sound card and the GPIO pins to make up the port, usually a paired receiver and transmitter hence a repeater. Here you will setup the first port required to make the controller function. You will be able to add other ports later if you require them.</p>
+
+        $wizardContent = '';
+
+        $wizardContent .= '
+			<legend>Setup Supported Interface Board or Manual Configuration</legend>
+			<p>If you have a supported interface board and have it connected to your single board computer you can choose it from the list. Otherwise, if you have a board that is not supported or you have built your own interface hardware, then choose <em>Manual Configuration</em>.</p>
 		';
 
+        $wizardContent .= '
+			<div class="control-group">
+				<label class="control-label" for="board_id">Select Interface:</label>
+				<div class="controls">
+					<select id="board_id" name="board_id" style="min-width:300px;" required>
+						<option value="" selected>Select One...</option>
+						<option value = "manual">Manual Configuration</option>
+						' . $board_select_options . '
+					</select>
+				</div>
+			</div>
+		';
+		
+		#############################################################
+
+        $wizardContent .= '<div id="port_manual_grp" style="display: none;">';
+        $wizardContent .= '
+			<legend>Manually Setup the 1<sup>st</sup> Port</legend>
+			<p>Ports are the audio and logic I/Os that interface the OpenRepeater controller with the transmitter and receiver to make the repeater function. This is done through other external circuitry. Since you have chosen to set this up manually, you must specify the settings for this hardware. It utilizes both a sound card and the GPIO pins to make up the port, usually a paired receiver and transmitter hence a repeater. Here you will setup the first port required to make the controller initially function. You will be able to add other ports later if you require them and your hardware supports them.</p>
+		';
 
 		$rxModeOptions = '';
 		if ($_SESSION['new_repeater_ports']['rxMode'] == 'gpio') { $rxModeOptions .= '<option value="gpio" selected>COS (Carrier Operated Switch)</option>'; } else { $rxModeOptions .= '<option value="gpio">COS (Carrier Operated Switch)</option>'; }
 		if ($_SESSION['new_repeater_ports']['rxMode'] == 'vox') { $rxModeOptions .= '<option value="vox" selected>VOX (Voice Operated Transmit)</option>'; } else { $rxModeOptions .= '<option value="vox">VOX (Voice Operated Transmit)</option>'; }
-
-
 
 		$rxDeviceOptions = "";
 		for ($device = 0; $device <  count($_SESSION["sound_devices"]); $device++) {
@@ -297,8 +341,6 @@ case "wizard_page3":
 			<legend>Receiver Settings (RX)</legend>
 
 			<input type="hidden" value="Port 1" name="portLabel">';
-
-
 
 		if ($_SESSION['new_repeater_ports']['rxGPIO_active'] == 'low' || '') {
 			$rxGPIO_active_options = '<option value = "low" selected>Active Low</option><option value = "high">Active High</option>';			
@@ -392,8 +434,9 @@ case "wizard_page3":
 				<span class="help">The audio output that sends audio to transmitter.</span>
 			</div>
 		';
+        $wizardContent .= '</div>'; // End Manual Port Grouping
 
-
+		#############################################################
 
         $wizardNav = '
 			<input type=hidden name="process_page" value="wizard_page3">
@@ -419,41 +462,67 @@ case "wizard_confirmation":
         $wizardContent .= 'Repeater Callsign: <strong>'.$_SESSION["new_repeater_settings"]['callSign'].'</strong>';
         $wizardContent .= '<hr>';
         
-		if ($_SESSION["new_repeater_ports"]['rxMode'] == "gpio") {
-	        $wizardContent .= 'Receive Mode: <strong>COS (Carrier Operated Switch)</strong>';
+		if ($_SESSION["interface"]["type"] == 'preset') {
+			// Display Preset Board Settings
+			$board_id = $_SESSION["interface"]["board_id"];
+
+			require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/classes/BoardPresets.php');
+			$board_presets = new BoardPresets();
+			$board_info = $board_presets->get_board_definitions($board_id);
+
+			print_r($board_info);
+
+	        $wizardContent .= '<h3>Interface Board</h3>';
+	        $wizardContent .= 'Manufacture: <strong>' . $board_info['manufacturer'] . '</strong>';
 	        $wizardContent .= '<br>';
-	        $wizardContent .= 'Receive GPIO Pin: <strong>'.$_SESSION["new_repeater_ports"]['rxGPIO'].' </strong> ('.$_SESSION["new_repeater_ports"]['rxGPIO_active'].')';
+	        $wizardContent .= 'Model: <strong>' . $board_info['model'] . '</strong>';
 			$wizardContent .= '<br>';
-        } else 	if ($_SESSION["new_repeater_ports"]['rxMode'] == "vox") {
-	        $wizardContent .= 'Receive Mode: <strong>VOX (Voice Operated Transmit)</strong>';
+	        $wizardContent .= 'Version: <strong>' . $board_info['version'] . '</strong>';
 	        $wizardContent .= '<br>';
-        }
+			
+		} else {
+			// Display manual port setup
+	        $wizardContent .= '<h3>Manual Port Settings</h3>';
 
-		for ($device = 0; $device <  count($_SESSION["sound_devices"]); $device++) {
-		   if ($_SESSION["sound_devices"][$device]['direction'] == "IN") {
-				$rxValue = 'alsa:plughw:'.$_SESSION["sound_devices"][$device]['card'].'|'.$_SESSION["sound_devices"][$device]['channel'];
-				$currentRX = $_SESSION['new_repeater_ports']['rxAudioDev'];
-				if ($rxValue == $currentRX) { 
-			        $wizardContent .= 'Receive Audio Output: <strong>INPUT: '.$_SESSION["sound_devices"][$device]['label'].' ('.$_SESSION["sound_devices"][$device]['channel_label'].')</strong>';
+			if ($_SESSION["new_repeater_ports"]['rxMode'] == "gpio") {
+		        $wizardContent .= 'Receive Mode: <strong>COS (Carrier Operated Switch)</strong>';
+		        $wizardContent .= '<br>';
+		        $wizardContent .= 'Receive GPIO Pin: <strong>'.$_SESSION["new_repeater_ports"]['rxGPIO'].' </strong> ('.$_SESSION["new_repeater_ports"]['rxGPIO_active'].')';
+				$wizardContent .= '<br>';
+	        } else 	if ($_SESSION["new_repeater_ports"]['rxMode'] == "vox") {
+		        $wizardContent .= 'Receive Mode: <strong>VOX (Voice Operated Transmit)</strong>';
+		        $wizardContent .= '<br>';
+	        }
+	
+			for ($device = 0; $device <  count($_SESSION["sound_devices"]); $device++) {
+			   if ($_SESSION["sound_devices"][$device]['direction'] == "IN") {
+					$rxValue = 'alsa:plughw:'.$_SESSION["sound_devices"][$device]['card'].'|'.$_SESSION["sound_devices"][$device]['channel'];
+					$currentRX = $_SESSION['new_repeater_ports']['rxAudioDev'];
+					if ($rxValue == $currentRX) { 
+				        $wizardContent .= 'Receive Audio Output: <strong>INPUT: '.$_SESSION["sound_devices"][$device]['label'].' ('.$_SESSION["sound_devices"][$device]['channel_label'].')</strong>';
+					}
 				}
 			}
-		}
-        $wizardContent .= '<hr>';
-
-
-        $wizardContent .= 'Transmit GPIO Pin: <strong>'.$_SESSION["new_repeater_ports"]['txGPIO'].'</strong> ('.$_SESSION["new_repeater_ports"]['txGPIO_active'].')';
-        $wizardContent .= '<br>';
-
-		for ($device = 0; $device <  count($_SESSION["sound_devices"]); $device++) {
-		   if ($_SESSION["sound_devices"][$device]['direction'] == "OUT") {
-				$txValue = 'alsa:plughw:'.$_SESSION["sound_devices"][$device]['card'].'|'.$_SESSION["sound_devices"][$device]['channel'];
-				$currentTX = $_SESSION['new_repeater_ports']['txAudioDev'];
-				if ($txValue == $currentTX) { 
-			        $wizardContent .= 'Transmit Audio Output: <strong>OUTPUT: '.$_SESSION["sound_devices"][$device]['label'].' ('.$_SESSION["sound_devices"][$device]['channel_label'].')</strong>';
-			        $wizardContent .= '<br>';
+	        $wizardContent .= '<br>';
+	
+	
+	        $wizardContent .= 'Transmit GPIO Pin: <strong>'.$_SESSION["new_repeater_ports"]['txGPIO'].'</strong> ('.$_SESSION["new_repeater_ports"]['txGPIO_active'].')';
+	        $wizardContent .= '<br>';
+	
+			for ($device = 0; $device <  count($_SESSION["sound_devices"]); $device++) {
+			   if ($_SESSION["sound_devices"][$device]['direction'] == "OUT") {
+					$txValue = 'alsa:plughw:'.$_SESSION["sound_devices"][$device]['card'].'|'.$_SESSION["sound_devices"][$device]['channel'];
+					$currentTX = $_SESSION['new_repeater_ports']['txAudioDev'];
+					if ($txValue == $currentTX) { 
+				        $wizardContent .= 'Transmit Audio Output: <strong>OUTPUT: '.$_SESSION["sound_devices"][$device]['label'].' ('.$_SESSION["sound_devices"][$device]['channel_label'].')</strong>';
+				        $wizardContent .= '<br>';
+					}
 				}
 			}
+
 		}
+
+
 
 
 
@@ -493,7 +562,7 @@ case "wizard_complete":
 // Page Output Template
 // ---------------------------------------------------------------------------------------
 
-$stepText = "Progress: Step ".$stepCurrent." of ".$stepTotal;
+$stepText = "Step ".$stepCurrent." of ".$stepTotal;
 $stepPercent = round(($stepCurrent/$stepTotal)*100)."%"; //create pecentage for inline CSS for progress bar
 
 $pageTitle = "Setup Wizard"; 

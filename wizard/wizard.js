@@ -18,7 +18,40 @@ if($('#rxMode').val() == 'gpio') {
 	$('#rxVOX_warn').hide();	
 } 
 
-	// Show/Hide applicable Long ID Settings, Update via AJAX
+	// Show/Hide applicable port method settings (Preset/Manual)
+    $('#board_id').change(function(){
+
+        if($('#board_id').val() == 'manual') {
+            $('#port_manual_grp').show(); 
+
+            $('#rxMode').prop('required',true);
+            $('#rxGPIO').prop('required',true);
+            $('#rxGPIO_active').prop('required',true);
+            $('#rxAudioDev').prop('required',true);
+            $('#txGPIO').prop('required',true);
+            $('#txGPIO_active').prop('required',true);
+            $('#txAudioDev').prop('required',true);
+
+            $('#rxMode').val('gpio');
+			$('#rxVOX_warn').hide();
+            $('#rxGPIO_grp').show();
+
+        } else {
+            $('#port_manual_grp').hide();
+
+            $('#rxMode').prop('required',false);
+            $('#rxGPIO').prop('required',false);
+            $('#rxGPIO_active').prop('required',false);
+            $('#rxAudioDev').prop('required',false);
+            $('#txGPIO').prop('required',false);
+            $('#txGPIO_active').prop('required',false);
+            $('#txAudioDev').prop('required',false);
+        } 
+
+    });
+
+
+	// Show/Hide applicable rxMode fields/warnings
     $('#rxMode').change(function(){
 
         if($('#rxMode').val() == 'gpio') {
@@ -41,6 +74,7 @@ if($('#rxMode').val() == 'gpio') {
         } 
 
     });
+
 });
 
 
