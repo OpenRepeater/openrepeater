@@ -197,7 +197,7 @@ include_once("includes/get_modules.php");
 											echo '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a></li>';
 										}
 									?>	
-									<li><a class="ajax-link" href="ports.php"><i class="icon-cog"></i><span class="hidden-tablet"> TX/RX Ports</span></a></li>
+									<li><a class="ajax-link" href="ports.php"><i class="icon-cog"></i><span class="hidden-tablet"> Interface</span></a></li>
 									<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>
 									<li><a class="ajax-link" href="dtmf.php"><i class="icon-th"></i><span class="hidden-tablet"> DTMF Reference</span></a></li>
 								<?php
