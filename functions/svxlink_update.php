@@ -72,6 +72,9 @@ switch ($settings['orp_Mode']) {
 				$config_array += $classSVXLink->build_logic_repeater($new_logic_name, $key);
 	
 				$new_event = $classSVXLinkTCL->alias_RepeaterLogic($new_logic_name);
+
+				$new_event = $classSVXLinkTCL->override_courtesy_tone($new_event);
+
 				$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
 				
 				$logicListArray = array($new_logic_name);
@@ -106,13 +109,13 @@ switch ($settings['orp_Mode']) {
 		// Build GPIO Config
 		$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();
 
-		# Insert TCL Overrides
-		$tclOverride = $classSVXLinkTCL->build_custom_tcl();
+		# Insert Logic TCL Overrides
+ 		$logicOverride = $classSVXLinkTCL->logic_override();
 
 
 		// WRITE CONFIGURATION & TCL FILES
 		$classSVXLink->write_config($config_array, 'svxlink.conf', 'ini');
-		$classSVXLink->write_config($tclOverride, 'CustomLogic.tcl', 'text');
+ 		$classSVXLink->write_config($logicOverride, 'Logic.tcl', 'text');
 		$classSVXLink->write_config($gpioConfigFile, 'gpio.conf', 'text');
 
         break;
@@ -156,7 +159,9 @@ $dbConnection->close();
 /* CLEAR SETTINGS UPDATE FLAG TO CLEAR BANNER AT TOP OF PAGE */
 $classDB->set_update_flag(false);
 
+$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink gpio_down');
 $shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
+$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink gpio_up');
 
 /* WHAT PAGE TO GO BACK TO */
 if ($_POST["return_url"]) {

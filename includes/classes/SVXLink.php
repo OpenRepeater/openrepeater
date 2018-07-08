@@ -339,26 +339,31 @@ class SVXLink {
 		}
 		$file_output = $this->orpFileHeader . $data;
 
-
 		switch ($filename) {
 		    case "svxlink.conf":
-				$filepath = '/etc/openrepeater/svxlink/' . $filename;
+				$filepath = '/etc/svxlink/';
 		        break;
 		    case "gpio.conf":
-				$filepath = '/etc/openrepeater/svxlink/' . $filename;
+				$filepath = '/etc/svxlink/';
 		        break;
-		    case "CustomLogic.tcl":
-				$filepath = '/etc/openrepeater/svxlink/local-events.d/' . $filename;
+		    case "Logic.tcl":
+				$filepath = '/usr/share/svxlink/events.d/local/';
 		        break;
 		    case (strpos($filename, "Module") === 0): // Begins with Module
-				$filepath = '/etc/openrepeater/svxlink/svxlink.d/' . $filename;
+				$filepath = '/etc/svxlink/svxlink.d/';
 		        break;
 		    case (strpos($filename, "ORP_") === 0): // Event beginning with ORP_
-				$filepath = '/usr/share/svxlink/events.d/' . $filename;
+				$filepath = '/usr/share/svxlink/events.d/';
 		        break;
 		}
 
-		file_put_contents($filepath, $file_output );
+		$full_file_path = $filepath . $filename;
+		
+		// If Directory Doesn't Exist, create it.
+		if (!is_dir($filepath)) { mkdir($filepath); }
+
+		// Write the File.
+		file_put_contents( $full_file_path, $file_output );
 	}
 
 
