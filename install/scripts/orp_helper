@@ -60,6 +60,16 @@ function svxlink_status {
 	systemctl is-active svxlink
 }
 
+function svxlink_gpio_up {
+	/usr/sbin/svxlink_gpio_up
+	echo up
+}
+
+function svxlink_gpio_down {
+	/usr/sbin/svxlink_gpio_down
+	echo down
+}
+
 
 ### SYSTEM FUNCTIONS ###
 function system_reboot {
@@ -187,7 +197,9 @@ while :; do
 			elif [ "$2" == "status" ]; then svxlink_status
 			elif [ "$2" == "enable" ]; then svxlink_enable
 			elif [ "$2" == "disable" ]; then svxlink_disable
-			else echo "INVALID OPTION"; echo "USAGE: orp_helper svxlink (start|stop|restart|status|enable|disable)"
+			elif [ "$2" == "gpio_up" ]; then svxlink_gpio_up
+			elif [ "$2" == "gpio_down" ]; then svxlink_gpio_down
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper svxlink (start|stop|restart|status|enable|disable|gpio_up|gpio_down)"
 			fi
 			exit;;
         system)
