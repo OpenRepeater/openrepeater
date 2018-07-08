@@ -57,10 +57,10 @@ class SVXLink_GPIO {
 		$this->process_gpio_pins();
 		
 		// Reformat arrays into space delminated lists of gpio pin numbers prefixed with 'gpio'
-		if (!empty($this->gpioInHighArray)) { $gpioInHighString = 'gpio'. implode(' gpio', $this->gpioInHighArray); }
-		if (!empty($this->gpioInLowArray)) { $gpioInLowString = 'gpio'. implode(' gpio', $this->gpioInLowArray); }
-		if (!empty($this->gpioOutHighArray)) { $gpioOutHighString = 'gpio'. implode(' gpio', $this->gpioOutHighArray); }
-		if (!empty($this->gpioOutLowArray)) { $gpioOutLowString = 'gpio'. implode(' gpio', $this->gpioOutLowArray); }
+		if (!empty($this->gpioInHighArray)) { $gpioInHighString = 'gpio'. implode(' gpio', $this->gpioInHighArray); } else { $gpioInHighString = ''; }
+		if (!empty($this->gpioInLowArray)) { $gpioInLowString = 'gpio'. implode(' gpio', $this->gpioInLowArray); } else { $gpioInLowString = ''; }
+		if (!empty($this->gpioOutHighArray)) { $gpioOutHighString = 'gpio'. implode(' gpio', $this->gpioOutHighArray); } else { $gpioOutHighString = ''; }
+		if (!empty($this->gpioOutLowArray)) { $gpioOutLowString = 'gpio'. implode(' gpio', $this->gpioOutLowArray); } else { $gpioOutLowString = ''; }
 
 		$gpioConfigFile = '
 			###############################################################################
