@@ -7,6 +7,7 @@ if (!empty($_POST)) {
 	$option = $_POST['post_option'];
 	echo exec_orp_helper($service, $option);
 }
+
 	
 // Function to pass and return commands from orp_helper script in BASH
 function exec_orp_helper ($opt1, $opt2) {
@@ -32,5 +33,4 @@ if( isset($_GET['update']) ) {
 		echo json_encode($outputArray);
 	}
 }
-
 ?>

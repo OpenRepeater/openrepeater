@@ -132,7 +132,7 @@ include('functions/ajax_system.php');
 					</div>
 					<div class="box-content">
 						<div class="info_label">SVXLink Status:</div>
-						<div class="info_value" class="rptStatus"><?php echo $status_string; ?></div>
+						<div id="rptStatus" class="info_value" ><?php echo $status_string; ?></div>
 
 						<div class="info_clear"></div>
 						

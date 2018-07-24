@@ -79,7 +79,6 @@ function updateSystemInfo(){
 	 		$("#cache_mem").html(systemInfo.cache_mem);
 	 		$("#percent_cach").html(systemInfo.percent_cach);
 	 		$("#bar4").width( systemInfo.percent_cach+'%' );
-
 		}
 	};
 	xmlhttp.open("GET", "../../functions/ajax_system.php?update=info", true);
@@ -159,25 +158,22 @@ function toggleRepeaterState() {
 }
 
 
-
 function svxlink_toggle_check_status(service, option) {
     $.ajax({ async: true, type: 'POST', dataType: 'text', url: ajax_url,
         data: { post_service: service, post_option: option },
         success: function (status) {
 			var status = $.trim(status);
-			console.log("Status: " + status);			
 			if(status==="active") {
 				// Shut it down
 				svxlink_toggle_state('svxlink','stop');
-				console.log("Stop");
 			} else {
 				// Start it ups
 				svxlink_toggle_state('svxlink','start');
-				console.log("Start");
 			}	
         }
     });	   
 };
+
 
 function svxlink_toggle_state(service, option) {
     $.ajax({ async: true, type: 'POST', dataType: 'text', url: ajax_url,
@@ -186,40 +182,14 @@ function svxlink_toggle_state(service, option) {
 			var state = $.trim(state);
 			if(state==="active") {
 				$( "#rptControlBtn" ).html( '<i class="icon-stop"></i> Stop Repeater' );
-				$( ".rptStatus" ).html( '<span class="label label-success">Active</span>' );
+				$( "#rptStatus" ).html( '<span class="label label-success">Active</span>' );
 			} else if(state==="failed") {
 				$( "#rptControlBtn" ).html( '<i class="icon-play"></i> Start Repeater' );
-				$( ".rptStatus" ).html( '<span class="label label-warning">FAILED</span> - <a href="log.php">View Log</a>' );
+				$( "#rptStatus" ).html( '<span class="label label-warning">FAILED</span> - <a href="log.php">View Log</a>' );
 			} else {
 				$( "#rptControlBtn" ).html( '<i class="icon-play"></i> Start Repeater' );
-				$( ".rptStatus" ).html( '<span class="label label">Deactivated</span>' );
+				$( "#rptStatus" ).html( '<span class="label label">Deactivated</span>' );
 			}	
         }
     });	   
 };
-
-
-
-/*
-function test_orp() {
-	$("#overlay").show();
-	$("#overlay .msg_1").html("Shutdown");
-
-	$("#overlay .msg_2").html("5");
-
-	var doCountdown = function() {
-		$('#overlay .msg_2').each(function() {
-			var count = parseInt($(this).html());
-			if (count !== 1) {
-				$(this).html(count - 1);
-			} else {
-				$("#overlay .msg_1").html("<strong>System Shutdown</strong><br><em>It is now safe to power down the controller</em>");
-				$("#overlay .msg_2").hide();
-// 				window.location.reload(true);
-				clearInterval(countDownInterval);
-			}
-		});
-	};
-	countDownInterval = setInterval(doCountdown, 1000);
-}
-*/
