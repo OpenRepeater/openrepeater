@@ -86,7 +86,7 @@ $board_definitions[] = [
 			'txGPIO' => '16',
 			'txGPIO_active' => 'high',
 			'rxAudioDev' => 'alsa:plughw:0|0',
-			'txAudioDev' => 'alsa:plughw:0|1',
+			'txAudioDev' => 'alsa:plughw:0|0',
 		],
 		2 => [
 			'portLabel' => 'Link',
@@ -96,7 +96,7 @@ $board_definitions[] = [
 			'txGPIO' => '17',
 			'txGPIO_active' => 'high',
 			'rxAudioDev' => 'alsa:plughw:1|0',
-			'txAudioDev' => 'alsa:plughw:1|1',
+			'txAudioDev' => 'alsa:plughw:1|0',
 		]
 	],
 	'modules' => [
