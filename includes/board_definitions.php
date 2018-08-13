@@ -142,26 +142,37 @@ Relay 4: 23 high
 // a:7:{s:7:"timeout";s:3:"120";s:15:"momentary_delay";s:3:"200";s:10:"access_pin";s:4:"1234";s:23:"access_attempts_allowed";s:1:"3";s:23:"relays_off_deactivation";s:1:"1";s:24:"relays_gpio_active_state";s:4:"high";s:5:"relay";a:4:{i:1;a:2:{s:4:"gpio";s:2:"20";s:5:"label";s:7:"Relay 1";}i:2;a:2:{s:4:"gpio";s:2:"21";s:5:"label";s:7:"Relay 2";}i:3;a:2:{s:4:"gpio";s:2:"22";s:5:"label";s:7:"Relay 3";}i:4;a:2:{s:4:"gpio";s:2:"23";s:5:"label";s:7:"Relay 4";}}}
 
 
-
-
 #################################################################################
-# ICS Controllers - Pi Repeater 1X
+# Richard Neese - SVXLink Basic Board
 #################################################################################
 
 $board_definitions[] = [
 	'manufacturer' => 'Richard Neese',
 	'model' => 'SVXLink Basic Board',
 	'version' => '1.0',
+	'ports' => [
+		1 => [
+			'portLabel' => 'Main Port',
+			'rxMode' => 'gpio',
+			'rxGPIO' => '23',
+			'rxGPIO_active' => 'high',
+			'txGPIO' => '24',
+			'txGPIO_active' => 'high',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+		],
+		2 => [
+			'portLabel' => 'Link Port',
+			'rxMode' => 'gpio',
+			'rxGPIO' => '25',
+			'rxGPIO_active' => 'high',
+			'txGPIO' => '18',
+			'txGPIO_active' => 'high',
+			'rxAudioDev' => 'alsa:plughw:1|1',
+			'txAudioDev' => 'alsa:plughw:1|1',
+		]
+	]
 ];
-
-/*
-SVXLink Basic Board (Ver 1, Rev 1A)
-Main Port RX GPIO: 23 high
-Main Port TX GPIO: 24 high
-Link Port RX GPIO: 25 high
-Link Port TX GPIO: 18 high
-*/
-
 
 
 #################################################################################
@@ -202,7 +213,6 @@ CTCSS2: 25 low
 CTCSS_ENC1: 13 low
 CTCSS2_ENC: 27 low
 */
-
 
 
 ?>
