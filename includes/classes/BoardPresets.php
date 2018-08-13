@@ -19,6 +19,12 @@ class BoardPresets {
 
 
 
+	private function orp_helper_call($section, $subfunc) {
+		return shell_exec( "sudo orp_helper " . trim($section) . " " . trim($subfunc) );
+	}
+
+
+
 	public function get_board_definitions($id = null) {
 		include_once($this->documentRoot . '/includes/board_definitions.php');
 		if(isset($id)) {
@@ -63,6 +69,18 @@ class BoardPresets {
 		}
 
 		return $html_options;
+	}
+
+
+
+	public function alsa_mixer_settings() {
+		# Loop through mixer settings by device, then settings and update ALSA settings
+		foreach ($this->boardPresetArray['alsa_settings'] as $current_alsa_dev => $curr_alsa_dev_values) {		
+			foreach ($curr_alsa_dev_values as $device_setting => $device_value) {
+				$alsa_args = '"' . $device_setting . '" "' . $device_value . '" ' . $current_alsa_dev;
+				$this->orp_helper_call('set_mixer', $alsa_args);
+			}		
+		}
 	}
 
 
@@ -155,6 +173,12 @@ class BoardPresets {
 		if (count($build_module_table) > 0) { $classDB->update_preset_modules($build_module_table); }
 		
 		$classDB->set_update_flag(true);
+
+
+		// Update Alsa Mixer Settings
+		if ( isset( $this->boardPresetArray['alsa_settings'] ) ) {
+			$this->alsa_mixer_settings();
+		}
 
 
 		return $fullBoardName;

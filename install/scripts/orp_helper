@@ -103,6 +103,16 @@ function audio_version {
 }
 
 
+### AUDIO FUNCTIONS ###
+function set_mixer {
+	if [ -n "$3" ]; then
+		amixer -c$3 set "$1" $2
+	else
+		amixer set "$1" $2
+	fi
+}
+
+
 ### NETWORK FUNCTIONS ###
 function network_read {
 	echo "Read Network Config for external parsing"
@@ -238,6 +248,12 @@ while :; do
 			elif [ "$2" == "outputs" ]; then audio_outputs
 			elif [ "$2" == "version" ]; then audio_version
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper audio (inputs|outputs|version)"
+			fi
+			exit;;
+        set_mixer)
+			if [[ -n "$2" && -n "$3" && -n "$4" ]]; then set_mixer "$2" "$3" "$4"
+			elif [[ -n "$2" && -n "$3" ]]; then set_mixer "$2" "$3"
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper set_mixer (setting) (value) [OPTIONAL: device]"
 			fi
 			exit;;
         network)

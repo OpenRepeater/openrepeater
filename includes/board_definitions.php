@@ -30,6 +30,15 @@ $board_definitions[] = [
 			'rxAudioDev' => 'alsa:plughw:0|0',
 			'txAudioDev' => 'alsa:plughw:0|0',
 		]
+	],
+	'alsa_settings' => [
+		0 => [
+			'Headphone' => '86%',
+			'PCM' => '75%',
+			'Lineout' => '58%',
+			'Mic' => '59%',
+			'Capture Mux' => 'LINE_IN'
+		]
 	]
 ];
 /*
@@ -60,7 +69,16 @@ $board_definitions[] = [
 			'rxAudioDev' => 'alsa:plughw:0|1',
 			'txAudioDev' => 'alsa:plughw:0|1',
 		]
-	]	
+	],
+	'alsa_settings' => [
+		0 => [
+			'Headphone' => '86%',
+			'PCM' => '75%',
+			'Lineout' => '58%',
+			'Mic' => '59%',
+			'Capture Mux' => 'LINE_IN'
+		]
+	]
 ];
 /*
 (Not Yet Supported by ORP)
@@ -99,6 +117,16 @@ $board_definitions[] = [
 			'txAudioDev' => 'alsa:plughw:1|0',
 		]
 	],
+	'alsa_settings' => [
+		0 => [
+			'Speaker' => '75%',
+			'Mic' => '69%'
+		],
+		1 => [
+			'Speaker' => '75%',
+			'Mic' => '69%'
+		]
+	],
 	'modules' => [
 		'Remote Relay' => [
 			'timeout' => '120',
@@ -132,15 +160,6 @@ $board_definitions[] = [
 	
 ];
 
-/*
-Relay 1: 20 high
-Relay 2: 21 high
-Relay 3: 22 high
-Relay 4: 23 high
-*/
-
-// a:7:{s:7:"timeout";s:3:"120";s:15:"momentary_delay";s:3:"200";s:10:"access_pin";s:4:"1234";s:23:"access_attempts_allowed";s:1:"3";s:23:"relays_off_deactivation";s:1:"1";s:24:"relays_gpio_active_state";s:4:"high";s:5:"relay";a:4:{i:1;a:2:{s:4:"gpio";s:2:"20";s:5:"label";s:7:"Relay 1";}i:2;a:2:{s:4:"gpio";s:2:"21";s:5:"label";s:7:"Relay 2";}i:3;a:2:{s:4:"gpio";s:2:"22";s:5:"label";s:7:"Relay 3";}i:4;a:2:{s:4:"gpio";s:2:"23";s:5:"label";s:7:"Relay 4";}}}
-
 
 #################################################################################
 # Richard Neese - SVXLink Basic Board
@@ -158,8 +177,8 @@ $board_definitions[] = [
 			'rxGPIO_active' => 'high',
 			'txGPIO' => '24',
 			'txGPIO_active' => 'high',
-			'rxAudioDev' => 'alsa:plughw:1|0',
-			'txAudioDev' => 'alsa:plughw:1|0',
+			'rxAudioDev' => 'alsa:plughw:0|0',
+			'txAudioDev' => 'alsa:plughw:0|0',
 		],
 		2 => [
 			'portLabel' => 'Link Port',
@@ -168,8 +187,18 @@ $board_definitions[] = [
 			'rxGPIO_active' => 'high',
 			'txGPIO' => '18',
 			'txGPIO_active' => 'high',
-			'rxAudioDev' => 'alsa:plughw:1|1',
-			'txAudioDev' => 'alsa:plughw:1|1',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+		]
+	],
+	'alsa_settings' => [
+		0 => [
+			'Speaker' => '75%',
+			'Mic' => '69%'
+		],
+		1 => [
+			'Speaker' => '75%',
+			'Mic' => '69%'
 		]
 	]
 ];
@@ -203,6 +232,15 @@ $board_definitions[] = [
 			'txGPIO_active' => 'low',
 			'rxAudioDev' => 'alsa:plughw:0|0',
 			'txAudioDev' => 'alsa:plughw:0|0',
+		]
+	],
+	'alsa_settings' => [
+		0 => [
+			'Headphone' => '86%',
+			'PCM' => '75%',
+			'Lineout' => '58%',
+			'Mic' => '59%',
+			'Capture Mux' => 'LINE_IN'
 		]
 	]
 ];
