@@ -99,6 +99,32 @@ $settings_array = unserialize($options);
 
 						  </fieldset>
 
+						<fieldset>
+							<legend>Proxy Settings (Optional)</legend>
+							<span class="help-inline">Please see http://www.echolink.org/proxy.htm for details<br></span>
+							<div class="control-group">
+								<label class="control-label">Proxy Server</label>
+								<div class="controls">
+								  <input type="text" id="proxy_server" name="proxy_server" value="<?php echo $settings_array['proxy_server']?>">
+								  <span class="help-inline">If set, connect to the given EchoLink proxy server host. All EchoLink connections, both incoming and outgoing, will then go through the proxy.</span>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label">Proxy Port</label>
+								<div class="controls">
+								  <input type="text" id="proxy_port" name="proxy_port" value="<?php echo !empty($settings_array['proxy_port']) ? $settings_array['proxy_port'] : '8100'; ?>">
+								  <span class="help-inline">Set the TCP port used for connecing to an EchoLink proxy server. Default is 8100.</span>	
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label">Proxy Password</label>
+								<div class="controls">
+								  <input type="password" id="proxy_password" name="proxy_password" value="<?php echo $settings_array['proxy_password']?>">
+								  <span class="help-inline">Set the EchoLink proxy password used when connecting to an EchoLink proxy server. Use the password PUBLIC for public proxy servers.</span>
+								</div>
+							</div>
+						</fieldset>	
+
 						<div class="form-actions">
 						  <input type="hidden" name="action" value="update">
 						  <input type="submit">
