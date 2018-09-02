@@ -21,9 +21,14 @@ $module_config_array['Module'.$cur_mod['svxlinkName']] = [
 	'DESCRIPTION' => $echolink_clean_desc,
 	'USE_GSM_ONLY' => '1',
 
-	'PROXY_SERVER' => $options['proxy_server'],
-	'PROXY_PORT' => $options['proxy_port'],
-	'PROXY_PASSWORD' => $options['proxy_password'],	
 ];
+
+// Append Proxy Settings.
+if(!empty($options['proxy_server'])){
+     	array_push($module_config_array['Module'.$cur_mod['svxlinkName']],
+		'PROXY_SERVER' => $options['proxy_server'],
+		'PROXY_PORT' => $options['proxy_port'],
+		'PROXY_PASSWORD' => $options['proxy_password']);
+}
 
 ?>
