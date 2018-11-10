@@ -36,11 +36,10 @@ $pageTitle = "General Settings";
 
 $customJS = "page-settings.js"; // "file1.js, file2.js, ... "
 
-include_once("includes/get_settings.php");
-include_once("includes/get_ctcss.php");
+// include_once("includes/get_ctcss.php");
 
 include('includes/header.php');
-$dbConnection->close();
+$ctcss = $Database->get_ctcss();
 
 ?>
 

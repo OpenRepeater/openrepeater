@@ -9,8 +9,10 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-// Include Classes
-require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/classes/BoardPresets.php');
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
 
 if( isset($_POST['action']) ) {
 	if ($_POST['action'] == 'loadBoardPreset'){
@@ -30,16 +32,18 @@ $board_presets = new BoardPresets();
 $board_select_options = $board_presets->get_select_options();
 
 
-$pageTitle = "Ports"; 
+$pageTitle = "Interface"; 
 
 $customJS = "page-ports.js"; // "file1.js, file2.js, ... "
 $customCSS = "page-ports.css"; // "file1.css, file2.css, ... "
 
-include('includes/get_sound.php');
 include('includes/header.php');
-include('includes/get_ports.php');
-	
-$dbConnection->close();
+$ports = $Database->get_ports();
+
+$SoundDevices = new SoundDevices();
+$device_list = $SoundDevices->get_device_list();
+$device_in_count = $SoundDevices->get_device_in_count();
+$device_out_count = $SoundDevices->get_device_out_count();
 
 
 #### PHP LOOPS TO READ AUDIO DEVICES AND SAVE TO PHP VARIABLES AS SELECT OPTIONS TO PASS TO JAVASCRIPT

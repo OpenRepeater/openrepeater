@@ -19,27 +19,20 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 $config_array = array();
 $config_array['GLOBAL'] = array(); // Declare empty for prioritization
 
-// Get Settings from SQLite
-include_once("../includes/get_settings.php");
-
-// Get Modules from SQLite
-include_once("../includes/get_modules.php");
-
-// Get Port Settings from SQLite
-include_once("../includes/get_ports.php");
-
-// Get GPIOs from SQLite that need to be set for OS (/sys/class/gpio/)
-include_once("../includes/get_gpios.php");
 
 /* ---------------------------------------------------------- */
 /* --- LOAD CLASSES --- */
 
-require_once('../includes/classes/Database.php');
-require_once('../includes/classes/SVXLink.php');
-require_once('../includes/classes/SVXLink_TCL.php');
-require_once('../includes/classes/SVXLink_GPIO.php');
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
 
+// Access database for Settings, Modules, Ports, and GPIOs
 $classDB = new Database();
+$settings = $classDB->get_settings();
+$module = $classDB->get_modules();
+$ports = $classDB->get_ports();
+$gpio = $classDB->get_gpios();
+
 $classSVXLink = new SVXLink($settings, $ports, $module);
 $classSVXLinkTCL = new SVXLink_TCL($settings);
 $classSVXLinkGPIO = new SVXLink_GPIO($gpio);
@@ -152,9 +145,6 @@ switch ($settings['orp_Mode']) {
 	
 /* ---------------------------------------------------------- */
 /* FINISH UP */
-
-/* CLOSE DATABSE CONNECTION */
-$dbConnection->close();
 
 /* CLEAR SETTINGS UPDATE FLAG TO CLEAR BANNER AT TOP OF PAGE */
 $classDB->set_update_flag(false);

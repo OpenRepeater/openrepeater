@@ -1,8 +1,13 @@
 <?php
-include_once("includes/get_settings.php");
-	
-include_once("includes/get_modules.php"); 
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
 
+$Database = new Database();
+$settings = $Database->get_settings();
+$module = $Database->get_modules();
+	
 	$modulesActive = array();
 	foreach($module as $cur_mod) { 
 		if ($cur_mod['moduleEnabled']==1) {

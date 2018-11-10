@@ -3,8 +3,6 @@
 # Board Presets Class
 #####################################################################################################
 
-require_once('Database.php');
-
 class BoardPresets {
 
     public $documentRoot;

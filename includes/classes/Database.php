@@ -9,8 +9,57 @@ class Database {
 
 
 	###############################################
+	# Settings Table
+	###############################################
+
+	public function get_settings($returnSetting = 'all') {
+		if ($returnSetting == 'all') {
+			$sql_query = 'SELECT * FROM settings';
+		} else {
+			$sql_query = "SELECT * FROM settings WHERE keyID = '".$returnSetting."'";
+		}
+
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$result = $db->query($sql_query) or die('Query failed');
+		
+		if ($returnSetting == 'all') {
+			// Return ALL settings as associative array
+			while ($row = $result->fetchArray()) {
+				$key = $row['keyID'];
+				$settings[$key] = $row['value'];
+			}
+			$db->close();
+			return $settings;
+
+		} else {
+			// Return requested setting value as string
+			$row = $result->fetchArray();
+			$db->close();
+			return $row['value'];		
+		}
+	}
+	
+	
+
+	###############################################
 	# Ports Table
 	###############################################
+
+	public function get_ports() {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$result = $db->query('SELECT * FROM "ports" ORDER BY "portNum" ASC') or die('Query failed');
+		
+		$ports = [];
+		while ($row = $result->fetchArray()) {			
+			$portNum = $row['portNum'];
+			foreach($row as $key => $value) {
+				$ports[$portNum][$key] = $value;
+			}
+		}
+		$db->close();
+		return $ports;	
+	}
+
 
 	public function clear_ports_table() {
 		$db = new SQLite3($this->db_loc);
@@ -39,9 +88,27 @@ class Database {
 	}
 
 
+
 	###############################################
 	# GPIO Table
 	###############################################
+
+	public function get_gpios() {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$result = $db->query('SELECT * FROM "gpio_pins" ORDER BY "gpio_num" ASC') or die('Query failed');
+		
+		$gpio = [];
+		while ($row = $result->fetchArray()) {			
+		    $pin_number = $row['gpio_num'];
+		    foreach($row as $key => $value) {
+				$gpio[$pin_number][$key] = $value;
+		     }
+		}
+
+		$db->close();
+		return $gpio;	
+	}
+
 
 	public function clear_gpio_table() {
 		$db = new SQLite3($this->db_loc);
@@ -69,9 +136,41 @@ class Database {
 	}
 
 
+
 	###############################################
 	# Module Table
 	###############################################
+
+	public function get_modules() {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$result = $db->query('SELECT * FROM "modules" ORDER BY "svxlinkID" ASC') or die('Query failed');
+		
+		$module = [];
+		while ($row = $result->fetchArray()) {			
+		    $module_key = $row['moduleKey'];
+		    foreach($row as $key => $value) {
+				$module[$module_key][$key] = $value;
+			}
+		}
+
+		$db->close();
+		return $module;	
+	}
+
+
+	public function active_module($id) {
+		$db = new SQLite3($this->db_loc);
+		if(isset($id)) {
+			// Target Module
+			$sql = "UPDATE modules SET moduleEnabled='1' WHERE moduleKey='$id'";
+		} else {
+			// Deactivate ALL Modules
+			$sql = "UPDATE modules SET moduleEnabled='1'";
+		}
+		$db->exec($sql);
+		$db->close();
+	}
+
 
 	public function deactive_module($id) {
 		$db = new SQLite3($this->db_loc);
@@ -97,6 +196,53 @@ class Database {
 		}
 		$db->close();
 	}
+
+
+
+	###############################################
+	# CTCSS Table
+	###############################################
+
+	// Read all the CTCSS Tones from SQLite into a PHP array
+	public function get_ctcss() {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$result = $db->query('SELECT * FROM "ctcss" ORDER BY "toneFreqHz" ASC') or die('Query failed');
+		
+		$ctcss = [];
+		while ($row = $result->fetchArray()) {			
+			$ctcss[$row['toneFreqHz']] = $row['toneFreqHz'];
+		}
+
+		$db->close();
+		return $ctcss;	
+	}
+
+
+
+	###############################################
+	# Version Table
+	###############################################
+
+	public function get_version() {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$result = $db->query('SELECT * FROM version_info') or die('Query failed');
+		$db->close();
+		
+		// Return requested setting value as string
+		$row = $result->fetchArray();
+		return $row['version_num'];		
+	}
+
+
+
+	###############################################
+	# Export
+	###############################################
+
+	public function db_dump() {
+		exec('sqlite3 '.$this->db_loc.' .dump > /var/www/openrepeater/backup/orp_test.sql', $output);
+	}
+
 
 
 	###############################################

@@ -9,7 +9,10 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-require_once('includes/classes/AudioFiles.php');
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
 $classAudioFiles = new AudioFiles();
 
 if (isset($_POST['action'])){
@@ -35,9 +38,7 @@ $pageTitle = "Identification";
 $customJS = "page-identification.js, morse-resampler.js, morse-XAudioServer.js, morse.js, morse-main.js"; // "file1.js, file2.js, ... "
 $customCSS = "page-identification.css"; // "file1.css, file2.css, ... "
 
-include_once("includes/get_settings.php");
 include('includes/header.php');
-$dbConnection->close();
 ?>
 
 			<?php if (isset($alert)) { echo $alert; } ?>

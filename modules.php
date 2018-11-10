@@ -14,7 +14,13 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 //$customCSS = "logtail.css"; // "file1.css, file2.css, ... "
 //$customJS = "logtail.js"; // "file1.js, file2.js, ... "
 
-include_once("includes/get_modules.php");
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
+
+$Database = new Database();
+$module = $Database->get_modules();
 ?>
 
 		<?php
@@ -22,14 +28,9 @@ include_once("includes/get_modules.php");
 			$module_id = $_GET['deactivate'];
 			$module[$module_id]['moduleEnabled'] = 0;
 
-			$sql = 'UPDATE modules SET moduleEnabled=0 WHERE moduleKey='.$module_id;
-			$dbConnection->exec($sql);
-
-			/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
-			$memcache_obj = new Memcache;
-			$memcache_obj->connect('localhost', 11211);
-			$memcache_obj->set('update_settings_flag', 1, false, 0);
-
+			$Database->deactive_module($module_id);
+			$Database->set_update_flag(true);
+			
 			$msgText = "The ".$module[$module_id]['moduleName']." Module has been successfully <strong>deactivated</strong>.";
 			$alert = '<div class="alert alert-success">'.$msgText.'</div>';
 		}
@@ -38,13 +39,8 @@ include_once("includes/get_modules.php");
 			$module_id = $_GET['activate'];
 			$module[$module_id]['moduleEnabled'] = 1;
 
-			$sql = 'UPDATE modules SET moduleEnabled=1 WHERE moduleKey='.$module_id;
-			$dbConnection->exec($sql);
-
-			/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
-			$memcache_obj = new Memcache;
-			$memcache_obj->connect('localhost', 11211);
-			$memcache_obj->set('update_settings_flag', 1, false, 0);
+			$Database->active_module($module_id);
+			$Database->set_update_flag(true);
 
 			$msgText = "The ".$module[$module_id]['moduleName']." Module has been successfully <strong>activated</strong>.";
 			$alert = '<div class="alert alert-success">'.$msgText.'</div>';
@@ -170,9 +166,8 @@ include_once("includes/get_modules.php");
 		<?php } ?>
 
 
-<?php include('includes/footer.php'); 
-$dbConnection->close();
-?>
+
+<?php include('includes/footer.php'); ?>
 
 <?php
 // --------------------------------------------------------
