@@ -226,11 +226,12 @@ class Database {
 	public function get_version() {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
 		$result = $db->query('SELECT * FROM version_info') or die('Query failed');
-		$db->close();
 		
 		// Return requested setting value as string
 		$row = $result->fetchArray();
 		return $row['version_num'];		
+
+		$db->close();
 	}
 
 
