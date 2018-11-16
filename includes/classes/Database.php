@@ -240,11 +240,41 @@ class Database {
 	# Export
 	###############################################
 
-	public function db_dump() {
-		exec('sqlite3 '.$this->db_loc.' .dump > /var/www/openrepeater/backup/orp_test.sql', $output);
+	public function db_export($db_tables, $sql_file) {
+		$orp_version = $this->get_version();
+
+		// SQL File Header, start file
+		$sql_file_header = str_repeat('-',80) . "\n-- OpenRepeater Backup (ver $orp_version)\n" . str_repeat('-',80);
+		exec('echo "' . $sql_file_header . '"  > ' . $sql_file);
+
+		// Loop through each table
+		foreach ($db_tables as $cur_table) {
+			// Section Header
+			$sql_section_header = "\n\n" . str_repeat('-',80) . "\n-- Table: $cur_table\n" . str_repeat('-',80);
+			exec('echo "' . $sql_section_header . '"  >> ' . $sql_file);
+
+			// Dump current table
+			exec('sqlite3 ' . $this->db_loc . ' ".dump ' . $cur_table . '" >> ' . $sql_file);
+		}
+
 	}
 
+	###############################################
+	# Import
+	###############################################
 
+	public function db_import($db_tables, $sql_file) {
+		// Empty Afected Tabled
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		// Loop through each table
+		foreach ($db_tables as $cur_table) {
+			$db->query("DELETE FROM $cur_table;") or die('Query failed');
+		}
+		$db->close();
+
+		// Import SQL file
+		exec('cat ' . $sql_file . ' | sqlite3 ' . $this->db_loc);
+	}
 
 	###############################################
 	# Memcache Flag
