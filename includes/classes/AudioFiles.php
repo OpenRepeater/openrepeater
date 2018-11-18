@@ -204,7 +204,7 @@ class AudioFiles {
 					<h3 class="modal-title" id="myModalLabel">Delete ' . $modal_label . '</h3>
 				      </div>
 				      <div class="modal-body">
-					Are you sure that you want to delete the ' . strtolower($modal_label) . ' <strong>' . $fileArray['fileLabel'] . '</strong>? This cannot be undo!
+					Are you sure that you want to delete the ' . strtolower($modal_label) . ' <strong>' . $fileArray['fileLabel'] . '</strong>? This cannot be undone!
 					<input type="hidden" name="delfile[]" value="' . $fileArray['fileName'] . '">
 					<input type="hidden" name="action" value="delete_file">
 				      </div>
