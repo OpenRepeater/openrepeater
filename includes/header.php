@@ -161,6 +161,8 @@ $module = $Database->get_modules();
 					<ul class="dropdown-menu">
 						<li><a href="../login.php?action=setPassword">Change Password</a></li>
 						<li class="divider"></li>
+						<li><a href="../backup.php">Backup & Restore</a></li>
+						<li class="divider"></li>
 						<li><a href="../login.php?action=logout">Logout</a></li>
 					</ul>
 				</div>

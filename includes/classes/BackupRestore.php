@@ -10,13 +10,15 @@ class BackupRestore {
 	private $orp_version;
 	
 	private $backupPath = "/var/www/openrepeater/backup/";
+ 	private $baseDownloadPath = '/backup/'; // This will get read and rewritten in construct below
 	private $archive_base_name;
+	private $backup_file_name;
 	private $archive_build_dir;
 	private $backup_restore_dir;
 	private $backup_db_file = 'backup.sql';
 	private $db_tables = ['settings','gpio_pins','ports','modules'];
 	private $backup_ini_file = 'backup.ini';
-	private $backup_sounds_dir = '/var/www/openrepeater/sounds';
+	private $orp_sounds_dir = '/var/www/openrepeater/sounds/';
 
 
 	public function __construct() {
@@ -30,6 +32,12 @@ class BackupRestore {
 		$this->backup_restore_dir = $this->backupPath . 'restore/';
 
 		$this->archive_base_name = strtolower($this->callsign) . date( "_Y-m-d_H-i-s", strtotime( $this->dateString ) );
+
+		// Construct base download url
+		$path = $this->baseDownloadPath; // Read starting path
+		$protocol = empty($_SERVER['HTTPS']) ? 'http' : 'https';
+		$this->baseDownloadPath = $protocol .'://' . $_SERVER['HTTP_HOST'] . $path; // Rewrite as full url
+
 	}
 
 
@@ -60,7 +68,21 @@ class BackupRestore {
 		// Clean and remove build folder & contents
 		$this->removeDirectory($this->archive_build_dir);
 
+		// Verify Backup File was Created and return results.
+		if (file_exists($this->backupPath . $this->backup_file_name)) {
+			return array(
+				'msgType' => 'success',
+				'msgText' => 'Successfully created backup: <strong>' . $this->backup_file_name . '</strong>'
+			);	
+		} else {
+			return array(
+				'msgType' => 'error',
+				'msgText' => 'There was a problem creating the backup. Please try again. If the problem persists, it may be due to a permissions issue.'
+			);				
+		}
+
 	}
+	
 	
 
 
@@ -69,6 +91,8 @@ class BackupRestore {
 	###############################################
 
 	public function pre_restore_validation($selected_restore_file) {
+		$data = [];
+		$errorLevel = 0;
 
 		// Check full file path exists before continuing
 		if (!file_exists($this->backupPath . $selected_restore_file)) {
@@ -88,53 +112,78 @@ class BackupRestore {
 		$this->unpack_archive($this->backupPath . $selected_restore_file);
 
 		// Verify min files exist: DB, INI file
-		if (file_exists($this->backup_restore_dir . $this->backup_ini_file)) {
-			echo 'INI Exists<br>';
+		if (!file_exists($this->backup_restore_dir . $this->backup_ini_file)) { $errorLevel++; }
+		if (!file_exists($this->backup_restore_dir . $this->backup_db_file)) { $errorLevel++; }
+
+		if ($errorLevel == 0) {
+			$data['status'] = 'ok';
+
+			// Read INI and compare
+			$Database = new Database();
+			$curr_orp_verion = $Database->get_version();
+			$ini_array = $this->read_ini( $this->backup_restore_dir . $this->backup_ini_file );
+			if ($curr_orp_verion == $ini_array['ORP_Backup']['orp_version']) {
+				$data['versionMatch'] = true;				
+			} else {
+				$data['versionMatch'] = false;
+			}
+			$data['curr_orp_verion'] = $curr_orp_verion;
+			$data['backup_orp_verion'] = $ini_array['ORP_Backup']['orp_version'];
+			$data['backup_callsign'] = $ini_array['ORP_Backup']['orp_callsign'];
+			$data['backup_date'] = date( "F j, Y, g:i a", strtotime( $ini_array['ORP_Backup']['backup_date'] ) );
+			
 		} else {
-			echo 'INI Doesn\'t Exists<br>';
+	        $data['status'] = 'error';
 		}
 
-		if (file_exists($this->backup_restore_dir . $this->backup_db_file)) {
-			echo 'DB Exists<br>';
-		} else {
-			echo 'DB Doesn\'t Exists<br>';
-		}
+        $data['errorLevel'] = $errorLevel;
 
-		// Read INI and compare
-		$Database = new Database();
-		$curr_orp_verion = $Database->get_version();
-		$ini_array = $this->read_ini( $this->backup_restore_dir . $this->backup_ini_file );
-		if ($curr_orp_verion == $ini_array['ORP_Backup']['orp_version']) {
-			echo 'Version Matches<br>';
-		} else {
-			echo 'Mismatched Version<br>';
-		}
-		echo 'Other Version Info: ' . $ini_array['ORP_Backup']['orp_callsign'] . ' | ' . date( "F j, Y, g:i a", strtotime( $ini_array['ORP_Backup']['backup_date'] ) ) . '<br>';
-
-		echo '<br>End Pre-Restore';
-		
+	    //returns data as JSON format
+	    echo json_encode($data);		
 	}
 
 
 	public function restore_backup() {
+		
+		########################################
+		# Copy Sounds into place
 
-		# Unpack Backup into Temp Folder
-		# Verify min files exist: DB, INI file
-		# Read INI 
+		$existing_courtesy_tones = $this->orp_sounds_dir . 'courtesy_tones/';
+		$existing_identification = $this->orp_sounds_dir . 'identification/';
+		$restore_courtesy_tones = $this->backup_restore_dir . 'courtesy_tones/';
+		$restore_identification = $this->backup_restore_dir . 'identification/';
+		
+		// If Courtesy Tones exist in backup, then restore
+		if (file_exists($restore_courtesy_tones)) {
+			$this->removeDirectory($existing_courtesy_tones);
+			exec("cp $restore_courtesy_tones $existing_courtesy_tones -R");
+		}
 
+		// If Identification exist in backup, then restore
+		if (file_exists($restore_identification)) {
+			$this->removeDirectory($existing_identification);
+			exec("cp $restore_identification $existing_identification -R");
+		}
+		########################################
 
 		# FUTURE: Add restoration of ALSA settings
-
-
+		
 		// Empty affected DB tables and import SQL file to DB.
 		$sql_file = $this->backup_restore_dir . $this->backup_db_file;
-
 		$Database = new Database();
-		$Database->db_export( $this->db_tables, $sql_file );
+		$Database->db_import( $this->db_tables, $sql_file );
 
-		$Database->db_import( $this->db_tables, '/var/www/openrepeater/backup/build/backup.sql' ); // Temp build location
-
+		// Cleanup/Delete Restore directory
+		$this->removeDirectory($this->backup_restore_dir);
 		
+		// Set Rebuild Flag
+		$Database->set_update_flag(true);
+
+		return array(
+			'msgType' => 'success',
+			'msgText' => 'Backup was successfully restored.'
+		);	
+
 	}
 
 
@@ -150,7 +199,7 @@ class BackupRestore {
 		    // Add Files/Folders to Archive
 		    $archive->addFile($this->archive_build_dir . $this->backup_db_file, $this->backup_db_file); // DB
 		    $archive->addFile($this->archive_build_dir . $this->backup_ini_file, $this->backup_ini_file); // INI
-			$archive->buildFromDirectory($this->backup_sounds_dir); // Sounds
+			$archive->buildFromDirectory($this->orp_sounds_dir); // Sounds
 		
 		    // Compress Archive
 		    $archive->compress(Phar::GZ);
@@ -160,6 +209,9 @@ class BackupRestore {
 
 			// Rename Compressed format with ORP extension
 			rename($this->archive_build_dir . $this->archive_base_name . '.tar.gz', $this->backupPath . $this->archive_base_name . '.orp');
+			
+			// Set file name as variable for verification and display
+			$this->backup_file_name = $this->archive_base_name . '.orp';
 
 		} catch (Exception $e) {
 		    echo "Exception : " . $e;
@@ -277,24 +329,40 @@ class BackupRestore {
 		$hidden_array = ['build','restore'];
 		$total_dir_size = 0;		
 		if ($backupLib) {			
-			$displayHTML = '<table width="100%"><tr><th>File Name</th><th>Size</th><th>Date</th><th>&nbsp;</th></tr>';
+			$displayHTML = '<table class="table table-striped table-condensed bootstrap-datatable">';
+			$displayHTML .= '<table class="table table-striped table-condensed bootstrap-datatable">';
+			$displayHTML .= '<thead><tr class="audio_row"><th>Name</th><th>Date</th><th>Size</th><th class="button_grp">Actions</th></tr></thead>   
+	<tbody>';
+
 
 			foreach($backupLib as $fileArray) {	
 				if (!in_array($fileArray['fileName'], $hidden_array, true)) {
 					$total_dir_size = $total_dir_size + $fileArray['fileSize'];
 					
-					// Development Output
 					$displayHTML .= '
-					  <tr>
-					    <td>' . $fileArray['fileName'] . '</td>
-					    <td>' . $this->formatSize($fileArray['fileSize']) . '</td>
-					    <td>' . date("F d Y H:i:s",$fileArray['fileDate']) . '</td>
-					    <td><a href="#">Restore</a> <a href="#">Download</a> <a href="#">Delete</a></td>
-					  </tr>';
+					<tr id="shortIDsoundRow1" class="audio_row">
+						<td><h3>' . $fileArray['fileName'] . '</h3></td>
+						
+						<td class="center">' . date("F d Y H:i:s",$fileArray['fileDate']) . '</td>
+							
+						<td class="center">' . $this->formatSize($fileArray['fileSize']) . '</td>
+
+						<td class="button_grp">
+						
+							<button type="button" class="btn btn-success" data-toggle="modal" data-target="#restoreFile" onclick="restoreFile(\'' . $fileArray['fileName'] . '\'); return false;"><i class="icon-refresh icon-white"></i> Restore</button>
+						
+							<!-- Button triggered modal -->
+							<button class="btn" onclick="location.href=\'' . $this->baseDownloadPath . $fileArray['fileName'] . '\'"><i class="icon-download-alt"></i></button>
+			
+							<!-- Button triggered modal -->
+							<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile" onclick="deleteFile(\'' . $fileArray['fileName'] . '\'); return false;"><i class="icon-trash icon-white"></i></button>
+						</td>
+					</tr>
+					';
 				}
 			}
 
-			$displayHTML .= '</table>';
+			$displayHTML .= '</tbody></table>';
 
 			$displayHTML .= 'TOTAL FILE SIZE: ' . $this->formatSize($total_dir_size);
 			
@@ -309,11 +377,34 @@ class BackupRestore {
 
 
 	###############################################
+	# Delete Backup
+	###############################################
+
+	public function deleteBackup($file) {
+	    unlink($this->backupPath . $file);
+
+		if (!file_exists($this->backupPath . $file)) {
+			return array(
+				'msgType' => 'success',
+				'msgText' => 'File successfully Deleted.'
+			);	
+		} else {
+			return array(
+				'msgType' => 'error',
+				'msgText' => 'There was a problem deleting the file. Please try again. If the problem persists, it may be due to a permissions issue.'
+			);				
+		}
+	}
+
+
+
+	###############################################
 	# Recursively Remove Directory
 	###############################################
 
 	// Only removes 2 directories deep
 	public function removeDirectory($path) {
+/*
 		$files = glob($path . '*');
 		foreach ($files as $file) {
 			if (is_dir($file)) { 
@@ -327,7 +418,21 @@ class BackupRestore {
 			}
 		}
 		rmdir($path);
+*/
+		exec('rm ' . $path . ' -R');
 		return;
+	}
+
+
+
+	###############################################
+	# Delete Backup
+	###############################################
+
+	public function is_dir_empty($dir) {
+		if (!file_exists($dir)) { return NULL; }
+		if (!is_readable($dir)) { return NULL; }
+		return (count(scandir($dir)) == 2);
 	}
 
 
