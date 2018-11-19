@@ -326,7 +326,7 @@ class BackupRestore {
 	public function display_backup_files() {
 
 		$backupLib = $this->get_backup_files();
-		$hidden_array = ['build','restore'];
+		$hidden_array = ['build','restore','.gitignore'];
 		$total_dir_size = 0;		
 		if ($backupLib) {			
 			$displayHTML = '<table class="table table-striped table-condensed bootstrap-datatable">';
