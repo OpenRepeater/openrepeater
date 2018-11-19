@@ -281,6 +281,99 @@ class BackupRestore {
 
 
 	###############################################
+	# Upload Backup Files
+	###############################################
+
+	public function upload_backup_files($fileNameArray) {
+
+		$maxFileSize = 500000000; // size in bytes
+		$allowedExts = array('orp');
+	
+		//Loop through each file
+		for($i=0; $i<count($fileNameArray['name']); $i++) {
+			//Get the temp file path
+			$tmpFile1 = $fileNameArray['tmp_name'][$i];
+			
+			$temp_ext = explode(".", $fileNameArray['name'][$i]);
+			$extension = end($temp_ext);
+
+			$currFile = $this->backupPath . str_replace(" ","_",$fileNameArray['name'][$i]);
+			
+
+			# Check File Size isn't too large
+			if($fileNameArray['size'][$i] > $maxFileSize){
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'Sorry, but the file you tried to upload is <strong>too large</strong>.'
+				);	
+			}
+
+			# Check to see if file is allowed type
+			if(!in_array($extension, $allowedExts)) {
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'Sorry, but the file you tried to upload is not in a supported format. Files must end with an .orp extension.'
+				);	
+			}
+
+			# Check to see if system temp folder is writable
+			if (!is_writable( sys_get_temp_dir() )) {
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'Sorry, it looks like there is a configuration issue. The system\'s temp folder is not writable'
+				);	
+			}
+
+			# Check for error reported by file array
+			if ($fileNameArray['error'][$i] > 0) {
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'There was a problem uploading the file'
+				);	
+			}
+
+			# Check to see if file already exists
+			if (file_exists($currFile)) {
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'Sorry but the file already exists.'
+				);	
+			}
+
+
+			if ($tmpFile1 != ""){
+				move_uploaded_file($tmpFile1, $currFile);
+
+				if (file_exists($currFile)) {
+					// SUCCESSFUL
+					return array(
+						'msgType' => 'success',
+						'msgText' => 'Successfully uploaded the backup file to library.'
+					);	
+					
+				} else {
+					// Failure
+					return array(
+						'msgType' => 'error',
+						'msgText' => 'There was a problem uploading the file.'
+					);						
+				}
+				
+			}
+
+		}
+
+		# Some how it got thru validation, but nothing was done.
+		return array(
+			'msgType' => 'error',
+			'msgText' => 'Don\'t know what happened, but nothing appears to have been done.'
+		);	
+
+	}
+
+
+
+	###############################################
 	# Get Local Backed Up Files
 	###############################################
 
