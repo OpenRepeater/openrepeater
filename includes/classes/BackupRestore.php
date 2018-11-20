@@ -18,6 +18,7 @@ class BackupRestore {
 	private $backup_db_file = 'backup.sql';
 	private $db_tables = ['settings','gpio_pins','ports','modules'];
 	private $backup_ini_file = 'backup.ini';
+	private $alsa_state_file = 'alsamixer.state';
 	private $orp_sounds_dir = '/var/www/openrepeater/sounds/';
 
 
@@ -60,7 +61,8 @@ class BackupRestore {
 		$Database = new Database();
 		$Database->db_export( $this->db_tables, $sql_file );
 
-		# FUTURE: Add backup of ALSA settings
+		// Backup of ALSA settings
+		exec('sudo orp_helper alsa backup "' . $this->archive_build_dir . $this->alsa_state_file . '"');
 
 		// Add build files to archive, including sounds, then package as ORP file
 		$this->build_archive();
@@ -166,8 +168,11 @@ class BackupRestore {
 		}
 		########################################
 
-		# FUTURE: Add restoration of ALSA settings
-		
+		// Restoration of ALSA settings
+		if (file_exists($this->backup_restore_dir . $this->alsa_state_file)) {
+			exec('sudo orp_helper alsa restore "' . $this->backup_restore_dir . $this->alsa_state_file . '"');
+		}
+
 		// Empty affected DB tables and import SQL file to DB.
 		$sql_file = $this->backup_restore_dir . $this->backup_db_file;
 		$Database = new Database();
@@ -199,6 +204,8 @@ class BackupRestore {
 		    // Add Files/Folders to Archive
 		    $archive->addFile($this->archive_build_dir . $this->backup_db_file, $this->backup_db_file); // DB
 		    $archive->addFile($this->archive_build_dir . $this->backup_ini_file, $this->backup_ini_file); // INI
+		    $archive->addFile($this->archive_build_dir . $this->alsa_state_file, $this->alsa_state_file); // alsamixer backup
+
 			$archive->buildFromDirectory($this->orp_sounds_dir); // Sounds
 		
 		    // Compress Archive

@@ -112,6 +112,15 @@ function set_mixer {
 	fi
 }
 
+function alsamixer_backup {
+	alsactl --file "$1" store
+	chown www-data:www-data "$1"
+}
+
+function alsamixer_restore {
+	alsactl --file "$1" restore
+}
+
 
 ### NETWORK FUNCTIONS ###
 function network_read {
@@ -254,6 +263,12 @@ while :; do
 			if [[ -n "$2" && -n "$3" && -n "$4" ]]; then set_mixer "$2" "$3" "$4"
 			elif [[ -n "$2" && -n "$3" ]]; then set_mixer "$2" "$3"
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper set_mixer (setting) (value) [OPTIONAL: device]"
+			fi
+			exit;;
+        alsa)
+			if [ "$2" == "backup" ]; then alsamixer_backup "$3"
+			elif [ "$2" == "restore" ]; then alsamixer_restore "$3"
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper alsa (backup|restore) [path]"
 			fi
 			exit;;
         network)
