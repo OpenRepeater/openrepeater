@@ -116,7 +116,7 @@ class BoardPresets {
 						'gpio_num' => $curr_port_values['rxGPIO'],
 						'direction' => 'in',
 						'active' => $curr_port_values['rxGPIO_active'],
-						'description' => 'PORT ' . $current_port_id . ' RX: ' . $board_definitions[$board_selected]['model'],
+						'description' => 'PORT ' . $current_port_id . ' RX (' . $this->boardPresetArray['model'] . ')',
 						'type' => 'Port'
 					];			
 				}
@@ -127,7 +127,7 @@ class BoardPresets {
 						'gpio_num' => $curr_port_values['txGPIO'],
 						'direction' => 'out',
 						'active' => $curr_port_values['txGPIO_active'],
-						'description' => 'PORT ' . $current_port_id . ' TX: ' . $board_definitions[$board_selected]['model'],
+						'description' => 'PORT ' . $current_port_id . ' TX: (' . $this->boardPresetArray['model'] . ')',
 						'type' => 'Port'
 					];
 				}
