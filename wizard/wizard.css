@@ -1,5 +1,14 @@
 /* @override https://192.168.1.132/wizard/wizard.css */
 
+.scrollTerms {
+	height:200px;
+	width:100%;
+	border:1px solid #ccc;
+	padding: 15px;
+	box-sizing: border-box;
+	overflow:auto;
+	margin-bottom: 5px;
+}
 
 div.row-fluid {
 	max-width: 800px;

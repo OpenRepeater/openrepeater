@@ -7,6 +7,11 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are, show the page.
 // --------------------------------------------------------
 
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
+
 session_name("open_repeater_wizard");   // In case there are several session based applications
 
 if (!isset($_POST["page"])) {
@@ -46,7 +51,8 @@ if (!isset($_POST["page"])) {
 	$_SESSION["interface"] = array(); // Define Interface Settings Array
 		
 	// read sound devices into session array
-	include('../includes/get_sound.php');
+	$SoundDevices = new SoundDevices();
+	$device_list = $SoundDevices->get_device_list();
 	$_SESSION["sound_devices"] = array();
 	$_SESSION["sound_devices"] = $device_list;
 
@@ -71,7 +77,7 @@ case "not_set": // write this pages cotents into array and go to next page
 	break;
 
 case "wizard_page1": // write this pages cotents into array and go to next page
-	if ($_POST['agree'] == 'yes') {
+	if (isset($_POST['agree'])) {
 		$_SESSION["agree"] = $_POST['agree']; // Sets to yes, just in case the user goes back to page
 	} else {
 		$alert = '<div class="alert alert-error">Sorry, but you must read and agree to the terms to continue.</div>';
@@ -119,7 +125,6 @@ case "wizard_update":
 		$merged_settings = array_merge($_SESSION["new_repeater_settings"], $_SESSION["default_settings"]);
 		$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');	
 	
-		require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/classes/BoardPresets.php');
 		$board_presets = new BoardPresets();
 
 		// Update Settings Table
@@ -227,24 +232,19 @@ case "wizard_page1":
 
 			<p>&nbsp;</p>";
 
-        $wizardContent .= "
-			<legend>Before You Get Started</legend>
-			<p>NOT SO FAST THERE SPARKY! There are a couple things you will need to do before you are able to setup your OpenRepeater controller:</p>
-			<ul>
-				<li><strong>SOUND (required):</strong> You will need to have a connected sound device to handle the incoming and outgoing audio for the “port”. The wizard will use some magic to try to detect this device. The line input or mic channel will be used to process audio from the receiver (RX). The line out or headphone jack will be used to send audio from the OpenRepeater controller to the transmitter (TX).</li>
-				<li><strong>PTT GPIO (required):</strong> You will need to know the GPIO pin number that you will be using with your single-board computer (SBC) to control the PTT (Push-To-Talk) of the transmitter. The controller will set this pin high (+3.3 Volts DC) to control external switching circuitry to key the transmitter. Note that the GPIO pin number is more than likely different than the pin number on the GPIO header. Please refer to a pinout diagram for your SBC.</li>
-				<li><strong>COS GPIO (recommended):</strong> While this option is not required it is highly recommended that you use COS control over software VOX as it will be much more reliable and stable. In order to do so, you will need to know the GPIO pin number that you will be using with your single-board computer (SBC) to receive the COS control signal from the receiver. This pin will be pulled to ground (0 VDC) to be active and should have a pull up resister to pull the pin back up to (+3.3 Volts DC) when inactive. You will need an external interface or circuitry to interface to and isolate this pin to prevent damage to the SBC. An optocoupler circuit is recommended. Note that the GPIO pin number is more than likely different than the pin number on the GPIO header. Please refer to a pinout diagram for your SBC.</li>
-			</ul>
-			<p>&nbsp;</p>";
-						
-        $wizardContent .= "
-			<legend>Caution About Setting Up Uncoordinated Repeaters</legend>
-			<div class='alert alert-info'><p>Having two repeaters operate on the same radio frequencies is problematic as they can interfere with each other, even with selective calling methods enabled. To help minimize this issue, regional repeater coordination organizations have been created. In some jurisdictions, coordination may be required by law or regulation. In the USA, coordination is optional and done on a voluntary basis, but Part 97 rule 205(c) prefers a coordinated repeater over an uncoordinated repeater in disputes over interference. Coordination in the USA is overseen by the National Frequency Coordinators' Council (NFCC), a non-profit organization that certifies regional coordinators.</p><p>When setting up a temporary uncoordinated repeater, it is best to research and check the frequencies first before putting the repeater on the air. This can be done by both listening to the frequencies for repeater activity and checking current repeater directory resources for repeaters in the area you plan to operate. If you do happen to encounter interference, please be respectful and move to another frequency. If you plan to setup a permanent/fixed repeater installation, coordination is highly advised.</p></div>
-		";
+        $wizardContent .= '<legend>Before You Get Started</legend>';
+
+        $wizardContent .= '<div class="scrollTerms">'; // Start of Scroll Box
+
+		ob_start();
+		include "includes/agreement.php";
+		$wizardContent .= ob_get_clean();
+
+        $wizardContent .= '</div>'; // END of Scroll Box
 
         $wizardContent .= '
 		<div>
-			<input type="checkbox" name="agree" value="yes"'.$agree_status.'> YES, I understand about setting up a repeater and the potential to interfere with others. Let\'s get this show on the road!
+			<input type="checkbox" name="agree" value="yes"'.$agree_status.'> I have read the requirements for hardware and I understand about setting up a repeater and the potential to cause interference.
 		</div>
 		';
 
@@ -270,7 +270,7 @@ case "wizard_page2":
 			
 			<label class="control-label" for="callSign">Call Sign</label>
 			<div class="controls">
-			  <input class="input-xlarge" style="text-transform: uppercase" id="callSign" type="text" name="callSign" value="'.$_SESSION['new_repeater_settings']['callSign'].'" autofocus required>
+			  <input class="input-xlarge" style="text-transform: uppercase" id="callSign" type="text" name="callSign" value="' . (isset($_SESSION['new_repeater_settings']['callSign']) ? $_SESSION['new_repeater_settings']['callSign'] : '') . '" autofocus required>
 			  <span class="help-inline">This call sign will be used for identification.</span>
 			</div>
 		';
@@ -289,7 +289,6 @@ case "wizard_page3":
 		$stepCurrent = 3;
 
 		// Load Board Presets
-		require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/classes/BoardPresets.php');
 		$board_presets = new BoardPresets();
 		$board_select_options = $board_presets->get_select_options();
 
@@ -323,15 +322,24 @@ case "wizard_page3":
 			<p>Ports are the audio and logic I/Os that interface the OpenRepeater controller with the transmitter and receiver to make the repeater function. This is done through other external circuitry. Since you have chosen to set this up manually, you must specify the settings for this hardware. It utilizes both a sound card and the GPIO pins to make up the port, usually a paired receiver and transmitter hence a repeater. Here you will setup the first port required to make the controller initially function. You will be able to add other ports later if you require them and your hardware supports them.</p>
 		';
 
+isset($_SESSION['new_repeater_ports']['rxMode']) ? $rxMode = $_SESSION['new_repeater_ports']['rxMode'] : $rxMode = 'gpio';
+isset($_SESSION['new_repeater_ports']['rxAudioDev']) ? $rxAudioDev = $_SESSION['new_repeater_ports']['rxAudioDev'] : $rxAudioDev = '';
+isset($_SESSION['new_repeater_ports']['rxGPIO_active']) ? $rxGPIO_active = $_SESSION['new_repeater_ports']['rxGPIO_active'] : $rxGPIO_active = 'high';
+isset($_SESSION['new_repeater_ports']['rxGPIO']) ? $rxGPIO = $_SESSION['new_repeater_ports']['rxMode'] : $rxGPIO = '';
+isset($_SESSION['new_repeater_ports']['txAudioDev']) ? $txAudioDev = $_SESSION['new_repeater_ports']['txAudioDev'] : $txAudioDev = '';
+isset($_SESSION['new_repeater_ports']['txGPIO_active']) ? $txGPIO_active = $_SESSION['new_repeater_ports']['txGPIO_active'] : $txGPIO_active = 'low';
+isset($_SESSION['new_repeater_ports']['txGPIO']) ? $txGPIO = $_SESSION['new_repeater_ports']['txGPIO'] : $txGPIO = '';
+
+
 		$rxModeOptions = '';
-		if ($_SESSION['new_repeater_ports']['rxMode'] == 'gpio') { $rxModeOptions .= '<option value="gpio" selected>COS (Carrier Operated Switch)</option>'; } else { $rxModeOptions .= '<option value="gpio">COS (Carrier Operated Switch)</option>'; }
-		if ($_SESSION['new_repeater_ports']['rxMode'] == 'vox') { $rxModeOptions .= '<option value="vox" selected>VOX (Voice Operated Transmit)</option>'; } else { $rxModeOptions .= '<option value="vox">VOX (Voice Operated Transmit)</option>'; }
+		if ($rxMode == 'gpio') { $rxModeOptions .= '<option value="gpio" selected>COS (Carrier Operated Switch)</option>'; } else { $rxModeOptions .= '<option value="gpio">COS (Carrier Operated Switch)</option>'; }
+		if ($rxMode == 'vox') { $rxModeOptions .= '<option value="vox" selected>VOX (Voice Operated Transmit)</option>'; } else { $rxModeOptions .= '<option value="vox">VOX (Voice Operated Transmit)</option>'; }
 
 		$rxDeviceOptions = "";
 		for ($device = 0; $device <  count($_SESSION["sound_devices"]); $device++) {
 		   if ($_SESSION["sound_devices"][$device]['direction'] == "IN") {
 				$rxValue = 'alsa:plughw:'.$_SESSION["sound_devices"][$device]['card'].'|'.$_SESSION["sound_devices"][$device]['channel'];
-				$currentRX = $_SESSION['new_repeater_ports']['rxAudioDev'];
+				$currentRX = $rxAudioDev;
 				if ($rxValue == $currentRX) { $rxSelected = " selected"; } else { $rxSelected = ""; }
 				$rxDeviceOptions .= '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT: '.$_SESSION["sound_devices"][$device]['label'].' ('.$_SESSION["sound_devices"][$device]['channel_label'].')</option>';
 			}
@@ -342,13 +350,13 @@ case "wizard_page3":
 
 			<input type="hidden" value="Port 1" name="portLabel">';
 
-		if ($_SESSION['new_repeater_ports']['rxGPIO_active'] == 'low' || '') {
+		if ($rxGPIO_active == 'low' || '') {
 			$rxGPIO_active_options = '<option value = "low" selected>Active Low</option><option value = "high">Active High</option>';			
 		} else {
 			$rxGPIO_active_options = '<option value = "low">Active Low</option><option value = "high" selected>Active High</option>';			
 		}
 
-		if ($_SESSION['new_repeater_ports']['txGPIO_active'] == 'high' || '') {
+		if ($rxGPIO_active == 'high' || '') {
 			$txGPIO_active_options = '<option value = "low">Active Low</option><option value = "high" selected>Active High</option>';			
 		} else {
 			$txGPIO_active_options = '<option value = "low" selected>Active Low</option><option value = "high">Active High</option>';			
@@ -379,7 +387,7 @@ case "wizard_page3":
 			<div class="control-group">
 				<label class="control-label" for="rxGPIO">Receive GPIO Pin</label>
 				<div class="controls">
-					<input type="text" value="'.$_SESSION['new_repeater_ports']['rxGPIO'].'" class="form-control" id="rxGPIO" name="rxGPIO" maxlength="3" style="width:143px;" placeholder="PIN #">
+					<input type="text" value="'.$rxGPIO.'" class="form-control" id="rxGPIO" name="rxGPIO" maxlength="3" style="width:143px;" placeholder="PIN #">
 					<select id="rxGPIO_active" name="rxGPIO_active" style="width:143px;">'.$rxGPIO_active_options.'</select>					
 				</div>
 				<span class="help">The GPIO input pin that will trigger the COS and whether it should be active high or low.</span>
@@ -404,7 +412,7 @@ case "wizard_page3":
 		for ($device = 0; $device <  count($_SESSION["sound_devices"]); $device++) {
 		   if ($_SESSION["sound_devices"][$device]['direction'] == "OUT") {
 				$txValue = 'alsa:plughw:'.$_SESSION["sound_devices"][$device]['card'].'|'.$_SESSION["sound_devices"][$device]['channel'];
-				$currentTX = $_SESSION['new_repeater_ports']['txAudioDev'];
+				$currentTX = $txAudioDev;
 				if ($txValue == $currentTX) { $txSelected = " selected"; } else { $txSelected = ""; }
 				$txDeviceOptions .= '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT: '.$_SESSION["sound_devices"][$device]['label'].' ('.$_SESSION["sound_devices"][$device]['channel_label'].')</option>';
 			}
@@ -417,7 +425,7 @@ case "wizard_page3":
 			<div class="control-group">
 				<label class="control-label" for="txGPIO">Transmit GPIO Pin</label>
 				<div class="controls">
-					<input type="text" value="'.$_SESSION['new_repeater_ports']['txGPIO'].'" class="form-control" id="txGPIO" name="txGPIO" maxlength="3" style="width:143px;" placeholder="PIN #" required>
+					<input type="text" value="'.$txGPIO.'" class="form-control" id="txGPIO" name="txGPIO" maxlength="3" style="width:143px;" placeholder="PIN #" required>
 					<select id="txGPIO_active" name="txGPIO_active" style="width:143px;">'.$txGPIO_active_options.'</select>					
 				</div>
 				<span class="help">The GPIO output pin that controls PTT on the transmitter and whether it should be active</span>
@@ -466,7 +474,6 @@ case "wizard_confirmation":
 			// Display Preset Board Settings
 			$board_id = $_SESSION["interface"]["board_id"];
 
-			require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/classes/BoardPresets.php');
 			$board_presets = new BoardPresets();
 			$board_info = $board_presets->get_board_definitions($board_id);
 
@@ -565,7 +572,7 @@ $stepPercent = round(($stepCurrent/$stepTotal)*100)."%"; //create pecentage for 
 
 $pageTitle = "Setup Wizard"; 
 // Wizard CSS is loaded by custom header in wizard folder
-include('header.php'); // Load custom wizard header
+include('includes/header.php'); // Load custom wizard header
 ?>
 
 			<h3><?php echo $stepText; ?></h3>
@@ -601,7 +608,7 @@ include('header.php'); // Load custom wizard header
 
 			</form>
     
-<?php include('footer.php'); // Load custom wizard footer ?>
+<?php include('includes/footer.php'); // Load custom wizard footer ?>
 
 
 
