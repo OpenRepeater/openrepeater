@@ -30,7 +30,7 @@ if ( isset( $_POST['validate_restore'] ) ) {
 } else if ( isset( $_POST['createBackup'] ) ) {
 	$results = $BackupRestore->create_backup();
 	$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
-} else if ($_POST['action'] == "upload_file") {
+} else if ( isset( $_POST['upload_file'] ) ) {
 	$results = $BackupRestore->upload_backup_files($_FILES['file']);
 	$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
 }
@@ -79,8 +79,6 @@ include('includes/header.php');
 				</div><!--/span-->
 			</div><!--/row-->
 
-			
-<?php echo $audioTable['modals']; ?>
 
 
 <!-- Modal - CREATE BACKUP DIALOG -->
@@ -115,12 +113,11 @@ include('includes/header.php');
       </div>
       <div class="modal-body">
 		<p>Upload an offline OpenRepeater backup file. These are special package files that end with an ".orp" extension. These can be either copies that you've previously download from this controller for offline archiving or backups that you wish to transfer from another OpenRepeater controller. Once uploaded, they will appear in the Local Backup Library where you can then initiate a restore.</p>
-		<input type="hidden" name="action" value="upload_file">
 		<input type="file" name="file[]" id="file" accept=".orp" required>
       </div>
       <div class="modal-footer">
 	<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-	<button type="submit" class="btn btn-success"><i class="icon-arrow-up icon-white"></i> Upload</button>
+	<button type="submit" class="btn btn-success"name="upload_file"><i class="icon-arrow-up icon-white"></i> Upload</button>
 
       </div>
     </div><!-- /.modal-content -->
