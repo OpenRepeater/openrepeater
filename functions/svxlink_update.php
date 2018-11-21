@@ -154,7 +154,7 @@ $shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
 $shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink gpio_up');
 
 /* WHAT PAGE TO GO BACK TO */
-if ($_POST["return_url"]) {
+if (isset($_POST["return_url"])) {
 	// Return to page that sent here
 	$url = strtok($_POST["return_url"], '?'); //Clean parameters from URL
 	header('location: '.$url);	
