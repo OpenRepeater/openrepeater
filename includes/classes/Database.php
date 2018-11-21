@@ -172,7 +172,7 @@ class Database {
 	}
 
 
-	public function deactive_module($id) {
+	public function deactive_module($id = NULL) {
 		$db = new SQLite3($this->db_loc);
 		if(isset($id)) {
 			// Target Module
