@@ -62,14 +62,22 @@ class Database {
 		return $results;
 	}
 
-	// INSERT ROW
+	// VALUE EXISTS - Return True/False
+	public function exists($table, $column, $value) {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$sql = 'SELECT COUNT(*) FROM "'.$table.'" WHERE "'.$column.'" = "'.$value.'";';
+		$result = $db->querySingle($sql, true) or die('Query failed');
+		if ( $result['COUNT(*)'] > 0 ) { return true; } else { return false; }
+	}
+
+	// INSERT ROW - Return True/False
 	public function insert($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
 		$results = $db->query($sql) or die('Query failed');
 		if ( $db->changes() > 0 ) { return true; } else { return false; }
 	}
 
-	// DELETE ROW
+	// DELETE ROW - Return True/False
 	public function delete_row($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
 		$results = $db->query($sql) or die('Query failed');
