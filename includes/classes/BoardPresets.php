@@ -7,12 +7,16 @@ class BoardPresets {
 
     public $documentRoot;
     public $boardPresetArray;
+    public $selectedBoardArray;
     public $boardManufacturerArray;
 
 
 
 	public function __construct() {
 		$this->documentRoot = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
+
+		include_once($this->documentRoot . '/includes/board_definitions.php');
+		$this->boardPresetArray = $board_definitions;
 	}
 
 
@@ -24,22 +28,18 @@ class BoardPresets {
 
 
 	public function get_board_definitions($id = null) {
-		include_once($this->documentRoot . '/includes/board_definitions.php');
 		if(isset($id)) {
 			# Return Single Board Preset
-			$this->boardPresetArray = $board_definitions[$id];			
-		} else {
-			# Return All Board Presets
-			$this->boardPresetArray = $board_definitions;			
+			$this->selectedBoardArray = $this->boardPresetArray[$id];			
 		}
-		return $this->boardPresetArray;
+		return $this->selectedBoardArray;
 	}
 
 
 	
 	public function get_manufacturers() {
 		// Check if board array has been set, if not set it.
-		if (empty($this->boardPresetArray)) { $this->get_board_definitions(); }
+// 		if (empty($this->boardPresetArray)) { $this->get_board_definitions(); }
 
 		foreach ($this->boardPresetArray as $board) {
 			$this->boardManufacturerArray[] = $board['manufacturer'];
@@ -53,7 +53,7 @@ class BoardPresets {
 
 	public function get_select_options() {
 		// Check if Arrays have been set, if not set them.
-		if (empty($this->boardPresetArray)) { $this->get_board_definitions(); }
+// 		if (empty($this->boardPresetArray)) { $this->get_board_definitions(); }
 		if (empty($this->boardManufacturerArray)) { $this->get_manufacturers(); }
 
 		$html_options = "";
@@ -73,7 +73,7 @@ class BoardPresets {
 
 	public function alsa_mixer_settings() {
 		# Loop through mixer settings by device, then settings and update ALSA settings
-		foreach ($this->boardPresetArray['alsa_settings'] as $current_alsa_dev => $curr_alsa_dev_values) {		
+		foreach ($this->selectedBoardArray['alsa_settings'] as $current_alsa_dev => $curr_alsa_dev_values) {		
 			foreach ($curr_alsa_dev_values as $device_setting => $device_value) {
 				$alsa_args = '"' . $device_setting . '" "' . $device_value . '" ' . $current_alsa_dev;
 				$this->orp_helper_call('set_mixer', $alsa_args);
@@ -86,7 +86,7 @@ class BoardPresets {
 	public function load_board_settings($id = null) {
 		$this->get_board_definitions($id);
 
-		$fullBoardName = trim($this->boardPresetArray['manufacturer'] . ' - ' . $this->boardPresetArray['model']);
+		$fullBoardName = trim($this->selectedBoardArray['manufacturer'] . ' - ' . $this->selectedBoardArray['model']);
 				
 		// Build Preset Values to Save to Database
 		$build_ports_table = array();
@@ -94,9 +94,9 @@ class BoardPresets {
 		$build_module_table = array();
 		$build_module_gpio_pins = array();
 		
-		if (isset($this->boardPresetArray['ports'])) {
+		if (isset($this->selectedBoardArray['ports'])) {
 			// Build Ports
-			foreach ($this->boardPresetArray['ports'] as $current_port_id => $curr_port_values) {
+			foreach ($this->selectedBoardArray['ports'] as $current_port_id => $curr_port_values) {
 				// Add Port Values
 				$build_ports_table[$current_port_id] = [
 					'portNum' => $current_port_id,
@@ -116,7 +116,7 @@ class BoardPresets {
 						'gpio_num' => $curr_port_values['rxGPIO'],
 						'direction' => 'in',
 						'active' => $curr_port_values['rxGPIO_active'],
-						'description' => 'PORT ' . $current_port_id . ' RX (' . $this->boardPresetArray['model'] . ')',
+						'description' => 'PORT ' . $current_port_id . ' RX (' . $this->selectedBoardArray['model'] . ')',
 						'type' => 'Port'
 					];			
 				}
@@ -127,7 +127,7 @@ class BoardPresets {
 						'gpio_num' => $curr_port_values['txGPIO'],
 						'direction' => 'out',
 						'active' => $curr_port_values['txGPIO_active'],
-						'description' => 'PORT ' . $current_port_id . ' TX: (' . $this->boardPresetArray['model'] . ')',
+						'description' => 'PORT ' . $current_port_id . ' TX: (' . $this->selectedBoardArray['model'] . ')',
 						'type' => 'Port'
 					];
 				}
@@ -135,10 +135,8 @@ class BoardPresets {
 			}
 		}
 
-
-
-		if (isset($this->boardPresetArray['modules'])) {
-			foreach ($this->boardPresetArray['modules'] as $current_module_name => $curr_module_values) {
+		if (isset($this->selectedBoardArray['modules'])) {
+			foreach ($this->selectedBoardArray['modules'] as $current_module_name => $curr_module_values) {
 				$build_module_table[] = [
 					'moduleName' => $current_module_name,
 					'moduleOptions' => serialize($curr_module_values)
@@ -174,10 +172,12 @@ class BoardPresets {
 
 
 		// Update Alsa Mixer Settings
-		if ( isset( $this->boardPresetArray['alsa_settings'] ) ) {
+		if ( isset( $this->selectedBoardArray['alsa_settings'] ) ) {
 			$this->alsa_mixer_settings();
 		}
 
+		// Rerun board definitions to reset Board Preset Array
+		$this->get_board_definitions();
 
 		return $fullBoardName;
 	}
