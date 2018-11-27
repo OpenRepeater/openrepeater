@@ -1,0 +1,641 @@
+<?php
+#####################################################################################################
+# Modules Framework Class
+#####################################################################################################
+
+class Modules {
+
+    private $Database = '/var/www/openrepeater/';
+	private $modules_path;
+	private $includes_path;
+	private $core_modules = ['Help','Parrot','EchoLink'];
+	
+	// SVXLink Locations
+	private $svxlink_events_d_path = '/usr/share/svxlink/events.d/';
+	private $svxlink_modules_d_path = '/usr/share/svxlink/modules.d/';
+	private $svxlink_sounds = '/usr/share/svxlink/sounds/en_US/'; // Need to read config for language folder.
+
+
+	public function __construct() {
+		$this->Database = new Database();
+		$this->modules_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/modules/';
+		$this->includes_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/';
+	}
+
+
+	###############################################
+	# Get Modules from DB
+	###############################################
+
+	public function get_modules() {
+		# REWRITE PENDING
+		# Currently Redirects to Database Class
+		# Plan to pull logic form those classes once everything points here
+		return $this->Database->get_modules();
+	}
+
+
+
+	###############################################
+	# Get Settings for Selected Module
+	###############################################
+
+	public function get_module_settings($id) {
+		$sql = 'SELECT moduleOptions FROM "modules" WHERE "moduleKey" = ' . $id;
+		$module = $this->Database->select_single($sql);
+		$moduleOptionsArray = unserialize($module['moduleOptions']);
+		return $moduleOptionsArray;	
+	}
+
+
+
+	###############################################
+	# Submit Settings for Selected Module
+	###############################################
+
+	public function save_module_settings($settings_array) {
+		$moduleID = $settings_array['moduleKey'];
+		unset($settings_array['moduleKey']); // Remove id after extracted above
+		unset($settings_array['updateModuleSettings']); // Remove Action
+
+		$modules = $this->get_modules();
+
+		// Check for custom form processor, if one exists...then insert inline with IN and OUT arrays for external processing
+		$mod_custom_submit_file = $this->modules_path . $modules[$moduleID]['svxlinkName'] . '/custom_submit.php';
+		if (file_exists($mod_custom_submit_file)) { 
+			$inputArray = $settings_array;
+			include($mod_custom_submit_file);
+			$settings_array = $outputArray;
+		}
+
+		$serializedSettings = serialize($settings_array);
+
+		$sql = "UPDATE modules SET moduleOptions = '$serializedSettings' WHERE moduleKey = '$moduleID';";
+		$insert_result = $this->Database->insert($sql);
+
+		if ($insert_result) { 
+			$this->Database->set_update_flag(true);
+			return array(
+				'msgType' => 'success',
+				'msgText' => 'Successfully saved module settings.'
+			);
+		} else { 
+			return array(
+				'msgType' => 'error',
+				'msgText' => 'There was a problem saving the module settings.'
+			);
+		}
+
+	}
+
+
+
+	###############################################
+	# Activate Module
+	###############################################
+
+	public function activateMod($id) {
+		$sql = 'SELECT * FROM "modules" WHERE "moduleKey" = "'.$id.'";';
+		$select_result = $this->Database->select_key_value($sql, 'moduleKey', 'svxlinkName');
+		$svxlink_name = $select_result[$id];
+
+		# REWRITE PENDING
+		# Currently Redirects to Database Class
+		# Plan to pull logic form those classes once everything points here
+		$this->Database->active_module($id);
+
+		$this->initialize_module($svxlink_name);		
+		$this->Database->set_update_flag(true);
+
+		return array(
+			'msgType' => 'success',
+			'msgText' => 'The module has been successfully <strong>activated</strong>.'
+		);
+	}
+
+
+
+	###############################################
+	# Deactivate Module
+	###############################################
+
+	public function deactivateMod($id) {
+		# REWRITE PENDING
+		# Currently Redirects to Database Class
+		# Plan to pull logic form those classes once everything points here
+		$this->Database->deactive_module($id);
+		$this->Database->set_update_flag(true);
+
+		return array(
+			'msgType' => 'success',
+			'msgText' => 'The module has been successfully <strong>deactivated</strong>.'
+		);
+	}
+
+
+
+	###############################################
+	# Upload Module
+	###############################################
+
+	public function upload_module() {
+		# Upload module package (i.e. ZIP file) into temp dir
+		# Unpack module package into a temp folder
+		# Verify minimum files required exist
+		# Read INI
+		# check module doesn't already exist
+		# Initiate Install and pass module name
+		# If aborted for any reason, clean up.
+	}
+
+
+
+	###############################################
+	# Install Module
+	###############################################
+
+	public function initialize_module($svxlink_name, $enabled = 0) {
+		$svxlink_name = trim($svxlink_name);
+
+		// Preceed only if module is not listed as a core module
+		if ( !in_array($svxlink_name, $this->core_modules) ) {
+
+			### Check for SVXLink Components and link into place ###
+	
+			// events.d directory
+			$mod_events_d_path = $this->modules_path . $svxlink_name . '/svxlink/events.d/';
+			if (file_exists($mod_events_d_path)) {
+				$fileArray = $this->read_dir($mod_events_d_path);
+				
+				// Create link for each file
+				// Files stay in ORP module folder and a link is created in SVXLink folder
+				foreach($fileArray as $file) {
+					$currTarget = $file['filePath'];
+					$currLink = $this->svxlink_events_d_path . $file['fileName'];
+					if (file_exists($currLink)) { unlink($currLink); } // Clean old link/file
+					symlink($currTarget, $currLink); // Set New Link
+				}
+			}
+	
+			// modules.d directory
+			$mod_modules_d_path = $this->modules_path . $svxlink_name . '/svxlink/modules.d/';
+			if (file_exists($mod_modules_d_path)) {
+				$fileArray = $this->read_dir($mod_modules_d_path);
+				
+				// Create link for each file
+				// Files stay in ORP module folder and a link is created in SVXLink folder
+				foreach($fileArray as $file) {
+					$currTarget = $file['filePath'];
+					$currLink = $this->svxlink_modules_d_path . $file['fileName'];
+					if (file_exists($currLink)) { unlink($currLink); } // Clean old link/file
+					symlink($currTarget, $currLink); // Set New Link
+				}
+			}
+	
+	
+			### Check for SVXLink Sounds and link into place ###
+	
+			$svxlink_sounds_path = $this->svxlink_sounds . $svxlink_name;
+			$mod_sounds_path = $this->modules_path . $svxlink_name . '/svxlink/sounds/en_US/';
+			if (file_exists($mod_sounds_path)) {
+				if (file_exists($svxlink_sounds_path)) { exec('rm ' . $svxlink_sounds_path . ' -R'); }
+				symlink($mod_sounds_path, $svxlink_sounds_path); // Set New Link
+			}
+
+
+			### Created DB record in modules table, if it doesn't exist, and set as deactive ###
+
+			if ($this->Database->exists('modules','svxlinkName',$svxlink_name) == false) { 
+				$sql = 'INSERT INTO "modules" ("moduleKey","moduleEnabled","svxlinkName","svxlinkID") VALUES (NULL,'.$enabled.',\''.$svxlink_name.'\',\''.$this->find_next_svxlink_id().'\')';
+				$insert_result = $this->Database->insert($sql);
+			}
+
+		}
+	}
+
+
+	public function install_module($svxlink_name) {
+		$svxlink_name = trim($svxlink_name);
+
+		### If Module Dir Doesn't Exist, create it. ###
+		if ( !file_exists( $this->modules_path . $svxlink_name ) ) {
+		    mkdir( $this->modules_path . $svxlink_name, 0777, true );
+		}
+		
+		# Create/Move Unzipped module package into name based dir
+
+		# Initialize Module
+		$this->initialize_module($svxlink_name);
+		
+	}
+
+
+
+	###############################################
+	# Remove Module
+	###############################################
+
+	public function remove_module($svxlink_name) {
+		$svxlink_name = trim($svxlink_name);
+
+		### Prevent Removal of Core Modules ###
+		if ( in_array($svxlink_name, $this->core_modules) ) {
+			exit("This is a core module and cannot be removed!");
+		}
+
+		### Verify Module is Deactivated ###
+
+		### Check for SVXLink Components and remove ###
+
+		// events.d directory
+		$mod_events_d_path = $this->modules_path . $svxlink_name . '/svxlink/events.d/';
+		if (file_exists($mod_events_d_path)) {
+			$fileArray = $this->read_dir($mod_events_d_path);
+			
+			// Remove link for each file
+			foreach($fileArray as $file) {
+				$currLink = $this->svxlink_events_d_path . $file['fileName'];
+				if (file_exists($currLink)) { unlink($currLink); }
+			}
+		}
+
+		// modules.d directory
+		$mod_modules_d_path = $this->modules_path . $svxlink_name . '/svxlink/modules.d/';
+		if (file_exists($mod_modules_d_path)) {
+			$fileArray = $this->read_dir($mod_modules_d_path);
+			
+			// Remove link for each file
+			foreach($fileArray as $file) {
+				$currLink = $this->svxlink_modules_d_path . $file['fileName'];
+				if (file_exists($currLink)) { unlink($currLink); }
+			}
+		}
+
+		### Check for SVXLink Sounds and remove ###
+
+		$svxlink_sounds_path = $this->svxlink_sounds . $svxlink_name;
+		$mod_sounds_path = $this->modules_path . $svxlink_name . '/svxlink/sounds/en_US/';
+		if (file_exists($mod_sounds_path)) {
+			if (file_exists($svxlink_sounds_path)) { exec('rm ' . $svxlink_sounds_path . ' -R'); }
+		}
+
+		### Remove module dir ###
+		
+		exec('rm ' . $this->modules_path . $svxlink_name . ' -R');
+		if ( !file_exists( $this->modules_path . $svxlink_name ) ) {
+		    echo "Directory Removed";
+		} else {
+		    echo "Directory Still Exist";
+		}
+		
+		### Remove DB record in modules table ###
+		
+		$sql = 'DELETE FROM "modules" WHERE svxlinkName = "' . $svxlink_name . '";';
+		$delete_result = $this->Database->delete_row($sql);
+		if ($delete_result) { echo 'Delete Successful'; } else { echo 'Delete Failed'; }
+
+	}
+
+
+
+	###############################################
+	# Display All Modules
+	###############################################
+
+	public function display_all() {
+		$modules = $this->get_modules();
+
+		$return_html = '
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><div style="width:200px">Module</div></th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			
+			<tbody>';
+
+		foreach($modules as $cur_mod) { 
+			$mod_ini_file = $this->modules_path.$cur_mod['svxlinkName'].'/info.ini';
+			$mod_settings_file = $this->modules_path.$cur_mod['svxlinkName'].'/settings.php';
+			$dtmf_help_file = $this->modules_path.$cur_mod['svxlinkName'].'/dtmf.php';
+
+			$curr_mod_ini = $this->read_ini($cur_mod['svxlinkName']);
+
+			if (isset($curr_mod_ini['Module_Info']['display_name'])) {
+				$currDisplayName = $curr_mod_ini['Module_Info']['display_name'];
+			} else {
+			    $currDisplayName = $cur_mod['svxlinkName'];
+			}
+
+			$return_html .= '
+			<tr>
+				<td>
+					<div><h3>' . $currDisplayName . ' (' . $cur_mod['svxlinkID'] .'#)</h3></div>
+ 					<div>';
+ 			
+ 			if ($cur_mod['moduleEnabled']==1) { 
+	 			$return_html .= '<span class="label-success label label-default">Active</span>';
+	 		} else {
+		 		$return_html .= '<span class="label-default label">Inactive</span>';
+		 	}
+			
+			$return_html .= '</div><div>';
+			
+			// Activate / Deactiveate Link
+			if ($cur_mod['moduleEnabled']==1) {
+				$return_html .= '<a href="?deactivate='.$cur_mod['moduleKey'].'">Deactivate</a>';
+			} else {
+				$return_html .= '<a href="?activate='.$cur_mod['moduleKey'].'">Activate</a>';													
+			}
+
+			// Settings Link...if Applicable
+			if ($cur_mod['moduleEnabled']==1 && file_exists($mod_settings_file)) {
+				$return_html .= ' | <a href="modules.php?settings='.$cur_mod['moduleKey'].'">Settings</a>';
+			}
+
+			// Delete Link...if not core module			
+			if ( $cur_mod['moduleEnabled']==0 && !in_array($cur_mod['svxlinkName'], $this->core_modules) ) {
+				$return_html .= ' | <a href="modules.php?delete='.$cur_mod['moduleKey'].'">Delete</a>';
+			}
+
+			// DTMF Link...if Applicable
+			if ($cur_mod['moduleEnabled']==1 && file_exists($dtmf_help_file)) {
+				$return_html .= ' | <a href="dtmf.php#'.$cur_mod['svxlinkName'].'">DTMF</a>';
+			}
+
+			$return_html .= '</div></td><td>';
+			
+			if (isset($curr_mod_ini['Module_Info']['mod_desc'])) {
+				$return_html .= $curr_mod_ini['Module_Info']['mod_desc'];
+			} else {
+			    $return_html .= "<em>(No Information)</em>";
+			}
+
+
+			$return_html .= '</td></tr>';
+
+		} /* End Current Module */
+
+		$return_html .= '</tbody></table>';
+		
+		return $return_html;	
+	}
+
+
+
+	###############################################
+	# Display Module Settings Page
+	###############################################
+
+	public function display_settings($id) {
+		$modules = $this->get_modules();
+
+		// If modules settings page is request, display that if it exist
+		$mod_settings_file = $this->modules_path . $modules[$id]['svxlinkName'] . '/settings.php';
+		if (file_exists($mod_settings_file)) {
+			$mod_ini = $this->read_ini($modules[$id]['svxlinkName']);
+
+			if (isset($mod_ini['Module_Info']['display_name'])) {
+				$displayName = $mod_ini['Module_Info']['display_name'];
+			} else {
+			    $displayName = $modules[$id]['svxlinkName'];
+			}
+
+			// Modules Includes: CSS & JS (if they exist)
+			$mod_css_file = $this->modules_path . $modules[$id]['svxlinkName'] . '/module.css';
+			$mod_js_file = $this->modules_path . $modules[$id]['svxlinkName'] . '/module.js';
+			if (file_exists($mod_css_file)) { $moduleCSS = '/modules/' . $modules[$id]['svxlinkName'] . '/module.css'; }
+			if (file_exists($mod_js_file)) { $moduleJS = '/modules/' . $modules[$id]['svxlinkName'] . '/module.js'; }
+
+			$moduleSettings = $this->get_module_settings($id);
+
+			// Construct Page Title
+			$pageTitle = $displayName . " Module Settings";
+
+			// Built Top of Form
+			$form_top = '
+			<form class="form-inline" role="form" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" id="moduleSettingsUpdate">
+
+			<div class="row-fluid sortable">
+				<div class="box span12">
+					<div class="box-header well" data-original-title>
+						<h2>' . $displayName . ' Module Settings</h2>
+					</div>
+					<div class="box-content">
+			';
+
+			// Built Bottom of Form
+			$form_bottom = '
+						<div class="form-actions">
+						  <!-- PASS MODULE KEY FOR UPDATE DATABASE AND REDIRECT BACK TO SETTINGS PAGE -->
+						  <input type="hidden" name="moduleKey" value="' . $id . '">
+						  <input type="hidden" name="updateModuleSettings">		
+						  <input type="submit">
+						</div>
+				
+					</div>
+				</div><!--/span-->
+			</div><!--/row-->
+			</form>			
+			';
+
+			// ***************************************************************** //
+			// Construct Page Content
+			ob_start();
+			include($this->includes_path . 'header.php');
+			echo $form_top;
+			include($mod_settings_file);
+			echo $form_bottom;
+			include($this->includes_path . 'footer.php');
+			$moduleHTML = ob_get_clean();
+			// ***************************************************************** //
+
+			return $moduleHTML;
+
+		} else {
+			// Construct Page Title
+			$pageTitle = "Modules";
+
+			// Construct Page Content
+			ob_start(); include($this->includes_path . 'header.php'); $moduleHTML = ob_get_clean();
+		    $moduleHTML .= "<h2>No Settings Page found.</h2>";
+			ob_start(); include($this->includes_path . 'footer.php'); $moduleHTML .= ob_get_clean();
+
+			return $moduleHTML;
+		}
+
+	}
+
+
+
+	###############################################
+	# Display Nav Settings Links
+	###############################################
+
+	public function nav_setting_links() {
+
+		$modules = $this->get_modules();
+		
+		$modulesActive = array();
+		foreach($modules as $cur_mod) { 
+			if ($cur_mod['moduleEnabled']==1) {
+				$curr_mod_ini = $this->read_ini($cur_mod['svxlinkName']);
+				if (isset($curr_mod_ini['Module_Info']['display_name'])) {
+					$currDisplayName = $curr_mod_ini['Module_Info']['display_name'];
+				} else {
+				    $currDisplayName = $cur_mod['svxlinkName'];
+				}
+
+				$module_settings_file = $this->modules_path . $cur_mod['svxlinkName'] . '/settings.php';
+				if (file_exists($module_settings_file)) {
+					$modulesActive[$cur_mod['moduleKey']] = $currDisplayName;
+				}
+			} 
+		}
+
+		if (!empty($modulesActive)) {
+			// Render Parent and Child menus
+			$return_html = '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>';
+			$return_html .= ' <ul class="nav nav-pills nav-stacked">';
+			foreach ($modulesActive as $mod_id => $mod_name) {
+				$return_html .= '<li><a href="modules.php?settings='.$mod_id.'">&nbsp;&nbsp;&nbsp;<i class="icon-chevron-right"></i><span class="hidden-tablet"> '.$mod_name.'</span></a></li>';
+			}
+			$return_html .= '  </ul>';
+			$return_html .= '</li>';
+		} else {
+			// Render Parent menu only
+			$return_html = '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a></li>';
+		}
+		
+		echo $return_html;
+	}
+
+
+
+	###############################################
+	# Display DTMF Codes
+	###############################################
+
+	public function display_dtmf_codes() {
+		$modules = $this->get_modules();
+		
+		$return_html = '';
+		if ($modules) {
+			foreach($modules as $cur_mod) {
+				if ($cur_mod['moduleEnabled']==1) { 
+					$curr_mod_ini = $this->read_ini($cur_mod['svxlinkName']);
+					if (isset($curr_mod_ini['Module_Info']['display_name'])) {
+						$currDisplayName = $curr_mod_ini['Module_Info']['display_name'];
+					} else {
+					    $currDisplayName = $cur_mod['svxlinkName'];
+					}
+
+					$dtmf_help_file = $this->modules_path . $cur_mod['svxlinkName'] . '/dtmf.php';
+
+					$return_html .= '<a name="' . $cur_mod['svxlinkName'] . '"></a>';			
+					include($dtmf_help_file);
+					$return_html .= '<legend>' . $cur_mod['svxlinkID'] . '# - ' . $currDisplayName . '</legend>
+					<p>Pressing ' . $cur_mod['svxlinkID'] . '# will enable the ' . $currDisplayName . ' module.</p>';
+			
+					if ($cur_mod['moduleEnabled']==1 && file_exists($dtmf_help_file)) {
+						$return_html .= '<h4>Sub Commands:</h4>
+						<pre>'.$sub_subcommands.'</pre>
+						<br>';
+					}
+				}
+			} /* End Current Module */
+		}
+		
+		return $return_html;
+	}
+
+
+
+	###############################################
+	# Read Module INI
+	###############################################
+
+	public function read_ini($svxlink_name) {
+		$ini_path = $this->modules_path . $svxlink_name . '/info.ini';
+		
+		if (file_exists($ini_path)) {
+			$mod_ini_array = parse_ini_file($ini_path, true);
+			return $mod_ini_array;
+		} else {
+		    return false;
+		}
+
+	}
+
+
+
+	###############################################
+	# Get Next SVXLink ID Number
+	###############################################
+
+	public function find_next_svxlink_id() {
+		$maxID = 99;
+
+		$sql = 'SELECT * FROM "modules";';
+		$existingIDs = $this->Database->select_key_value($sql, 'svxlinkName', 'svxlinkID');
+
+		$x = 1; 
+		while( !isset($nextNumber) && $maxID >= $x ) {
+		    if (!in_array($x,$existingIDs)) {
+			    $nextNumber = $x;
+				return $nextNumber;
+		    }
+		    $x++;
+		}
+		
+	}
+
+
+
+	###############################################
+	# Update Module GPIO Pins
+	###############################################
+
+	private function update_gpios($gpio_type, $gpio_array) {
+		// Purge all GPIO Pins for this TYPE
+		$sql = 'DELETE FROM "gpio_pins" WHERE type = "'.$gpio_type.'";';
+		$delete_result = $this->Database->delete_row($sql);
+
+		// Loop through provided array and set new GPIO Pins
+		foreach($gpio_array as $curr_GPIO) {	
+			$sql = 'INSERT INTO "gpio_pins" ("gpio_num","direction","active","description","type") VALUES ("'.$curr_GPIO['gpio_num'].'","'.$curr_GPIO['direction'].'","'.$curr_GPIO['active'].'","'.$curr_GPIO['description'].'","'.$gpio_type.'");';;
+			$insert_result = $this->Database->insert($sql);
+		}
+	}
+
+
+
+	###############################################
+	# Read Directory and Generate Paths to Files
+	###############################################
+
+	private function read_dir($path) {
+	
+		// Read Files into 1 dimensional array
+		if ($handle = opendir($path)) {
+				while (false !== ($file = readdir($handle))) {
+				if ('.' === $file) continue;
+				if ('..' === $file) continue;
+				$fileList[] = $file;
+			}
+			closedir($handle);	
+		}
+	
+		// Build array with full file paths
+		foreach($fileList as $fileName) {	
+			$filePath = $path . $fileName;
+			$filesArray[] = array('fileName' => $fileName, 'filePath' => $filePath);	
+		}
+
+		return $filesArray;
+	}
+
+
+}

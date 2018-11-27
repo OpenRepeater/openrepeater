@@ -1,8 +1,5 @@
-//module JS
+// Module JavaScript for UI elements
 
-
-
-//alert("Module JS Loaded");
 
 // Variables
 var maxSysRelays = 8;

@@ -9,8 +9,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-
-
 //$customCSS = "logtail.css"; // "file1.css, file2.css, ... "
 //$customJS = "logtail.js"; // "file1.js, file2.js, ... "
 
@@ -20,60 +18,32 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 ################################################################################
 
 $Database = new Database();
-$module = $Database->get_modules();
+$ModulesClass = new Modules();
+
 ?>
 
 		<?php
+		if ( isset($_POST['updateModuleSettings']) ) {
+			$results = $ModulesClass->save_module_settings($_POST);
+			$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
+		}
+
 		if ( isset($_GET['deactivate']) ) {
 			$module_id = $_GET['deactivate'];
-			$module[$module_id]['moduleEnabled'] = 0;
-
-			$Database->deactive_module($module_id);
-			$Database->set_update_flag(true);
-			
-			$msgText = "The ".$module[$module_id]['moduleName']." Module has been successfully <strong>deactivated</strong>.";
-			$alert = '<div class="alert alert-success">'.$msgText.'</div>';
+			$results = $ModulesClass->deactivateMod($module_id);
+			$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
 		}
 
 		if ( isset($_GET['activate']) ) {
 			$module_id = $_GET['activate'];
-			$module[$module_id]['moduleEnabled'] = 1;
-
-			$Database->active_module($module_id);
-			$Database->set_update_flag(true);
-
-			$msgText = "The ".$module[$module_id]['moduleName']." Module has been successfully <strong>activated</strong>.";
-			$alert = '<div class="alert alert-success">'.$msgText.'</div>';
+			$results = $ModulesClass->activateMod($module_id);
+			$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
 		}
 
 		if ( isset($_GET['settings']) ) {
 			// If modules settings page is request, display that if it exist
-			$module_id = $_GET['settings'];
-
-			$mod_settings_file = 'modules/'.$module[$module_id]['svxlinkName'].'/settings.php';
-			if (file_exists($mod_settings_file)) {
-				$mod_css_file = 'modules/'.$module[$module_id]['svxlinkName'].'/module.css';
-				$mod_js_file = 'modules/'.$module[$module_id]['svxlinkName'].'/module.js';
-
-				if (file_exists($mod_css_file)) {
-					$moduleCSS = "../" . $mod_css_file; 
-				}
-
-				if (file_exists($mod_js_file)) {
-					$moduleJS = "../" . $mod_js_file; 
-				}
-
-				$pageTitle = $module[$module_id]['moduleName'] . " Module";
-				include('includes/header.php');
-				include($mod_settings_file);
-
-			} else {
-				$pageTitle = "Modules";
-				include('includes/header.php');
-			    echo "<h2>No Settings Page found.</h2>";
-			}
-			
-			
+			echo $ModulesClass->display_settings($_GET['settings']);
+									
 		} else {
 			//Otherwise show all modules
 			$pageTitle = "Modules";
@@ -89,85 +59,12 @@ $module = $Database->get_modules();
 					</div>
 					<div class="box-content">
 					
+					<?php echo $ModulesClass->display_all(); ?>
 					
-					
-					
-					
-					<?php if ($module) { ?>
-						<table class="table table-striped">
-							<thead>
-								<tr>
-									<th><div style="width:200px">Module</div></th>
-									<th>Description</th>
-								</tr>
-							</thead>
-							
-							<tbody>
-								<?php
-								foreach($module as $cur_mod) { 
-									$mod_ini_file = 'modules/'.$cur_mod['svxlinkName'].'/info.ini';
-									$mod_settings_file = 'modules/'.$cur_mod['svxlinkName'].'/settings.php';
-									$dtmf_help_file = 'modules/'.$cur_mod['svxlinkName'].'/dtmf.php';
-								?>
-								<tr>
-									<td>
-										<div><h3><?php echo $cur_mod['moduleName']; ?> (<?php echo $cur_mod['svxlinkID']; ?>#)</h3></div>
-										<div><?php if ($cur_mod['moduleEnabled']==1) { echo '<span class="label-success label label-default">Active</span>'; } else {echo '<span class="label-default label">Inactive</span>';} ?></div>
-										<div>
-											<?php
-												if ($cur_mod['moduleEnabled']==1) {
-													echo '<a href="?deactivate='.$cur_mod['moduleKey'].'">Deactivate</a>';
-												} else {
-													echo '<a href="?activate='.$cur_mod['moduleKey'].'">Activate</a>';													
-												}
-											?>
-
-											<?php
-												if ($cur_mod['moduleEnabled']==1 && file_exists($mod_settings_file)) {
-													echo ' | <a href="modules.php?settings='.$cur_mod['moduleKey'].'">Settings</a>';
-												}
-											?>
-
-											<?php
-												if ($cur_mod['moduleEnabled']==1 && file_exists($dtmf_help_file)) {
-													echo ' | <a href="dtmf.php#'.$cur_mod['svxlinkName'].'">DTMF</a>';
-												}
-											?>
-										</div>
-									</td>
-									<td>
-										<?php
-										if (file_exists($mod_ini_file)) {
-											$mod_ini_array = parse_ini_file($mod_ini_file, true);
-											if ($mod_ini_array['Module_Info']['mod_desc']) {
-												echo $mod_ini_array['Module_Info']['mod_desc'];
-											} else {
-											    echo "<em>(No Information)</em>";
-											}
-										} else {
-										    echo "<em>(No Information)</em>";
-										}
-										?>
-									</td>
-								</tr>
-								<?php } /* End Current Module */ ?>
-						
-							</tbody>
-						</table>
-					
-					<?php } else {
-						echo "No Modules Installed.";
-					}
-					?>
-
 					</div>
 				</div><!--/span-->
 			</div><!--/row-->
 		<?php } ?>
-
-
-
-<?php include('includes/footer.php'); ?>
 
 <?php
 // --------------------------------------------------------

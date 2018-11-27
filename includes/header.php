@@ -6,17 +6,6 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 
 $Database = new Database();
 $settings = $Database->get_settings();
-$module = $Database->get_modules();
-	
-	$modulesActive = array();
-	foreach($module as $cur_mod) { 
-		if ($cur_mod['moduleEnabled']==1) {
-			$module_settings_file = 'modules/'.$cur_mod['svxlinkName'].'/settings.php';
-			if (file_exists($module_settings_file)) {
-				$modulesActive[$cur_mod['moduleKey']] = $cur_mod['moduleName'];
-			}
-		} 
-	}
 ?>
 
 
@@ -190,19 +179,8 @@ $module = $Database->get_modules();
 									<li><a class="ajax-link" href="identification.php"><i class="icon-bullhorn"></i><span class="hidden-tablet"> Identification</span></a></li>
 									<li><a class="ajax-link" href="courtesy_tone.php"><i class="icon-music"></i><span class="hidden-tablet"> Courtesy Tones</span></a></li>
 									<?php
-										if (!empty($modulesActive)) {
-											// Render Parent and Child menus
-											echo '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>';
-											echo ' <ul class="nav nav-pills nav-stacked">';
-											foreach ($modulesActive as $mod_id => $mod_name) {
-												echo '<li><a href="modules.php?settings='.$mod_id.'">&nbsp;&nbsp;&nbsp;<i class="icon-chevron-right"></i><span class="hidden-tablet"> '.$mod_name.'</span></a></li>';
-											}
-											echo '  </ul>';
-											echo '</li>';
-										} else {
-											// Render Parent menu only
-											echo '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a></li>';
-										}
+										$ModulesClass = new Modules();
+										echo $ModulesClass->nav_setting_links();
 									?>	
 									<li><a class="ajax-link" href="ports.php"><i class="icon-cog"></i><span class="hidden-tablet"> Interface</span></a></li>
 									<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>

@@ -1,4 +1,9 @@
 <?php
+/*
+* This is the file that gets called for this module when OpenRepeater displays the DTMF commands. This file is optional,
+* but highly recommended if your module has DTMF commands. 
+*/
+
 $sub_subcommands = '9999# 		Connect to EchoLink by Node ID. (Node 9999 is ECHOTEST)
 #		Disconnect from last connected station
 ##		Disconnect station and deactivate EchoLink Module

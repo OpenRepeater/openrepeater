@@ -1,7 +1,11 @@
 <?php
-$module_id = $cur_mod['moduleKey'];
-$options = unserialize($module[$module_id]['moduleOptions']);
+/*
+* This is the file that gets called for this module when OpenRepeater displays the DTMF commands. This file is optional,
+* but highly recommended if your module has DTMF commands. 
+*/
 
+$module_id = $cur_mod['moduleKey'];
+$options = unserialize($cur_mod['moduleOptions']);
 
 $sub_subcommands = 'STATUS REPORT
 0#		Speaks state of all relays (On/Off)

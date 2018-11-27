@@ -9,13 +9,26 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
+
 $pageTitle = "DTMF Reference"; 
 
+/*
 include_once("includes/get_settings.php");
 include_once("includes/get_modules.php");
 $dbConnection->close();
+*/
 
 include('includes/header.php');
+
+$Database = new Database();
+$settings = $Database->get_settings();
+
+$ModulesClass = new Modules();
+$modules = $ModulesClass->get_modules();
 
 ?>
 
@@ -52,38 +65,7 @@ include('includes/header.php');
 							<br>
 							<?php } ?>
 							
-							
-							
-							<?php 
-							if ($module) {
-								foreach($module as $cur_mod) {
-									if ($cur_mod['moduleEnabled']==1) { 
-										$mod_ini_file = 'modules/'.$cur_mod['svxlinkName'].'/info.ini';
-										$dtmf_help_file = 'modules/'.$cur_mod['svxlinkName'].'/dtmf.php';
-										echo '<a name="' . $cur_mod['svxlinkName'] . '"></a>';
-								
-										include($dtmf_help_file);
-										echo '<legend>'.$cur_mod['svxlinkID'].'# - '.$cur_mod['moduleName'].'</legend>
-										<p>Pressing '.$cur_mod['svxlinkID'].'# will enable the '.$cur_mod['moduleName'].' module. ';
-								
-										if (file_exists($mod_ini_file)) {
-											$mod_ini_array = parse_ini_file($mod_ini_file, true);
-											if ($mod_ini_array['Module_Info']['mod_desc']) {
-												echo $mod_ini_array['Module_Info']['mod_desc'];
-											} 
-										}
-										echo '</p>';
-								
-										if ($cur_mod['moduleEnabled']==1 && file_exists($dtmf_help_file)) {
-											echo '<h4>Sub Commands:</h4>
-											<pre>'.$sub_subcommands.'</pre>
-											<br>';
-										}
-									}
-								} /* End Current Module */
-							}
-							?>
-							
+							<?php echo $ModulesClass->display_dtmf_codes(); ?>
 							
 							<legend># - Deactivate Current Module</legend>
 							<p>By pressing the number key (#), this will deactivate the current module. If you are in a module that has a couple levels, then the number key (#) will function like a back key.</p>
