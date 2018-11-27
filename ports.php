@@ -17,7 +17,6 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 if( isset($_POST['action']) ) {
 	if ($_POST['action'] == 'loadBoardPreset'){
 		$board_selected = $_POST['board_id'];
-	
 		$board_preset = new BoardPresets();
 		$board_name = $board_preset->load_board_settings($board_selected);
 	
@@ -297,7 +296,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 				<h3 class="modal-title" id="myModalLabel">Advanced Details</h3>
 			      </div>
 			      <div class="modal-body">
-					<?php echo $audio_details; ?>
+					<?php // echo $audio_details; ?>
 			      </div>
 			      <div class="modal-footer">
 				  	<button type="button" class="btn btn-default" data-dismiss="modal"><i class="icon-remove"></i> Close</button>
