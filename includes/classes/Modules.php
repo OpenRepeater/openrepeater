@@ -5,8 +5,9 @@
 
 class Modules {
 
-    private $Database = '/var/www/openrepeater/';
-	private $modules_path;
+    public $Database = '/var/www/openrepeater/';
+	public $modules_path;
+	public $modulesUploadTempDir;
 	private $includes_path;
 	private $core_modules = ['Help','Parrot','EchoLink'];
 	
@@ -20,6 +21,7 @@ class Modules {
 		$this->Database = new Database();
 		$this->modules_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/modules/';
 		$this->includes_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/';
+		$this->modulesUploadTempDir = $this->modules_path . 'tempModuleDir/';
 	}
 
 
@@ -138,18 +140,147 @@ class Modules {
 	# Upload Module
 	###############################################
 
-	public function upload_module() {
-		# Upload module package (i.e. ZIP file) into temp dir
-		# Unpack module package into a temp folder
-		# Verify minimum files required exist
-		# Read INI
-		# check module doesn't already exist
-		# Initiate Install and pass module name
-		# If aborted for any reason, clean up.
+	public function upload_module($fileNameArray) {
+
+		$maxFileSize = 500000000; // size in bytes
+		$allowedExts = array('zip');
+	
+		//Loop through each file
+		for($i=0; $i<count($fileNameArray['name']); $i++) {
+			//Get the temp file path
+			$tmpFile1 = $fileNameArray['tmp_name'][$i];
+			
+			$temp_ext = explode(".", $fileNameArray['name'][$i]);
+			$extension = end($temp_ext);
+
+			$uploadedModuleZip = $this->modules_path . 'tempModule' . $extension;
+			
+			# Check File Size isn't too large
+			if($fileNameArray['size'][$i] > $maxFileSize){
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'Sorry, but the file you tried to upload is <strong>too large</strong>.'
+				);	
+			}
+
+			# Check to see if file is allowed type
+			if(!in_array($extension, $allowedExts)) {
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'Sorry, but the file you tried to upload is not in a supported format. Files must modules packaged up with a .zip extension.'
+				);	
+			}
+
+			# Check to see if system temp folder is writable
+			if (!is_writable( sys_get_temp_dir() )) {
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'Sorry, it looks like there is a configuration issue. The system\'s temp folder is not writable'
+				);	
+			}
+
+			# Check for error reported by file array
+			if ($fileNameArray['error'][$i] > 0) {
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'There was a problem uploading the file'
+				);	
+			}
+
+
+			if ($tmpFile1 != ""){
+				if(file_exists($uploadedModuleZip)) {
+				    unlink($uploadedModuleZip); //remove orphan
+				}
+				move_uploaded_file($tmpFile1, $uploadedModuleZip);
+
+				if (file_exists($uploadedModuleZip)) {
+					### SUCCESSFUL UPLOAD ###
+					$unzip = $this->unzip_module($uploadedModuleZip);
+					if ($unzip == true) {
+						### SUCCESSFUL UNZIP ###
+						$install_results = $this->install_module($this->modulesUploadTempDir);
+						if ( is_array($install_results) ) {
+							if (isset($install_results['Module_Info']['display_name'])) {
+								$currDisplayName = trim($install_results['Module_Info']['display_name']);
+								return array(
+									'msgType' => 'success',
+									'msgText' => 'The ' . $currDisplayName . ' module has been successfully installed. To use it, you must first activate it.'
+								);	
+							} else {
+								return array(
+									'msgType' => 'success',
+									'msgText' => 'Module has been successfully installed. To use it, you must first activate it.'
+								);	
+							}
+
+						} else {
+							return array(
+								'msgType' => 'error',
+								'msgText' => 'There was a problem installing the module. Either this is not an OpenRepeater module, or the zip file was improperly constructed, or the module already exists.'
+							);	
+							
+						}
+
+							
+					} else {
+						### FAILED UNZIP ###
+						return array(
+							'msgType' => 'error',
+							'msgText' => 'There was a problem Unzipping the file'
+						);	
+					}
+										
+				} else {
+					// Failure
+					return array(
+						'msgType' => 'error',
+						'msgText' => 'There was a problem uploading the file.'
+					);						
+				}
+				
+			}
+
+		}
+
+		# Some how it got thru validation, but nothing was done.
+		return array(
+			'msgType' => 'error',
+			'msgText' => 'Don\'t know what happened, but nothing appears to have been done.'
+		);	
+
 	}
 
 
 
+	###############################################
+	# Archive Functions
+	###############################################
+
+	public function unzip_module($selected_archive) {
+		try	{
+			if (!file_exists($this->modulesUploadTempDir)) {
+			    mkdir($this->modulesUploadTempDir, 0777, true);
+			}
+
+			$zip = new ZipArchive;
+			$res = $zip->open($selected_archive);
+			if ($res === TRUE) {
+				$zip->extractTo($this->modulesUploadTempDir);
+				$zip->close();
+				unlink($selected_archive);
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (Exception $e) {
+		    echo "Exception : " . $e;
+		}
+	}
+
+
+	
 	###############################################
 	# Install Module
 	###############################################
@@ -214,19 +345,66 @@ class Modules {
 	}
 
 
-	public function install_module($svxlink_name) {
-		$svxlink_name = trim($svxlink_name);
+	public function install_module($tempModulePath) {
+		$error_level = 0;
 
-		### If Module Dir Doesn't Exist, create it. ###
-		if ( !file_exists( $this->modules_path . $svxlink_name ) ) {
-		    mkdir( $this->modules_path . $svxlink_name, 0777, true );
+		# Verify minimum files required exist
+		$ini_path = $tempModulePath . 'info.ini';
+		$build_config_path = $tempModulePath . 'build_config.php';
+		$events_d_path = $tempModulePath . 'svxlink/events.d/';
+		$modules_d_path = $tempModulePath . 'svxlink/modules.d/';
+
+		if (!file_exists($ini_path)) { $error_level++; }
+		if (!file_exists($build_config_path)) { $error_level++; }
+		if (!file_exists($events_d_path)) { $error_level++; }
+		if (!file_exists($modules_d_path)) { $error_level++; }
+
+		if ($error_level > 0) {
+			exec('rm ' . $tempModulePath. ' -R');
+			return false;
+		}
+
+		# Read INI and get SVXLink Name
+		if (file_exists($ini_path)) {
+			$mod_ini_array = parse_ini_file($ini_path, true);
+		} else {
+		    $error_level++;
+		}
+
+		if ( isset($mod_ini_array['Module_Info']['mod_name']) ) {
+			$svxlink_name = trim($mod_ini_array['Module_Info']['mod_name']);
+			$new_module_path = $this->modules_path . $svxlink_name;
+		} else {
+			exec('rm ' . $tempModulePath. ' -R');
+			return false;			
 		}
 		
-		# Create/Move Unzipped module package into name based dir
+		# Check module doesn't already exist
+		if (file_exists($new_module_path)) { $error_level++; }
 
-		# Initialize Module
-		$this->initialize_module($svxlink_name);
+		if ($error_level > 0) {
+			exec('rm ' . $tempModulePath. ' -R');
+			return false;
+		}
 		
+		# Move module into place
+		rename($tempModulePath, $new_module_path);
+
+		if (!file_exists($new_module_path)) { $error_level++; }
+
+		if ($error_level > 0) {
+			exec('rm ' . $tempModulePath. ' -R');
+			return false;
+		}
+		
+		# Initiate Install and set module as inactive
+		$this->initialize_module($svxlink_name, 0);
+
+		# Final Cleanup
+		if (file_exists($tempModulePath)) { exec('rm ' . $tempModulePath. ' -R'); }
+		
+		return $mod_ini_array;
+
 	}
 
 
@@ -242,8 +420,6 @@ class Modules {
 		if ( in_array($svxlink_name, $this->core_modules) ) {
 			exit("This is a core module and cannot be removed!");
 		}
-
-		### Verify Module is Deactivated ###
 
 		### Check for SVXLink Components and remove ###
 
@@ -314,7 +490,8 @@ class Modules {
 				</tr>
 			</thead>
 			
-			<tbody>';
+			<tbody>
+			';
 
 		foreach($modules as $cur_mod) { 
 			$mod_ini_file = $this->modules_path.$cur_mod['svxlinkName'].'/info.ini';
@@ -520,7 +697,6 @@ class Modules {
 
 	public function display_dtmf_codes() {
 		$modules = $this->get_modules();
-		
 		$return_html = '';
 		if ($modules) {
 			foreach($modules as $cur_mod) {
@@ -533,10 +709,9 @@ class Modules {
 					}
 
 					$dtmf_help_file = $this->modules_path . $cur_mod['svxlinkName'] . '/dtmf.php';
-
 					$return_html .= '<a name="' . $cur_mod['svxlinkName'] . '"></a>';			
 					include($dtmf_help_file);
-					$return_html .= '<legend>' . $cur_mod['svxlinkID'] . '# - ' . $currDisplayName . '</legend>
+					$return_html .= '<legend>' . $cur_mod['svxlinkID'] . '# - ' . $currDisplayName . ' Module</legend>
 					<p>Pressing ' . $cur_mod['svxlinkID'] . '# will enable the ' . $currDisplayName . ' module.</p>';
 			
 					if ($cur_mod['moduleEnabled']==1 && file_exists($dtmf_help_file)) {

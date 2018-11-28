@@ -9,9 +9,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-//$customCSS = "logtail.css"; // "file1.css, file2.css, ... "
-//$customJS = "logtail.js"; // "file1.js, file2.js, ... "
-
 ################################################################################
 # AUTOLOAD CLASSES
 require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
@@ -40,6 +37,11 @@ $ModulesClass = new Modules();
 			$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
 		}
 
+		if ( isset( $_POST['upload_file'] ) ) {
+			$results = $ModulesClass->upload_module($_FILES['file']);
+			$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
+		}
+
 		if ( isset($_GET['settings']) ) {
 			// If modules settings page is request, display that if it exist
 			echo $ModulesClass->display_settings($_GET['settings']);
@@ -47,10 +49,15 @@ $ModulesClass = new Modules();
 		} else {
 			//Otherwise show all modules
 			$pageTitle = "Modules";
+			$customCSS = "page-modules.css";
 			include('includes/header.php');
 		?>
 
 			<?php if (isset($alert)) { echo $alert; } ?>
+
+			<button class="btn upload" data-toggle="modal" data-target="#uploadFile">
+				<i class="icon-arrow-up"></i> Upload &amp; Install New Module
+			</button>
 
 			<div class="row-fluid sortable">
 				<div class="box span12">
@@ -64,7 +71,36 @@ $ModulesClass = new Modules();
 					</div>
 				</div><!--/span-->
 			</div><!--/row-->
-		<?php } ?>
+
+			<!-- Modal - UPLOAD DIALOG -->
+			<form action="<?php htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+			<div class="modal fade" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+				<h3 class="modal-title" id="myModalLabel">Upload Module</h3>
+			      </div>
+			      <div class="modal-body">
+					<p>Upload an OpenRepeater module to add additional functionality. These are specially packaged SVXLink Modules along with the required sound files and user interface components zipped up in an easy to install file. Modules must be compressed with a ".zip" extension. Upon upload the modules will be unzipped, verified, and installed. You will then need to active the module, configure any settings (if applicable), and rebuild/restart the repeater.</p>
+					<input type="file" name="file[]" id="file" accept=".zip" required>
+			      </div>
+			      <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="submit" class="btn btn-success"name="upload_file"><i class="icon-arrow-up icon-white"></i> Upload</button>
+			
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div>
+			</form>
+
+
+		<?php
+			include('includes/footer.php');
+			}
+		?>
+
+
 
 <?php
 // --------------------------------------------------------
