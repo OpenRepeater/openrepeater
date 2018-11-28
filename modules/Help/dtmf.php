@@ -6,16 +6,25 @@
 
 $sub_subcommands = '';
 
-foreach($module as $cur_help_mod) {
-	if ($cur_help_mod['moduleEnabled']==1) {
-		if ($cur_help_mod['moduleName']=="Help") {
-			$sub_subcommands .= "0#		Overview of the Help Module\r";
+foreach($modules as $cur_mod_array) {
+	if ($cur_mod_array['moduleEnabled']==1) {
+		$curr_mod_ini = $this->read_ini($cur_mod_array['svxlinkName']);
+		if (isset($curr_mod_ini['Module_Info']['display_name'])) {
+			$currDisplayName = $curr_mod_ini['Module_Info']['display_name'];
 		} else {
-			$sub_subcommands .= $cur_help_mod['svxlinkID']."#		Help on ".$cur_help_mod['moduleName']." Module\r";
+		    $currDisplayName = $cur_mod_array['svxlinkName'];
+		}
+
+		if ($currDisplayName=="Help") {
+			$sub_subcommands .= $cur_mod_array['svxlinkID'] . "#		Overview of the Help Module\r";
+		} else {
+			$sub_subcommands .= $cur_mod_array['svxlinkID']."#		Help on ".$currDisplayName." Module\r";
 			
 		}
 	}
 }
 
 $sub_subcommands .= '#		Exit Help';
+
+
 ?>
