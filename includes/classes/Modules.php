@@ -558,8 +558,13 @@ class Modules {
 			if (isset($curr_mod_ini['Module_Info']['mod_desc'])) {
 				$return_html .= $curr_mod_ini['Module_Info']['mod_desc'];
 			} else {
-			    $return_html .= "<em>(No Information)</em>";
+			    $return_html .= "<em>(No Description)</em>";
 			}
+
+			// Version / Author Info
+			if ( isset($curr_mod_ini['Module_Info']['version']) || isset($curr_mod_ini['Module_Info']['authors']) ) { $return_html .= '<br><br>'; }
+			if (isset($curr_mod_ini['Module_Info']['version'])) { $return_html .= 'Version: ' . $curr_mod_ini['Module_Info']['version'] . '&nbsp;&nbsp;&nbsp;'; }
+			if (isset($curr_mod_ini['Module_Info']['version'])) { $return_html .= 'Authors: ' . $curr_mod_ini['Module_Info']['authors']; }
 
 
 			$return_html .= '</td></tr>';
