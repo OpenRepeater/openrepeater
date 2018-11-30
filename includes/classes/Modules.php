@@ -710,22 +710,24 @@ class Modules {
 		$modules = $this->get_modules();
 		$return_html = '';
 		if ($modules) {
-			foreach($modules as $cur_mod) {
-				if ($cur_mod['moduleEnabled']==1) { 
-					$curr_mod_ini = $this->read_ini($cur_mod['svxlinkName']);
+			foreach($modules as $cur_mod_loop) {
+				$currDisplayName = '';
+				if ($cur_mod_loop['moduleEnabled']==1) { 
+					$curr_mod_ini = $this->read_ini($cur_mod_loop['svxlinkName']);
+
 					if (isset($curr_mod_ini['Module_Info']['display_name'])) {
 						$currDisplayName = $curr_mod_ini['Module_Info']['display_name'];
 					} else {
-					    $currDisplayName = $cur_mod['svxlinkName'];
+					    $currDisplayName = $cur_mod_loop['svxlinkName'];
 					}
 
-					$dtmf_help_file = $this->modules_path . $cur_mod['svxlinkName'] . '/dtmf.php';
-					$return_html .= '<a name="' . $cur_mod['svxlinkName'] . '"></a>';			
-					include($dtmf_help_file);
-					$return_html .= '<legend>' . $cur_mod['svxlinkID'] . '# - ' . $currDisplayName . ' Module</legend>
-					<p>Pressing ' . $cur_mod['svxlinkID'] . '# will enable the ' . $currDisplayName . ' module.</p>';
+					$return_html .= '<a name="' . $cur_mod_loop['svxlinkName'] . '"></a>';			
+					$return_html .= '<legend>' . $cur_mod_loop['svxlinkID'] . '# - ' . $currDisplayName . ' Module</legend>
+					<p>Pressing ' . $cur_mod_loop['svxlinkID'] . '# will enable the ' . $currDisplayName . ' module.</p>';
 			
-					if ($cur_mod['moduleEnabled']==1 && file_exists($dtmf_help_file)) {
+					$dtmf_help_file = $this->modules_path . $cur_mod_loop['svxlinkName'] . '/dtmf.php';
+					include($dtmf_help_file);
+					if ($cur_mod_loop['moduleEnabled']==1 && file_exists($dtmf_help_file)) {
 						$return_html .= '<h4>Sub Commands:</h4>
 						<pre>'.$sub_subcommands.'</pre>
 						<br>';
