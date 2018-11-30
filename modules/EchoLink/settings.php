@@ -83,9 +83,6 @@
 	  <input type="hidden" name="connections" value="4">
 	  <input type="hidden" name="idle_timeout" value="300">
 
-	  <!-- PASS MODULE KEY FOR UPDATE DATABASE AND REDIRECT BACK TO SETTINGS PAGE -->
-	  <input type="hidden" name="moduleKey" value="<?php echo $module[$module_id]['moduleKey']; ?>">
-
   </fieldset>
 
   <fieldset>

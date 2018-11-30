@@ -459,17 +459,28 @@ class Modules {
 		
 		exec('rm ' . $this->modules_path . $svxlink_name . ' -R');
 		if ( !file_exists( $this->modules_path . $svxlink_name ) ) {
-		    echo "Directory Removed";
-		} else {
-		    echo "Directory Still Exist";
-		}
-		
 		### Remove DB record in modules table ###
-		
 		$sql = 'DELETE FROM "modules" WHERE svxlinkName = "' . $svxlink_name . '";';
 		$delete_result = $this->Database->delete_row($sql);
-		if ($delete_result) { echo 'Delete Successful'; } else { echo 'Delete Failed'; }
-
+			if ($delete_result) { 
+				$this->Database->set_update_flag(true);
+				return array(
+					'msgType' => 'success',
+					'msgText' => 'Successfully deleted the module.'
+				);
+			} else {
+				return array(
+					'msgType' => 'error',
+					'msgText' => 'There was a problem fully deleting the module.'
+				);
+			}
+		} else {
+			return array(
+				'msgType' => 'error',
+				'msgText' => 'There was a problem deleting the module.'
+			);
+		}
+		
 	}
 
 
@@ -534,7 +545,7 @@ class Modules {
 
 			// Delete Link...if not core module			
 			if ( $cur_mod['moduleEnabled']==0 && !in_array($cur_mod['svxlinkName'], $this->core_modules) ) {
-				$return_html .= ' | <a href="modules.php?delete='.$cur_mod['moduleKey'].'">Delete</a>';
+				$return_html .= ' | <a href="" data-toggle="modal" data-target="#deleteModule" onclick="deleteModule(\'' . $cur_mod['svxlinkName'] . '\',\'' . $currDisplayName . '\'); return false;">Delete</a>';
 			}
 
 			// DTMF Link...if Applicable

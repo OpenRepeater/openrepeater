@@ -42,6 +42,11 @@ $ModulesClass = new Modules();
 			$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
 		}
 
+		if ( isset( $_POST['delete'] ) ) {
+			$results = $ModulesClass->remove_module($_POST['deleteSelectedModule']);
+			$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
+		}
+
 		if ( isset($_GET['settings']) ) {
 			// If modules settings page is request, display that if it exist
 			echo $ModulesClass->display_settings($_GET['settings']);
@@ -49,6 +54,7 @@ $ModulesClass = new Modules();
 		} else {
 			//Otherwise show all modules
 			$pageTitle = "Modules";
+			$customJS = "page-modules.js";
 			$customCSS = "page-modules.css";
 			include('includes/header.php');
 		?>
@@ -93,6 +99,30 @@ $ModulesClass = new Modules();
 			  </div><!-- /.modal-dialog -->
 			</div>
 			</form>
+
+
+			<!-- Modal - DELETE DIALOG -->
+			<form action="<?php htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+			<div class="modal fade" id="deleteModule" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3 class="modal-title" id="myModalLabel">Delete Module?</h3>
+			      </div>
+			      <div class="modal-body">
+				Are you sure that you want to delete the <strong><span>MODULE_NAME</span></strong> module? This cannot be undone!
+				<input type="hidden" id="deleteSelectedModule" name="deleteSelectedModule" value="">
+			      </div>
+			      <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="submit" class="btn btn-danger" name="delete"><i class="icon-trash icon-white"></i> Delete</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div>
+			</form>
+			<!-- /.modal -->
 
 
 		<?php
