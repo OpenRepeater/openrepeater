@@ -1,0 +1,11 @@
+*
+!.gitignore
+
+!EchoLink/
+!EchoLink/**
+
+!Help/
+!Help/**
+
+!Parrot/
+!Parrot/**
