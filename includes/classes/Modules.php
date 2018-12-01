@@ -55,23 +55,28 @@ class Modules {
 	# Submit Settings for Selected Module
 	###############################################
 
-	public function save_module_settings($settings_array) {
+	public function save_module_settings($settings_array, $type = 'normal') {
 		$moduleID = $settings_array['moduleKey'];
 		unset($settings_array['moduleKey']); // Remove id after extracted above
-		unset($settings_array['updateModuleSettings']); // Remove Action
-
-		$modules = $this->get_modules();
-
-		// Check for custom form processor, if one exists...then insert inline with IN and OUT arrays for external processing
-		$mod_custom_submit_file = $this->modules_path . $modules[$moduleID]['svxlinkName'] . '/custom_submit.php';
-		if (file_exists($mod_custom_submit_file)) { 
-			$inputArray = $settings_array;
-			include($mod_custom_submit_file);
-			$settings_array = $outputArray;
+		if (isset($settings_array['updateModuleSettings'])) {
+			unset($settings_array['updateModuleSettings']); // Remove Action			
 		}
 
-		$serializedSettings = serialize($settings_array);
+		##########
+		if ($type == 'normal') {
+			$modules = $this->get_modules();
 
+			// Check for custom form processor, if one exists...then insert inline with IN and OUT arrays for external processing
+			$mod_custom_submit_file = $this->modules_path . $modules[$moduleID]['svxlinkName'] . '/custom_submit.php';
+			if (file_exists($mod_custom_submit_file)) { 
+				$inputArray = $settings_array;
+				include($mod_custom_submit_file);
+				$settings_array = $outputArray;
+			}
+		}
+		##########
+
+		$serializedSettings = serialize($settings_array);
 		$sql = "UPDATE modules SET moduleOptions = '$serializedSettings' WHERE moduleKey = '$moduleID';";
 		$insert_result = $this->Database->insert($sql);
 
@@ -333,15 +338,34 @@ class Modules {
 				symlink($mod_sounds_path, $svxlink_sounds_path); // Set New Link
 			}
 
-
-			### Created DB record in modules table, if it doesn't exist, and set as deactive ###
-
-			if ($this->Database->exists('modules','svxlinkName',$svxlink_name) == false) { 
-				$sql = 'INSERT INTO "modules" ("moduleKey","moduleEnabled","svxlinkName","svxlinkID") VALUES (NULL,'.$enabled.',\''.$svxlink_name.'\',\''.$this->find_next_svxlink_id().'\')';
-				$insert_result = $this->Database->insert($sql);
-			}
-
 		}
+
+
+		### Created DB record in modules table, if it doesn't exist, and set as deactive ###
+
+		if ($this->Database->exists('modules','svxlinkName',$svxlink_name) == false) { 
+			$sql = 'INSERT INTO "modules" ("moduleKey","moduleEnabled","svxlinkName","svxlinkID") VALUES (NULL,'.$enabled.',\''.$svxlink_name.'\',\''.$this->find_next_svxlink_id().'\')';
+			$insert_result = $this->Database->insert($sql);
+		}
+
+	
+		### If no options are set in DB, check for default settings file and load if one exists ###
+
+		$sql = 'SELECT * FROM "modules" WHERE "svxlinkName" = \''.$svxlink_name.'\';';
+		$module = $this->Database->select_single($sql);
+		$module_key = $module['moduleKey'];
+		$module_options = $module['moduleOptions'];
+
+		if ($module_options == NULL || $module_options == '') {
+			$default_settings_file = $this->modules_path . $svxlink_name . '/default_settings.php';
+			if (file_exists($default_settings_file)) {
+				include($default_settings_file);
+				$default_settings['moduleKey'] = $module_key;
+				$this->save_module_settings($default_settings, 'install');
+			}
+			
+		}
+
 	}
 
 
