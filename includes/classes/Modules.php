@@ -158,7 +158,7 @@ class Modules {
 			$temp_ext = explode(".", $fileNameArray['name'][$i]);
 			$extension = end($temp_ext);
 
-			$uploadedModuleZip = $this->modules_path . 'tempModule' . $extension;
+			$uploadedModuleZip = $this->modules_path . 'tempModule.' . $extension;
 			
 			# Check File Size isn't too large
 			if($fileNameArray['size'][$i] > $maxFileSize){
@@ -268,13 +268,28 @@ class Modules {
 			    mkdir($this->modulesUploadTempDir, 0777, true);
 			}
 
+			// Clean up any Mac OS trash in user zip file if it exists
+			exec('zip -d '.$selected_archive.' "__MACOSX*"');
+
 			$zip = new ZipArchive;
 			$res = $zip->open($selected_archive);
 			if ($res === TRUE) {
 				$zip->extractTo($this->modulesUploadTempDir);
 				$zip->close();
 				unlink($selected_archive);
+
+				// If zip contains parent folder, move child files and remove folder
+				$folder_list  = glob($this->modulesUploadTempDir."*", GLOB_ONLYDIR);
+				$file_count  = count( glob($this->modulesUploadTempDir."*") ) - count($folder_list);
+				if (count($folder_list) == 1 && $file_count == 0) {
+					$get_sub_dir = glob($this->modulesUploadTempDir."*", GLOB_ONLYDIR);
+					$get_sub_dir = $get_sub_dir[0];
+					exec('mv ' . $get_sub_dir . '/* ' . $this->modulesUploadTempDir);
+					exec('rm ' . $get_sub_dir . ' -R');
+				}
+
 				return true;
+
 			} else {
 				return false;
 			}
