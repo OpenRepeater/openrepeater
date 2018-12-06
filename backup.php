@@ -47,24 +47,11 @@ include('includes/header.php');
 
 			<?php if (isset($alert)) { echo $alert; } ?>
 
+			<!-- Button triggered modal -->
+			<button class="btn backup" data-toggle="modal" data-target="#createBackup"><i class="icon-hdd"></i> Create Backup</button>
 
-			<div class="row-fluid sortable">
-
-				<div class="box span12">
-					<div class="box-header well" data-original-title>
-						<h2><i class="icon-folder-open"></i> File Operations</h2>
-					</div>
-					<div class="box-content">
-						<!-- Button triggered modal -->
-						<button class="btn backup" data-toggle="modal" data-target="#createBackup"><i class="icon-hdd"></i> Create Backup</button>
-	
-						<!-- Button triggered modal -->
-						<button class="btn upload" data-toggle="modal" data-target="#uploadFile"><i class="icon-arrow-up"></i> Upload Offline Backup</button>
-					</div>
-				</div><!--/span-->
-				
-			</div><!--/row-->
-
+			<!-- Button triggered modal -->
+			<button class="btn upload" data-toggle="modal" data-target="#uploadFile"><i class="icon-arrow-up"></i> Upload Offline Backup</button>
 
 			<div class="row-fluid sortable">		
 				<div class="box span12">
