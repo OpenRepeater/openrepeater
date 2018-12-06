@@ -20,14 +20,19 @@ class BackupRestore {
 	private $backup_ini_file = 'backup.ini';
 	private $alsa_state_file = 'alsamixer.state';
 	private $orp_sounds_dir = '/var/www/openrepeater/sounds/';
+	
+	private $Database;
+	private $Modules;
 
 
 	public function __construct() {
+		$this->Database = new Database();
+		$this->Modules = new Modules();
+
 		$this->dateString = date('Y/m/d H:i:s');
 
-		$Database = new Database();
-		$this->callsign = $Database->get_settings('callSign');
-		$this->orp_version = $Database->get_version();
+		$this->callsign = $this->Database->get_settings('callSign');
+		$this->orp_version = $this->Database->get_version();
 
 		$this->archive_build_dir = $this->backupPath . 'build/';
 		$this->backup_restore_dir = $this->backupPath . 'restore/';
@@ -58,8 +63,7 @@ class BackupRestore {
 		
  		// Dump the sqlite database, specified tables only
 		$sql_file = $this->archive_build_dir . $this->backup_db_file;
-		$Database = new Database();
-		$Database->db_export( $this->db_tables, $sql_file );
+		$this->Database->db_export( $this->db_tables, $sql_file );
 
 		// Backup of ALSA settings
 		exec('sudo orp_helper alsa backup "' . $this->archive_build_dir . $this->alsa_state_file . '"');
@@ -121,8 +125,7 @@ class BackupRestore {
 			$data['status'] = 'ok';
 
 			// Read INI and compare
-			$Database = new Database();
-			$curr_orp_verion = $Database->get_version();
+			$curr_orp_verion = $this->Database->get_version();
 			$ini_array = $this->read_ini( $this->backup_restore_dir . $this->backup_ini_file );
 			if ($curr_orp_verion == $ini_array['ORP_Backup']['orp_version']) {
 				$data['versionMatch'] = true;				
@@ -175,14 +178,13 @@ class BackupRestore {
 
 		// Empty affected DB tables and import SQL file to DB.
 		$sql_file = $this->backup_restore_dir . $this->backup_db_file;
-		$Database = new Database();
-		$Database->db_import( $this->db_tables, $sql_file );
+		$this->Database->db_import( $this->db_tables, $sql_file );
 
 		// Cleanup/Delete Restore directory
 		$this->removeDirectory($this->backup_restore_dir);
 		
 		// Set Rebuild Flag
-		$Database->set_update_flag(true);
+		$this->Database->set_update_flag(true);
 
 		return array(
 			'msgType' => 'success',
@@ -207,7 +209,20 @@ class BackupRestore {
 		    $archive->addFile($this->archive_build_dir . $this->alsa_state_file, $this->alsa_state_file); // alsamixer backup
 
 			$archive->buildFromDirectory($this->orp_sounds_dir); // Sounds
-		
+
+
+			// Modules (non-core / add-ons)
+			$mod_build_dir = $this->archive_build_dir . 'mod_build/modules';
+			if (!file_exists($mod_build_dir)) { mkdir($mod_build_dir, 0777, true); }
+
+			$non_core_modules = $this->Modules->get_non_core_modules_path();
+			foreach($non_core_modules as $mod_name => $mod_path) {
+				echo $mod_name . '<br>';
+				exec('cp "' . $mod_path . '" "' . $mod_build_dir . '/' . $mod_name . '" -R');			
+			}
+			$archive->buildFromDirectory($this->archive_build_dir . 'mod_build/');
+
+
 		    // Compress Archive
 		    $archive->compress(Phar::GZ);
 		

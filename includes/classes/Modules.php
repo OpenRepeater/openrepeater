@@ -5,7 +5,7 @@
 
 class Modules {
 
-    public $Database = '/var/www/openrepeater/';
+    public $Database;
 	public $modules_path;
 	public $modulesUploadTempDir;
 	private $includes_path;
@@ -867,6 +867,23 @@ class Modules {
 		}
 
 		return $filesArray;
+	}
+
+
+
+	###############################################
+	# Read Directory and Generate Paths to Files
+	###############################################
+
+	public function get_non_core_modules_path() {	
+		$mod_folder_list  = glob($this->modules_path."*", GLOB_ONLYDIR);
+		foreach($mod_folder_list as $currPath) {
+			if (!in_array(basename($currPath), $this->core_modules)) {
+				$addon_modules[basename($currPath)] = $currPath;
+			}
+		}
+
+		return $addon_modules;
 	}
 
 
