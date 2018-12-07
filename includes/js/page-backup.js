@@ -46,7 +46,7 @@ function ajaxValidateRestore () {
 				$('#restoreFile .modal-body').append('</p>');
 
 				// Enable Submit/Restore button
-				$('#restoreFile :input[type="submit"]').prop('disabled', false);
+				$('#restoreButton').prop('disabled', false);
 
             } else {
 				// Failed to Validate as ORP Package
@@ -59,4 +59,12 @@ function ajaxValidateRestore () {
         }
     });
 }
+
+// Restore Button, please wait while submitting
+$( "#restoreButton" ).click(function() {
+	$('#restoreFile .modal-title').text('Restore in Progress');
+	
+	$('#restoreFile .modal-body').html('<center><h4 style="text-align: center">Please Wait</h4><img src="theme/img/ajax-loaders/ajax-loader-7.gif" align="middle"></center>');
+});
+
 // ----------------------------------------------------------

@@ -114,7 +114,7 @@ include('includes/header.php');
 
 
 <!-- Modal - RESTORE DIALOG -->
-<form action="<?php htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+<form id="restoreForm" action="<?php htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 <div class="modal fade" id="restoreFile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -130,7 +130,7 @@ include('includes/header.php');
       </div>
       <div class="modal-footer">
 	<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-	<button type="submit" class="btn btn-danger" name="restore" disabled><i class="icon-refresh icon-white"></i> Restore</button>
+	<button type="submit" id="restoreButton" class="btn btn-danger" name="restore" disabled><i class="icon-refresh icon-white"></i> Restore</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->

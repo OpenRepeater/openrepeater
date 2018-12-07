@@ -169,6 +169,34 @@ class BackupRestore {
 			$this->removeDirectory($existing_identification);
 			exec("cp $restore_identification $existing_identification -R");
 		}
+
+
+		########################################
+		# Restore Modules (non-core / add-ons)
+		
+		$restore_module_path = $this->backup_restore_dir . 'modules/';
+		
+		if (file_exists($restore_module_path)) {
+			// Remove existing modules first (non-core)
+			$non_core_modules = $this->Modules->get_non_core_modules_path();
+			if(isset($non_core_modules)) {
+				foreach($non_core_modules as $mod_name => $mod_path) {
+					$this->Modules->remove_module($mod_name);
+				}				
+			}
+
+			// Restore backed up modules
+			$mod_folder_list  = glob($restore_module_path . '*', GLOB_ONLYDIR);
+			foreach($mod_folder_list as $mod_path) {
+				$mod_name = basename($mod_path);
+				exec('cp "' . $mod_path . '" "' . $this->Modules->modules_path . $mod_name . '" -R');			
+
+				// Init module just to create symlinks. DB will get overwritten below
+				$this->Modules->initialize_module($mod_name, 0);
+			}
+
+		}
+
 		########################################
 
 		// Restoration of ALSA settings
@@ -212,15 +240,16 @@ class BackupRestore {
 
 
 			// Modules (non-core / add-ons)
-			$mod_build_dir = $this->archive_build_dir . 'mod_build/modules';
-			if (!file_exists($mod_build_dir)) { mkdir($mod_build_dir, 0777, true); }
-
 			$non_core_modules = $this->Modules->get_non_core_modules_path();
-			foreach($non_core_modules as $mod_name => $mod_path) {
-				echo $mod_name . '<br>';
-				exec('cp "' . $mod_path . '" "' . $mod_build_dir . '/' . $mod_name . '" -R');			
+			if ( count($non_core_modules)>0 ) {
+				$mod_build_dir = $this->archive_build_dir . 'mod_build/modules';
+				if (!file_exists($mod_build_dir)) { mkdir($mod_build_dir, 0777, true); }
+	
+				foreach($non_core_modules as $mod_name => $mod_path) {
+					exec('cp "' . $mod_path . '" "' . $mod_build_dir . '/' . $mod_name . '" -R');			
+				}
+				$archive->buildFromDirectory($this->archive_build_dir . 'mod_build/');				
 			}
-			$archive->buildFromDirectory($this->archive_build_dir . 'mod_build/');
 
 
 		    // Compress Archive

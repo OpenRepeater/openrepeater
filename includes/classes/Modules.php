@@ -584,7 +584,7 @@ class Modules {
 
 			// Delete Link...if not core module			
 			if ( $cur_mod['moduleEnabled']==0 && !in_array($cur_mod['svxlinkName'], $this->core_modules) ) {
-				$return_html .= ' | <a href="" data-toggle="modal" data-target="#deleteModule" onclick="deleteModule(\'' . $cur_mod['svxlinkName'] . '\',\'' . $currDisplayName . '\'); return false;">Delete</a>';
+				$return_html .= ' | <a href="#" data-toggle="modal" data-target="#deleteModule" onclick="deleteModule(\'' . $cur_mod['svxlinkName'] . '\',\'' . $currDisplayName . '\'); return false;">Delete</a>';
 			}
 
 			// DTMF Link...if Applicable
@@ -872,7 +872,7 @@ class Modules {
 
 
 	###############################################
-	# Read Directory and Generate Paths to Files
+	# Non-Core Modules
 	###############################################
 
 	public function get_non_core_modules_path() {	
@@ -882,8 +882,12 @@ class Modules {
 				$addon_modules[basename($currPath)] = $currPath;
 			}
 		}
-
-		return $addon_modules;
+		
+		if(isset($addon_modules)) {
+			return $addon_modules;		
+		} else {
+			return NULL;
+		}
 	}
 
 
