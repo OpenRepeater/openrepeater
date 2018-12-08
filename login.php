@@ -1,18 +1,22 @@
 <?php
 session_start();
 
-include_once("/etc/openrepeater/database.php");
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
+$Database = new Database();
 
-$getVer = $dbConnection->query("SELECT version_num FROM version_info;");
-$vertData = $getVer->fetchArray(SQLITE3_ASSOC);
+$versionNum = $Database->get_version();
 
-$getCallSign = $dbConnection->query('SELECT * FROM settings WHERE "keyID" = "callSign";');
-$callsign = $getCallSign->fetchArray(SQLITE3_ASSOC);
+$getCallSign = $Database->select_key_value('SELECT * FROM settings WHERE "keyID" = "callSign";', 'keyID', 'value');
+$callsign = $getCallSign['callSign'];
 
 
-// ----------------------------------------------------------------------------------------------------------------------------------
-// Change Password
-// ----------------------------------------------------------------------------------------------------------------------------------
+###############################################
+# Change Password
+###############################################
+
 if (isset($_POST['action'])){
 	if ($_POST['action'] == "setPassword"){
 
@@ -21,32 +25,26 @@ if (isset($_POST['action'])){
 
 		// passwords don't match
 		if ($password1 != $password2) {
-			$dbConnection->close();
 			header('location: login.php?action=setPassword&error=mismatch');
 			die();
 		}
 
 		// password is too long
 		if (strlen($password1) > 28) {
-			$dbConnection->close();
 			header('location: login.php?action=setPassword&error=toolong');
 			die();
 		}
 
 		// password is too short
 		if (strlen($password1) < 8) {
-			$dbConnection->close();
 			header('location: login.php?action=setPassword&error=tooshort');
 			die();
 		}
 
 		$usr = $_SESSION['username'];
 		$resetQuery = "SELECT username, salt FROM users WHERE username = '$usr';";
-		$resetResult = $dbConnection->query($resetQuery);
-		$resetData = $resetResult->fetchArray(SQLITE3_ASSOC);
-
+ 		$resetData = $Database->select_single($resetQuery);
 		if (!$resetData['salt']){
-			$dbConnection->close();
 			header('location: login.php?action=setPassword');
 		}
 
@@ -61,9 +59,8 @@ if (isset($_POST['action'])){
 		$salt = createSalt();
 		$hash = hash('sha256', $salt . $hash);
 
-		$dbConnection->query("UPDATE users SET salt='$salt' WHERE username='$usr'") or die();
-		$dbConnection->query("UPDATE users SET password='$hash' WHERE username='$usr'") or die();
-		$dbConnection->close();
+		$updateSQL = "UPDATE users SET password='$hash', salt='$salt' WHERE username='$usr'";
+		$Database->update($updateSQL);
 
 		$_SESSION = array();
 		session_destroy();
@@ -71,50 +68,49 @@ if (isset($_POST['action'])){
 	}
 }
 
-// ----------------------------------------------------------------------------------------------------------------------------------
-// Process User Login
-// ----------------------------------------------------------------------------------------------------------------------------------
+
+###############################################
+# Process User Login
+###############################################
+
 if ((isset($_POST['username'])) && (isset($_POST['password']))){
 	$username = SQLite3::escapeString($_POST['username']);
 	$password = SQLite3::escapeString($_POST['password']);
 
 	$loginQuery = "SELECT UserID, password, salt FROM users WHERE username = '$username';";
-	$loginResult = $dbConnection->query($loginQuery)or die();
-	$loginData = $loginResult->fetchArray(SQLITE3_ASSOC);
+	$loginData = $Database->select_single($loginQuery);
 	
 	// User Doesn't Exist
 	if (!$loginData['salt']){
-		$dbConnection->close();
 		header('location: login.php?error=incorrectLogin');
 	}
 
 	// User Exists - pull info from DB to compare to submitted credentials
 	$loginHash = hash('sha256', $loginData['salt'] . hash('sha256', $password));
 	if ($loginHash != $loginData['password']){
-		$dbConnection->close();
 		header('location: login.php?error=incorrectLogin');
 
 	} else {
 		session_regenerate_id();
 		$_SESSION['username'] = $username;
 		$_SESSION['userID'] = $loginData['userID'];
-		$_SESSION['version_num'] = $vertData['version_num'];
-		if ($callsign['value']) {
+		$_SESSION['version_num'] = $versionNum;
+		if ($callsign) {
 			// If callsign is set in DB, then login
-			$_SESSION['callsign'] = $callsign['value'];
-			$dbConnection->close();
+			$_SESSION['callsign'] = $callsign;
 			header('location: dashboard.php');
 		} else {
 			// If callsign has not been setup in DB, then send to setup wizard
-			$dbConnection->close();
 			header('location: wizard/index.php');			
 		}
 	}
 }
 
-// ----------------------------------------------------------------------------------------------------------------------------------
-//Display Login Form
-// ----------------------------------------------------------------------------------------------------------------------------------
+
+###############################################
+# Display Login Form
+###############################################
+
 if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	if(isset($_GET['error'])) {
 		if ($_GET['error'] == 'incorrectLogin') {
@@ -157,7 +153,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 			</form>
 		</div><!--/span-->
 
-		<center><p><a href="http://openrepeater.com" target="_blank">OpenRepeater</a> ver: ' . $vertData['version_num'] . '</p></center>
+		<center><p><a href="http://openrepeater.com" target="_blank">OpenRepeater</a> ver: ' . $versionNum . '</p></center>
 
 	</div><!--/row-->
 	';
@@ -165,18 +161,21 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	die();
 }
 
-// ----------------------------------------------------------------------------------------------------------------------------------
-// Logout and Destroy Session
-// ----------------------------------------------------------------------------------------------------------------------------------
+
+###############################################
+# Logout and Destroy Session
+###############################################
+
 if (isset($_GET['action'])){
 	if ($_GET['action'] == "logout"){
 		$_SESSION = array();
 		session_destroy();
 		header('Location: login.php');
 
-// ----------------------------------------------------------------------------------------------------------------------------------
-// Display Change Password Form
-// ----------------------------------------------------------------------------------------------------------------------------------
+###############################################
+# Display Change Password Form
+###############################################
+
 	} else if ($_GET['action'] == "setPassword"){
 
 	if(isset($_GET['error'])) {
@@ -226,7 +225,7 @@ if (isset($_GET['action'])){
 			</form>
 		</div><!--/span-->
 
-		<center><p><a href="http://openrepeater.com" target="_blank">OpenRepeater</a> ver: ' . $vertData['version_num'] . '</p></center>
+		<center><p><a href="http://openrepeater.com" target="_blank">OpenRepeater</a> ver: ' . $versionNum . '</p></center>
 
 	</div><!--/row-->
 	';

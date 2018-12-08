@@ -83,14 +83,11 @@ $settings = $Database->get_settings();
 <?php
 	$current_page_url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
-	/* CHECK FOR MEMCACHE FLAG AND NOTIFY USER IF SERVER NEEDS RESTARTED */
-
-	$memcache_obj = new Memcache;
-	$memcache_obj->connect('localhost', 11211);
-	$var = $memcache_obj->get('update_settings_flag');
+	/* CHECK FOR UPDATE FLAG AND NOTIFY USER IF SERVER NEEDS RESTARTED */
+	$updateFlage = $Database->get_update_flag();
 ?>
 
-	<div class="server_bar_wrap"<?php if ($var != 1) { echo ' style="display: none;"'; } ?>>
+	<div class="server_bar_wrap"<?php if ($updateFlage == false) { echo ' style="display: none;"'; } ?>>
 	<div class="server_bar">
 		<span>Repeater Configuration Files Rebuild & Restart Required: </span>
 

@@ -123,13 +123,13 @@ case "wizard_page3": // write this pages cotents into array and go to next page
 case "wizard_update":
 	if ($_POST["page"] != "wizard_page3") { // If back button wasn't press then proceed...
 		$merged_settings = array_merge($_SESSION["new_repeater_settings"], $_SESSION["default_settings"]);
-		$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');	
-	
+
+		$Database = new Database();
 		$board_presets = new BoardPresets();
 
 		// Update Settings Table
 		foreach($merged_settings as $key=>$value){  
-			$query = $db->exec("UPDATE settings SET value='$value' WHERE keyID='$key'");
+			$query = $Database->update("UPDATE settings SET value='$value' WHERE keyID='$key'");
 		}
 
 		if ($_SESSION["interface"]["type"] == 'preset') {
@@ -140,7 +140,7 @@ case "wizard_update":
 			// Process Manual port setup
 		
 			// Update Ports Table
-			$query = $db->exec("DELETE from ports;");
+			$query = $Database->delete_row('DELETE from PORTS;');		
 		
 			$portNum='1';
 			$portLabel=$_SESSION["new_repeater_ports"]['portLabel'];
@@ -153,44 +153,36 @@ case "wizard_update":
 			$txGPIO_active=$_SESSION["new_repeater_ports"]['txGPIO_active'];
 		
 			$sql = "INSERT INTO ports (portNum,portLabel,rxMode,rxGPIO,txGPIO,rxAudioDev,txAudioDev,rxGPIO_active,txGPIO_active) VALUES ('$portNum','$portLabel','$rxMode','$rxGPIO','$txGPIO','$rxAudioDev','$txAudioDev','$rxGPIO_active','$txGPIO_active')";
-			$query = $db->exec($sql);
-	
+
+			$Database->insert($sql);
 	
 			// Update GPIO Pins Table
-			$db->exec("DELETE from gpio_pins;");
+			$Database->delete_row('DELETE from gpio_pins;');
 	
 			if ($rxMode == "gpio") {
 				$sql_rx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$rxGPIO','in','$rxGPIO_active','PORT $portNum RX: $portLabel','Port')";
-				$db->exec($sql_rx);			
+				$Database->insert($sql_rx);
 			}
 	
 			$sql_tx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$txGPIO','out','$txGPIO_active','PORT $portNum TX: $portLabel','Port')";
-			$db->exec($sql_tx);
-	
+			$Database->insert($sql_tx);	
 	
 			// Update Modules Table
-			$db->exec("DELETE from modules;");
+			$Database->delete_row('DELETE from modules;');
 	
 			// Help Module
-			$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('1','Help','1','Help','0','')";
-			$db->exec($sql_module);
+			$sql_module = "INSERT INTO modules (moduleKey,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('1','1','Help','0','')";
+			$Database->insert($sql_module);	
 	
 			// Parrot Module
-			$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('2','Parrot','1','Parrot','1','')";
-			$db->exec($sql_module);
+			$sql_module = "INSERT INTO modules (moduleKey,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('2','1','Parrot','1','')";
+			$Database->insert($sql_module);	
 	
 			// EchoLink Module
 			$serialized_options = 'a:10:{s:7:"timeout";s:2:"60";s:8:"callSign";s:0:"";s:8:"password";s:0:"";s:5:"sysop";s:12:"OpenRepeater";s:8:"location";s:0:"";s:11:"description";s:34:"Welcome to an Open Repeater Server";s:6:"server";s:20:"servers.echolink.org";s:8:"max_qsos";s:1:"4";s:11:"connections";s:1:"4";s:12:"idle_timeout";s:3:"300";}';
-			$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('3','EchoLink','0','EchoLink','2','$serialized_options')";
-			$db->exec($sql_module);
-	
-			// Remote Relay Module
-			$serialized_options = 'a:7:{s:7:"timeout";s:3:"120";s:15:"momentary_delay";s:3:"200";s:10:"access_pin";s:4:"1234";s:23:"access_attempts_allowed";s:1:"3";s:23:"relays_off_deactivation";s:1:"1";s:24:"relays_gpio_active_state";s:4:"high";s:5:"relay";a:1:{i:1;a:2:{s:4:"gpio";s:0:"";s:5:"label";s:7:"Relay 1";}}}';
-			$sql_module = "INSERT INTO modules (moduleKey,moduleName,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('4','Remote Relay','0','RemoteRelay','9','$serialized_options')";
-			$db->exec($sql_module);
-	
-			// Close DB
-			$db->close();
+			$sql_module = "INSERT INTO modules (moduleKey,moduleEnabled,svxlinkName,svxlinkID,moduleOptions) VALUES ('3','0','EchoLink','2','$serialized_options')";
+			$Database->insert($sql_module);	
+
 		}
 	
 // ******** REBUILD CONFIG FILES ****************

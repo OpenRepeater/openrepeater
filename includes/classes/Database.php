@@ -74,7 +74,24 @@ class Database {
 	public function insert($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
 		$results = $db->query($sql) or die('Query failed');
-		if ( $db->changes() > 0 ) { return true; } else { return false; }
+		if ( $db->changes() > 0 ) { 
+			$this->set_update_flag(true);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// UPDATE - Return True/False
+	public function update($sql) {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$results = $db->query($sql) or die('Query failed');
+		if ( $db->changes() > 0 ) { 
+			$this->set_update_flag(true);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	// DELETE ROW - Return True/False
@@ -300,6 +317,16 @@ class Database {
 		}
 	}
 
+	public function get_update_flag() {
+		$memcache_obj = new Memcache;
+		$memcache_obj->connect('localhost', 11211);
+		$state = $memcache_obj->get('update_settings_flag');
+		if ($state == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 }
 ?>

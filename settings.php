@@ -8,27 +8,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
-
-
-if (isset($_POST['action'])){
-
-	$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');
-	
-	foreach($_POST as $key=>$value){  
-		if ($key != "action") {
-			$query = $db->exec("UPDATE settings SET value='$value' WHERE keyID='$key'");
-		}
-	}
-   $db->close();
-	
-	$msgText = "The settings have been updated successfully!";
-	$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
-
-	/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
-	$memcache_obj = new Memcache;
-	$memcache_obj->connect('localhost', 11211);
-	$memcache_obj->set('update_settings_flag', 1, false, 0);
-}
 ?>
 
 <?php

@@ -9,25 +9,26 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
+$Database = new Database();
 
 if (isset($_POST['action'])){
 
 	if ($_POST['action'] == "changMode") {
 		if ($_POST['orp_Mode'] == "advanced") {
 			// Setup Advanced Mode, create DB table and update setting to switch to Advanced mode.
-			$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');
-			
+
 			$new_table_sql = "CREATE TABLE IF NOT EXISTS advanced (
 			    keyID	TEXT	NOT NULL	PRIMARY KEY,
 			    value	TEXT	NOT NULL
 			);";
-			$new_query = $db->exec($new_table_sql);
+			$new_query = $Database->insert($new_table_sql);	
 
 			$sql = "UPDATE settings SET value='advanced' WHERE keyID='orp_Mode'";
-			$query = $db->exec($sql);
-
-			$db->close();
+			$query = $Database->update($sql);	
 
 			$msgText = "Open Repeater has been set to Advanced mode.";
 			$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
@@ -35,49 +36,26 @@ if (isset($_POST['action'])){
 
 		} else if ($_POST['orp_Mode'] == "repeater") {
 			// Change mode back to standard ORP mode
-			$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');
-			
 			$sql = "UPDATE settings SET value='repeater' WHERE keyID='orp_Mode'";
-			$query = $db->exec($sql);
-
-			$db->close();
+			$query = $Database->update($sql);	
 
 			$msgText = "Open Repeater has been reverted back to standard repeater mode. Please rebuild your configuration files.";
 			$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
-
-			/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
-			$memcache_obj = new Memcache;
-			$memcache_obj->connect('localhost', 11211);
-			$memcache_obj->set('update_settings_flag', 1, false, 0);
 
 		}
 
 
 	} else if ($_POST['action'] == "update_advanced") {
-		$db = new SQLite3('/var/lib/openrepeater/db/openrepeater.db');
-		
 		foreach($_POST as $key=>$value){  
 			if ($key != "action") {
 				$sql = "INSERT OR REPLACE INTO advanced (keyID, value) VALUES ('$key', '$value');";
-				$query = $db->exec($sql);
+				$query = $Database->insert($sql);
 			}
 		}
-	   $db->close();
 		
 		$msgText = "The settings have been updated successfully!";
 		$alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">×</button>'.$msgText.'</div>';
 	
-	
-		/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
-		$memcache_obj = new Memcache;
-		$memcache_obj->connect('localhost', 11211);
-		$memcache_obj->set('update_settings_flag', 1, false, 0);
-
-
-		/*
-		
-		*/
-
 	}
 }
 
@@ -90,8 +68,6 @@ $pageTitle = "Advanced Setup";
 //$customCSS = ""; // "file1.css, file2.css, ... "
 //$customJS = ""; // "file1.js, file2.js, ... "
  
-include_once("includes/get_settings.php");
-
 include('includes/header.php');
 
 
@@ -107,15 +83,19 @@ if (isset($alert)) { echo $alert; }
 switch ($settings['orp_Mode']) {
     // Advance mode set, so display advanced page
     case "advanced":
-		include_once("includes/get_advanced.php");
+		$results = $Database->select_key_value('SELECT * from advanced', 'keyID', 'value');
+		foreach($results as $adv_key => $adv_value) {
+			// Remove Window Newline characters and trim off leading and trailing whitespace.
+			$advanced[$adv_key] = trim(str_replace("\r", "", $adv_value)) . "\n";
+		}
 		
-		if ($advanced['svxlink_config']) {
+		if (isset($advanced['svxlink_config'])) {
 			$svxlink_config_value = $advanced['svxlink_config'];
 		} else {
 			$svxlink_config_value = file_get_contents( "/etc/openrepeater/svxlink/svxlink.conf" );			
 		}
 
-		if ($advanced['gpio_config']) {
+		if (isset($advanced['gpio_config'])) {
 			$gpio_config_value = $advanced['gpio_config'];
 		} else {
 			$gpio_config_value = file_get_contents( "/etc/openrepeater/svxlink/gpio.conf" );			

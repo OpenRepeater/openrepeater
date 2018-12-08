@@ -132,7 +132,11 @@ switch ($settings['orp_Mode']) {
 
     case "advanced":
 		// Process advanced mode overrides
-		include_once("../includes/get_advanced.php");
+		$adv_results = $classDB->select_key_value('SELECT * from advanced', 'keyID', 'value');
+		foreach($adv_results as $adv_key => $adv_value) {
+			// Remove Window Newline characters and trim off leading and trailing whitespace.
+			$advanced[$adv_key] = trim(str_replace("\r", "", $adv_value)) . "\n";
+		}
 	
 		// WRITE CONFIGURATION & TCL FILES
 		$classSVXLink->write_config($advanced['svxlink_config'], 'svxlink.conf', 'text'); // Overridden svxlink.confg
