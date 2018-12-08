@@ -498,7 +498,12 @@ class Modules {
 		
 		exec('rm ' . $this->modules_path . $svxlink_name . ' -R');
 		if ( !file_exists( $this->modules_path . $svxlink_name ) ) {
+
+		### Remove GPIO pins if module uses them ###
+		$this->delete_gpios($svxlink_name);
+
 		### Remove DB record in modules table ###
+
 		$sql = 'DELETE FROM "modules" WHERE svxlinkName = "' . $svxlink_name . '";';
 		$delete_result = $this->Database->delete_row($sql);
 			if ($delete_result) { 
@@ -840,6 +845,13 @@ class Modules {
 			$sql = 'INSERT INTO "gpio_pins" ("gpio_num","direction","active","description","type") VALUES ("'.$curr_GPIO['gpio_num'].'","'.$curr_GPIO['direction'].'","'.$curr_GPIO['active'].'","'.$curr_GPIO['description'].'","'.$gpio_type.'");';;
 			$insert_result = $this->Database->insert($sql);
 		}
+	}
+
+
+	private function delete_gpios($gpio_type) {
+		// Purge all GPIO Pins for this TYPE
+		$sql = 'DELETE FROM "gpio_pins" WHERE type = "'.$gpio_type.'";';
+		$delete_result = $this->Database->delete_row($sql);
 	}
 
 
