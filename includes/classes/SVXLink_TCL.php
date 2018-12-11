@@ -160,7 +160,7 @@ class SVXLink_TCL {
 		    	// Long ID - VOICE ID
 				$proc_content .= $this->buildVoiceID();
 				if ($this->settingsArray['ID_Long_AppendTime'] == 'True') {
-					$longIdString .= $this->buildTime();
+					$proc_content .= $this->buildTime();
 				}
 				if ($this->settingsArray['ID_Long_AppendTone'] == 'True') {
 					// FUTURE - Option to announce CTCSS / PL Tone;
