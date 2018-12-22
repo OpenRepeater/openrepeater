@@ -247,7 +247,7 @@ class SVXLink {
 	# Build Logic - SIMPLEX
 	###############################################
 
-	public function build_logic_simplex($logicName,$curPort) {
+	public function build_logic_simplex($logicName,$curPort,$modules=false) {
 		$this->logics[] = $logicName; // Add this logic to list for Globals Section
 
 		$logic_array[$logicName] = [
@@ -256,7 +256,9 @@ class SVXLink {
 			'TX' => 'TX_Port' . $curPort,
 		];
 
-		// $logic_array[$logicName] += $this->build_module_list();
+		if ($modules) {
+			$logic_array[$logicName] += $this->build_module_list();
+		}
 
 		$logic_array[$logicName] += [
 			'CALLSIGN' => $this->settingsArray['callSign'],

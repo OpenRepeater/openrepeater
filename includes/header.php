@@ -169,7 +169,16 @@ $settings = $Database->get_settings();
 						<li class="nav-header hidden-tablet">Main</li>
 						<?php
 						switch ($settings['orp_Mode']) {
-						    case "repeater":
+						    case "advanced":
+						    	?>
+									<li><a class="ajax-link" href="dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
+									<li><a class="ajax-link" href="advanced.php"><i class="icon-wrench"></i><span class="hidden-tablet"> Advanced</span></a></li>
+									<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>
+								<?php
+						        break;
+
+
+						    default:
 						    	?>
 									<li><a class="ajax-link" href="dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
 									<li><a class="ajax-link" href="settings.php"><i class="icon-wrench"></i><span class="hidden-tablet"> General Settings</span></a></li>
@@ -183,15 +192,6 @@ $settings = $Database->get_settings();
 									<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>
 									<li><a class="ajax-link" href="dtmf.php"><i class="icon-th"></i><span class="hidden-tablet"> DTMF Reference</span></a></li>
 								<?php
-						        break;
-
-						    case "advanced":
-						    	?>
-									<li><a class="ajax-link" href="dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
-									<li><a class="ajax-link" href="advanced.php"><i class="icon-wrench"></i><span class="hidden-tablet"> Advanced</span></a></li>
-									<li><a class="ajax-link" href="log.php"><i class="icon-list-alt"></i><span class="hidden-tablet"> Repeater Log</span></a></li>
-								<?php
-						        break;
 						}
 						?>
 					</ul>

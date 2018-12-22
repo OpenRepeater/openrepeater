@@ -76,6 +76,15 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 
 			<div id="alertWrap"><?php if(isset($alert)) { echo $alert; } ?></div>
 
+			<form class="form-horizontal" role="form" action="functions/ajax_db_update.php" method="post" id="settingsUpdate" name="settingsUpdate" >
+				<select id="orp_Mode" name="orp_Mode">
+					<option value="repeater"<?php if ($settings['orp_Mode'] == 'repeater') { echo ' selected'; } ?>>1 Repeater + Simplex Links (all ports linked)</option>
+					<option value="simplex"<?php if ($settings['orp_Mode'] == 'simplex') { echo ' selected'; } ?>>Simplex Node</option>
+				</select>
+				<label class="control-label" for="orp_Mode">Logic Mode for Port(s)</label>
+			</form>
+
+
 			<form class="form-inline" role="form" action="functions/port_db_update.php" method="post" id="portsUpdate">
 
 			<div class="row-fluid sortable">
@@ -210,13 +219,6 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 						</div>
 
 						<div id="portCount"></div>
-
-						<br>
-						
-						<div class="alert alert-info">
-						<strong>NOTE: </strong> You may define more than one port. Currently, the 1<sup>st</sup> port will be defined as the primary repeater logic, any additional ports will be defined as simplex links. More options will be made available in upcoming versions.
-						</div>
-
 
 						<div class="form-actions">
 						  <input type="hidden" name="action" value="update">		

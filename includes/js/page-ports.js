@@ -1,3 +1,23 @@
+$(function() {
+
+	$('#settingsUpdate').on('change', function() {
+	    //submit changes to db
+	    var $form = $("#settingsUpdate");
+	    var method = $form.attr("method") ? $form.attr("method").toUpperCase() : "GET";
+	    $.ajax({
+	        url: $form.attr("action"),
+	        data: $form.serialize(),
+	        type: method,
+	        success: function() {
+				$('.server_bar_wrap').show(); 
+	        }
+	    });
+    });
+
+});
+
+
+
 // Variables
 var maxSysPorts = 8;
 var minReqPorts = 1;
@@ -140,36 +160,37 @@ function loadBoardPreset() {
 
 // Main Scripts
 $(window).load(function(){
-$(function() {
-        var inputPorts = $('#detectedRX').val();
+	$(function() {
+	    var inputPorts = $('#detectedRX').val();
 		var outputPorts = $('#detectedTX').val();
-
-        var portsDiv = $('#portsWrap');
-        var i = $('#portsWrap p').size();
-
+	
+	    var portsDiv = $('#portsWrap');
+	    var i = $('#portsWrap p').size();
+	
 		updatePortCount(i);
-
-        
-
-        $('#addPort').live('click', function() {
-                if(checkMaxPort(i, maxSysPorts, inputPorts, outputPorts)) {
+	
+	    
+	
+	    $('#addPort').live('click', function() {
+	            if(checkMaxPort(i, maxSysPorts, inputPorts, outputPorts)) {
 	                i++;
 	
 	                $(htmlTemplate(i)).appendTo(portsDiv);
 	
 					updatePortCount(i);
 				}
-                return false;
-        });
-        
-        $('#removePort').live('click', function() { 
-                if(checkMinPort(i, minReqPorts)) {
-                        $(this).parents('p').remove();
-                        i--;
+	            return false;
+	    });
+	    
+	    $('#removePort').live('click', function() { 
+	            if(checkMinPort(i, minReqPorts)) {
+	                    $(this).parents('p').remove();
+	                    i--;
 						updatePortCount(i);
-                }
-                return false;
-        });
-});
+	            }
+	            return false;
+	    });
+	
+	});
 
 });//]]> 

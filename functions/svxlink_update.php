@@ -119,10 +119,36 @@ switch ($settings['orp_Mode']) {
 	###############################################
 
     case "simplex":
-		$useLogic = 'SimplexLogic';
-		
-		### WORK IN PROGRESS
-		
+
+		foreach ($ports as $key => $val) {
+			// Build Ports
+			$config_array += $classSVXLink->build_rx($key); // Build RX
+			$config_array += $classSVXLink->build_tx($key); // Build TX
+
+			// Simplex Logic
+			$new_logic_name = 'ORP_SimplexLogic_Port' . $key;
+			$new_logic_filename = $new_logic_name . '.tcl';
+
+			$config_array += $classSVXLink->build_logic_simplex($new_logic_name, $key, true);
+
+			$new_event = $classSVXLinkTCL->alias_SimplexLogic($new_logic_name);
+			$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
+		}
+
+		// GLOBAL SETTINGS
+		$config_array['GLOBAL'] += $classSVXLink->build_global();
+
+		// Build GPIO Config
+		$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();
+
+		# Insert Logic TCL Overrides
+ 		$logicOverride = $classSVXLinkTCL->logic_override();
+
+		// WRITE CONFIGURATION & TCL FILES
+		$classSVXLink->write_config($config_array, 'svxlink.conf', 'ini');
+ 		$classSVXLink->write_config($logicOverride, 'Logic.tcl', 'text');
+		$classSVXLink->write_config($gpioConfigFile, 'gpio.conf', 'text');
+
         break;
 
 
