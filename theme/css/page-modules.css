@@ -1,3 +1,11 @@
+button.btn.upload {
+	float: left;
+}
+
+button.btn.find_new {
+	float: right;
+}
+
 /* Mods to File Upload Field */
 
 #uniform-file.uploader {

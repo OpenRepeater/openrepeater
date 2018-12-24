@@ -65,6 +65,10 @@ $ModulesClass = new Modules();
 				<i class="icon-arrow-up"></i> Upload &amp; Install New Module
 			</button>
 
+			<button class="btn find_new" onclick=" window.open('https://openrepeater.com/downloads/modules/','_blank')">
+				<i class="icon-search"></i> Find Modules on OpenRepeater.com
+			</button>
+
 			<div class="row-fluid sortable">
 				<div class="box span12">
 					<div class="box-header well" data-original-title>
