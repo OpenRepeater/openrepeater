@@ -44,6 +44,8 @@ $device_list = $SoundDevices->get_device_list();
 $device_in_count = $SoundDevices->get_device_in_count();
 $device_out_count = $SoundDevices->get_device_out_count();
 
+$audio_details = $SoundDevices->get_device_list('details');
+
 
 #### PHP LOOPS TO READ AUDIO DEVICES AND SAVE TO PHP VARIABLES AS SELECT OPTIONS TO PASS TO JAVASCRIPT
 // Inputs
@@ -298,7 +300,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 				<h3 class="modal-title" id="myModalLabel">Advanced Details</h3>
 			      </div>
 			      <div class="modal-body">
-					<?php // echo $audio_details; ?>
+					<?php echo $audio_details; ?>
 			      </div>
 			      <div class="modal-footer">
 				  	<button type="button" class="btn btn-default" data-dismiss="modal"><i class="icon-remove"></i> Close</button>
