@@ -234,7 +234,9 @@ class BackupRestore {
 		    // Add Files/Folders to Archive
 		    $archive->addFile($this->archive_build_dir . $this->backup_db_file, $this->backup_db_file); // DB
 		    $archive->addFile($this->archive_build_dir . $this->backup_ini_file, $this->backup_ini_file); // INI
-		    $archive->addFile($this->archive_build_dir . $this->alsa_state_file, $this->alsa_state_file); // alsamixer backup
+			if (file_exists($this->alsa_state_file)) {
+				$archive->addFile($this->archive_build_dir . $this->alsa_state_file, $this->alsa_state_file); // alsamixer backup
+			}
 
 			$archive->buildFromDirectory($this->orp_sounds_dir); // Sounds
 
