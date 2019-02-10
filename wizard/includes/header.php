@@ -63,7 +63,6 @@
 
 				<div class="header-logo">
 					<a href="../dashboard.php"><img src="../theme/img/OpenRepeaterLogo-Header.png"></a>
-					<span>BETA</span>
 				</div>
 
 				<!-- user dropdown starts -->
