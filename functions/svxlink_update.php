@@ -179,9 +179,13 @@ switch ($settings['orp_Mode']) {
 /* CLEAR SETTINGS UPDATE FLAG TO CLEAR BANNER AT TOP OF PAGE */
 $classDB->set_update_flag(false);
 
+########
+# Redundant GPIO teardown/setup to work around SVXLink issue
 $shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink gpio_down');
-$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
 $shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink gpio_up');
+########
+
+$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
 
 /* WHAT PAGE TO GO BACK TO */
 if (isset($_POST["return_url"])) {
