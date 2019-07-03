@@ -308,19 +308,19 @@ class Database {
 
 	public function set_update_flag($flag) {
 		/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
-		$memcache_obj = new Memcache;
-		$memcache_obj->connect('localhost', 11211);
+		$memcached_obj = new Memcached;
+		$memcached_obj->addServer('localhost', 11211);
 		if($flag == true) {
-			$memcache_obj->set('update_settings_flag', 1, false, 0); // Set Flag
+			$memcached_obj->set('update_settings_flag', 1, false, 0); // Set Flag
 		} else {
-			$memcache_obj->set('update_settings_flag', 0, false, 0); // Clear Flag			
+			$memcached_obj->set('update_settings_flag', 0, false, 0); // Clear Flag			
 		}
 	}
 
 	public function get_update_flag() {
-		$memcache_obj = new Memcache;
-		$memcache_obj->connect('localhost', 11211);
-		$state = $memcache_obj->get('update_settings_flag');
+		$memcached_obj = new Memcached;
+		$memcached_obj->addServer('localhost', 11211);
+		$state = $memcached_obj->get('update_settings_flag');
 		if ($state == 1) {
 			return true;
 		} else {
