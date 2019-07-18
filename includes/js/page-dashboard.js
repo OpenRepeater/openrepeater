@@ -9,6 +9,7 @@ $(function() {
 	// Begin update cycle
 		updateTimeInterval = setInterval(updateTime, 1000);
 		updateInfoInterval = setInterval(refreshData, 15000); // Every 15 seconds
+		updateSVXLinkInterval = setInterval(updateSVXLink, 60000); // Every 1 minute
 	
 	// Timeout Functions
 	timoutMinutes = 10;
@@ -16,12 +17,12 @@ $(function() {
 	setTimeout(() => { 
 		clearInterval(updateTimeInterval); 
 		clearInterval(updateInfoInterval); 
+		clearInterval(updateSVXLinkInterval ); 
 	}, timoutMinutes * 60000); // Timeout after number of minutes X millisections per minute;
 
 	setTimeout(() => { 
 		alert('You\'ve been on this page too long. To reduce demand on the system, auto updating of information has stopped. To start auto updating again, please reload this page.'); 
 	}, timoutMinutes * 60000 + 10000); // Timeout after number of minutes X millisections per minute + delay for alert;
-  
 });
 
 
@@ -69,7 +70,6 @@ function refreshData() {
 	// Wait for intial data to load before allowing updates. 
 	if ( $( '#cur_time' ).length ) {
 		updateSystemDynamic();
-		updateSVXLink();
 		updateMemory();
 	}
 }
@@ -242,6 +242,7 @@ function shutdown_countdown() {
 
 
 function toggleRepeaterState() {
+	$('#rptStatus').html('<img src="theme/img/ajax-loaders/ajax-loader-1.gif">');
 	svxlink_toggle_check_status('svxlink','status');
 }
 
