@@ -32,16 +32,26 @@ class System {
 	# System Info
 	###############################################
 
-	public function system_info() {
+	public function system_static() {
  		list($system, $host, $kernel) = explode(" ", $this->orp_helper_call('info','os'), 4);
 
+		$sysStaticArray = [
+			'host' => $host,
+			'kernel' => $system . ' ' . $kernel,
+			'cpu_cores' => $this->getCPU_Type(),
+		];
+		
+		$timeArray = $this->system_time();
+		
+		return array_merge($sysStaticArray, $timeArray);
+	}
+
+
+	public function system_dynamic() {
 		$cpuTempF = $this->getCPU_Temp('F');
 		$cpuTempC = $this->getCPU_Temp('C');
 
 		return [
-			'host' => $host,
-			'kernel' => $system . ' ' . $kernel,
-			'cpu_cores' => $this->getCPU_Type(),
 			'cpu_speed' => $this->getCPU_Speed(),
 			'cpu_load' => $this->getCPU_Load(),
 			'cpuTempF' => $cpuTempF,
@@ -116,6 +126,17 @@ class System {
 
 
 	###############################################
+	# SVXLink Functions
+	###############################################
+
+	public function svxlink_status() {
+		$status = $this->orp_helper_call('svxlink', 'status');
+		return trim($status);
+ 	}
+
+
+
+	###############################################
 	# Memory Usage
 	###############################################
 
@@ -177,11 +198,12 @@ class System {
 				'drive' => $drive[$count],
 				'typex' => $typex[$count],
 				'size' => $size[$count],
-				'used' => $used[$count],
-				'avail' => $avail[$count],
+				'used' => $this->capacity($used[$count]),
+				'avail' => $this->capacity($avail[$count]),
 				'percent' => $percent[$count],
+				'percentFree' => (100 - floatval($percent[$count])) . '%',
 				'mount' => $mount[$count],
-				'capacity' => $this->capacity($size[$count]),
+				'capacity' => $this->capacity(floatval($used[$count]) + floatval($avail[$count])),
 			];
 
 			$percent_part[$count] = $percent[$count];
@@ -195,12 +217,12 @@ class System {
 	private function capacity($raw_size) {
 		$clean_size = trim($raw_size);
 
-		if ($clean_size > 1000000000 ) {
-			$capacity = number_format(($clean_size * .000000001), 2, '.', ',') . " PB";
-		} elseif ($clean_size > 1000000 ) {
-			$capacity = number_format(($clean_size * .000001), 2, '.', ',') . " TB";
-		} elseif ($clean_size > 1000 ) {
-			$capacity = number_format(($clean_size * .001), 1, '.', ',') . " GB";
+		if ($clean_size > 1024000000 ) {
+			$capacity = number_format(($clean_size * .000000001024), 2, '.', ',') . " PB";
+		} elseif ($clean_size > 1024000 ) {
+			$capacity = number_format(($clean_size * .000001024), 2, '.', ',') . " TB";
+		} elseif ($clean_size > 1024 ) {
+			$capacity = number_format(($clean_size * .001024), 1, '.', ',') . " GB";
 		} else {
 			$capacity = number_format($clean_size, 1, '.', ',') . " MB";
 		}
