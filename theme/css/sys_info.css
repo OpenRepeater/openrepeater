@@ -75,16 +75,13 @@ div#bar6 { background-color:#006838; }
 
 /* @group Disk Usage */
 
-#drive_label {
+.drive_label {
+	text-align: center;
 	font-weight: bold;
 }
 
-span#drive_size {
-	float: right;
-}
-
-.pieLabel div {
-	font-size: 12px!important;
+.total_size {
+	text-align: center;
 }
 
 /* @end */
