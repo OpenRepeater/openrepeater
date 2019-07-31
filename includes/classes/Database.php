@@ -45,7 +45,7 @@ class Database {
 	// SELECT KEY/VALUE PAIR - Return table as key/value associative array
 	public function select_key_value($sql, $keyCol = NULL, $valueCol = NULL) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
-		$result = $db->query($sql) or die('Query failed');
+		$result = $db->query($sql) or die('Unable to select key/value pair.');
 		
 		// Return key/value pairs as associative array
 		while ($rowArray = $result->fetchArray()) {
@@ -58,7 +58,7 @@ class Database {
 	// SELECT SINGLE - Return single 
 	public function select_single($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
-		$results = $db->querySingle($sql, true) or die('Query failed');
+		$results = $db->querySingle($sql, true) or die('Unable to select single record from database');
 		return $results;
 	}
 
@@ -66,14 +66,14 @@ class Database {
 	public function exists($table, $column, $value) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
 		$sql = 'SELECT COUNT(*) FROM "'.$table.'" WHERE "'.$column.'" = "'.$value.'";';
-		$result = $db->querySingle($sql, true) or die('Query failed');
+		$result = $db->querySingle($sql, true) or die('Unable to locate value in database');
 		if ( $result['COUNT(*)'] > 0 ) { return true; } else { return false; }
 	}
 
 	// INSERT ROW - Return True/False
 	public function insert($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
-		$results = $db->query($sql) or die('Query failed');
+		$results = $db->query($sql) or die('Unable to insert record into database.');
 		if ( $db->changes() > 0 ) { 
 			$this->set_update_flag(true);
 			return true;
@@ -85,7 +85,7 @@ class Database {
 	// UPDATE - Return True/False
 	public function update($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
-		$results = $db->query($sql) or die('Query failed');
+		$results = $db->query($sql) or die('Unable to update database.');
 		if ( $db->changes() > 0 ) { 
 			$this->set_update_flag(true);
 			return true;
@@ -97,7 +97,7 @@ class Database {
 	// DELETE ROW - Return True/False
 	public function delete_row($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
-		$results = $db->query($sql) or die('Query failed');
+		$results = $db->query($sql) or die('Unable to delete from database.');
 		if ( $db->changes() > 0 ) { return true; } else { return false; }
 	}
 
@@ -226,7 +226,7 @@ class Database {
 
 	public function update_preset_modules( $input_array = array() ) {
 		foreach($input_array as $moduleArray){  
-			$sql = "UPDATE modules SET moduleEnabled='1', moduleOptions='".$moduleArray['moduleOptions']."' WHERE moduleName='".$moduleArray['moduleName']."';";
+			$sql = "UPDATE modules SET moduleEnabled='1', moduleOptions='".$moduleArray['moduleOptions']."' WHERE moduleKey='".$moduleArray['moduleKey']."';";
 			$results = $this->insert($sql);
 		}
 	}
@@ -292,7 +292,7 @@ class Database {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
 		// Loop through each table
 		foreach ($db_tables as $cur_table) {
-			$db->query("DELETE FROM $cur_table;") or die('Query failed');
+			$db->query("DELETE FROM $cur_table;") or die('Unable to delete current record.');
 		}
 		$db->close();
 
@@ -311,9 +311,9 @@ class Database {
 		$memcached_obj = new Memcached;
 		$memcached_obj->addServer('localhost', 11211);
 		if($flag == true) {
-			$memcached_obj->set('update_settings_flag', 1, false, 0); // Set Flag
+			$memcached_obj->set('update_settings_flag', 1); // Set Flag
 		} else {
-			$memcached_obj->set('update_settings_flag', 0, false, 0); // Clear Flag			
+			$memcached_obj->set('update_settings_flag', 0); // Clear Flag			
 		}
 	}
 

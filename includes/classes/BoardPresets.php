@@ -6,13 +6,14 @@
 class BoardPresets {
 
     public $documentRoot;
-    public $boardPresetArray;
-    public $selectedBoardArray;
-    public $boardManufacturerArray;
+    public $boardPresetArray = [];
+    public $selectedBoardArray = [];
+    public $boardManufacturerArray = [];
 
 
 
 	public function __construct() {
+		$board_definitions = [];
 		$this->documentRoot = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
 
 		include_once($this->documentRoot . '/includes/board_definitions.php');
@@ -138,7 +139,7 @@ class BoardPresets {
 		if (isset($this->selectedBoardArray['modules'])) {
 			foreach ($this->selectedBoardArray['modules'] as $current_module_name => $curr_module_values) {
 				$build_module_table[] = [
-					'moduleName' => $current_module_name,
+					'moduleKey' => $current_module_name,
 					'moduleOptions' => serialize($curr_module_values)
 				];
 

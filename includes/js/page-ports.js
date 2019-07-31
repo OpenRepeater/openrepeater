@@ -152,9 +152,8 @@ function updateDB() {
 }
 
 function loadBoardPreset() {
-	document.getElementById('loadBoardPreset').submit();
-
-	alert('submit form');
+//	document.getElementById('loadBoardPreset').submit();
+	console.log('submit form');
 }
 
 
