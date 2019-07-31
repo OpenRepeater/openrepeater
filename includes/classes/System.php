@@ -71,8 +71,8 @@ class System {
 
 
 	private function getCPU_Speed() {
-		$frequency = number_format($this->orp_helper_call('info','cpu_speed') / 1000);
-		return $frequency . 'MHz';
+		$frequency = number_format( floatval( $this->orp_helper_call('info','cpu_speed') ) / 1000 );
+		return $frequency . 'MHz'; 
 	}
 
 
@@ -86,7 +86,7 @@ class System {
 	private function getCPU_Temp($unit) {
 		if(!$unit) { $unit = 'F'; }
 
-		$celsius = round($this->orp_helper_call('info','cpu_temp') / 1000, 1);
+		$celsius = round( floatval( $this->orp_helper_call('info','cpu_temp') ) / 1000, 1);
 		$fahrenheit = $celsius * 1.8 + 32;
 
 		if ($unit == 'C') {
@@ -215,7 +215,7 @@ class System {
 
 
 	private function capacity($raw_size) {
-		$clean_size = trim($raw_size);
+		$clean_size = floatval( trim($raw_size) );
 
 		if ($clean_size > 1024000000 ) {
 			$capacity = number_format(($clean_size * .000000001024), 2, '.', ',') . " PB";

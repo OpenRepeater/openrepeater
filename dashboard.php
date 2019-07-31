@@ -29,11 +29,6 @@ $classSystem = new System();
 		</div>
 	</div>
 			
-			<script type="text/javascript">
-				var timeString = "<?=str_replace("-","/",$systemTime['datetime']);?>";
-				var startTime = new Date(timeString);
-			</script>
-
 			<div class="row-fluid sortable">
 				<div class="box span4">
 					<div class="box-header well">

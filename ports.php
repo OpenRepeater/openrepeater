@@ -272,7 +272,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 								</div>
 						      <div class="modal-footer">
 								<button class="btn btn-default" data-dismiss="modal">Cancel</button>
-								<button class="btn btn-success" onclick="loadBoardPreset();"><i class="icon-circle-arrow-up icon-white"></i> Load</button>
+								<button class="btn btn-success" onclick="loadBoardPreset()"><i class="icon-circle-arrow-up icon-white"></i> Load</button>
 						      </div>
 						    </div><!-- /.modal-content -->
 						  </div><!-- /.modal-dialog -->

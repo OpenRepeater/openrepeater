@@ -243,7 +243,7 @@ class BackupRestore {
 
 			// Modules (non-core / add-ons)
 			$non_core_modules = $this->Modules->get_non_core_modules_path();
-			if ( count($non_core_modules)>0 ) {
+			if ( isset($non_core_modules) ) {
 				$mod_build_dir = $this->archive_build_dir . 'mod_build/modules';
 				if (!file_exists($mod_build_dir)) { mkdir($mod_build_dir, 0777, true); }
 	
