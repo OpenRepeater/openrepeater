@@ -734,16 +734,16 @@ class Modules {
 
 		if (!empty($modulesActive)) {
 			// Render Parent and Child menus
-			$return_html = '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>';
+			$return_html = '<li><a class="ajax-link" href="../modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>';
 			$return_html .= ' <ul class="nav nav-pills nav-stacked">';
 			foreach ($modulesActive as $mod_id => $mod_name) {
-				$return_html .= '<li><a href="modules.php?settings='.$mod_id.'">&nbsp;&nbsp;&nbsp;<i class="icon-chevron-right"></i><span class="hidden-tablet"> '.$mod_name.'</span></a></li>';
+				$return_html .= '<li><a href="../modules.php?settings='.$mod_id.'">&nbsp;&nbsp;&nbsp;<i class="icon-chevron-right"></i><span class="hidden-tablet"> '.$mod_name.'</span></a></li>';
 			}
 			$return_html .= '  </ul>';
 			$return_html .= '</li>';
 		} else {
 			// Render Parent menu only
-			$return_html = '<li><a class="ajax-link" href="modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a></li>';
+			$return_html = '<li><a class="ajax-link" href="../modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a></li>';
 		}
 		
 		echo $return_html;
