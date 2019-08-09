@@ -10,12 +10,11 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 // --------------------------------------------------------
 ################################################################################
 # AUTOLOAD CLASSES
-require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+// require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
 ################################################################################
 $pageTitle = "SSH Shell Access"; 
 
 include('/' . trim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/header.php');
-
 
 $root = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
 ?>
