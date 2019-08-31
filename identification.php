@@ -113,14 +113,24 @@ include('includes/header.php');
 																											
 								</div>
 								
-								<div id="append" class="appendGrp" style="display: none;"> <!-- Expand Setting -->
-									<div class="appendOption">
+								<div id="shortID_Options" class="appendGrp">
+
+									<div id="appendShortMorseID" class="appendOption" style="display: none;">
 									<label for="ID_Short_AppendMorse">Append Morse ID: </label>
 									<select	id="ID_Short_AppendMorse" name="ID_Short_AppendMorse">
 										<option value="False" <?php if ($settings['ID_Short_AppendMorse'] == 'False') { echo "selected"; } ?>>No</option>
 										<option value="True" <?php if ($settings['ID_Short_AppendMorse'] == 'True') { echo "selected"; } ?>>Yes</option>
 									</select>
 									</div>
+									
+									<div id="activeID" class="appendOption" style="display: none;">
+									<label for="ID_Only_When_Active">ID only when active: </label>
+									<select	id="ID_Only_When_Active" name="ID_Only_When_Active">
+										<option value="False" <?php if ($settings['ID_Only_When_Active'] == 'False') { echo "selected"; } ?>>No</option>
+										<option value="True" <?php if ($settings['ID_Only_When_Active'] == 'True') { echo "selected"; } ?>>Yes</option>
+									</select>
+									</div>
+
 								</div>
 
 							</div> <!-- END enable/disable short ID setting -->

@@ -21,7 +21,7 @@ if (!isset($_POST["page"])) {
 		"courtesy"				=>		"4_Up.wav",
 		"repeaterTimeoutSec"	=>		"230",
 		"rxTone"				=>		"",
-		"txTailValueSec"		=>		"4",
+		"txTailValueSec"		=>		"2",
 		"txTone"				=>		"",
 		"courtesyMode"			=>		"beep",
 		"ID_Short_Mode"			=>		"morse",
@@ -63,6 +63,19 @@ if (!isset($_POST["page"])) {
 
 
 $errormessage = null;
+
+
+// PHP function to pass outputs Browser Concole
+function php_console_log($output, $with_script_tags = true) {
+    $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) . ');';
+    if ($with_script_tags) {
+        $js_code = '<script>' . $js_code . '</script>';
+    }
+    echo $js_code;
+}
+
+
+
 
 // Handle the incoming request based on the page it came from or the default set above.
 
@@ -126,6 +139,11 @@ case "wizard_update":
 
 		$Database = new Database();
 		$board_presets = new BoardPresets();
+
+		// Check and Update Database Structure with new fields if they don't already exist
+		$result = $Database->add_record('settings','ID_Only_When_Active','False');
+		php_console_log($result);
+
 
 		// Update Settings Table
 		foreach($merged_settings as $key=>$value){  

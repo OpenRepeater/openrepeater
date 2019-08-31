@@ -228,6 +228,17 @@ class SVXLink {
 			];			
 		}
 
+		# ID only if there is activity, only affect short IDs
+		if ($this->settingsArray['ID_Only_When_Active'] == 'True') {
+			$logic_array[$logicName] += [
+				'IDENT_ONLY_AFTER_TX' => '4'
+			];
+		} else {
+			$logic_array[$logicName] += [
+				'#IDENT_ONLY_AFTER_TX' => '0'
+			];			
+		}
+
 		#Long ID
 		if ($this->settingsArray['ID_Long_Mode'] == 'disabled') {
 			$logic_array[$logicName] += [
@@ -296,6 +307,17 @@ class SVXLink {
 		} else {
 			$logic_array[$logicName] += [
 				'SHORT_IDENT_INTERVAL' => $this->settingsArray['ID_Short_IntervalMin']
+			];			
+		}
+
+		# ID only if there is activity, only affect short IDs
+		if ($this->settingsArray['ID_Only_When_Active'] == 'True') {
+			$logic_array[$logicName] += [
+				'IDENT_ONLY_AFTER_TX' => '4'
+			];
+		} else {
+			$logic_array[$logicName] += [
+				'#IDENT_ONLY_AFTER_TX' => '0'
 			];			
 		}
 

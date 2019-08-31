@@ -303,6 +303,45 @@ class Database {
 
 
 	###############################################
+	# Modify Database Structure
+	###############################################
+
+	// Currently only supports settings table structure. Future Add support for passing Associated Arrays parameters
+	public function add_record($table, $key, $value) {
+		if ($this->exists($table, 'keyID', $key) == false) {
+			$insert_sql = "INSERT INTO $table ('keyID','value') VALUES ('$key','$value')";
+			$results = $this->insert($insert_sql);
+			if ($results == true) {
+				return "Record $key Added Successfully";
+			} else {
+				return "Error Adding $key Record";
+			}
+
+		} else {
+			return "Record $key Already Exists";	
+		}
+	}
+
+
+	// Currently only supports settings table structure. Future Add support for passing Associated Arrays parameters
+	public function remove_record($table, $key) {
+		if ($this->exists($table, 'keyID', $key) == true) {
+			$delete_sql = "DELETE FROM $table WHERE keyID = '$key'";			
+			$results = $this->delete_row($delete_sql);
+			if ($results == true) {
+				return "Record $key Deleted Successfully";
+			} else {
+				return "Error Deleting $key Record";
+			}
+			
+		} else {
+			return "Record $key doesn't exist to remove";
+		}
+	}
+
+
+
+	###############################################
 	# Memcache Flag
 	###############################################
 

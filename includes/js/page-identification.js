@@ -32,7 +32,11 @@ if($('#ID_Short_Mode').val() != 'disabled') { $('#short-id-grp-enable #general')
 if($('#ID_Short_Mode').val() == 'morse') { $('#short-id-grp-enable #morse').show();}
 if($('#ID_Short_Mode').val() == 'voice') { $('#short-id-grp-enable #voice').show(); }
 if($('#ID_Short_Mode').val() == 'custom') { $('#short-id-grp-enable #custom').show(); }
-if($('#ID_Short_Mode').val() == 'voice' || $('#ID_Short_Mode').val() == 'custom') { $('#short-id-grp-enable #append').show(); }
+if($($('#ID_Short_Mode').val() == 'morse' || '#ID_Short_Mode').val() == 'voice' || $('#ID_Short_Mode').val() == 'custom') {
+    $('#short-id-grp-enable #shortID_Options').show(); 
+	$('#short-id-grp-enable #activeID').show();
+}
+if($('#ID_Short_Mode').val() == 'voice' || $('#ID_Short_Mode').val() == 'custom') { $('#short-id-grp-enable #appendShortMorseID').show(); }
 
 
 if($('#ID_Long_Mode').val() != 'disabled') { $('#long-id-grp-enable #general').show(); }
@@ -56,28 +60,32 @@ $('#morseCallsign').val($('#callsign').val() + $('input[name=ID_Morse_Suffix]:ch
 
         if($('#ID_Short_Mode').val() == 'disabled') {
             $('#short-id-grp-enable #general').hide(); 
-            $('#short-id-grp-enable #append').hide(); 
+            $('#short-id-grp-enable #appendShortMorseID').hide(); 
+            $('#short-id-grp-enable #activeID').hide(); 
         } else {
             $('#short-id-grp-enable #general').show(); 
         } 
 
         if($('#ID_Short_Mode').val() == 'morse') {
             $('#short-id-grp-enable #morse').show(); 
-            $('#short-id-grp-enable #append').hide(); 
+            $('#short-id-grp-enable #appendShortMorseID').hide(); 
+            $('#short-id-grp-enable #activeID').show(); 
         } else {
             $('#short-id-grp-enable #morse').hide(); 
         } 
 
         if($('#ID_Short_Mode').val() == 'voice') {
             $('#short-id-grp-enable #voice').show(); 
-            $('#short-id-grp-enable #append').show();
+            $('#short-id-grp-enable #appendShortMorseID').show();
+            $('#short-id-grp-enable #activeID').show(); 
         } else {
             $('#short-id-grp-enable #voice').hide();
         } 
 
         if($('#ID_Short_Mode').val() == 'custom') {
             $('#short-id-grp-enable #custom').show(); 
-            $('#short-id-grp-enable #append').show(); 
+            $('#short-id-grp-enable #appendShortMorseID').show(); 
+            $('#short-id-grp-enable #activeID').show(); 
         } else {
             $('#short-id-grp-enable #custom').hide();
         } 
