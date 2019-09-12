@@ -141,8 +141,8 @@ case "wizard_update":
 		$board_presets = new BoardPresets();
 
 		// Check and Update Database Structure with new fields if they don't already exist
-		$result = $Database->add_record('settings','ID_Only_When_Active','False');
-		php_console_log($result);
+		$Database->add_record('settings','ID_Only_When_Active','False');
+		//php_console_log($result);
 
 
 		// Update Settings Table
