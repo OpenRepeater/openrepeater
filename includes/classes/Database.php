@@ -70,6 +70,21 @@ class Database {
 		if ( $result['COUNT(*)'] > 0 ) { return true; } else { return false; }
 	}
 
+	// TABLE COLUMN EXISTS - Return True/False
+	public function exists_column($table, $column_name) {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+
+		// Get column names for table. 	
+		$column_results = $db->query('PRAGMA table_info("' . $table . '")');			
+		while ($colArray = $column_results->fetchArray()) {
+			// Set Primary Key for parent array
+			if ($colArray['pk'] == 1) { $primary_key =  $colArray['name']; }
+			$columns[] = $colArray['name'];
+		}
+
+		if (in_array($column_name, $columns)) { return true; } else { return false; }
+	}
+
 	// INSERT ROW - Return True/False
 	public function insert($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
@@ -101,6 +116,20 @@ class Database {
 		if ( $db->changes() > 0 ) { return true; } else { return false; }
 	}
 
+	// COUNT TABLE COLUMNS - Return Number
+	public function count_table_columns($table) {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$column_results = $db->query('PRAGMA table_info("' . $table . '")');
+		while ($colArray = $column_results->fetchArray()) {
+			// Set Primary Key for parent array
+			if ($colArray['pk'] == 1) { $primary_key =  $colArray['name']; }
+			$columns[] = $colArray['name'];
+		}
+ 		$numColumns = count($columns);
+		return $numColumns;
+	}			
+
+
 
 
 	###############################################
@@ -130,6 +159,14 @@ class Database {
 	public function get_ports() {
 		$sql = 'SELECT * FROM "ports" ORDER BY "portNum" ASC';
 		$ports = $this->select_all('ports', $sql);
+		foreach($ports as $curPort) {
+			$curPortNum = $curPort['portNum'];
+			$curOptions = unserialize($curPort['portOptions']);
+			foreach($curOptions as $key=>$value) {
+				$ports[$curPortNum][$key] = $value;
+			}
+			unset($ports[$curPortNum]['portOptions']);
+		}
 		return $ports;	
 	}
 
@@ -142,14 +179,32 @@ class Database {
 
 
 	public function update_ports_table( $input_array = array() ) {
+		$primaryColumns = ['portNum','portLabel','rxAudioDev','txAudioDev','portType'];
 		foreach($input_array as $portArr){  
-			$column_names = [];
-			$column_values = [];
-			$columns = implode(",",array_keys($portArr));
-			$escaped_values = array_values($portArr);
-			$values  = "'" . implode("','", $escaped_values) . "'";
-			$sql = "INSERT INTO ports(".$columns.") VALUES(".$values.");";
-			$results = $this->insert($sql);
+			$portNum = $portArr['portNum'];
+			$currColumns = [];
+			$portOptions = [];
+			foreach($portArr as $portColName => $portColValue){  
+				if ( in_array($portColName, $primaryColumns) )
+				    $currColumns[$portColName] = $portColValue;
+				else
+				    $portOptions[$portColName] = $portColValue;
+			}
+			$currColumns['portOptions'] = serialize($portOptions);
+
+			if ( $this->exists('ports','portNum', $portNum) == true ) {
+				// If port exists, update it
+				foreach($currColumns as $col=>$value){  
+					$results = $this->update("UPDATE ports SET $col='$value' WHERE portNum='$portNum'");	
+				}
+			} else {
+				// If port doesn't exist, create it
+				$columns = implode(",",array_keys($currColumns));
+				$escaped_values = array_values($currColumns);
+				$values  = "'" . implode("','", $escaped_values) . "'";
+				$sql = "INSERT INTO ports(".$columns.") VALUES(".$values.");";
+				$results = $this->insert($sql);
+			}
 		}
 	}
 
@@ -306,40 +361,154 @@ class Database {
 	# Modify Database Structure
 	###############################################
 
+	// ADD RECORD
 	// Currently only supports settings table structure. Future Add support for passing Associated Arrays parameters
 	public function add_record($table, $key, $value) {
 		if ($this->exists($table, 'keyID', $key) == false) {
 			$insert_sql = "INSERT INTO $table ('keyID','value') VALUES ('$key','$value')";
 			$results = $this->insert($insert_sql);
 			if ($results == true) {
-				return "Record $key Added Successfully";
+				// Record Added Successfully
+				return true;
 			} else {
-				return "Error Adding $key Record";
+				// Error Adding Record
+				return false;
 			}
 
 		} else {
-			return "Record $key Already Exists";	
+			// Record Already Exists
+			return false;
 		}
 	}
 
-
+	// REMOVE RECORD
 	// Currently only supports settings table structure. Future Add support for passing Associated Arrays parameters
 	public function remove_record($table, $key) {
 		if ($this->exists($table, 'keyID', $key) == true) {
 			$delete_sql = "DELETE FROM $table WHERE keyID = '$key'";			
 			$results = $this->delete_row($delete_sql);
 			if ($results == true) {
-				return "Record $key Deleted Successfully";
+				// Record Deleted Successfully
+				return true;
 			} else {
-				return "Error Deleting $key Record";
+				// Error Deleting Record
+				return false;
 			}
 			
 		} else {
-			return "Record $key doesn't exist to remove";
+			//Record doesn't exist to remove
+			return false;
 		}
 	}
 
 
+	// ADD NEW COLUMN TO TABLE
+	public function add_table_column($table, $column_name) {
+		if ($this->exists_column($table, $column_name) == false) {
+			$old_num_columns = $this->count_table_columns($table);
+
+			$update_sql = "ALTER TABLE $table ADD COLUMN $column_name";
+			$update_sql .= " TEXT";
+			$results = $this->update($update_sql);
+
+			$new_num_columns = $this->count_table_columns($table);
+
+			if ($new_num_columns > $old_num_columns) {
+				// Column Added Successfully
+				return true;
+			} else {
+				// Error Adding Column
+				return false;
+			}
+		} else {
+			// Column Already Exists
+			return false;
+		}
+	}
+
+
+	// REMOVE COLUMN FROM TABLE
+	public function remove_table_column($table, $column_name) {
+		// Get table structure, remove specified column, and build insert SQL
+		$tableStructure = $this->get_table_structure($table);
+		$tableStructure = array_diff_key($tableStructure, array_flip([$column_name]));
+		foreach ($tableStructure as $columnName => $columnArray) {
+			$columnList[] = $columnName;
+		    $currentColDetails = "'" . $columnName . "'";
+		    $currentColDetails .= " " . $columnArray['type'];
+		    if ($columnArray['pk'] == 1) { $currentColDetails .= " PRIMARY KEY"; }
+		    if ($columnArray['notnull'] == 1) { $currentColDetails .= " NOT NULL"; }
+		    if ($columnArray['dflt_value'] != "") { $currentColDetails .= " DEFAULT " . $columnArray['dflt_value']; }
+		
+		    $columnDetails[] = $currentColDetails;
+		}
+		$columnsDetailsCSV = implode(', ', $columnDetails);
+		$columnsCSV = implode(',', $columnList);
+
+		// Build SQL Transcation to create new table
+		$sql = "BEGIN TRANSACTION;";
+		$sql .= "CREATE TEMPORARY TABLE '" . $table . "_backup' ($columnsDetailsCSV);";
+		$sql .= "INSERT INTO " . $table . "_backup SELECT $columnsCSV FROM " . $table . ";";
+		$sql .= "DROP TABLE " . $table . ";";
+		$sql .= "CREATE TABLE '" . $table . "' ($columnsDetailsCSV);";
+		$sql .= "INSERT INTO " . $table . " SELECT $columnsCSV FROM " . $table . "_backup;";
+		$sql .= "DROP TABLE " . $table . "_backup;";
+		$sql .= "COMMIT;";
+		
+		// Execute SQL
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$results = $db->exec($sql) or die('Unable to modify table structure.');
+	}
+
+
+	// GET TABLE STRUCTURE - Return Array
+	public function get_table_structure($table) {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$table_results = $db->query('PRAGMA table_info("' . $table . '")');
+		$tableColumns = [];
+ 		while ($colArray = $table_results->fetchArray()) {
+			$name = $colArray['name'];
+			$tableColumns[$name]['type'] = $colArray['type'];
+			$tableColumns[$name]['notnull'] = $colArray['notnull'];
+			$tableColumns[$name]['dflt_value'] = $colArray['dflt_value'];
+			$tableColumns[$name]['pk'] = $colArray['pk'];
+			$tableColumns[$name]['cid'] = $colArray['cid'];
+		}
+		return $tableColumns;
+	}
+
+
+	// UPGRADE PORTS TABLE - Data structure change from ver 2.1.2 to 3.0.0+
+	public function upgrade_ports_table_structure() {
+		// Check if ports table need updatings, if so proceed.
+		if ( $this->exists_column('ports', 'portOptions') == false ) {
+			// Add new columns
+			$this->add_table_column('ports', 'portType');
+			$this->add_table_column('ports', 'portOptions');
+		
+			// Migrate old columns into options field as serialized array
+			$sql = 'SELECT * FROM "ports" ORDER BY "portNum" ASC';
+			$ports = $this->select_all('ports', $sql);
+			foreach($ports as $curPort){  
+				$curPortID = $curPort['portNum'];
+				if ($curPort['rxGPIO'] > 0) { $portType = 'GPIO'; } else { $portType = ''; }
+				$options_array = array_diff_key( $curPort, array_flip( ['portNum', 'portLabel', 'rxAudioDev', 'txAudioDev', 'portType', 'portOptions'] ) );
+				$newOptions = serialize($options_array);
+				$sql = "UPDATE ports SET portType='$portType', portOptions='$newOptions' WHERE portNum='$curPortID'";
+				$this->insert($sql);
+			}
+
+			// Remove Old Columns...moved into portOptions
+			$this->remove_table_column('ports', 'rxMode');
+			$this->remove_table_column('ports', 'rxGPIO');
+			$this->remove_table_column('ports', 'txGPIO');
+			$this->remove_table_column('ports', 'rxGPIO_active');
+			$this->remove_table_column('ports', 'txGPIO_active');
+
+		}
+	}
+	
+	
 
 	###############################################
 	# Memcache Flag
