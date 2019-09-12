@@ -52,9 +52,8 @@ switch ($settings['orp_Mode']) {
 
 		foreach ($ports as $key => $val) {
 			// Build Ports
-			$config_array += $classSVXLink->build_rx($key); // Build RX
-			$config_array += $classSVXLink->build_tx($key); // Build TX
-
+			$config_array += $classSVXLink->build_rx( $key, $val['portType'] ); // Build RX
+			$config_array += $classSVXLink->build_tx( $key, $val['portType'] ); // Build TX
 
 			// If there is more than one port, build 1st port as repeater, and additional ports as simplex links
 			if ($key == 1) {

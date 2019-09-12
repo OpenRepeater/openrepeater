@@ -107,13 +107,13 @@ class SVXLink {
 		return $global_array;
 	}
 	
-	
+
 	
 	###############################################
 	# Build RX Port
 	###############################################
 
-	public function build_rx($curPort) {
+	public function build_rx($curPort, $curPortType = 'GPIO') {
 		$audio_dev = explode("|", $this->portsArray[$curPort]['rxAudioDev']);
 		
 		$rx_array['RX_Port'.$curPort] = [
@@ -132,12 +132,27 @@ class SVXLink {
 			];
 	
 		} else {
+
 			// COS Squelch Mode
-			$rx_array['RX_Port'.$curPort] += [
-				'SQL_DET' => 'GPIO',
-				'GPIO_SQL_PIN' => 'gpio' . $this->portsArray[$curPort]['rxGPIO'],
-				'SQL_HANGTIME' => '10',
-			];
+			switch ($curPortType) {		
+			    case 'GPIO':
+					$rx_array['RX_Port'.$curPort] += [
+						'SQL_DET' => 'GPIO',
+						'GPIO_SQL_PIN' => 'gpio' . $this->portsArray[$curPort]['rxGPIO'],
+						'SQL_HANGTIME' => '10',
+					];
+			        break;
+	
+			    case 'HiDraw':
+					$rx_array['RX_Port'.$curPort] += [
+						'SQL_DET' => 'HIDRAW',
+						'HID_DEVICE' => $this->portsArray[$curPort]['hidrawDev'],
+						'HID_SQL_PIN' => $this->portsArray[$curPort]['hidrawRX'],
+						'SQL_HANGTIME' => '10',
+					];
+			        break;
+			}
+
 		}
 	
 		$rx_array['RX_Port'.$curPort] += [
@@ -164,21 +179,36 @@ class SVXLink {
 	# Build TX Port
 	###############################################
 
-	public function build_tx($curPort) {
+	public function build_tx($curPort, $curPortType = 'GPIO') {
 		$audio_dev = explode("|", $this->portsArray[$curPort]['txAudioDev']);
 	
 		$tx_array['TX_Port'.$curPort] = [
 			'TYPE' => 'Local',
 			'AUDIO_DEV' => $audio_dev[0],
 			'AUDIO_CHANNEL' => $audio_dev[1],
-			'PTT_TYPE' => 'GPIO',
-			'PTT_PORT' => 'GPIO',
-			'PTT_PIN' => 'gpio'.$this->portsArray[$curPort]['txGPIO'],
 			'PTT_HANGTIME' => ($this->settingsArray['txTailValueSec'] * 1000),
 			'TIMEOUT' => '300',
 			'TX_DELAY' => '50',
 		];
 	
+		switch ($curPortType) {		
+		    case 'GPIO':
+				$tx_array['TX_Port'.$curPort] += [
+					'PTT_TYPE' => 'GPIO',
+					'PTT_PORT' => 'GPIO',
+					'PTT_PIN' => 'gpio'.$this->portsArray[$curPort]['txGPIO'],
+				];
+		        break;
+
+		    case 'HiDraw':
+				$tx_array['TX_Port'.$curPort] += [
+					'PTT_TYPE' => 'Hidraw',
+					'HID_DEVICE' => $this->portsArray[$curPort]['hidrawDev'],
+					'HID_PTT_PIN' => $this->portsArray[$curPort]['hidrawTX'],
+				];
+		        break;
+		}
+
 		if ($this->settingsArray['txTone']) {
 			$tx_array['TX_Port'.$curPort] += [
 				'CTCSS_FQ' => $this->settingsArray['txTone'],
