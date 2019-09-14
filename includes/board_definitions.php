@@ -12,23 +12,25 @@ $board_definitions[] = [
 	'ports' => [
 		1 => [
 			'portLabel' => 'Port 1',
+			'rxAudioDev' => 'alsa:plughw:0|1',
+			'txAudioDev' => 'alsa:plughw:0|1',
+            'portType' => 'GPIO',
 			'rxMode' => 'gpio',
 			'rxGPIO' => '26',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '498',
 			'txGPIO_active' => 'high',
-			'rxAudioDev' => 'alsa:plughw:0|1',
-			'txAudioDev' => 'alsa:plughw:0|1',
 		],
 		2 => [
 			'portLabel' => 'Port 2',
+			'rxAudioDev' => 'alsa:plughw:0|0',
+			'txAudioDev' => 'alsa:plughw:0|0',
+            'portType' => 'GPIO',
 			'rxMode' => 'gpio',
 			'rxGPIO' => '23',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '499',
 			'txGPIO_active' => 'high',
-			'rxAudioDev' => 'alsa:plughw:0|0',
-			'txAudioDev' => 'alsa:plughw:0|0',
 		]
 	],
 	'alsa_settings' => [
@@ -61,13 +63,14 @@ $board_definitions[] = [
 	'ports' => [
 		1 => [
 			'portLabel' => 'Port 1',
+			'rxAudioDev' => 'alsa:plughw:0|1',
+			'txAudioDev' => 'alsa:plughw:0|1',
+            'portType' => 'GPIO',
 			'rxMode' => 'gpio',
 			'rxGPIO' => '26',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '498',
 			'txGPIO_active' => 'high',
-			'rxAudioDev' => 'alsa:plughw:0|1',
-			'txAudioDev' => 'alsa:plughw:0|1',
 		]
 	],
 	'alsa_settings' => [
@@ -98,23 +101,25 @@ $board_definitions[] = [
 	'ports' => [
 		1 => [
 			'portLabel' => 'Repeater',
+			'rxAudioDev' => 'alsa:plughw:0|0',
+			'txAudioDev' => 'alsa:plughw:0|0',
+            'portType' => 'GPIO',
 			'rxMode' => 'gpio',
 			'rxGPIO' => '19',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '16',
 			'txGPIO_active' => 'high',
-			'rxAudioDev' => 'alsa:plughw:0|0',
-			'txAudioDev' => 'alsa:plughw:0|0',
 		],
 		2 => [
 			'portLabel' => 'Link',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+            'portType' => 'GPIO',
 			'rxMode' => 'gpio',
 			'rxGPIO' => '18',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '17',
 			'txGPIO_active' => 'high',
-			'rxAudioDev' => 'alsa:plughw:1|0',
-			'txAudioDev' => 'alsa:plughw:1|0',
 		]
 	],
 	'alsa_settings' => [
@@ -172,23 +177,25 @@ $board_definitions[] = [
 	'ports' => [
 		1 => [
 			'portLabel' => 'Main Port',
+			'rxAudioDev' => 'alsa:plughw:0|0',
+			'txAudioDev' => 'alsa:plughw:0|0',
+            'portType' => 'GPIO',
 			'rxMode' => 'gpio',
 			'rxGPIO' => '23',
 			'rxGPIO_active' => 'high',
 			'txGPIO' => '24',
 			'txGPIO_active' => 'high',
-			'rxAudioDev' => 'alsa:plughw:0|0',
-			'txAudioDev' => 'alsa:plughw:0|0',
 		],
 		2 => [
 			'portLabel' => 'Link Port',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+            'portType' => 'GPIO',
 			'rxMode' => 'gpio',
 			'rxGPIO' => '25',
 			'rxGPIO_active' => 'high',
 			'txGPIO' => '18',
 			'txGPIO_active' => 'high',
-			'rxAudioDev' => 'alsa:plughw:1|0',
-			'txAudioDev' => 'alsa:plughw:1|0',
 		]
 	],
 	'alsa_settings' => [
@@ -215,23 +222,25 @@ $board_definitions[] = [
 	'ports' => [
 		1 => [
 			'portLabel' => 'Port 1',
+			'rxAudioDev' => 'alsa:plughw:0|1',
+			'txAudioDev' => 'alsa:plughw:0|1',
+            'portType' => 'GPIO',
 			'rxMode' => 'gpio',
 			'rxGPIO' => '26',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '498',
 			'txGPIO_active' => 'low',
-			'rxAudioDev' => 'alsa:plughw:0|1',
-			'txAudioDev' => 'alsa:plughw:0|1',
 		],
 		2 => [
 			'portLabel' => 'Port 2',
+			'rxAudioDev' => 'alsa:plughw:0|0',
+			'txAudioDev' => 'alsa:plughw:0|0',
+            'portType' => 'GPIO',
 			'rxMode' => 'gpio',
 			'rxGPIO' => '23',
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '499',
 			'txGPIO_active' => 'low',
-			'rxAudioDev' => 'alsa:plughw:0|0',
-			'txAudioDev' => 'alsa:plughw:0|0',
 		]
 	],
 	'alsa_settings' => [

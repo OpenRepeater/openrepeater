@@ -87,6 +87,10 @@ class BoardPresets {
 	public function load_board_settings($id = null) {
 		$this->get_board_definitions($id);
 
+ 		$classDB = new Database();
+		$classDB->clear_ports_table();
+		$classDB->clear_gpio_table();
+
 		$fullBoardName = trim($this->selectedBoardArray['manufacturer'] . ' - ' . $this->selectedBoardArray['model']);
 				
 		// Build Preset Values to Save to Database
@@ -97,44 +101,17 @@ class BoardPresets {
 		
 		if (isset($this->selectedBoardArray['ports'])) {
 			// Build Ports
-			foreach ($this->selectedBoardArray['ports'] as $current_port_id => $curr_port_values) {
+			foreach ($this->selectedBoardArray['ports'] as $current_port_id => $curr_port_columns) {
 				// Add Port Values
-				$build_ports_table[$current_port_id] = [
-					'portNum' => $current_port_id,
-					'portLabel' => $curr_port_values['portLabel'],
-					'rxMode' => $curr_port_values['rxMode'],
-					'rxGPIO' => $curr_port_values['rxGPIO'],
-					'txGPIO' => $curr_port_values['txGPIO'],
-					'rxAudioDev' => $curr_port_values['rxAudioDev'],
-					'txAudioDev' => $curr_port_values['txAudioDev'],
-					'rxGPIO_active' => $curr_port_values['rxGPIO_active'],
-					'txGPIO_active' => $curr_port_values['txGPIO_active'],			
-				];
-				
-				// Add GPIO Pin for RX for Port...if one is set
-				if(isset($curr_port_values['rxGPIO']) && $curr_port_values['rxGPIO'] != '') {
-					$build_gpio_table[] = [
-						'gpio_num' => $curr_port_values['rxGPIO'],
-						'direction' => 'in',
-						'active' => $curr_port_values['rxGPIO_active'],
-						'description' => 'PORT ' . $current_port_id . ' RX (' . $this->selectedBoardArray['model'] . ')',
-						'type' => 'Port'
-					];			
-				}
-		
-				// Add GPIO Pin for TX for Port...if one is set
-				if(isset($curr_port_values['txGPIO']) && $curr_port_values['txGPIO'] != '') {
-					$build_gpio_table[] = [
-						'gpio_num' => $curr_port_values['txGPIO'],
-						'direction' => 'out',
-						'active' => $curr_port_values['txGPIO_active'],
-						'description' => 'PORT ' . $current_port_id . ' TX: (' . $this->selectedBoardArray['model'] . ')',
-						'type' => 'Port'
-					];
-				}
-		
+				$build_ports_table[$current_port_id] = ['portNum' => $current_port_id];
+				foreach ($curr_port_columns as $columnKey => $columnValue) {
+					$build_ports_table[$current_port_id] += [$columnKey => $columnValue];
+				}		
 			}
 		}
+
+		$classDB->update_ports_table($build_ports_table);
+
 
 		if (isset($this->selectedBoardArray['modules'])) {
 			foreach ($this->selectedBoardArray['modules'] as $current_module_name => $curr_module_values) {
@@ -158,20 +135,11 @@ class BoardPresets {
 			}
 		}
 
-		// Update Database
- 		$classDB = new Database();
-		$classDB->clear_ports_table();
-		$classDB->update_ports_table($build_ports_table);
-
-		$classDB->clear_gpio_table();
 		$classDB->update_gpio_table($build_gpio_table);
 
 		$classDB->deactive_module();
 		if (count($build_module_table) > 0) { $classDB->update_preset_modules($build_module_table); }
 		
-		$classDB->set_update_flag(true);
-
-
 		// Update Alsa Mixer Settings
 		if ( isset( $this->selectedBoardArray['alsa_settings'] ) ) {
 			$this->alsa_mixer_settings();

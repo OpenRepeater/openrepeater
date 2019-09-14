@@ -29,21 +29,27 @@ if(isset($_POST)==true && empty($_POST)==false) {
 	$rxAudioDev=$_POST['rxAudioDev'];					
 	$txAudioDev=$_POST['txAudioDev'];
 
+	$insertArray = [];
 	foreach($portLabel as $a => $b) {
 		$newPortNum = $a+1;
-		
-		// Write settings into Port DB Table
-		$sql = "INSERT INTO ports (portNum,portLabel,rxMode,rxGPIO,txGPIO,rxAudioDev,txAudioDev,rxGPIO_active,txGPIO_active) VALUES ('$newPortNum','$portLabel[$a]','$rxMode[$a]','$rxGPIO[$a]','$txGPIO[$a]','$rxAudioDev[$a]','$txAudioDev[$a]','$rxGPIO_active[$a]','$txGPIO_active[$a]')";
-		$Database->update($sql);	
-		
-		// Write RX pin to GPIO Pin table in DB
-		$gpio_rx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$rxGPIO[$a]','in','$rxGPIO_active[$a]','PORT $newPortNum RX: $portLabel[$a]','Port');";
-		$Database->update($gpio_rx);	
-		
-		// Write TX pin to GPIO Pin table in DB
-		$gpio_tx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$txGPIO[$a]','out','$txGPIO_active[$a]','PORT $newPortNum TX: $portLabel[$a]','Port');";
-		$Database->update($gpio_tx);	
+
+		// Static Columns
+		$insertArray[$newPortNum] = ['portNum' => $newPortNum];
+		$insertArray[$newPortNum] += ['portLabel' => $portLabel[$a]];
+		$insertArray[$newPortNum] += ['rxAudioDev' => $rxAudioDev[$a]];
+		$insertArray[$newPortNum] += ['txAudioDev' => $txAudioDev[$a]];
+		$insertArray[$newPortNum] += ['portType' => 'GPIO'];
+
+		// Columns to be serialized later
+		$insertArray[$newPortNum] += ['rxMode' => $rxMode[$a]];
+		$insertArray[$newPortNum] += ['rxGPIO' => $rxGPIO[$a]];
+		$insertArray[$newPortNum] += ['txGPIO' => $txGPIO[$a]];
+		$insertArray[$newPortNum] += ['rxGPIO_active' => $rxGPIO_active[$a]];
+		$insertArray[$newPortNum] += ['txGPIO_active' => $txGPIO_active[$a]];
 	}
+
+	// Write settings into Port DB Table
+	$Database->update_ports_table($insertArray);
 
 	return true;
 	

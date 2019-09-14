@@ -182,6 +182,7 @@ class Database {
 		$primaryColumns = ['portNum','portLabel','rxAudioDev','txAudioDev','portType'];
 		foreach($input_array as $portArr){  
 			$portNum = $portArr['portNum'];
+			$gpioFlag = 0;
 			$currColumns = [];
 			$portOptions = [];
 			foreach($portArr as $portColName => $portColValue){  
@@ -189,6 +190,7 @@ class Database {
 				    $currColumns[$portColName] = $portColValue;
 				else
 				    $portOptions[$portColName] = $portColValue;
+				    if ($portColName == 'rxGPIO' || $portColName == 'txGPIO') { $gpioFlag++; }
 			}
 			$currColumns['portOptions'] = serialize($portOptions);
 
@@ -205,6 +207,22 @@ class Database {
 				$sql = "INSERT INTO ports(".$columns.") VALUES(".$values.");";
 				$results = $this->insert($sql);
 			}
+
+			if ($gpioFlag > 0) {
+				if ($portOptions['rxGPIO'] > 0) {
+					$build_gpio_row = []; // reset array
+					$build_gpio_row[] = ['gpio_num' => $portOptions['rxGPIO'],'direction' => 'in','active' => $portOptions['rxGPIO_active'],'description' => 'RX: ' . $portArr['portLabel'],'type' => 'Port'];
+					$this->update_gpio_table( $build_gpio_row );
+				}
+
+				if ($portOptions['txGPIO'] > 0) {
+					$build_gpio_row = []; // reset array
+					$build_gpio_row[] = ['gpio_num' => $portOptions['txGPIO'],'direction' => 'out','active' => $portOptions['txGPIO_active'],'description' => 'TX: ' . $portArr['portLabel'],'type' => 'Port'];
+					$this->update_gpio_table( $build_gpio_row );
+				}
+
+			}
+
 		}
 	}
 
@@ -230,13 +248,19 @@ class Database {
 
 	public function update_gpio_table( $input_array = array() ) {
 		foreach($input_array as $gpioArr){  
-			$column_names = [];
-			$column_values = [];
-			$columns = implode(",",array_keys($gpioArr));
-			$escaped_values = array_values($gpioArr);
-			$values  = "'" . implode("','", $escaped_values) . "'";
-			$sql = "INSERT INTO gpio_pins(".$columns.") VALUES(".$values.");";
-			$results = $this->insert($sql);
+			if ( $this->exists('gpio_pins','gpio_num', $gpioArr['gpio_num']) == true ) {
+				$sql = "UPDATE gpio_pins SET direction='".$gpioArr['direction']."', active='".$gpioArr['active']."', description='".$gpioArr['description']."', type='".$gpioArr['type']."' WHERE gpio_num='".$gpioArr['gpio_num']."';";
+				$results = $this->update($sql);
+				
+			} else {
+				$column_names = [];
+				$column_values = [];
+				$columns = implode(",",array_keys($gpioArr));
+				$escaped_values = array_values($gpioArr);
+				$values  = "'" . implode("','", $escaped_values) . "'";
+				$sql = "INSERT INTO gpio_pins(".$columns.") VALUES(".$values.");";
+				$results = $this->insert($sql);
+			}
 		}
 	}
 
