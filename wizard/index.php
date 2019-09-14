@@ -37,7 +37,7 @@ if (!isset($_POST["page"])) {
 		"ID_Short_IntervalMin"	=>		"10",
 		"ID_Short_AppendMorse"	=>		"False",
 		"ID_Short_CustomFile"	=>		"Sample_Short_ID_Clip.wav",
-		"ID_Morse_Amplitude"	=>		"200",
+		"ID_Morse_Amplitude"	=>		"-13.98",
 		"repeaterDTMF_disable"	=>		"False",
 		"repeaterDTMF_disable_pin"	=>	"1234"
 		);
