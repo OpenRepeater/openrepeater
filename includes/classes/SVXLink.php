@@ -144,12 +144,21 @@ class SVXLink {
 			        break;
 	
 			    case 'HiDraw':
+					$hidDev = trim( $this->portsArray[$curPort]['hidrawDev'] );
+					if ($this->portsArray[$curPort]['hidrawRX_cos_invert'] == true) {
+						$hid_pin = '!' . $this->portsArray[$curPort]['hidrawRX_cos']; // Inverted Logic
+					} else {
+						$hid_pin = $this->portsArray[$curPort]['hidrawRX_cos']; // Normal Logic
+					}
 					$rx_array['RX_Port'.$curPort] += [
 						'SQL_DET' => 'HIDRAW',
-						'HID_DEVICE' => $this->portsArray[$curPort]['hidrawDev'],
-						'HID_SQL_PIN' => $this->portsArray[$curPort]['hidrawRX'],
+						'HID_DEVICE' => $hidDev,
+						'HID_SQL_PIN' => $hid_pin,
 						'SQL_HANGTIME' => '10',
 					];
+
+					// Set Hidraw device permission, This should really be moved to the start of SVXLink. 
+					exec("sudo orp_helper hidraw owner $hidDev", $version);
 			        break;
 			}
 
@@ -201,11 +210,20 @@ class SVXLink {
 		        break;
 
 		    case 'HiDraw':
+				$hidDev = trim( $this->portsArray[$curPort]['hidrawDev'] );
+				if ($this->portsArray[$curPort]['hidrawTX_ptt_invert'] == true) {
+					$hid_pin = '!' . $this->portsArray[$curPort]['hidrawTX_ptt']; // Inverted Logic
+				} else {
+					$hid_pin = $this->portsArray[$curPort]['hidrawTX_ptt']; // Normal Logic
+				}
 				$tx_array['TX_Port'.$curPort] += [
 					'PTT_TYPE' => 'Hidraw',
-					'HID_DEVICE' => $this->portsArray[$curPort]['hidrawDev'],
-					'HID_PTT_PIN' => $this->portsArray[$curPort]['hidrawTX'],
+					'HID_DEVICE' => $hidDev,
+					'HID_PTT_PIN' => $hid_pin,
 				];
+
+				// Set Hidraw device permission, This should really be moved to the start of SVXLink. 
+				exec("sudo orp_helper hidraw owner $hidDev", $version);
 		        break;
 		}
 

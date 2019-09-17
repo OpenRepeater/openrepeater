@@ -62,7 +62,11 @@ class BoardPresets {
 			$html_options .= '<optgroup label="' . $manufacturerName . '">';
 				foreach ($this->boardPresetArray as $boardID => $boardValues) {
 					if ( $boardValues['manufacturer'] == $manufacturerName )
-				    $html_options .= '<option value="' . $boardID . '">' . $boardValues['model'] . ' (v' . $boardValues['version'] . ')</option>';
+				    $html_options .= '<option value="' . $boardID . '">' . $boardValues['model'];
+					if ( isset($boardValues['version']) ) {
+					    $html_options .= ' (' . trim($boardValues['version']) . ')';
+					}
+				    $html_options .= '</option>';
 				}
 			$html_options .= '</optgroup>';
 		}

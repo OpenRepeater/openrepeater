@@ -5,10 +5,10 @@ $board_definitions = array();
 # ICS Controllers - Pi Repeater 2X
 #################################################################################
 
-$board_definitions[] = [
+$board_definitions[170923] = [
 	'manufacturer' => 'ICS Controllers',
 	'model' => 'Pi Repeater 2X',
-	'version' => '3.1+',
+	'version' => 'v3.1+',
 	'ports' => [
 		1 => [
 			'portLabel' => 'Port 1',
@@ -20,6 +20,10 @@ $board_definitions[] = [
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '498',
 			'txGPIO_active' => 'high',
+			'rxGPIO_ctcss' => '24',
+			'rxGPIO_ctcss_active' => 'low',
+			'txGPIO_ctcss' => '13',
+			'txGPIO_ctcss_active' => 'low',
 		],
 		2 => [
 			'portLabel' => 'Port 2',
@@ -31,6 +35,10 @@ $board_definitions[] = [
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '499',
 			'txGPIO_active' => 'high',
+			'rxGPIO_ctcss' => '25',
+			'rxGPIO_ctcss_active' => 'low',
+			'txGPIO_ctcss' => '27',
+			'txGPIO_ctcss_active' => 'low',
 		]
 	],
 	'alsa_settings' => [
@@ -43,23 +51,16 @@ $board_definitions[] = [
 		]
 	]
 ];
-/*
-(Not Yet Supported by ORP)
-CTCSS1: 24 low
-CTCSS2: 25 low
-CTCSS_ENC1: 13 low
-CTCSS2_ENC: 27 low
-*/
 
 
 #################################################################################
 # ICS Controllers - Pi Repeater 1X
 #################################################################################
 
-$board_definitions[] = [
+$board_definitions[171231] = [
 	'manufacturer' => 'ICS Controllers',
 	'model' => 'Pi Repeater 1X',
-	'version' => '1.0+',
+	'version' => 'v1.0+',
 	'ports' => [
 		1 => [
 			'portLabel' => 'Port 1',
@@ -71,6 +72,10 @@ $board_definitions[] = [
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '498',
 			'txGPIO_active' => 'high',
+			'rxGPIO_ctcss' => '24',
+			'rxGPIO_ctcss_active' => 'low',
+			'txGPIO_ctcss' => '13',
+			'txGPIO_ctcss_active' => 'low',
 		]
 	],
 	'alsa_settings' => [
@@ -83,21 +88,16 @@ $board_definitions[] = [
 		]
 	]
 ];
-/*
-(Not Yet Supported by ORP)
-CTCSS1: 24 low
-CTCSS_ENC1: 13 low
-*/
 
 
 #################################################################################
 # F5UII/F8ASB - SVXLink Card
 #################################################################################
 
-$board_definitions[] = [
+$board_definitions[160430] = [
 	'manufacturer' => 'F5UII/F8ASB',
 	'model' => 'SVXLink Card',
-	'version' => '1.11+',	
+	'version' => 'v1.11+',	
 	'ports' => [
 		1 => [
 			'portLabel' => 'Repeater',
@@ -170,10 +170,10 @@ $board_definitions[] = [
 # Richard Neese - SVXLink Basic Board
 #################################################################################
 
-$board_definitions[] = [
+$board_definitions[161021] = [
 	'manufacturer' => 'Richard Neese',
 	'model' => 'SVXLink Basic Board',
-	'version' => '1.0',
+	'version' => 'v1.0',
 	'ports' => [
 		1 => [
 			'portLabel' => 'Main Port',
@@ -212,13 +212,85 @@ $board_definitions[] = [
 
 
 #################################################################################
+# DMK Engineering Inc. - URI
+#################################################################################
+
+$board_definitions[110326] = [
+	'manufacturer' => 'DMK Engineering Inc.',
+	'model' => 'URI',
+	'version' => '9095',
+	'ports' => [
+		1 => [
+			'portLabel' => 'Main Port',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+            'portType' => 'HiDraw',
+            'hidrawDev' => '/dev/hidraw0',
+            'hidrawRX_cos' => 'VOL_DN',
+            'hidrawRX_cos_invert' => true,
+            'hidrawRX_ctcss' => 'VOL_UP',
+            'hidrawRX_ctcss_invert' => true,
+            'hidrawTX_ptt' => 'GPIO3',
+            'hidrawTX_ptt_invert' => false,
+		],
+	],
+	'gpios' => [
+		1 => 'GPIO1',
+		2 => 'GPIO2',
+		4 => 'GPIO4',
+		5 => 'GPIO5',
+		6 => 'GPIO6',
+		7 => 'GPIO7',
+		8 => 'GPIO8',
+	],
+	'alsa_settings' => [
+		0 => [
+			'Speaker' => '75%',
+			'Mic' => '18dB'
+		]
+	]
+];
+
+
+#################################################################################
+# Repeater Builder / Scott Zimmerman (N3XCC) - USB-RIM Lite
+#################################################################################
+
+$board_definitions[170306] = [
+	'manufacturer' => 'Repeater Builder',
+	'model' => 'USB-RIM Lite',
+	'ports' => [
+		1 => [
+			'portLabel' => 'Main Port',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+            'portType' => 'HiDraw',
+            'hidrawDev' => '/dev/hidraw0',
+            'hidrawRX_cos' => 'VOL_DN',
+            'hidrawRX_cos_invert' => true,
+            'hidrawRX_ctcss' => 'VOL_UP',
+            'hidrawRX_ctcss_invert' => true,
+            'hidrawTX_ptt' => 'GPIO3',
+            'hidrawTX_ptt_invert' => false,
+		],
+	],
+	'alsa_settings' => [
+		0 => [
+			'Speaker' => '75%',
+			'Mic' => '18dB'
+		]
+	]
+];
+
+
+#################################################################################
 # ICS Controllers - Pi Repeater 2X PROTOTYPE
 #################################################################################
 
-$board_definitions[] = [
+$board_definitions[170402] = [
 	'manufacturer' => 'ICS Controllers',
 	'model' => 'Pi Repeater 2X',
-	'version' => '2.1 - PROTOTYPE',
+	'version' => 'v2.1 - PROTOTYPE',
 	'ports' => [
 		1 => [
 			'portLabel' => 'Port 1',
@@ -230,6 +302,10 @@ $board_definitions[] = [
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '498',
 			'txGPIO_active' => 'low',
+			'rxGPIO_ctcss' => '24',
+			'rxGPIO_ctcss_active' => 'low',
+			'txGPIO_ctcss' => '13',
+			'txGPIO_ctcss_active' => 'low',
 		],
 		2 => [
 			'portLabel' => 'Port 2',
@@ -241,6 +317,10 @@ $board_definitions[] = [
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '499',
 			'txGPIO_active' => 'low',
+			'rxGPIO_ctcss' => '25',
+			'rxGPIO_ctcss_active' => 'low',
+			'txGPIO_ctcss' => '27',
+			'txGPIO_ctcss_active' => 'low',
 		]
 	],
 	'alsa_settings' => [
@@ -253,13 +333,6 @@ $board_definitions[] = [
 		]
 	]
 ];
-/*
-(Not Yet Supported by ORP)
-CTCSS1: 24 low
-CTCSS2: 25 low
-CTCSS_ENC1: 13 low
-CTCSS2_ENC: 27 low
-*/
 
 
 ?>

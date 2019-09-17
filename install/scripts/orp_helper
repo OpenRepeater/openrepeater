@@ -89,6 +89,12 @@ function system_user {
 }
 
 
+### HIDRAW FUNCTIONS ###
+function hidraw_ownership {
+	chown svxlink:svxlink "$1"
+}
+
+
 ### AUDIO FUNCTIONS ###
 function audio_inputs {
 	arecord -l
@@ -269,6 +275,11 @@ while :; do
 			if [ "$2" == "backup" ]; then alsamixer_backup "$3"
 			elif [ "$2" == "restore" ]; then alsamixer_restore "$3"
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper alsa (backup|restore) [path]"
+			fi
+			exit;;
+        hidraw)
+			if [ "$2" == "owner" ]; then hidraw_ownership "$3"
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper hidraw (owner) [path]"
 			fi
 			exit;;
         network)
