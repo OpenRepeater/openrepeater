@@ -247,10 +247,10 @@ class SVXLink {
 
 
 	###############################################
-	# Build Logic - REPEATER
+	# Build Full Duplex Logic (Repeater)
 	###############################################
 
-	public function build_logic_repeater($logicName,$curPort) {
+	public function build_full_duplex_logic($logicName,$curPort) {
 		$this->logics[] = $logicName; // Add this logic to list for Globals Section
 
 		$logic_array[$logicName] = [
@@ -327,10 +327,10 @@ class SVXLink {
 
 
 	###############################################
-	# Build Logic - SIMPLEX
+	# Build Half Duplex Logic (Simplex)
 	###############################################
 
-	public function build_logic_simplex($logicName,$curPort,$modules=false) {
+	public function build_half_duplex_logic($logicName,$curPort,$modules=false) {
 		$this->logics[] = $logicName; // Add this logic to list for Globals Section
 
 		$logic_array[$logicName] = [

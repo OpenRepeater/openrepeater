@@ -1,5 +1,5 @@
- <?php
-# Copyright Â©2018 - Aaron Crawford, N3MBH - info(at)openrepeater(dot)com
+<?php
+# Copyright ©2018 - Aaron Crawford, N3MBH - info(at)openrepeater(dot)com
 # Licended under GPL v2 or later
 
 /*
@@ -16,9 +16,8 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 /* ---------------------------------------------------------- */
 
 // Declare Config Arrays
-$config_array = array();
-$config_array['GLOBAL'] = array(); // Declare empty for prioritization
-
+$config_array = [];
+$config_array['GLOBAL'] = []; // Declare empty for prioritization
 
 /* ---------------------------------------------------------- */
 /* --- LOAD CLASSES --- */
@@ -42,134 +41,80 @@ $classSVXLinkGPIO = new SVXLink_GPIO($gpio);
 
 $classSVXLink->delete_custom_evnets(); // Purge Previous Custom Event Files
 
-switch ($settings['orp_Mode']) {
-
+foreach ($ports as $key => $val) {
 	###############################################
-	# Repeater Setup
+	# Work around until new UI is in place
+	###############################################
+	switch ($settings['orp_Mode']) {
+		case "repeater":
+			if ($key == 1) { $val['portDuplex'] = 'full'; } else { $val['portDuplex'] = 'half'; }
+			$val['linkGroup'] = 1;
+			break;
+		case "simplex":
+			$val['portDuplex'] = 'half'; // or full or half
+			break;
+	}
 	###############################################
 
-    case "repeater":
 
-		foreach ($ports as $key => $val) {
-			// Build Ports
-			$config_array += $classSVXLink->build_rx( $key, $val['portType'] ); // Build RX
-			$config_array += $classSVXLink->build_tx( $key, $val['portType'] ); // Build TX
+	// Build Ports
+	$config_array += $classSVXLink->build_rx( $key, $val['portType'] ); // Build RX
+	$config_array += $classSVXLink->build_tx( $key, $val['portType'] ); // Build TX
 
-			// If there is more than one port, build 1st port as repeater, and additional ports as simplex links
-			if ($key == 1) {
-				// Build Repeater Logic
-				$new_logic_name = 'ORP_RepeaterLogic_Port' . $key;
-				$new_logic_filename = $new_logic_name . '.tcl';
-	
-				$config_array += $classSVXLink->build_logic_repeater($new_logic_name, $key);
-	
-				$new_event = $classSVXLinkTCL->alias_RepeaterLogic($new_logic_name);
+	if ($val['portDuplex'] == 'full') {
+		// Full Duplex Logic
+		$new_logic_name = 'ORP_FullDuplexLogic_Port' . $key;
+		$new_logic_filename = $new_logic_name . '.tcl';
 
-				$new_event = $classSVXLinkTCL->override_courtesy_tone($new_event);
+		$config_array += $classSVXLink->build_full_duplex_logic($new_logic_name, $key);
 
-				$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
-				
-				$logicListArray = array($new_logic_name);
-			
-				
-			} else {
-				// Build Link/Simplex Logic
-				$new_logic_name = 'ORP_SimplexLogic_Port' . $key;
-				$new_logic_filename = $new_logic_name . '.tcl';
-	
-				$config_array += $classSVXLink->build_logic_simplex($new_logic_name, $key);
-	
-				$new_event = $classSVXLinkTCL->alias_SimplexLogic($new_logic_name);
-				$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
+		$new_event = $classSVXLinkTCL->alias_RepeaterLogic($new_logic_name);
 
-				$logicListArray[] = $new_logic_name;
+		$new_event = $classSVXLinkTCL->override_courtesy_tone($new_event);
 					
-			}
-			
-		}
+	} else {
+		// Half Duplex Logic
+		$new_logic_name = 'ORP_HalfDuplexLogic_Port' . $key;
+		$new_logic_filename = $new_logic_name . '.tcl';
 
+		$config_array += $classSVXLink->build_half_duplex_logic($new_logic_name, $key);
 
-		if (count($logicListArray) > 1) {
-			// BUILD LINK SECTION
-			$config_array += $classSVXLink->build_link( 'LinkSection', $logicListArray );			
-		}
-
-
-		// GLOBAL SETTINGS
-		$config_array['GLOBAL'] += $classSVXLink->build_global();
-
-		// Build GPIO Config
-		$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();
-
-		# Insert Logic TCL Overrides
- 		$logicOverride = $classSVXLinkTCL->logic_override();
-
-
-		// WRITE CONFIGURATION & TCL FILES
-		$classSVXLink->write_config($config_array, 'svxlink.conf', 'ini');
- 		$classSVXLink->write_config($logicOverride, 'Logic.tcl', 'text');
-		$classSVXLink->write_config($gpioConfigFile, 'gpio.conf', 'text');
-
-        break;
-
-
-	###############################################
-	# Simplex Setup
-	###############################################
-
-    case "simplex":
-
-		foreach ($ports as $key => $val) {
-			// Build Ports
-			$config_array += $classSVXLink->build_rx($key); // Build RX
-			$config_array += $classSVXLink->build_tx($key); // Build TX
-
-			// Simplex Logic
-			$new_logic_name = 'ORP_SimplexLogic_Port' . $key;
-			$new_logic_filename = $new_logic_name . '.tcl';
-
-			$config_array += $classSVXLink->build_logic_simplex($new_logic_name, $key, true);
-
-			$new_event = $classSVXLinkTCL->alias_SimplexLogic($new_logic_name);
-			$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
-		}
-
-		// GLOBAL SETTINGS
-		$config_array['GLOBAL'] += $classSVXLink->build_global();
-
-		// Build GPIO Config
-		$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();
-
-		# Insert Logic TCL Overrides
- 		$logicOverride = $classSVXLinkTCL->logic_override();
-
-		// WRITE CONFIGURATION & TCL FILES
-		$classSVXLink->write_config($config_array, 'svxlink.conf', 'ini');
- 		$classSVXLink->write_config($logicOverride, 'Logic.tcl', 'text');
-		$classSVXLink->write_config($gpioConfigFile, 'gpio.conf', 'text');
-
-        break;
-
-
-	###############################################
-	# Advanced Setup
-	###############################################
-
-    case "advanced":
-		// Process advanced mode overrides
-		$adv_results = $classDB->select_key_value('SELECT * from advanced', 'keyID', 'value');
-		foreach($adv_results as $adv_key => $adv_value) {
-			// Remove Window Newline characters and trim off leading and trailing whitespace.
-			$advanced[$adv_key] = trim(str_replace("\r", "", $adv_value)) . "\n";
-		}
+		$new_event = $classSVXLinkTCL->alias_SimplexLogic($new_logic_name);
+	}
+	$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
 	
-		// WRITE CONFIGURATION & TCL FILES
-		$classSVXLink->write_config($advanced['svxlink_config'], 'svxlink.conf', 'text'); // Overridden svxlink.confg
-		unlink('/etc/openrepeater/svxlink/local-events.d/CustomLogic.tcl'); // Delete custom TCL overrides if they exist
-		$classSVXLink->write_config($advanced['gpio_config'], 'gpio.conf', 'text'); // Overridden GPIO config
-        break;
+	// Add to LinkGroup
+	if (isset($val['linkGroup'])) {
+		$linkGroupArray[$val['linkGroup']][$key] = $new_logic_name;
+	}
 
 }
+
+
+// BUILD LINK SECTION - If link group contains 2 or more ports...built config
+if (isset($linkGroupArray)) {
+	foreach ($linkGroupArray as $grpNumber => $grpArray) {
+		if (count($grpArray) > 1) {
+			$config_array += $classSVXLink->build_link( 'LinkGroup' . $grpNumber, $grpArray );			
+		}
+	}
+}
+
+// GLOBAL SETTINGS
+$config_array['GLOBAL'] += $classSVXLink->build_global();
+
+// Build GPIO Config
+$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();
+
+// Insert Logic TCL Overrides
+$logicOverride = $classSVXLinkTCL->logic_override();
+
+// WRITE CONFIGURATION & TCL FILES
+$classSVXLink->write_config($config_array, 'svxlink.conf', 'ini');
+$classSVXLink->write_config($logicOverride, 'Logic.tcl', 'text');
+$classSVXLink->write_config($gpioConfigFile, 'gpio.conf', 'text');
+
+
 
 	
 /* ---------------------------------------------------------- */
