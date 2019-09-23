@@ -16,20 +16,23 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 
 $pageTitle = "DTMF Reference"; 
 
-/*
-include_once("includes/get_settings.php");
-include_once("includes/get_modules.php");
-$dbConnection->close();
-*/
-
 include('includes/header.php');
 
 $Database = new Database();
 $settings = $Database->get_settings();
+$ports = $Database->get_ports();
 
 $ModulesClass = new Modules();
 $modules = $ModulesClass->get_modules();
 
+
+// Create count array for Link Groups
+foreach ($ports as $curPort) {
+	if (isset($curPort['linkGroup']) && $curPort['linkGroup'] > 0){
+		echo $curPort['linkGroup'] . '<br>';
+		$linkGrpCount[$curPort['linkGroup']]++;			
+	}
+}
 ?>
 
 			<?php if (isset($alert)) { echo $alert; } ?>
@@ -69,6 +72,30 @@ $modules = $ModulesClass->get_modules();
 							
 							<legend># - Deactivate Current Module</legend>
 							<p>By pressing the number key (#), this will deactivate the current module. If you are in a module that has a couple levels, then the number key (#) will function like a back key.</p>
+							<br>
+
+
+							<?php
+							// Display link groups that should be active
+							if (isset($linkGrpCount)) {
+								echo '<legend>Links</legend>';
+								echo '<p>By pressing the star key (*), this will cause the repeater to identify.</p>';
+
+								foreach ($linkGrpCount as $curLinkNum => $curLinkCount) {
+									if ($curLinkCount > 1) {
+										?>
+										<h3>Link Group <?php echo $curLinkNum ?></h3>
+										
+										<p><strong>9<?php echo $curLinkNum ?> + 0#</strong> - <span style="color:red;">Disable Link Group <?php echo $curLinkNum ?></span> <br><em>Link Group ID + 0 (Disable) + # (Execute Command)</em></p>
+
+										<p><strong>9<?php echo $curLinkNum ?> + 1#</strong> - <span style="color:green;">Enable Link Group <?php echo $curLinkNum ?></span> <br><em>Link Group ID + 1 (Enable) + # (Execute Command)</em></p>
+										<?php
+									}
+								}
+								
+							}							
+							?>
+
 							<br>
 
 

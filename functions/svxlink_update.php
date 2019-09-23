@@ -1,5 +1,5 @@
 <?php
-# Copyright ©2018 - Aaron Crawford, N3MBH - info(at)openrepeater(dot)com
+# Copyright ï¿½2018 - Aaron Crawford, N3MBH - info(at)openrepeater(dot)com
 # Licended under GPL v2 or later
 
 /*
@@ -45,14 +45,16 @@ foreach ($ports as $key => $val) {
 	###############################################
 	# Work around until new UI is in place
 	###############################################
-	switch ($settings['orp_Mode']) {
-		case "repeater":
-			if ($key == 1) { $val['portDuplex'] = 'full'; } else { $val['portDuplex'] = 'half'; }
-			$val['linkGroup'] = 1;
-			break;
-		case "simplex":
-			$val['portDuplex'] = 'half'; // or full or half
-			break;
+	if ( !isset($val['portDuplex']) ) {
+		switch ($settings['orp_Mode']) {
+			case "repeater":
+				if ($key == 1) { $val['portDuplex'] = 'full'; } else { $val['portDuplex'] = 'half'; }
+				$val['linkGroup'] = 1;
+				break;
+			case "simplex":
+				$val['portDuplex'] = 'half'; // or full or half
+				break;
+		}
 	}
 	###############################################
 
@@ -95,7 +97,7 @@ foreach ($ports as $key => $val) {
 if (isset($linkGroupArray)) {
 	foreach ($linkGroupArray as $grpNumber => $grpArray) {
 		if (count($grpArray) > 1) {
-			$config_array += $classSVXLink->build_link( 'LinkGroup' . $grpNumber, $grpArray );			
+			$config_array += $classSVXLink->build_link( $grpNumber, $grpArray );			
 		}
 	}
 }

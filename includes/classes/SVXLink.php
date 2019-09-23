@@ -411,12 +411,30 @@ class SVXLink {
 	# Build LINK Section
 	###############################################
 
-	public function build_link($linkName, $logicsArray) {
+	public function build_link($linkGroupNum, $logicsArray, $linkActive = true) {
+		$linkName = 'LinkGroup' . $linkGroupNum;
 		$this->links[] = $linkName; // Add this link section to link list for declaration in Globals Section
 
+		foreach($logicsArray as $currLogicKey => $currLogicName) {
+			$currLinkString = $currLogicName;
+			$currLinkString .= ':9' . $linkGroupNum;
+			$currLinkString .= ':' . $this->settingsArray['callSign'];
+			$outputLogicArray[$currLogicKey] =  $currLinkString;
+			echo $currLogicName . '<br>';
+		}
+
 		$link_array[$linkName] = [
-			'CONNECT_LOGICS' => implode(",", $logicsArray),
-			'DEFAULT_ACTIVE' => '1',
+			'CONNECT_LOGICS' => implode(",", $outputLogicArray),			
+		];
+
+		if ($linkActive == true) {
+			$link_array[$linkName] += [
+				'DEFAULT_ACTIVE' => '1',
+			];
+		}
+
+		$link_array[$linkName] += [
+			'#TIMEOUT' => '300', // In seconds				
 		];
 
 		return $link_array;
