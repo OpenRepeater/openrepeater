@@ -28,8 +28,7 @@ $modules = $ModulesClass->get_modules();
 
 // Create count array for Link Groups
 foreach ($ports as $curPort) {
-	if (isset($curPort['linkGroup']) && $curPort['linkGroup'] > 0){
-		echo $curPort['linkGroup'] . '<br>';
+	if (isset($curPort['linkGroup']) && $curPort['linkGroup'] > 0 && $curPort['portEnabled'] == 1){
 		$linkGrpCount[$curPort['linkGroup']]++;			
 	}
 }
@@ -79,7 +78,7 @@ foreach ($ports as $curPort) {
 							// Display link groups that should be active
 							if (isset($linkGrpCount)) {
 								echo '<legend>Links</legend>';
-								echo '<p>By pressing the star key (*), this will cause the repeater to identify.</p>';
+								echo '<p>You can enable or disable linking using the codes below.</p>';
 
 								foreach ($linkGrpCount as $curLinkNum => $curLinkCount) {
 									if ($curLinkCount > 1) {

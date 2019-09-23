@@ -179,7 +179,7 @@ class Database {
 
 
 	public function update_ports_table( $input_array = array() ) {
-		$primaryColumns = ['portNum','portLabel','rxAudioDev','txAudioDev','portType'];
+		$primaryColumns = ['portNum','portLabel','rxAudioDev','txAudioDev','portType','portEnabled'];
 		foreach($input_array as $portArr){  
 			$portNum = $portArr['portNum'];
 			$gpioFlag = 0;
@@ -508,6 +508,7 @@ class Database {
 		if ( $this->exists_column('ports', 'portOptions') == false ) {
 			// Add new columns
 			$this->add_table_column('ports', 'portType');
+			$this->add_table_column('ports', 'portEnabled');
 			$this->add_table_column('ports', 'portOptions');
 		
 			// Migrate old columns into options field as serialized array
@@ -516,9 +517,9 @@ class Database {
 			foreach($ports as $curPort){  
 				$curPortID = $curPort['portNum'];
 				if ($curPort['rxGPIO'] > 0) { $portType = 'GPIO'; } else { $portType = ''; }
-				$options_array = array_diff_key( $curPort, array_flip( ['portNum', 'portLabel', 'rxAudioDev', 'txAudioDev', 'portType', 'portOptions'] ) );
+				$options_array = array_diff_key( $curPort, array_flip( ['portNum', 'portLabel', 'rxAudioDev', 'txAudioDev', 'portType', 'portEnabled',  'portOptions'] ) );
 				$newOptions = serialize($options_array);
-				$sql = "UPDATE ports SET portType='$portType', portOptions='$newOptions' WHERE portNum='$curPortID'";
+				$sql = "UPDATE ports SET portType='$portType', portOptions='$newOptions', portEnabled='1' WHERE portNum='$curPortID'";
 				$this->insert($sql);
 			}
 
