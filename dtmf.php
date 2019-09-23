@@ -62,7 +62,7 @@ foreach ($ports as $curPort) {
 
 							<p><strong><?php echo $settings['repeaterDTMF_disable_pin'] ?> + 1#</strong> - <span style="color:green;">Enable Transmitter</span> <br><em>Your code + 1 (Enable) + # (Execute Command)</em></p>
 
-							<p>NOTE: If a module is running while you wish to disable the transmitter, you must first disable the module OR force the disable command by prefixing with a star (*). So, the disable command would become <strong>* + <?php echo $settings['repeaterDTMF_disable_pin'] ?> + 0#</p>
+							<p>NOTE: If a module is running while you wish to disable the transmitter, you must first disable the module OR force the disable command by prefixing with a star (*). So, the disable command would become <strong>* + <?php echo $settings['repeaterDTMF_disable_pin'] ?> + 0#</strong></p>
 							
 							<br>
 							<?php } ?>
@@ -83,7 +83,7 @@ foreach ($ports as $curPort) {
 								foreach ($linkGrpCount as $curLinkNum => $curLinkCount) {
 									if ($curLinkCount > 1) {
 										?>
-										<h3>Link Group <?php echo $curLinkNum ?></h3>
+										<h4>Link Group <?php echo $curLinkNum ?></h4>
 										
 										<p><strong>9<?php echo $curLinkNum ?> + 0#</strong> - <span style="color:red;">Disable Link Group <?php echo $curLinkNum ?></span> <br><em>Link Group ID + 0 (Disable) + # (Execute Command)</em></p>
 
