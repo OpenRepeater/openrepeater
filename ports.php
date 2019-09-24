@@ -198,7 +198,19 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 											  </select>
 											</div>
 										  </div>
-									  	</fieldset>
+
+										  <hr>
+										  <div class="control-group">
+											<label class="control-label" for="portEnabled<?php echo $idNum; ?>">Port Enabled/Disabled</label>
+											<div class="controls">
+											  <select id="portEnabled<?php echo $idNum; ?>" name="portEnabled[]">
+											  	<option value="1" <?php if ($cur_port['portEnabled'] == '1') { echo ' selected'; } ?>>Enabled</option>
+											  	<option value="0" <?php if ($cur_port['portEnabled'] == '0') { echo ' selected'; } ?>>Disabled</option>
+											  </select>
+											</div>
+										  </div>
+
+										</fieldset>
 								      </div>
 								      <div class="modal-footer">
 									  	<button type="button" class="btn btn-default" data-dismiss="modal"><i class="icon-remove"></i> Close</button>

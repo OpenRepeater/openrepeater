@@ -91,6 +91,16 @@ function htmlTemplate(n) {
 	'  </select>'+
 	'</div>'+
 	'</div>'+
+	'<hr>'+
+	'<div class="control-group">'+
+	'<label class="control-label" for="portEnabled' + n + '">Port Enabled/Disabled</label>'+
+	'<div class="controls">'+
+	'  <select id="portEnabled' + n + '" name="portEnabled[]" class="portEnabled">'+
+	'  	<option value="1" selected>Enabled</option>'+
+	'  	<option value="0">Disabled</option>'+
+	'  </select>'+
+	'</div>'+
+	'</div>'+
 	'</fieldset>'+
 	'</div>'+
 	'<div class="modal-footer">'+
