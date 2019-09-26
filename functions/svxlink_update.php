@@ -54,6 +54,7 @@ foreach ($ports as $key => $val) {
 					break;
 				case "simplex":
 					$val['portDuplex'] = 'half'; // or full or half
+					$val['linkGroup'] = 1;
 					break;
 			}
 		}
