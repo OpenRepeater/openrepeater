@@ -85,9 +85,9 @@ foreach ($ports as $curPort) {
 										?>
 										<h4>Link Group <?php echo $curLinkNum ?></h4>
 										
-										<p><strong>9<?php echo $curLinkNum ?> + 0#</strong> - <span style="color:red;">Disable Link Group <?php echo $curLinkNum ?></span> <br><em>Link Group ID + 0 (Disable) + # (Execute Command)</em></p>
+										<p><strong>8<?php echo $curLinkNum ?> + 0#</strong> - <span style="color:red;">Disable Link Group <?php echo $curLinkNum ?></span> <br><em>Link Group ID + 0 (Disable) + # (Execute Command)</em></p>
 
-										<p><strong>9<?php echo $curLinkNum ?> + 1#</strong> - <span style="color:green;">Enable Link Group <?php echo $curLinkNum ?></span> <br><em>Link Group ID + 1 (Enable) + # (Execute Command)</em></p>
+										<p><strong>8<?php echo $curLinkNum ?> + 1#</strong> - <span style="color:green;">Enable Link Group <?php echo $curLinkNum ?></span> <br><em>Link Group ID + 1 (Enable) + # (Execute Command)</em></p>
 										<?php
 									}
 								}
