@@ -121,26 +121,25 @@ class SVXLink {
 			'AUDIO_DEV' => $audio_dev[0],
 			'AUDIO_CHANNEL' => $audio_dev[1],
 		];
+		
+		// If rxMode is not defined for current port, then set to 'gpio'. This also works for hidraw and serial pins
+		if ( !isset($this->portsArray[$curPort]['rxMode']) ) { $this->portsArray[$curPort]['rxMode'] = 'gpio'; }
 	
 		if (strtolower($this->portsArray[$curPort]['rxMode']) == 'vox') {
 			// VOX Squelch Mode
-			$rx_array['RX_Port'.$curPort] += [
-				'SQL_DET' => 'VOX',
-				'VOX_FILTER_DEPTH' => '150',
-				'VOX_THRESH' => '300',
-				'SQL_HANGTIME' => '1000',
-			];
+			$rx_array['RX_Port'.$curPort]['SQL_DET'] = 'VOX';
+			$rx_array['RX_Port'.$curPort]['VOX_FILTER_DEPTH'] = '150';
+			$rx_array['RX_Port'.$curPort]['VOX_THRESH'] = '300';
+			$rx_array['RX_Port'.$curPort]['SQL_HANGTIME'] = '1000';
 	
 		} else {
 
 			// COS Squelch Mode
 			switch ($curPortType) {		
 			    case 'GPIO':
-					$rx_array['RX_Port'.$curPort] += [
-						'SQL_DET' => 'GPIO',
-						'GPIO_SQL_PIN' => 'gpio' . $this->portsArray[$curPort]['rxGPIO'],
-						'SQL_HANGTIME' => '10',
-					];
+					$rx_array['RX_Port'.$curPort]['SQL_DET'] = 'GPIO';
+					$rx_array['RX_Port'.$curPort]['GPIO_SQL_PIN'] = 'gpio' . $this->portsArray[$curPort]['rxGPIO'];
+					$rx_array['RX_Port'.$curPort]['SQL_HANGTIME'] = '10';
 			        break;
 	
 			    case 'HiDraw':
@@ -150,15 +149,13 @@ class SVXLink {
 					} else {
 						$hid_pin = $this->portsArray[$curPort]['hidrawRX_cos']; // Normal Logic
 					}
-					$rx_array['RX_Port'.$curPort] += [
-						'SQL_DET' => 'HIDRAW',
-						'HID_DEVICE' => $hidDev,
-						'HID_SQL_PIN' => $hid_pin,
-						'SQL_HANGTIME' => '10',
-					];
+					$rx_array['RX_Port'.$curPort]['SQL_DET'] = 'HIDRAW';
+					$rx_array['RX_Port'.$curPort]['HID_DEVICE'] = $hidDev;
+					$rx_array['RX_Port'.$curPort]['HID_SQL_PIN'] = $hid_pin;
+					$rx_array['RX_Port'.$curPort]['SQL_HANGTIME'] = '10';
 
 					// Set Hidraw device permission, This should really be moved to the start of SVXLink. 
-					exec("sudo orp_helper hidraw owner $hidDev", $version);
+					exec("sudo orp_helper hidraw owner $hidDev", $result);
 			        break;
 
 			    case 'Serial':
@@ -168,35 +165,41 @@ class SVXLink {
 					} else {
 						$serial_pin = $this->portsArray[$curPort]['serialRX_cos']; // Normal Logic
 					}
-					$rx_array['RX_Port'.$curPort] += [
-						'SQL_DET' => 'SERIAL',
-						'SERIAL_PORT' => $serialDev,
-						'SERIAL_PIN' => $serial_pin,
-						'SQL_HANGTIME' => '10',
-					];
+					$rx_array['RX_Port'.$curPort]['SQL_DET'] = 'SERIAL';
+					$rx_array['RX_Port'.$curPort]['SERIAL_PORT'] = $serialDev;
+					$rx_array['RX_Port'.$curPort]['SERIAL_PIN'] = $serial_pin;
+					$rx_array['RX_Port'.$curPort]['SQL_HANGTIME'] = '10';
 
-					// Set Hidraw device permission, This should really be moved to the start of SVXLink. 
-// 					exec("sudo orp_helper hidraw owner $hidDev", $version);
+					// Set Serial device permission, This should really be moved to the start of SVXLink. 
+					exec("sudo orp_helper hidraw owner $serialDev", $result);
 			        break;
 			}
 
 		}
 	
-		$rx_array['RX_Port'.$curPort] += [
-			'SQL_START_DELAY' => '1',
-			'SQL_DELAY' => '10',
-			'SIGLEV_SLOPE' => '1',
-			'SIGLEV_OFFSET' => '0',
-			'SIGLEV_OPEN_THRESH' => '30',
-			'SIGLEV_CLOSE_THRESH' => '10',
-			'DEEMPHASIS' => '1',
-			'PEAK_METER' => '0',
-			'DTMF_DEC_TYPE' => 'INTERNAL',
-			'DTMF_MUTING' => '1',
-			'DTMF_HANGTIME' => '100',
-			'DTMF_SERIAL' => '/dev/ttyS0',
-		];
+		# Fixed Settings
+		$rx_array['RX_Port'.$curPort]['SQL_START_DELAY'] = '1';
+		$rx_array['RX_Port'.$curPort]['SQL_DELAY'] = '10';
+		$rx_array['RX_Port'.$curPort]['SIGLEV_SLOPE'] = '1';
+		$rx_array['RX_Port'.$curPort]['SIGLEV_OFFSET'] = '0';
+		$rx_array['RX_Port'.$curPort]['SIGLEV_OPEN_THRESH'] = '30';
+		$rx_array['RX_Port'.$curPort]['SIGLEV_CLOSE_THRESH'] = '10';
+		$rx_array['RX_Port'.$curPort]['DEEMPHASIS'] = '1';
+		$rx_array['RX_Port'.$curPort]['PEAK_METER'] = '0';
+		$rx_array['RX_Port'.$curPort]['DTMF_DEC_TYPE'] = 'INTERNAL';
+		$rx_array['RX_Port'.$curPort]['DTMF_MUTING'] = '1';
+		$rx_array['RX_Port'.$curPort]['DTMF_HANGTIME'] = '100';
+		$rx_array['RX_Port'.$curPort]['DTMF_SERIAL'] = '/dev/ttyS0';
 	
+
+		### APPEND ADVANCED SVXLINK LOCAL RX SETTINGS...IF THEY EXIST ###
+		if ( isset($this->portsArray[$curPort]['SVXLINK_ADVANCED_RX']) ) {
+			$svxlink_advanced_rx_array = $this->portsArray[$curPort]['SVXLINK_ADVANCED_RX'];
+			foreach ($svxlink_advanced_rx_array as $settingName => $settingValue) {
+				$rx_array['RX_Port'.$curPort][trim($settingName)] = trim($settingValue);
+			}
+		}
+
 		return $rx_array;
 	}
 
@@ -220,11 +223,9 @@ class SVXLink {
 	
 		switch ($curPortType) {		
 		    case 'GPIO':
-				$tx_array['TX_Port'.$curPort] += [
-					'PTT_TYPE' => 'GPIO',
-					'PTT_PORT' => 'GPIO',
-					'PTT_PIN' => 'gpio'.$this->portsArray[$curPort]['txGPIO'],
-				];
+				$tx_array['TX_Port'.$curPort]['PTT_TYPE'] = 'GPIO';
+				$tx_array['TX_Port'.$curPort]['PTT_PORT'] = 'GPIO';
+				$tx_array['TX_Port'.$curPort]['PTT_PIN'] = 'gpio'.$this->portsArray[$curPort]['txGPIO'];
 		        break;
 
 		    case 'HiDraw':
@@ -234,14 +235,12 @@ class SVXLink {
 				} else {
 					$hid_pin = $this->portsArray[$curPort]['hidrawTX_ptt']; // Normal Logic
 				}
-				$tx_array['TX_Port'.$curPort] += [
-					'PTT_TYPE' => 'Hidraw',
-					'HID_DEVICE' => $hidDev,
-					'HID_PTT_PIN' => $hid_pin,
-				];
+				$tx_array['TX_Port'.$curPort]['PTT_TYPE'] = 'Hidraw';
+				$tx_array['TX_Port'.$curPort]['HID_DEVICE'] = $hidDev;
+				$tx_array['TX_Port'.$curPort]['HID_PTT_PIN'] = $hid_pin;
 
 				// Set Hidraw device permission, This should really be moved to the start of SVXLink. 
-				exec("sudo orp_helper hidraw owner $hidDev", $version);
+				exec("sudo orp_helper hidraw owner $hidDev", $result);
 		        break;
 
 		    case 'Serial':
@@ -251,32 +250,36 @@ class SVXLink {
 				} else {
 					$serial_pin = $this->portsArray[$curPort]['serialTX_ptt']; // Normal Logic
 				}
-				$tx_array['TX_Port'.$curPort] += [
-					'PTT_TYPE' => 'SerialPin',
-					'PTT_PORT' => $serialDev,
-					'PTT_PIN' => $serial_pin,
-				];
+				$tx_array['TX_Port'.$curPort]['PTT_TYPE'] = 'SerialPin';
+				$tx_array['TX_Port'.$curPort]['PTT_PORT'] = $serialDev;
+				$tx_array['TX_Port'.$curPort]['PTT_PIN'] = $serial_pin;
 
-				// Set Hidraw device permission, This should really be moved to the start of SVXLink. 
-// 				exec("sudo orp_helper hidraw owner $hidDev", $version);
+				// Set Serial device permission, This should really be moved to the start of SVXLink. 
+				exec("sudo orp_helper hidraw owner $serialDev", $result);
 		        break;
 
 		}
 
 		if ($this->settingsArray['txTone']) {
-			$tx_array['TX_Port'.$curPort] += [
-				'CTCSS_FQ' => $this->settingsArray['txTone'],
-				'CTCSS_LEVEL' => '9',
-			];
+			$tx_array['TX_Port'.$curPort]['CTCSS_FQ'] = $this->settingsArray['txTone'];
+			$tx_array['TX_Port'.$curPort]['CTCSS_LEVEL'] = '9';
 		}
 	
-		$tx_array['TX_Port'.$curPort] += [
-			'PREEMPHASIS' => '0',
-			'DTMF_TONE_LENGTH' => '100',
-			'DTMF_TONE_SPACING' => '50',
-			'DTMF_TONE_PWR' => '-18',
-		];
+		# Fixed Settings
+		$tx_array['TX_Port'.$curPort]['PREEMPHASIS'] = '0';
+		$tx_array['TX_Port'.$curPort]['DTMF_TONE_LENGTH'] = '100';
+		$tx_array['TX_Port'.$curPort]['DTMF_TONE_SPACING'] = '50';
+		$tx_array['TX_Port'.$curPort]['DTMF_TONE_PWR'] = '-18';
 	
+
+		### APPEND ADVANCED SVXLINK LOCAL TX SETTINGS...IF THEY EXIST ###
+		if ( isset($this->portsArray[$curPort]['SVXLINK_ADVANCED_TX']) ) {
+			$svxlink_advanced_tx_array = $this->portsArray[$curPort]['SVXLINK_ADVANCED_TX'];
+			foreach ($svxlink_advanced_tx_array as $settingName => $settingValue) {
+				$tx_array['TX_Port'.$curPort][trim($settingName)] = trim($settingValue);
+			}
+		}
+
 		return $tx_array;
 	}
 
@@ -297,66 +300,54 @@ class SVXLink {
 
 		$logic_array[$logicName] += $this->build_module_list();
 
-		$logic_array[$logicName] += [
-			'CALLSIGN' => $this->settingsArray['callSign']
-		];
+		$logic_array[$logicName]['CALLSIGN'] = $this->settingsArray['callSign'];
 
 		# Short ID
 		if ($this->settingsArray['ID_Short_Mode'] == 'disabled') {
-			$logic_array[$logicName] += [
-				'#SHORT_IDENT_INTERVAL' => '0'
-			];
+			$logic_array[$logicName]['#SHORT_IDENT_INTERVAL'] = '0';
 		} else {
-			$logic_array[$logicName] += [
-				'SHORT_IDENT_INTERVAL' => $this->settingsArray['ID_Short_IntervalMin']
-			];			
+			$logic_array[$logicName]['SHORT_IDENT_INTERVAL'] = $this->settingsArray['ID_Short_IntervalMin'];
 		}
 
 		# ID only if there is activity, only affect short IDs
 		if ($this->settingsArray['ID_Only_When_Active'] == 'True') {
-			$logic_array[$logicName] += [
-				'IDENT_ONLY_AFTER_TX' => '4'
-			];
-		} else {
-			$logic_array[$logicName] += [
-				'#IDENT_ONLY_AFTER_TX' => '0'
-			];			
+			$logic_array[$logicName]['IDENT_ONLY_AFTER_TX'] = '4';
 		}
 
-		#Long ID
+		# Long ID
 		if ($this->settingsArray['ID_Long_Mode'] == 'disabled') {
-			$logic_array[$logicName] += [
-				'#LONG_IDENT_INTERVAL' => '0'
-			];
+			$logic_array[$logicName]['#LONG_IDENT_INTERVAL'] = '0';
 		} else {
-			$logic_array[$logicName] += [
-				'LONG_IDENT_INTERVAL' => $this->settingsArray['ID_Long_IntervalMin']
-			];			
+			$logic_array[$logicName]['LONG_IDENT_INTERVAL'] = $this->settingsArray['ID_Long_IntervalMin'];
 		}
 
-
-		$logic_array[$logicName] += [
-			'EVENT_HANDLER' => '/usr/share/svxlink/events.tcl',
-			'DEFAULT_LANG' => 'en_US',
-			'RGR_SOUND_DELAY' => '1',
-			'REPORT_CTCSS' => $this->settingsArray['rxTone'],
-			'TX_CTCSS' => 'ALWAYS',
-			'MACROS' => 'Macros',
-			'FX_GAIN_NORMAL' => '0',
-			'FX_GAIN_LOW' => '-12',
-			'IDLE_TIMEOUT' => '1',
-			'OPEN_ON_SQL' => '1',
-			'OPEN_SQL_FLANK' => 'OPEN',
-			'IDLE_SOUND_INTERVAL' => '0',
-		];
+		# Fixed Settings
+		$logic_array[$logicName]['EVENT_HANDLER'] = '/usr/share/svxlink/events.tcl';
+		$logic_array[$logicName]['DEFAULT_LANG'] = 'en_US';
+		$logic_array[$logicName]['RGR_SOUND_DELAY'] = '1';
+		$logic_array[$logicName]['REPORT_CTCSS'] = $this->settingsArray['rxTone'];
+		$logic_array[$logicName]['TX_CTCSS'] = 'ALWAYS';
+		$logic_array[$logicName]['#MACROS'] = 'Macros';
+		$logic_array[$logicName]['FX_GAIN_NORMAL'] = '0';
+		$logic_array[$logicName]['FX_GAIN_LOW'] = '-12';
+		$logic_array[$logicName]['IDLE_TIMEOUT'] = '1';
+		$logic_array[$logicName]['OPEN_ON_SQL'] = '1';
+		$logic_array[$logicName]['OPEN_SQL_FLANK'] = 'OPEN';
+		$logic_array[$logicName]['IDLE_SOUND_INTERVAL'] = '0';
 		
 		if ($this->settingsArray['repeaterDTMF_disable'] == 'True') {
-			$logic_array[$logicName] += [
-				'ONLINE_CMD' => $this->settingsArray['repeaterDTMF_disable_pin'],
-			];
+			$logic_array[$logicName]['ONLINE_CMD'] = $this->settingsArray['repeaterDTMF_disable_pin'];
 		}
-	
-	
+
+
+		### APPEND ADVANCED SVXLINK LOGIC SETTINGS...IF THEY EXIST ###
+		if ( isset($this->portsArray[$curPort]['SVXLINK_ADVANCED_LOGIC']) ) {
+			$svxlink_advanced_logic_array = $this->portsArray[$curPort]['SVXLINK_ADVANCED_LOGIC'];
+			foreach ($svxlink_advanced_logic_array as $settingName => $settingValue) {
+				$logic_array[$logicName][trim($settingName)] = trim($settingValue);
+			}
+		}
+
 		return $logic_array;
 	}
 
@@ -379,57 +370,40 @@ class SVXLink {
 			$logic_array[$logicName] += $this->build_module_list();
 		}
 
-		$logic_array[$logicName] += [
-			'CALLSIGN' => $this->settingsArray['callSign']
-		];
+		$logic_array[$logicName]['CALLSIGN'] = $this->settingsArray['callSign'];
 
 		# Short ID
 		if ($this->settingsArray['ID_Short_Mode'] == 'disabled') {
-			$logic_array[$logicName] += [
-				'#SHORT_IDENT_INTERVAL' => '0'
-			];
+			$logic_array[$logicName]['#SHORT_IDENT_INTERVAL'] = '0';
 		} else {
-			$logic_array[$logicName] += [
-				'SHORT_IDENT_INTERVAL' => $this->settingsArray['ID_Short_IntervalMin']
-			];			
+			$logic_array[$logicName]['SHORT_IDENT_INTERVAL'] = $this->settingsArray['ID_Short_IntervalMin'];
 		}
 
 		# ID only if there is activity, only affect short IDs
 		if ($this->settingsArray['ID_Only_When_Active'] == 'True') {
-			$logic_array[$logicName] += [
-				'IDENT_ONLY_AFTER_TX' => '4'
-			];
-		} else {
-			$logic_array[$logicName] += [
-				'#IDENT_ONLY_AFTER_TX' => '0'
-			];			
+			$logic_array[$logicName]['IDENT_ONLY_AFTER_TX'] = '4';
 		}
 
 		#Long ID
 		if ($this->settingsArray['ID_Long_Mode'] == 'disabled') {
-			$logic_array[$logicName] += [
-				'#LONG_IDENT_INTERVAL' => '0'
-			];
+			$logic_array[$logicName]['#LONG_IDENT_INTERVAL'] = '0';
 		} else {
-			$logic_array[$logicName] += [
-				'LONG_IDENT_INTERVAL' => $this->settingsArray['ID_Long_IntervalMin']
-			];			
+			$logic_array[$logicName]['LONG_IDENT_INTERVAL'] = $this->settingsArray['ID_Long_IntervalMin'];
 		}
 
-		$logic_array[$logicName] += [
-			'EVENT_HANDLER' => '/usr/share/svxlink/events.tcl',
-			'DEFAULT_LANG' => 'en_US',
-			'RGR_SOUND_DELAY' => '1',
-			'REPORT_CTCSS' => $this->settingsArray['rxTone'],
-			'TX_CTCSS' => 'ALWAYS',
-			'MACROS' => 'Macros',
-			'FX_GAIN_NORMAL' => '0',
-			'FX_GAIN_LOW' => '-12',
-			'IDLE_TIMEOUT' => '1',
-			'OPEN_ON_SQL' => '1',
-			'OPEN_SQL_FLANK' => 'OPEN',
-			'IDLE_SOUND_INTERVAL' => '0',
-		];
+		# Fixed Settings
+		$logic_array[$logicName]['EVENT_HANDLER'] = '/usr/share/svxlink/events.tcl';
+		$logic_array[$logicName]['DEFAULT_LANG'] = 'en_US';
+		$logic_array[$logicName]['RGR_SOUND_DELAY'] = '1';
+		$logic_array[$logicName]['REPORT_CTCSS'] = $this->settingsArray['rxTone'];
+		$logic_array[$logicName]['TX_CTCSS'] = 'ALWAYS';
+		$logic_array[$logicName]['#MACROS'] = 'Macros';
+		$logic_array[$logicName]['FX_GAIN_NORMAL'] = '0';
+		$logic_array[$logicName]['FX_GAIN_LOW'] = '-12';
+		$logic_array[$logicName]['IDLE_TIMEOUT'] = '1';
+		$logic_array[$logicName]['OPEN_ON_SQL'] = '1';
+		$logic_array[$logicName]['OPEN_SQL_FLANK'] = 'OPEN';
+		$logic_array[$logicName]['IDLE_SOUND_INTERVAL'] = '0';
 		
 		/*
 		if ($this->settingsArray['repeaterDTMF_disable'] == 'True') {
@@ -439,6 +413,14 @@ class SVXLink {
 		}
 		*/	
 	
+		### APPEND ADVANCED SVXLINK LOGIC SETTINGS...IF THEY EXIST ###
+		if ( isset($this->portsArray[$curPort]['SVXLINK_ADVANCED_LOGIC']) ) {
+			$svxlink_advanced_logic_array = $this->portsArray[$curPort]['SVXLINK_ADVANCED_LOGIC'];
+			foreach ($svxlink_advanced_logic_array as $settingName => $settingValue) {
+				$logic_array[$logicName][trim($settingName)] = trim($settingValue);
+			}
+		}
+
 		return $logic_array;
 	}
 
@@ -453,7 +435,7 @@ class SVXLink {
 
 		foreach($logicsArray as $currLogicKey => $currLogicName) {
 			$currLinkString = $currLogicName;
-			$currLinkString .= ':9' . $linkGroupNum;
+			$currLinkString .= ':8' . $linkGroupNum;
 			$currLinkString .= ':' . $this->settingsArray['callSign'];
 			$outputLogicArray[$currLogicKey] =  $currLinkString;
 			echo $currLogicName . '<br>';
