@@ -11,6 +11,7 @@ class SVXLink {
 	private $modulesListArray;
 	private $logics = array();
 	private $links = array();
+	public $macros = array();
 	private $orpFileHeader;
     private $web_path = '/var/www/openrepeater/';	
 
@@ -327,7 +328,6 @@ class SVXLink {
 		$logic_array[$logicName]['RGR_SOUND_DELAY'] = '1';
 		$logic_array[$logicName]['REPORT_CTCSS'] = $this->settingsArray['rxTone'];
 		$logic_array[$logicName]['TX_CTCSS'] = 'ALWAYS';
-		$logic_array[$logicName]['#MACROS'] = 'Macros';
 		$logic_array[$logicName]['FX_GAIN_NORMAL'] = '0';
 		$logic_array[$logicName]['FX_GAIN_LOW'] = '-12';
 		$logic_array[$logicName]['IDLE_TIMEOUT'] = '1';
@@ -335,6 +335,9 @@ class SVXLink {
 		$logic_array[$logicName]['OPEN_SQL_FLANK'] = 'OPEN';
 		$logic_array[$logicName]['IDLE_SOUND_INTERVAL'] = '0';
 		
+		# Macro Section
+		$logic_array[$logicName]['MACROS'] = '';
+
 		if ($this->settingsArray['repeaterDTMF_disable'] == 'True') {
 			$logic_array[$logicName]['ONLINE_CMD'] = $this->settingsArray['repeaterDTMF_disable_pin'];
 		}
@@ -397,7 +400,6 @@ class SVXLink {
 		$logic_array[$logicName]['RGR_SOUND_DELAY'] = '1';
 		$logic_array[$logicName]['REPORT_CTCSS'] = $this->settingsArray['rxTone'];
 		$logic_array[$logicName]['TX_CTCSS'] = 'ALWAYS';
-		$logic_array[$logicName]['#MACROS'] = 'Macros';
 		$logic_array[$logicName]['FX_GAIN_NORMAL'] = '0';
 		$logic_array[$logicName]['FX_GAIN_LOW'] = '-12';
 		$logic_array[$logicName]['IDLE_TIMEOUT'] = '1';
@@ -405,6 +407,9 @@ class SVXLink {
 		$logic_array[$logicName]['OPEN_SQL_FLANK'] = 'OPEN';
 		$logic_array[$logicName]['IDLE_SOUND_INTERVAL'] = '0';
 		
+		# Macro Section
+		$logic_array[$logicName]['MACROS'] = '';
+
 		/*
 		if ($this->settingsArray['repeaterDTMF_disable'] == 'True') {
 			$logic_array[$logicName] += [
@@ -423,6 +428,7 @@ class SVXLink {
 
 		return $logic_array;
 	}
+
 
 
 	###############################################
@@ -457,6 +463,86 @@ class SVXLink {
 
 		return $link_array;
 	}
+
+
+
+	###############################################
+	# Build MACRO Section
+	###############################################
+
+	public function build_macro() {
+		$existPorts = $this->portsArray;
+
+################
+# Temp data to simulate future DB table
+################
+$fakeDB = [
+	0 => [
+		'macroKey' => '0',
+		'macroEnabled' => '1',
+		'macroNum' => '1',
+		'macroLabel' => '',
+		'macroModule' => 'EchoLink',
+		'macroString' => '9999#',
+		'macroPorts' => '2',
+	],
+	1 => [
+		'macroKey' => '1',
+		'macroEnabled' => '1',
+		'macroNum' => '8',
+		'macroLabel' => '',
+		'macroModule' => 'Parrot',
+		'macroString' => '0123456789##',
+		'macroPorts' => 'ALL',
+	]
+];
+################
+
+		$logicFullPrefix = 'ORP_FullDuplexLogic_Port';
+		$logicHalfPrefix = 'ORP_HalfDuplexLogic_Port';
+		$macroNamePrefix = 'Macros_Port';
+
+		foreach ($fakeDB as $currMacro => $currMacroArray) {
+			$currMacroNum = $currMacroArray['macroNum'];
+			$currMacroModule = $currMacroArray['macroModule'];
+			$currMacroString = $currMacroArray['macroString'];
+			$currMacroPorts = $currMacroArray['macroPorts'];
+
+			if ($currMacroArray['macroEnabled'] == 1) {
+				if ($currMacroPorts != 'ALL') {
+					if ($existPorts[$currMacroPorts]['portEnabled'] == 1) {
+						if ($existPorts[$currMacroPorts]['portDuplex'] == 'full') {
+							$currMacroName = $macroNamePrefix . $currMacroPorts;
+							$this->macros[$logicFullPrefix . $currMacroPorts] = $currMacroName;
+						} else if ($existPorts[$currMacroPorts]['portDuplex'] == 'half') {
+							$currMacroName = $macroNamePrefix . $currMacroPorts;
+							$this->macros[$logicFullPrefix . $currMacroPorts] = $currMacroName;
+						}
+
+						$macro_array[$currMacroName][$currMacroNum] = $currMacroModule . ':' . trim($currMacroString);					
+					}
+
+				} else if ($currMacroPorts == 'ALL') {
+					foreach ($existPorts as $curPort => $curPortArray) {
+						if ($curPortArray['portEnabled'] == 1) {
+							if ($curPortArray['portDuplex'] == 'full') {
+								$currMacroName = $macroNamePrefix . $curPort;
+								$this->macros[$logicHalfPrefix . $curPort] = $currMacroName;
+							} else if ($curPortArray['portDuplex'] == 'half') {
+								$currMacroName = $macroNamePrefix . $curPort;
+								$this->macros[$logicHalfPrefix . $curPort] = $currMacroName;
+							}
+
+							$macro_array[$currMacroName][$currMacroNum] = $currMacroModule . ':' . trim($currMacroString);								
+						}
+					}
+				}
+			}
+		}
+
+		return $macro_array;
+	}
+
 
 
 	###############################################

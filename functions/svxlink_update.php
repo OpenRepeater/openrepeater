@@ -100,9 +100,16 @@ foreach ($ports as $key => $val) {
 if (isset($linkGroupArray)) {
 	foreach ($linkGroupArray as $grpNumber => $grpArray) {
 		if (count($grpArray) > 1) {
-			$config_array += $classSVXLink->build_link( $grpNumber, $grpArray );			
+			$config_array += $classSVXLink->build_link( $grpNumber, $grpArray );
 		}
 	}
+}
+
+
+// BUILD MACRO SECTION
+$config_array += $classSVXLink->build_macro();
+foreach($classSVXLink->macros as $curLogicSect => $curMacroSect) {
+	$config_array[$curLogicSect]['MACROS'] = $curMacroSect;
 }
 
 // GLOBAL SETTINGS
