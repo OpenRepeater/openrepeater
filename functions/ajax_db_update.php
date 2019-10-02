@@ -11,18 +11,11 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 # AUTOLOAD CLASSES
 require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
 ################################################################################
-$Database = new Database();
+$classDB = new Database();
 
-foreach($_POST as $key=>$value){  
-	// SPECIAL FORMATING
-	if ($key == "callSign") { $value = strtoupper($value); }
-	if ($key == "echolink_callSign") { $value = strtoupper($value); }
-	
-	$query = $Database->update("UPDATE settings SET value='$value' WHERE keyID='$key'");	
-}
+$result = $classDB->update_settings($_POST);
 
-if ($query) { return true; } else { return false; }
-
+if ($result) { return true; } else { return false; }
 
 // --------------------------------------------------------
 // SESSION CHECK TO SEE IF USER IS LOGGED IN.

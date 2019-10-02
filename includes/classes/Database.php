@@ -131,7 +131,6 @@ class Database {
 
 
 
-
 	###############################################
 	# Settings Table
 	###############################################
@@ -150,7 +149,17 @@ class Database {
 		}
 	}
 	
+	public function update_settings($settingsArray) {
+		foreach($settingsArray as $key=>$value){  
+			// SPECIAL FORMATING
+			if ($key == "callSign") { $value = strtoupper($value); }
+			$query = $this->update("UPDATE settings SET value='$value' WHERE keyID='$key'");	
+		}
+		
+		if ($query) { return true; } else { return false; }
+	}
 	
+
 
 	###############################################
 	# Ports Table
