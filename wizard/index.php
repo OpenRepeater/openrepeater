@@ -142,6 +142,7 @@ case "wizard_update":
 
 		// Check and Update Database Structure with new fields if they don't already exist
 		$Database->add_record('settings','ID_Only_When_Active','False');
+		$Database->add_record('settings','Location_Info','');
 		//php_console_log($result);
 
 
