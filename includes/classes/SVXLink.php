@@ -436,7 +436,8 @@ class SVXLink {
 	# Build LINK Section
 	###############################################
 
-	public function build_link($linkGroupNum, $logicsArray, $linkActive = true) {
+	public function build_link($linkGroupNum, $logicsArray) {
+		$linkGroupSettingsArray = unserialize($this->settingsArray['LinkGroup_Settings']);
 		$linkName = 'LinkGroup' . $linkGroupNum;
 		$this->links[] = $linkName; // Add this link section to link list for declaration in Globals Section
 
@@ -447,19 +448,15 @@ class SVXLink {
 			$outputLogicArray[$currLogicKey] =  $currLinkString;
 		}
 
-		$link_array[$linkName] = [
-			'CONNECT_LOGICS' => implode(",", $outputLogicArray),			
-		];
+		$link_array[$linkName]['CONNECT_LOGICS'] = implode(",", $outputLogicArray);
 
-		if ($linkActive == true) {
-			$link_array[$linkName] += [
-				'DEFAULT_ACTIVE' => '1',
-			];
+		if ($linkGroupSettingsArray[$linkGroupNum]['defaultActive'] == '1') {
+			$link_array[$linkName]['DEFAULT_ACTIVE'] = $linkGroupSettingsArray[$linkGroupNum]['defaultActive'];
 		}
 
-		$link_array[$linkName] += [
-			'#TIMEOUT' => '300', // In seconds				
-		];
+		if ($linkGroupSettingsArray[$linkGroupNum]['timeout'] > 0) {
+			$link_array[$linkName]['TIMEOUT'] = $linkGroupSettingsArray[$linkGroupNum]['timeout']; // In seconds
+		}
 
 		return $link_array;
 	}
