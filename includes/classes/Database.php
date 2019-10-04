@@ -231,8 +231,8 @@ class Database {
 				}
 
 			}
-
 		}
+		return $results;
 	}
 
 
@@ -317,6 +317,24 @@ class Database {
 			$sql = "UPDATE modules SET moduleEnabled='1', moduleOptions='".$moduleArray['moduleOptions']."' WHERE moduleKey='".$moduleArray['moduleKey']."';";
 			$results = $this->insert($sql);
 		}
+	}
+
+
+
+	###############################################
+	# Macro Table
+	###############################################
+
+	public function get_macros() {
+		$modulesArray = $this->get_modules();
+		$sql = 'SELECT * FROM "macros" ORDER BY "svxlinkID" ASC';
+		$macros = $this->select_all('macros', $sql);
+		foreach ($macros as $curMacroNum => $curMacroArray) {
+			$macroOutput[$curMacroNum] = $curMacroArray;
+			$moduleID = $curMacroArray['macroModuleID'];
+			$macroOutput[$curMacroNum]['macroModuleName'] = $modulesArray[$moduleID]['svxlinkName'];
+		}
+		return $macroOutput;	
 	}
 
 

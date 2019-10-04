@@ -31,6 +31,7 @@ $settings = $classDB->get_settings();
 $module = $classDB->get_modules();
 $ports = $classDB->get_ports();
 $gpio = $classDB->get_gpios();
+$macros = $classDB->get_macros();
 
 $classSVXLink = new SVXLink($settings, $ports, $module);
 $classSVXLinkTCL = new SVXLink_TCL($settings);
@@ -107,10 +108,13 @@ if (isset($linkGroupArray)) {
 
 
 // BUILD MACRO SECTION
-$config_array += $classSVXLink->build_macro();
-foreach($classSVXLink->macros as $curLogicSect => $curMacroSect) {
-	$config_array[$curLogicSect]['MACROS'] = $curMacroSect;
+$config_array += $classSVXLink->build_macro($macros);
+if (isset($classSVXLink->macros)) {
+	foreach($classSVXLink->macros as $curLogicSect => $curMacroSect) {
+		$config_array[$curLogicSect]['MACROS'] = $curMacroSect;
+	}
 }
+
 
 // GLOBAL SETTINGS
 $config_array['GLOBAL'] += $classSVXLink->build_global();

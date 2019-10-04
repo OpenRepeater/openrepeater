@@ -445,7 +445,6 @@ class SVXLink {
 			$currLinkString .= ':8' . $linkGroupNum;
 			$currLinkString .= ':' . $this->settingsArray['callSign'];
 			$outputLogicArray[$currLogicKey] =  $currLinkString;
-			echo $currLogicName . '<br>';
 		}
 
 		$link_array[$linkName] = [
@@ -471,45 +470,23 @@ class SVXLink {
 	# Build MACRO Section
 	###############################################
 
-	public function build_macro() {
+	public function build_macro($macrosArray) {
 		$existPorts = $this->portsArray;
-
-################
-# Temp data to simulate future DB table
-################
-$fakeDB = [
-	0 => [
-		'macroKey' => '0',
-		'macroEnabled' => '1',
-		'macroNum' => '1',
-		'macroLabel' => '',
-		'macroModule' => 'EchoLink',
-		'macroString' => '9999#',
-		'macroPorts' => '2',
-	],
-	1 => [
-		'macroKey' => '1',
-		'macroEnabled' => '1',
-		'macroNum' => '8',
-		'macroLabel' => '',
-		'macroModule' => 'Parrot',
-		'macroString' => '0123456789##',
-		'macroPorts' => 'ALL',
-	]
-];
-################
-
+		$modulesArray = $this->modulesArray;
+		$macro_array = [];
+		
 		$logicFullPrefix = 'ORP_FullDuplexLogic_Port';
 		$logicHalfPrefix = 'ORP_HalfDuplexLogic_Port';
 		$macroNamePrefix = 'Macros_Port';
 
-		foreach ($fakeDB as $currMacro => $currMacroArray) {
+		foreach ($macrosArray as $currMacro => $currMacroArray) {
 			$currMacroNum = $currMacroArray['macroNum'];
-			$currMacroModule = $currMacroArray['macroModule'];
+			$currMacroModuleID = $currMacroArray['macroModuleID'];
+			$currMacroModuleName = $currMacroArray['macroModuleName'];
 			$currMacroString = $currMacroArray['macroString'];
 			$currMacroPorts = $currMacroArray['macroPorts'];
 
-			if ($currMacroArray['macroEnabled'] == 1) {
+			if ( $currMacroArray['macroEnabled'] == 1 && $modulesArray[$currMacroModuleID]['moduleEnabled'] == 1 ) {
 				if ($currMacroPorts != 'ALL') {
 					if ($existPorts[$currMacroPorts]['portEnabled'] == 1) {
 						if ($existPorts[$currMacroPorts]['portDuplex'] == 'full') {
@@ -517,10 +494,10 @@ $fakeDB = [
 							$this->macros[$logicFullPrefix . $currMacroPorts] = $currMacroName;
 						} else if ($existPorts[$currMacroPorts]['portDuplex'] == 'half') {
 							$currMacroName = $macroNamePrefix . $currMacroPorts;
-							$this->macros[$logicFullPrefix . $currMacroPorts] = $currMacroName;
+							$this->macros[$logicHalfPrefix . $currMacroPorts] = $currMacroName;
 						}
 
-						$macro_array[$currMacroName][$currMacroNum] = $currMacroModule . ':' . trim($currMacroString);					
+						$macro_array[$currMacroName][$currMacroNum] = $currMacroModuleName . ':' . trim($currMacroString);					
 					}
 
 				} else if ($currMacroPorts == 'ALL') {
@@ -528,13 +505,13 @@ $fakeDB = [
 						if ($curPortArray['portEnabled'] == 1) {
 							if ($curPortArray['portDuplex'] == 'full') {
 								$currMacroName = $macroNamePrefix . $curPort;
-								$this->macros[$logicHalfPrefix . $curPort] = $currMacroName;
+								$this->macros[$logicFullPrefix . $curPort] = $currMacroName;
 							} else if ($curPortArray['portDuplex'] == 'half') {
 								$currMacroName = $macroNamePrefix . $curPort;
 								$this->macros[$logicHalfPrefix . $curPort] = $currMacroName;
 							}
 
-							$macro_array[$currMacroName][$currMacroNum] = $currMacroModule . ':' . trim($currMacroString);								
+							$macro_array[$currMacroName][$currMacroNum] = $currMacroModuleName . ':' . trim($currMacroString);								
 						}
 					}
 				}
