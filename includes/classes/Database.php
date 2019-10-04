@@ -338,6 +338,33 @@ class Database {
 	}
 
 
+	public function clear_macros_table() {
+		$sql = 'DELETE FROM macros;';
+		$delete_result = $this->delete_row($sql);
+		return $delete_result;
+	}
+	
+
+	public function update_macro_table( $input_array = array() ) {
+		foreach($input_array as $macroArr){  
+			if ( $this->exists('macros','macroKey', $macroArr['macroKey']) == true ) {
+				$sql = "UPDATE macros SET macroEnabled='".$macroArr['macroEnabled']."', macroNum='".$macroArr['macroNum']."', macroLabel='".$macroArr['macroLabel']."', macroModuleID='".$macroArr['macroModuleID']."', macroString='".$macroArr['macroString']."', macroPorts='".$macroArr['macroPorts']."' WHERE macroKey='".$macroArr['macroKey']."';";
+				$results = $this->update($sql);
+				
+			} else {
+				$column_names = [];
+				$column_values = [];
+				$columns = implode(",",array_keys($macroArr));
+				$escaped_values = array_values($macroArr);
+				$values  = "'" . implode("','", $escaped_values) . "'";
+				$sql = "INSERT INTO macros(".$columns.") VALUES(".$values.");";
+				$results = $this->insert($sql);
+			}
+		}
+		return $results;
+	}
+
+
 
 	###############################################
 	# CTCSS Table
