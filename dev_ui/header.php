@@ -125,6 +125,23 @@
 			top:1px;
 		}
 
+		.myButton.rebuild {
+			-moz-box-shadow:inset 0px 1px 0px 0px #e27171;
+			-webkit-box-shadow:inset 0px 1px 0px 0px #e27171;
+			box-shadow:inset 0px 1px 0px 0px #e27171;
+			background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #c40303), color-stop(1, #a80909));
+			background:-moz-linear-gradient(top, #c40303 5%, #a80909 100%);
+			background:-webkit-linear-gradient(top, #c40303 5%, #a80909 100%);
+			background:-o-linear-gradient(top, #c40303 5%, #a80909 100%);
+			background:-ms-linear-gradient(top, #c40303 5%, #a80909 100%);
+			background:linear-gradient(to bottom, #c40303 5%, #a80909 100%);
+			filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#c40303', endColorstr='#a80909',GradientType=0);
+			background-color:#c40303;
+			border:1px solid #b80707;
+			color:#ffffff;
+			text-shadow:0px 1px 0px #800909;
+		}
+
 	</style>
 </head>
 

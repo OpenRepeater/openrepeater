@@ -6,7 +6,7 @@
 <?php $current_page_url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>
 <form action="../functions/svxlink_update.php" method="post" style="margin:0;">
 	<input type="hidden" name="return_url" value="<?php echo $current_page_url; ?>">
-	<button type="submit" class="btn btn-success"><i class="icon-refresh icon-white"></i> Restart</button>
+	<button type="submit" class="myButton rebuild">Rebuild Config</button>
 </form>
 
 
