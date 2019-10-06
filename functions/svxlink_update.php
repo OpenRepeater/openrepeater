@@ -25,7 +25,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	# AUTOLOAD CLASSES
 	require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
 
-	// Access database for Settings, Modules, Ports, and GPIOs
+	// Access database for Settings, Modules, Ports, GPIOs, etc.
 	$classDB = new Database();
 	$settings = $classDB->get_settings();
 	$module = $classDB->get_modules();
@@ -33,6 +33,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	$gpio = $classDB->get_gpios();
 	$macros = $classDB->get_macros();
 
+	$classFunctions = new Functions();
 	$classSVXLink = new SVXLink($settings, $ports, $module);
 	$classSVXLinkTCL = new SVXLink_TCL($settings);
 	$classSVXLinkGPIO = new SVXLink_GPIO($gpio);
@@ -84,7 +85,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 				$new_logic_filename = $new_logic_name . '.tcl';
 				$new_event = $classSVXLinkTCL->alias_SimplexLogic($new_logic_name);
 			}
-			$classSVXLink->write_config($new_event, $new_logic_filename, 'text');
+			$classFunctions->write_config($new_event, $new_logic_filename, 'text');
 
 			// Add to LinkGroup
 			if (isset($val['linkGroup'])) {
@@ -131,9 +132,9 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	$logicOverride = $classSVXLinkTCL->logic_override();
 
 	// WRITE CONFIGURATION & TCL FILES
-	$classSVXLink->write_config($config_array, 'svxlink.conf', 'ini');
-	$classSVXLink->write_config($logicOverride, 'Logic.tcl', 'text');
-	$classSVXLink->write_config($gpioConfigFile, 'gpio.conf', 'text');
+	$classFunctions->write_config($config_array, 'svxlink.conf', 'ini');
+	$classFunctions->write_config($logicOverride, 'Logic.tcl', 'text');
+	$classFunctions->write_config($gpioConfigFile, 'gpio.conf', 'text');
 
 
 
