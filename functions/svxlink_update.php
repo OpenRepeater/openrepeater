@@ -118,8 +118,11 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	$config_array['GLOBAL'] += $classSVXLink->build_global();
 
 	// LOCATION SETTINGS
-	$config_array += $classSVXLink->build_location();
-	$config_array['GLOBAL']['LOCATION_INFO'] = $classSVXLink->location;
+	$locationResults = $classSVXLink->build_location();
+	if ($locationResults != false) {
+		$config_array += $locationResults;
+		$config_array['GLOBAL']['LOCATION_INFO'] = $classSVXLink->location;
+	}
 
 	// Build GPIO Config
 	$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();

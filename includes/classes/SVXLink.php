@@ -525,39 +525,43 @@ class SVXLink {
 	###############################################
 
 	public function build_location() {
-		$locSection = 'LocationInfo';
-		$this->location = $locSection; // used to set in global seciton
+		$locationSettings = @unserialize( $this->settingsArray['Location_Info'] );
+		// only build this section if a serialized settings array is retrived.
+		if ($this->settingsArray['Location_Info'] === 'b:0;' || $locationSettings !== false) {
+			$locSection = 'LocationInfo';
+			$this->location = $locSection; // used to set in global seciton
 
-		$locationSettings = unserialize( $this->settingsArray['Location_Info'] );
-
-		if ($locationSettings['Echolink_Status_Servers'] != '') {
-			$location_array[$locSection]['STATUS_SERVER_LIST'] = $locationSettings['Echolink_Status_Servers'];
+			if ($locationSettings['Echolink_Status_Servers'] != '') {
+				$location_array[$locSection]['STATUS_SERVER_LIST'] = $locationSettings['Echolink_Status_Servers'];
+			}
+			if ($locationSettings['APRS_ServerList'] != '') {
+				$location_array[$locSection]['APRS_SERVER_LIST'] = $locationSettings['APRS_ServerList'];
+			}
+			$location_array[$locSection]['LAT_POSITION'] = $locationSettings['Latitude'];
+			$location_array[$locSection]['LON_POSITION'] = $locationSettings['Longitude'];
+			switch ($locationSettings['APRS_Station_Type']) {
+			case "repeater":
+				$location_array[$locSection]['CALLSIGN'] = 'ER-' . $this->settingsArray['callSign']; // Repeater
+				break;
+			case "link":
+				$location_array[$locSection]['CALLSIGN'] = 'EL-' . $this->settingsArray['callSign']; // Link
+				break;
+			}
+			$location_array[$locSection]['FREQUENCY'] = $locationSettings['Frequency'];
+			$location_array[$locSection]['TONE'] = $locationSettings['Tone'];
+			$location_array[$locSection]['TX_POWER'] = $locationSettings['TX_Power'];
+			$location_array[$locSection]['ANTENNA_GAIN'] = $locationSettings['Antenna_Gain'];
+			$location_array[$locSection]['ANTENNA_HEIGHT'] = $locationSettings['Antenna_Height'];
+			$location_array[$locSection]['ANTENNA_DIR'] = $locationSettings['Antenna_Dir'];
+			$location_array[$locSection]['PATH'] = $locationSettings['APRS_Path'];
+			$location_array[$locSection]['BEACON_INTERVAL'] = $locationSettings['Beacon_Interval'];
+			$location_array[$locSection]['STATISTICS_INTERVAL'] = $locationSettings['Statistics_Interval'];
+			$location_array[$locSection]['COMMENT'] = '[ORP] Powered by openrepeater.com';
+	
+			return $location_array;
+		} else {
+			return false;
 		}
-		if ($locationSettings['APRS_ServerList'] != '') {
-			$location_array[$locSection]['APRS_SERVER_LIST'] = $locationSettings['APRS_ServerList'];
-		}
-		$location_array[$locSection]['LAT_POSITION'] = $locationSettings['Latitude'];
-		$location_array[$locSection]['LON_POSITION'] = $locationSettings['Longitude'];
-		switch ($locationSettings['APRS_Station_Type']) {
-		case "repeater":
-			$location_array[$locSection]['CALLSIGN'] = 'ER-' . $this->settingsArray['callSign']; // Repeater
-			break;
-		case "link":
-			$location_array[$locSection]['CALLSIGN'] = 'EL-' . $this->settingsArray['callSign']; // Link
-			break;
-		}
-		$location_array[$locSection]['FREQUENCY'] = $locationSettings['Frequency'];
-		$location_array[$locSection]['TONE'] = $locationSettings['Tone'];
-		$location_array[$locSection]['TX_POWER'] = $locationSettings['TX_Power'];
-		$location_array[$locSection]['ANTENNA_GAIN'] = $locationSettings['Antenna_Gain'];
-		$location_array[$locSection]['ANTENNA_HEIGHT'] = $locationSettings['Antenna_Height'];
-		$location_array[$locSection]['ANTENNA_DIR'] = $locationSettings['Antenna_Dir'];
-		$location_array[$locSection]['PATH'] = $locationSettings['APRS_Path'];
-		$location_array[$locSection]['BEACON_INTERVAL'] = $locationSettings['Beacon_Interval'];
-		$location_array[$locSection]['STATISTICS_INTERVAL'] = $locationSettings['Statistics_Interval'];
-		$location_array[$locSection]['COMMENT'] = '[ORP] Powered by openrepeater.com';
-
-		return $location_array;
 	}
 
 
