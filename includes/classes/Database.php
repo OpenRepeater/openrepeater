@@ -33,6 +33,7 @@ class Database {
 		$result = $db->query($sql) or die('Query failed');
 	
 		// Return all data as nested associative array
+		if (isset($result)) { $nested_array = []; }
 		while ($rowArray = $result->fetchArray()) {
 			$row_pk = $rowArray[$primary_key];
 			foreach($columns as $key => $value) {
@@ -329,6 +330,7 @@ class Database {
 		$modulesArray = $this->get_modules();
 		$sql = 'SELECT * FROM "macros" ORDER BY "svxlinkID" ASC';
 		$macros = $this->select_all('macros', $sql);
+		$macroOutput = [];
 		foreach ($macros as $curMacroNum => $curMacroArray) {
 			$macroOutput[$curMacroNum] = $curMacroArray;
 			$moduleID = $curMacroArray['macroModuleID'];
