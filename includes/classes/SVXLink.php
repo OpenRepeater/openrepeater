@@ -429,28 +429,34 @@ class SVXLink {
 	###############################################
 
 	public function build_link($linkGroupNum, $logicsArray) {
-		$linkGroupSettingsArray = unserialize($this->settingsArray['LinkGroup_Settings']);
-		$linkName = 'LinkGroup' . $linkGroupNum;
-		$this->links[] = $linkName; // Add this link section to link list for declaration in Globals Section
-
-		foreach($logicsArray as $currLogicKey => $currLogicName) {
-			$currLinkString = $currLogicName;
-			$currLinkString .= ':8' . $linkGroupNum;
-			$currLinkString .= ':' . $this->settingsArray['callSign'];
-			$outputLogicArray[$currLogicKey] =  $currLinkString;
+		$linkGroupSettingsArray = @unserialize( $this->settingsArray['LinkGroup_Settings'] );
+		// only build this section if a serialized settings array is retrived.
+		if ($this->settingsArray['LinkGroup_Settings'] === 'b:0;' || $linkGroupSettingsArray !== false) {
+			$linkName = 'LinkGroup' . $linkGroupNum;
+			$this->links[] = $linkName; // Add this link section to link list for declaration in Globals Section
+	
+			foreach($logicsArray as $currLogicKey => $currLogicName) {
+				$currLinkString = $currLogicName;
+				$currLinkString .= ':8' . $linkGroupNum;
+				$currLinkString .= ':' . $this->settingsArray['callSign'];
+				$outputLogicArray[$currLogicKey] =  $currLinkString;
+			}
+	
+			$link_array[$linkName]['CONNECT_LOGICS'] = implode(",", $outputLogicArray);
+	
+			if ($linkGroupSettingsArray[$linkGroupNum]['defaultActive'] == '1') {
+				$link_array[$linkName]['DEFAULT_ACTIVE'] = $linkGroupSettingsArray[$linkGroupNum]['defaultActive'];
+			}
+	
+			if ($linkGroupSettingsArray[$linkGroupNum]['timeout'] > 0) {
+				$link_array[$linkName]['TIMEOUT'] = $linkGroupSettingsArray[$linkGroupNum]['timeout']; // In seconds
+			}
+	
+			return $link_array;
+		} else {
+			return false;
 		}
 
-		$link_array[$linkName]['CONNECT_LOGICS'] = implode(",", $outputLogicArray);
-
-		if ($linkGroupSettingsArray[$linkGroupNum]['defaultActive'] == '1') {
-			$link_array[$linkName]['DEFAULT_ACTIVE'] = $linkGroupSettingsArray[$linkGroupNum]['defaultActive'];
-		}
-
-		if ($linkGroupSettingsArray[$linkGroupNum]['timeout'] > 0) {
-			$link_array[$linkName]['TIMEOUT'] = $linkGroupSettingsArray[$linkGroupNum]['timeout']; // In seconds
-		}
-
-		return $link_array;
 	}
 
 

@@ -98,9 +98,14 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 
 	// BUILD LINK SECTION - If link group contains 2 or more ports...built config
 	if (isset($linkGroupArray)) {
+		$linkArray = [];
 		foreach ($linkGroupArray as $grpNumber => $grpArray) {
 			if (count($grpArray) > 1) {
-				$config_array += $classSVXLink->build_link( $grpNumber, $grpArray );
+				$linkResults = $classSVXLink->build_link( $grpNumber, $grpArray );
+				if ($linkResults != false) {
+					$config_array += $linkResults;
+				}
+
 			}
 		}
 	}
