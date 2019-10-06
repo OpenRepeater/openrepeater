@@ -37,7 +37,10 @@ class Functions {
 			if ($section_count > 1) { $ini_return .= $section_separator . "\n\n";}
 			$ini_return .= "[" . $ini_section . "]\n";
 			foreach($ini_section_array as $key => $value) {
-				$ini_return .= $key . "=" . $value . "\n";
+				$value = trim($value);
+				if ($value != '') {
+					$ini_return .= $key . "=" . $value . "\n";
+				}
 			}
 			$ini_return .= "\n";
 		}
