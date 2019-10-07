@@ -90,4 +90,54 @@ class Functions {
 
 
 
+	###############################################
+	# Geo Functions
+	###############################################
+
+	public function geo_convert($latitude, $longitude, $format=null) {
+		$latitudeDirection = $latitude < 0 ? 'S': 'N';
+		$longitudeDirection = $longitude < 0 ? 'W': 'E';
+
+		$latitudeNotation = $latitude < 0 ? '-': '';
+		$longitudeNotation = $longitude < 0 ? '-': '';
+
+		$latitudeInDegrees = floor(abs($latitude));
+		$longitudeInDegrees = floor(abs($longitude));
+
+		$latitudeDecimal = abs($latitude)-$latitudeInDegrees;
+		$longitudeDecimal = abs($longitude)-$longitudeInDegrees;
+
+		$latParts = explode(".",$latitude);
+		$latTempma = "0.".$latParts[1];
+		$latTempma = $latTempma * 3600;
+		$latitudeMinutes = floor($latTempma / 60);
+		$latitudeSeconds = $latTempma - ($latitudeMinutes*60);
+
+		$longParts = explode(".",$longitude);
+		$longTempma = "0.".$longParts[1];
+		$longTempma = $longTempma * 3600;
+		$longitudeMinutes = floor($longTempma / 60);
+		$longitudeSeconds = $longTempma - ($longitudeMinutes*60);
+
+		switch ($format) {
+		case 'svxlink':
+			$precision = 0;
+			$latitudeSeconds = round($latitudeSeconds,$precision);
+			$longitudeSeconds = round($longitudeSeconds,$precision);
+			$outputFormat = '%s.%s.%s%s'; // SVXLink Format
+			break;
+		default:
+			$precision = 1;
+			$latitudeSeconds = round($latitudeSeconds,$precision);
+			$longitudeSeconds = round($longitudeSeconds,$precision);
+			$outputFormat = '%s°%s\'%s"%s'; // Google DMS
+		}
+
+		return [
+		'latitude' => sprintf($outputFormat,$latitudeInDegrees,$latitudeMinutes,$latitudeSeconds,$latitudeDirection),
+		'longitude' => sprintf($outputFormat,$longitudeInDegrees,$longitudeMinutes,$longitudeSeconds,$longitudeDirection)
+		];
+	}
+
+
 }

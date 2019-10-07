@@ -525,14 +525,17 @@ class SVXLink {
 			$locSection = 'LocationInfo';
 			$this->location = $locSection; // used to set in global seciton
 
+			$classFunctions = new Functions();
+			$convertGeo = $classFunctions->geo_convert($locationSettings['Latitude'], $locationSettings['Longitude'], 'svxlink');
+
 			if ($locationSettings['Echolink_Status_Servers'] != '') {
 				$location_array[$locSection]['STATUS_SERVER_LIST'] = $locationSettings['Echolink_Status_Servers'];
 			}
 			if ($locationSettings['APRS_ServerList'] != '') {
 				$location_array[$locSection]['APRS_SERVER_LIST'] = $locationSettings['APRS_ServerList'];
 			}
-			$location_array[$locSection]['LAT_POSITION'] = $locationSettings['Latitude'];
-			$location_array[$locSection]['LON_POSITION'] = $locationSettings['Longitude'];
+			$location_array[$locSection]['LAT_POSITION'] = $convertGeo['latitude'];
+			$location_array[$locSection]['LON_POSITION'] = $convertGeo['longitude'];
 			switch ($locationSettings['APRS_Station_Type']) {
 			case "repeater":
 				$location_array[$locSection]['CALLSIGN'] = 'ER-' . $this->settingsArray['callSign']; // Repeater

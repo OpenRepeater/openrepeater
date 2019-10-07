@@ -23,8 +23,8 @@ if (isset($_POST['action'])){
 		'Echolink_Status_Servers' => 'aprs.echolink.org:5199',
 	// 	'APRS_SERVER_LIST' => 'noam.aprs2.net:14580',
 		'APRS_ServerList' => '',
-		'Latitude' => '39.32.48N',
-		'Longitude' => '77.54.43W',
+		'Latitude' => '40.781523', // In decimal format
+		'Longitude' => '-73.966529', // In decimal format
 		'APRS_Station_Type' => 'repeater', // repeater OR link, NOTE: Callsign is pulled from settings and prefixed accordingly. 
 		'Frequency' => '444.65',
 		'Tone' => '0',
