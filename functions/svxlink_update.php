@@ -44,6 +44,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	$classSVXLink->delete_custom_evnets(); // Purge Previous Custom Event Files
 
 	foreach ($ports as $key => $val) {
+		if ( empty($val['portEnabled']) ) { $val['portEnabled'] = 1; } // Set port to enabled if variable doesn't exist
 		if ( $val['portEnabled'] == 1 ) {
 			###############################################
 			# Work around until new UI is in place
