@@ -12,7 +12,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
 ################################################################################
 
-session_name("open_repeater_wizard");   // In case there are several session based applications
+session_id("open_repeater_wizard");   // In case there are several session based applications
 
 if (!isset($_POST["page"])) {
 	// Default Settings are not visiable to the user. They will get written into database as defaults that they can change later on.
@@ -178,7 +178,7 @@ case "wizard_update":
 			// Update GPIO Pins Table
 			$Database->delete_row('DELETE from gpio_pins;');
 	
-			if ($rxMode == "gpio") {
+			if ($rxMode == "cos") {
 				$sql_rx = "INSERT INTO gpio_pins (gpio_num,direction,active,description,type) VALUES ('$rxGPIO','in','$rxGPIO_active','PORT $portNum RX: $portLabel','Port')";
 				$Database->insert($sql_rx);
 			}
@@ -333,7 +333,7 @@ case "wizard_page3":
 			<p>Ports are the audio and logic I/Os that interface the OpenRepeater controller with the transmitter and receiver to make the repeater function. This is done through other external circuitry. Since you have chosen to set this up manually, you must specify the settings for this hardware. It utilizes both a sound card and the GPIO pins to make up the port, usually a paired receiver and transmitter hence a repeater. Here you will setup the first port required to make the controller initially function. You will be able to add other ports later if you require them and your hardware supports them.</p>
 		';
 
-isset($_SESSION['new_repeater_ports']['rxMode']) ? $rxMode = $_SESSION['new_repeater_ports']['rxMode'] : $rxMode = 'gpio';
+isset($_SESSION['new_repeater_ports']['rxMode']) ? $rxMode = $_SESSION['new_repeater_ports']['rxMode'] : $rxMode = 'cos';
 isset($_SESSION['new_repeater_ports']['rxAudioDev']) ? $rxAudioDev = $_SESSION['new_repeater_ports']['rxAudioDev'] : $rxAudioDev = '';
 isset($_SESSION['new_repeater_ports']['rxGPIO_active']) ? $rxGPIO_active = $_SESSION['new_repeater_ports']['rxGPIO_active'] : $rxGPIO_active = 'high';
 isset($_SESSION['new_repeater_ports']['rxGPIO']) ? $rxGPIO = $_SESSION['new_repeater_ports']['rxMode'] : $rxGPIO = '';
@@ -343,7 +343,7 @@ isset($_SESSION['new_repeater_ports']['txGPIO']) ? $txGPIO = $_SESSION['new_repe
 
 
 		$rxModeOptions = '';
-		if ($rxMode == 'gpio') { $rxModeOptions .= '<option value="gpio" selected>COS (Carrier Operated Switch)</option>'; } else { $rxModeOptions .= '<option value="gpio">COS (Carrier Operated Switch)</option>'; }
+		if ($rxMode == 'cos') { $rxModeOptions .= '<option value="cos" selected>COS (Carrier Operated Switch)</option>'; } else { $rxModeOptions .= '<option value="cos">COS (Carrier Operated Switch)</option>'; }
 		if ($rxMode == 'vox') { $rxModeOptions .= '<option value="vox" selected>VOX (Voice Operated Transmit)</option>'; } else { $rxModeOptions .= '<option value="vox">VOX (Voice Operated Transmit)</option>'; }
 
 		$rxDeviceOptions = "";
@@ -500,7 +500,7 @@ case "wizard_confirmation":
 			// Display manual port setup
 	        $wizardContent .= '<h3>Manual Port Settings</h3>';
 
-			if ($_SESSION["new_repeater_ports"]['rxMode'] == "gpio") {
+			if ($_SESSION["new_repeater_ports"]['rxMode'] == "cos") {
 		        $wizardContent .= 'Receive Mode: <strong>COS (Carrier Operated Switch)</strong>';
 		        $wizardContent .= '<br>';
 		        $wizardContent .= 'Receive GPIO Pin: <strong>'.$_SESSION["new_repeater_ports"]['rxGPIO'].' </strong> ('.$_SESSION["new_repeater_ports"]['rxGPIO_active'].')';

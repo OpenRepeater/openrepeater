@@ -114,8 +114,8 @@ class SVXLink {
 		'AUDIO_CHANNEL' => $audio_dev[1],
 		];
 
-		// If rxMode is not defined for current port, then set to 'gpio'. This also works for hidraw and serial pins
-		if ( !isset($this->portsArray[$curPort]['rxMode']) ) { $this->portsArray[$curPort]['rxMode'] = 'gpio'; }
+		// If rxMode is not defined for current port, then set to 'cos'.
+		if ( !isset($this->portsArray[$curPort]['rxMode']) ) { $this->portsArray[$curPort]['rxMode'] = 'cos'; }
 
 		if (strtolower($this->portsArray[$curPort]['rxMode']) == 'vox') {
 			// VOX Squelch Mode

@@ -165,7 +165,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 											<label class="control-label" for="rxGPIO_active<?php echo $idNum; ?>">RX Control Mode</label>
 											<div class="controls">
 												<select id="rxMode<?php echo $idNum; ?>" name="rxMode[]" class="rxMode">
-													<option value="gpio" <?php if ($cur_port['rxMode'] == 'gpio') { echo "selected"; } ?>>COS</option>
+													<option value="gpio" <?php if ($cur_port['rxMode'] == 'cos') { echo "selected"; } ?>>COS</option>
 													<option value="vox" <?php if ($cur_port['rxMode'] == 'vox') { echo "selected"; } ?>>VOX</option>
 												</select>
 											</div>
