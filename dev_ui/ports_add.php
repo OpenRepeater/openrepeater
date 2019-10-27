@@ -27,7 +27,25 @@ if (isset($_POST['action'])){
 	
 	$testArr = [
 	    1 => [
-	        'portNum' => '1',
+            'portNum' => '1',
+            'portLabel' => 'ICS 1X',
+            'rxAudioDev' => 'alsa:plughw:0|1',
+            'txAudioDev' => 'alsa:plughw:0|1',
+            'portType' => 'GPIO',
+            'rxMode' => 'cos',
+            'rxGPIO' => '26',
+            'txGPIO' => '498',
+//             'rxGPIO_active' => 'low',
+            'rxGPIO_active' => 'high',
+            'txGPIO_active' => 'high',
+
+            'portDuplex'  => 'full',
+            'portEnabled'  => '1',
+            'linkGroup'  => '1',
+	        ],
+
+	    2 => [
+	        'portNum' => '2',
 	        'portLabel' => 'USB RIM Lite',
 	        'rxAudioDev' => 'alsa:plughw:1|0',
 	        'txAudioDev' => 'alsa:plughw:1|0',
@@ -40,7 +58,7 @@ if (isset($_POST['action'])){
 	        'hidrawTX_ptt' => 'GPIO3',
 	        'hidrawTX_ptt_invert' => false,
 	
-	        'portDuplex'  => 'full',
+	        'portDuplex'  => 'half',
 	        'portEnabled'  => '1',
 	        'linkGroup'  => '1',
 	    ],
@@ -64,6 +82,7 @@ if (isset($_POST['action'])){
 	            'linkGroup'  => '1',
 	        ],
 	*/
+/*
 	    2 => [
 	        'portNum' => '2',
 	        'portLabel' => 'ICS 2X Port 2',
@@ -80,6 +99,7 @@ if (isset($_POST['action'])){
 	        'portEnabled'  => '1',
 	        'linkGroup'  => '1',
 	    ],
+*/
 	
 	/*
 	    3 => [
@@ -122,6 +142,23 @@ if (isset($_POST['action'])){
 	            'portEnabled'  => '0',
 	        ],
 	*/
+	    22 => [
+	        'portNum' => '22',
+	        'portLabel' => 'VOIP/Network',
+/*
+	        'rxAudioDev' => 'alsa:plughw:1|0',
+	        'txAudioDev' => 'alsa:plughw:1|0',
+*/
+	        'portType' => 'Network',	
+	        'netHost' => '--RPI IP Address--',	
+	        'netPort' => '5210',	
+	        'netKey' => '--LINK KEY--',	
+	        'netCodec' => 'S16',	
+
+	        'portDuplex'  => 'half',
+	        'portEnabled'  => '1',
+	        'linkGroup'  => '1',
+	    ],
 
 	];
 	

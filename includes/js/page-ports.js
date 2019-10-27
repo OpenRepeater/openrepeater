@@ -258,7 +258,6 @@ $(window).load(function(){
 
 
 		$(".portForm").live("change", function(){
-			console.log('changed');
 			var portFormID = $(this).attr('id');
 			updateDB(portFormID);
 		});
