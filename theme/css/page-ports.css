@@ -21,6 +21,16 @@ select#orp_Mode {
 	margin-top: 8px;
 }
 
+.portRow.special {
+	background-color: #feffcc;
+	min-height: 10px;
+}
+
+.portRow.special a.addPort, .portRow.special a.removePort{
+	margin: 0;
+    padding: 5px;
+}
+
 
 .portRow span {
     display: inline-block;
@@ -38,12 +48,19 @@ select#orp_Mode {
 	border: 2px solid #c21900;
 }
 
-a#addPort, #removePort {
+a.addPort, a.removePort {
 float:left;
 margin-top: 12px;
 margin-left: 5px;
 }
 
+#noPorts {
+	margin-bottom: 10px;
+}
+
+#noPorts .addPort, #noPorts .removePort {
+	margin: 0;
+}
 
 
 input, select {

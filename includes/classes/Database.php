@@ -166,8 +166,12 @@ class Database {
 	# Ports Table
 	###############################################
 
-	public function get_ports() {
-		$sql = 'SELECT * FROM "ports" ORDER BY "portNum" ASC';
+	public function get_ports($portNum = 'ALL') {
+		if ($portNum == 'ALL') {
+			$sql = 'SELECT * FROM ports ORDER BY "portNum" ASC';
+		} else {
+			$sql = 'SELECT * FROM ports WHERE portNum = "' . $portNum . '";';
+		}
 		$ports = $this->select_all('ports', $sql);
 		foreach($ports as $curPort) {
 			$curPortNum = $curPort['portNum'];
@@ -183,6 +187,18 @@ class Database {
 
 	public function clear_ports_table() {
 		$sql = 'DELETE FROM ports;';
+		$delete_result = $this->delete_row($sql);
+		return $delete_result;
+	}
+
+	public function delete_ports($portNum = 'ALL') {
+		if ($portNum == 'ALL') {
+			$sql = 'DELETE FROM ports;';
+		} else {
+			$currPortArray = $this->get_ports($portNum);
+			if ($currPortArray[$portNum]['portType'] == 'GPIO') { $this->delete_gpio_pins('Port ' . $portNum);}
+			$sql = 'DELETE FROM ports WHERE portNum = "' . $portNum . '";';
+		}
 		$delete_result = $this->delete_row($sql);
 		return $delete_result;
 	}
@@ -217,17 +233,21 @@ class Database {
 				$sql = "INSERT INTO ports(".$columns.") VALUES(".$values.");";
 				$results = $this->insert($sql);
 			}
+			
+			// Clear previous GPIOs for this port.
+			$this->delete_gpio_pins( 'Port ' . $portArr['portNum'] );
 
+			// Set new GPIOs if needed
 			if ($gpioFlag > 0) {
 				if ($portOptions['rxGPIO'] > 0) {
 					$build_gpio_row = []; // reset array
-					$build_gpio_row[] = ['gpio_num' => $portOptions['rxGPIO'],'direction' => 'in','active' => $portOptions['rxGPIO_active'],'description' => 'RX: ' . $portArr['portLabel'],'type' => 'Port'];
+					$build_gpio_row[] = ['gpio_num' => $portOptions['rxGPIO'],'direction' => 'in','active' => $portOptions['rxGPIO_active'],'description' => 'RX: ' . $portArr['portLabel'],'type' => 'Port ' . $portArr['portNum']];
 					$this->update_gpio_table( $build_gpio_row );
 				}
 
 				if ($portOptions['txGPIO'] > 0) {
 					$build_gpio_row = []; // reset array
-					$build_gpio_row[] = ['gpio_num' => $portOptions['txGPIO'],'direction' => 'out','active' => $portOptions['txGPIO_active'],'description' => 'TX: ' . $portArr['portLabel'],'type' => 'Port'];
+					$build_gpio_row[] = ['gpio_num' => $portOptions['txGPIO'],'direction' => 'out','active' => $portOptions['txGPIO_active'],'description' => 'TX: ' . $portArr['portLabel'],'type' => 'Port ' . $portArr['portNum']];
 					$this->update_gpio_table( $build_gpio_row );
 				}
 
@@ -256,12 +276,25 @@ class Database {
 	}
 
 
+	public function delete_gpio_pins($type = 'ALL') {
+		if ($type == 'ALL') {
+			$sql = 'DELETE FROM gpio_pins;';
+		} else {
+			$sql = 'DELETE FROM gpio_pins WHERE type = "' . $type . '";';
+		}
+		$delete_result = $this->delete_row($sql);
+		return $delete_result;
+	}
+
+
 	public function update_gpio_table( $input_array = array() ) {
 		foreach($input_array as $gpioArr){  
+			// Update Existing Pin
 			if ( $this->exists('gpio_pins','gpio_num', $gpioArr['gpio_num']) == true ) {
 				$sql = "UPDATE gpio_pins SET direction='".$gpioArr['direction']."', active='".$gpioArr['active']."', description='".$gpioArr['description']."', type='".$gpioArr['type']."' WHERE gpio_num='".$gpioArr['gpio_num']."';";
 				$results = $this->update($sql);
 				
+			// Create Pin if it does not exist
 			} else {
 				$column_names = [];
 				$column_values = [];

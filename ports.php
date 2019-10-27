@@ -54,7 +54,7 @@ for ($device = 0; $device <  count($device_list); $device++) {
    if ($device_list[$device]['direction'] == "IN") {
 		$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
 		$rxSelected = "";
-		$phpAudioInputOptions .= '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+		$phpAudioInputOptions .= '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')<\/option>';
 	}
 }
 
@@ -64,7 +64,7 @@ for ($device = 0; $device <  count($device_list); $device++) {
    if ($device_list[$device]['direction'] == "OUT") {
 		$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
 		$txSelected = "";
-		$phpAudioOutputOptions .= '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+		$phpAudioOutputOptions .= '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')<\/option>';
 	}
 }
 ?>
@@ -87,7 +87,6 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 			</form>
 
 
-			<form class="form-inline" role="form" action="functions/port_db_update.php" method="post" id="portsUpdate">
 
 			<div class="row-fluid sortable">
 				<div class="box span12">
@@ -98,152 +97,185 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 																			
 						<div id="portsWrap">
 						<?php 
-						$idNum = 1; // This will be replease by a loop to load exsiting values 
+						$idNum = 1;
 						
 						if ($ports) {
 							foreach($ports as $cur_port) { ?>
 
-								<p class="portRow<?php if ($idNum == 1) { echo ' first'; } else { echo ' additional'; } ?>">
-									<span>
-									<input type="text" name="portNum[]" value="<?php echo $idNum; ?>" style="width:15px;display:none;">
-									
-									<input id="portLabel<?php echo $idNum; ?>" type="text" required="required" name="portLabel[]" placeholder="Port Label" value="<?php echo $cur_port['portLabel']; ?>" class="portLabel">
-									</span>
-									<span class="rx">
-									<input id="rxGPIO<?php echo $idNum; ?>" type="text" required="required" name="rxGPIO[]" placeholder="GPIO"  value="<?php echo $cur_port['rxGPIO']; ?>" class="rxGPIO">
-									<select id="rxAudioDev<?php echo $idNum; ?>" name="rxAudioDev[]" class="rxAudioDev">
-										<option>---</option>
-										<?php
-										for ($device = 0; $device <  count($device_list); $device++) {
-										   if ($device_list[$device]['direction'] == "IN") {
-												$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-												$currentRX = $cur_port['rxAudioDev'];
-												if ($rxValue == $currentRX) { $rxSelected = " selected"; } else { $rxSelected = ""; }
-												echo '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+								<?php if ($cur_port['portType'] == 'GPIO') { ?>
+									<div id="port<?=$cur_port['portNum']?>wrap">
+									<form id="port<?=$cur_port['portNum']?>form" class="portForm form-inline" role="form" action="functions/port_db_update.php" method="post">
+
+									<input type="hidden" name="portType[<?=$cur_port['portNum']?>]" value="GPIO">
+									<p id="port<?=$cur_port['portNum']?>" class="portRow<?php if ($idNum == 1) { echo ' first'; } else { echo ' additional'; } ?>" data-port-number="<?=$cur_port['portNum']?>">
+										<span>
+										
+										<input id="portLabel<?=$cur_port['portNum']?>" type="text" required="required" name="portLabel[<?=$cur_port['portNum']?>]" placeholder="Port Label" value="<?php echo $cur_port['portLabel']; ?>" class="portLabel">
+										</span>
+										<span class="rx">
+										<input id="rxGPIO<?=$cur_port['portNum']?>" type="text" required="required" name="rxGPIO[<?=$cur_port['portNum']?>]" placeholder="GPIO"  value="<?php echo $cur_port['rxGPIO']; ?>" class="rxGPIO">
+										<select id="rxAudioDev<?=$cur_port['portNum']?>" name="rxAudioDev[<?=$cur_port['portNum']?>]" class="rxAudioDev">
+											<option>---</option>
+											<?php
+											for ($device = 0; $device <  count($device_list); $device++) {
+											   if ($device_list[$device]['direction'] == "IN") {
+													$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
+													$currentRX = $cur_port['rxAudioDev'];
+													if ($rxValue == $currentRX) { $rxSelected = " selected"; } else { $rxSelected = ""; }
+													echo '<option value="'.$rxValue.'"'.$rxSelected.'>INPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+												}
 											}
-										}
-										?>
-									</select>
-									</span>
-									<span class="tx">
-									<input id="txGPIO<?php echo $idNum; ?>" type="text" required="required" name="txGPIO[]" placeholder="GPIO" value="<?php echo $cur_port['txGPIO']; ?>" class="txGPIO">
-									<select id="txAudioDev<?php echo $idNum; ?>" name="txAudioDev[]" class="txAudioDev">
-										<option>---</option>
-										<?php
-										for ($device = 0; $device <  count($device_list); $device++) {
-										   if ($device_list[$device]['direction'] == "OUT") {
-												$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-												$currentTX = $cur_port['txAudioDev'];
-												if ($txValue == $currentTX) { $txSelected = " selected"; } else { $txSelected = ""; }
-												echo '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+											?>
+										</select>
+										</span>
+										<span class="tx">
+										<input id="txGPIO<?=$cur_port['portNum']?>" type="text" required="required" name="txGPIO[<?=$cur_port['portNum']?>]" placeholder="GPIO" value="<?php echo $cur_port['txGPIO']; ?>" class="txGPIO">
+										<select id="txAudioDev<?=$cur_port['portNum']?>" name="txAudioDev[<?=$cur_port['portNum']?>]" class="txAudioDev">
+											<option>---</option>
+											<?php
+											for ($device = 0; $device <  count($device_list); $device++) {
+											   if ($device_list[$device]['direction'] == "OUT") {
+													$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
+													$currentTX = $cur_port['txAudioDev'];
+													if ($txValue == $currentTX) { $txSelected = " selected"; } else { $txSelected = ""; }
+													echo '<option value="'.$txValue.'"'.$txSelected.'>OUTPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+												}
 											}
-										}
-										?>
-									</select>
-									</span>
+											?>
+										</select>
+										</span>
+	
+										<!-- Button triggered modal -->
+										<button type="button" class="btn port_settings" data-toggle="modal" data-target="#portDetails<?=$cur_port['portNum']?>" title="Extra settings for this port"><i class="icon-cog"></i></button>
+	
+										<?php if ($idNum == 1) { 
+											echo '<a href="#" class="addPort">Add</a>';
+										} else {
+											echo '<a href="#" class="removePort">Remove</a>';
+										} ?>								
+									</p>
 
-									<!-- Button triggered modal -->
-									<button type="button" class="btn port_settings" data-toggle="modal" data-target="#portDetails<?php echo $idNum; ?>" title="Extra settings for this port"><i class="icon-cog"></i></button>
+									<!-- Modal - ADVANCED DETAIL DIALOG -->
+									<div class="modal fade" id="portDetails<?=$cur_port['portNum']?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									  <div class="modal-dialog">
+									    <div class="modal-content">
+									      <div class="modal-header">
+										  <h3 class="modal-title" id="myModalLabel">Extra Settings (Port <?=$cur_port['portNum']?>)</h3>
+									      </div>
+									      <div class="modal-body">
+										  	<fieldset>
+											  <div class="control-group">
+												<label class="control-label" for="rxGPIO_active<?=$cur_port['portNum']?>">RX Control Mode</label>
+												<div class="controls">
+													<select id="rxMode<?=$cur_port['portNum']?>" name="rxMode[<?=$cur_port['portNum']?>]" class="rxMode">
+														<option value="cos" <?php if ($cur_port['rxMode'] == 'cos') { echo "selected"; } ?>>COS</option>
+														<option value="vox" <?php if ($cur_port['rxMode'] == 'vox') { echo "selected"; } ?>>VOX</option>
+													</select>
+												</div>
+											  </div>
+											  <div style="clear: both;"></div>
+	
+											  <br>
+											  <div class="alert alert-danger">
+												<strong>WARNING:</strong> The VOX receive mode is experimental. It may provide unpredictable results and keying of the system due to spurious noise and audio levels. It strongly recommended that you use the COS Mode if at all possible. 
+											  </div>
+	
+											  <div class="control-group">
+												<label class="control-label" for="rxGPIO_active<?=$cur_port['portNum']?>">RX Active GPIO State</label>
+												<div class="controls">
+												  <select id="rxGPIO_active<?=$cur_port['portNum']?>" name="rxGPIO_active[<?=$cur_port['portNum']?>]" class="rxGPIO_active">
+												  	<option value="high" <?php if ($cur_port['rxGPIO_active'] == 'high') { echo ' selected'; } ?>>Active High</option>
+												  	<option value="low" <?php if ($cur_port['rxGPIO_active'] == 'low') { echo ' selected'; } ?>>Active Low</option>
+												  </select>
+												</div>
+											  </div>
+											  <div style="clear: both;"></div>
+											  
+											  <div class="control-group">
+												<label class="control-label" for="txGPIO_active<?=$cur_port['portNum']?>">TX Active GPIO State</label>
+												<div class="controls">
+												  <select id="txGPIO_active<?=$cur_port['portNum']?>" name="txGPIO_active[<?=$cur_port['portNum']?>]" class="txGPIO_active">
+												  	<option value="high" <?php if ($cur_port['txGPIO_active'] == 'high') { echo ' selected'; } ?>>Active High</option>
+												  	<option value="low" <?php if ($cur_port['txGPIO_active'] == 'low') { echo ' selected'; } ?>>Active Low</option>
+												  </select>
+												</div>
+											  </div>
+											  <div style="clear: both;"></div>
+	
+											  <div class="control-group">
+												<label class="control-label" for="portEnabled<?=$cur_port['portNum']?>">Port Enabled/Disabled</label>
+												<div class="controls">
+												  <select id="portEnabled<?=$cur_port['portNum']?>" name="portEnabled[<?=$cur_port['portNum']?>]">
+												  	<option value="1" <?php if ($cur_port['portEnabled'] == '1') { echo ' selected'; } ?>>Enabled</option>
+												  	<option value="0" <?php if ($cur_port['portEnabled'] == '0') { echo ' selected'; } ?>>Disabled</option>
+												  </select>
+												</div>
+											  </div>
+											  <div style="clear: both;"></div>
+	
+											  <div class="control-group">
+												<label class="control-label" for="linkGroup<?=$cur_port['portNum']?>">Link Group</label>
+												<div class="controls">
+												  <select id="linkGroup<?=$cur_port['portNum']?>" name="linkGroup[<?=$cur_port['portNum']?>]">
+												  	<option value="" <?php if ($cur_port['linkGroup'] == '') { echo ' selected'; } ?>>None</option>
+												  	<option value="1" <?php if ($cur_port['linkGroup'] == '1') { echo ' selected'; } ?>>Group 1</option>
+												  	<option value="2" <?php if ($cur_port['linkGroup'] == '2') { echo ' selected'; } ?>>Group 2</option>
+												  	<option value="3" <?php if ($cur_port['linkGroup'] == '3') { echo ' selected'; } ?>>Group 3</option>
+												  	<option value="4" <?php if ($cur_port['linkGroup'] == '4') { echo ' selected'; } ?>>Group 4</option>
+												  </select>
+												</div>
+											  </div>
+											  <div style="clear: both;"></div>
+	
+											</fieldset>
+									      </div>
+									      <div class="modal-footer">
+										  	<button type="button" class="btn btn-default" data-dismiss="modal"><i class="icon-remove"></i> Close</button>
+									      </div>
+									    </div><!-- /.modal-content -->
+									  </div><!-- /.modal-dialog -->
+									</div>
+									<!-- /.modal -->
 
-									<?php if ($idNum == 1) { 
-										echo '<a href="#" id="addPort">Add</a>';
-									} else {
-										echo '<a href="#" id="removePort">Remove</a>';
-									} ?>								
-								</p>
+									</form>
+									</div>
 
-								<!-- Modal - ADVANCED DETAIL DIALOG -->
-								<div class="modal fade" id="portDetails<?php echo $idNum; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								  <div class="modal-dialog">
-								    <div class="modal-content">
-								      <div class="modal-header">
-									  <h3 class="modal-title" id="myModalLabel">Extra Settings (Port <?php echo $idNum; ?>)</h3>
-								      </div>
-								      <div class="modal-body">
-									  	<fieldset>
-										  <div class="control-group">
-											<label class="control-label" for="rxGPIO_active<?php echo $idNum; ?>">RX Control Mode</label>
-											<div class="controls">
-												<select id="rxMode<?php echo $idNum; ?>" name="rxMode[]" class="rxMode">
-													<option value="gpio" <?php if ($cur_port['rxMode'] == 'cos') { echo "selected"; } ?>>COS</option>
-													<option value="vox" <?php if ($cur_port['rxMode'] == 'vox') { echo "selected"; } ?>>VOX</option>
-												</select>
-											</div>
-										  </div>
-										  <div style="clear: both;"></div>
+								<?php } else { ?>
+									<div id="port<?=$cur_port['portNum']?>wrap">
+									<p id="port<?=$cur_port['portNum']?>" class="portRow<?php if ($idNum == 1) { echo ' first'; } else { echo ' additional'; } ?> special" data-port-number="<?=$cur_port['portNum']?>">
+										<span>
+											<strong>Port #<?=$cur_port['portNum']?>:</strong> <?=$cur_port['portLabel']?>
+										</span>
+		
+										<?php if ($idNum == 1) { 
+											echo '<a href="#" class="addPort">Add</a>';
+										} else {
+											echo '<a href="#" class="removePort">Remove</a>';
+										} ?>								
+									</p>
+									</div>
 
-										  <br>
-										  <div class="alert alert-danger">
-											<strong>WARNING:</strong> The VOX receive mode is experimental. It may provide unpredictable results and keying of the system due to spurious noise and audio levels. It strongly recommended that you use the COS Mode if at all possible. 
-										  </div>
-
-										  <div class="control-group">
-											<label class="control-label" for="rxGPIO_active<?php echo $idNum; ?>">RX Active GPIO State</label>
-											<div class="controls">
-											  <select id="rxGPIO_active<?php echo $idNum; ?>" name="rxGPIO_active[]" class="rxGPIO_active">
-											  	<option value="high" <?php if ($cur_port['rxGPIO_active'] == 'high') { echo ' selected'; } ?>>Active High</option>
-											  	<option value="low" <?php if ($cur_port['rxGPIO_active'] == 'low') { echo ' selected'; } ?>>Active Low</option>
-											  </select>
-											</div>
-										  </div>
-										  <div style="clear: both;"></div>
-										  
-										  <hr>
-										  <div class="control-group">
-											<label class="control-label" for="txGPIO_active<?php echo $idNum; ?>">TX Active GPIO State</label>
-											<div class="controls">
-											  <select id="txGPIO_active<?php echo $idNum; ?>" name="txGPIO_active[]" class="txGPIO_active">
-											  	<option value="high" <?php if ($cur_port['txGPIO_active'] == 'high') { echo ' selected'; } ?>>Active High</option>
-											  	<option value="low" <?php if ($cur_port['txGPIO_active'] == 'low') { echo ' selected'; } ?>>Active Low</option>
-											  </select>
-											</div>
-										  </div>
-
-										  <hr>
-										  <div class="control-group">
-											<label class="control-label" for="portEnabled<?php echo $idNum; ?>">Port Enabled/Disabled</label>
-											<div class="controls">
-											  <select id="portEnabled<?php echo $idNum; ?>" name="portEnabled[]">
-											  	<option value="1" <?php if ($cur_port['portEnabled'] == '1') { echo ' selected'; } ?>>Enabled</option>
-											  	<option value="0" <?php if ($cur_port['portEnabled'] == '0') { echo ' selected'; } ?>>Disabled</option>
-											  </select>
-											</div>
-										  </div>
-
-										</fieldset>
-								      </div>
-								      <div class="modal-footer">
-									  	<button type="button" class="btn btn-default" data-dismiss="modal"><i class="icon-remove"></i> Close</button>
-								      </div>
-								    </div><!-- /.modal-content -->
-								  </div><!-- /.modal-dialog -->
-								</div>
-								<!-- /.modal -->
-
+								<?php } ?>
 
 
 							<?php 
 							$idNum++;
 							}	
 						} else {
-							echo "there are no ports...";
+							echo '<div id="noPorts">';
+							echo '<a href="#" class="addPort">Add first port</a>';
+							echo '</div>';
 						}
 						?>
 
 						</div>
 
 						<div id="portCount"></div>
-
-						<div class="form-actions">
-						  <input type="hidden" name="action" value="update">		
-						  <button type="button" class="btn btn-primary" onclick="updateDB()">Update Ports</button>
-						</div>
 						
 					</div>
 				</div><!--/span-->
 			
 			</div><!--/row-->
-			</form>
 			
 			<form class="form-horizontal" role="form" action="ports.php" method="post" id="loadBoardPreset" name="loadBoardPreset" >
 			<div class="row-fluid sortable">
