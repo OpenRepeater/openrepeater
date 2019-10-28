@@ -15,11 +15,6 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 if(isset($_POST)==true && empty($_POST)==false) {
 	$Database = new Database();
 
-	// Clear old settings
-// 	$Database->delete_row('DELETE from PORTS;');
-// 	$Database->delete_row('DELETE FROM "gpio_pins" WHERE type = "Port";');
-// 	$Database->delete_gpio_pins('Port');
-
 	// Define sub arrays
 	$portNum=$_POST['portNum'];
 	$portLabel=$_POST['portLabel'];			
