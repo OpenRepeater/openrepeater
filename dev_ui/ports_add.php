@@ -26,139 +26,151 @@ if (isset($_POST['action'])){
 	$classDB->delete_row('DELETE FROM "gpio_pins" WHERE type = "Port";');
 	
 	$testArr = [
-	    1 => [
-            'portNum' => '1',
-            'portLabel' => 'ICS 1X',
-            'rxAudioDev' => 'alsa:plughw:0|1',
-            'txAudioDev' => 'alsa:plughw:0|1',
-            'portType' => 'GPIO',
-            'rxMode' => 'cos',
-            'rxGPIO' => '26',
-            'txGPIO' => '498',
-//             'rxGPIO_active' => 'low',
-            'rxGPIO_active' => 'high',
-            'txGPIO_active' => 'high',
+		1 => [
+			'portNum' => '1',
+			'portLabel' => 'ICS 1X',
+			'rxAudioDev' => 'alsa:plughw:0|1',
+			'txAudioDev' => 'alsa:plughw:0|1',
+			'portType' => 'GPIO',
+			'rxMode' => 'cos',
+			'rxGPIO' => '26',
+			'txGPIO' => '498',
+			// 'rxGPIO_active' => 'low',
+			'rxGPIO_active' => 'high',
+			'txGPIO_active' => 'high',
 
-            'portDuplex'  => 'full',
-            'portEnabled'  => '1',
-            'linkGroup'  => '1',
-	        ],
-
-	    2 => [
-	        'portNum' => '2',
-	        'portLabel' => 'USB RIM Lite',
-	        'rxAudioDev' => 'alsa:plughw:1|0',
-	        'txAudioDev' => 'alsa:plughw:1|0',
-	        'portType' => 'HiDraw',
-	        'hidrawDev' => '/dev/hidraw0',
-	        'hidrawRX_cos' => 'VOL_DN',
-	        'hidrawRX_cos_invert' => true,
-	        'hidrawRX_ctcss' => 'VOL_UP',
-	        'hidrawRX_ctcss_invert' => true,
-	        'hidrawTX_ptt' => 'GPIO3',
-	        'hidrawTX_ptt_invert' => false,
-	
-	        'portDuplex'  => 'half',
-	        'portEnabled'  => '1',
-	        'linkGroup'  => '1',
-	    ],
-	
-	
-	/*
-	    1 => [
-	            'portNum' => '1',
-	            'portLabel' => 'ICS 2X Port 1',
-	            'rxAudioDev' => 'alsa:plughw:0|1',
-	            'txAudioDev' => 'alsa:plughw:0|1',
-	            'portType' => 'GPIO',
-	            'rxMode' => 'cos',
-	            'rxGPIO' => '26',
-	            'txGPIO' => '498',
-	            'rxGPIO_active' => 'low',
-	            'txGPIO_active' => 'high',
-	
-	            'portDuplex'  => 'full',
-	            'portEnabled'  => '1',
-	            'linkGroup'  => '1',
-	        ],
-	*/
-/*
-	    2 => [
-	        'portNum' => '2',
-	        'portLabel' => 'ICS 2X Port 2',
-	        'rxAudioDev' => 'alsa:plughw:0|0',
-	        'txAudioDev' => 'alsa:plughw:0|0',
-	        'portType' => 'GPIO',
-	        'rxMode' => 'cos',
-	        'rxGPIO' => '23',
-	        'txGPIO' => '499',
-	        'rxGPIO_active' => 'low',
-	        'txGPIO_active' => 'high',           
-	
 			'portDuplex'  => 'full',
-	        'portEnabled'  => '1',
-	        'linkGroup'  => '1',
-	    ],
-*/
-	
-	/*
-	    3 => [
-	            'portNum' => '3',
-	            'portLabel' => 'DMK URI',
-	            'rxAudioDev' => 'alsa:plughw:1|0',
-	            'txAudioDev' => 'alsa:plughw:1|0',
-	            'portType' => 'HiDraw',
-	            'hidrawDev' => '/dev/hidraw0',
-	            'hidrawRX_cos' => 'VOL_DN',
-	            'hidrawRX_cos_invert' => true,
-	            'hidrawRX_ctcss' => 'VOL_UP',
-	            'hidrawRX_ctcss_invert' => true,
-	            'hidrawTX_ptt' => 'GPIO3',
-	            'hidrawTX_ptt_invert' => false,
-	
-	            'portDuplex'  => 'half',
-	            'portEnabled'  => '1',
-	            'linkGroup'  => '1',
-	            'rxAudioDev' => 'alsa:plughw:1|0',
-	            'txAudioDev' => 'alsa:plughw:1|0',
-	        ],
-	*/
+			'portEnabled'  => '1',
+			'linkGroup'  => '1',
+		],
 
-	/*
-	    4 => [
-	            'portNum' => '4',
-	            'portLabel' => 'Test Serial',
-	            'rxAudioDev' => 'alsa:plughw:0|0',
-	            'txAudioDev' => 'alsa:plughw:0|0',
-	            'portType' => 'Serial',
-	            'rxMode' => 'cos',
-	            'serialDev' => '/dev/ttyUSB1',
-	            'serialRX_cos' => 'CTS',
-	            'serialRX_cos_invert' => true,
-	            'serialTX_ptt' => 'DTR',
-	            'serialTX_ptt_invert' => false,
+		2 => [
+			'portNum' => '2',
+			'portLabel' => 'USB RIM Lite',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+			'portType' => 'HiDraw',
+			'hidrawDev' => '/dev/hidraw0',
+			'hidrawRX_cos' => 'VOL_DN',
+			'hidrawRX_cos_invert' => true,
+			'hidrawRX_ctcss' => 'VOL_UP',
+			'hidrawRX_ctcss_invert' => true,
+			'hidrawTX_ptt' => 'GPIO3',
+			'hidrawTX_ptt_invert' => false,
+
+			'portDuplex' => 'half',
+			'portEnabled' => '1',
+			'linkGroup' => '1',
+		],
 	
-	            'portDuplex'  => 'half',
-	            'portEnabled'  => '0',
-	        ],
-	*/
-	    22 => [
-	        'portNum' => '22',
-	        'portLabel' => 'VOIP/Network',
+	
 /*
-	        'rxAudioDev' => 'alsa:plughw:1|0',
-	        'txAudioDev' => 'alsa:plughw:1|0',
-*/
-	        'portType' => 'Network',	
-	        'netHost' => '--RPI IP Address--',	
-	        'netPort' => '5210',	
-	        'netKey' => '--LINK KEY--',	
-	        'netCodec' => 'S16',	
+		1 => [
+			'portNum' => '1',
+			'portLabel' => 'ICS 2X Port 1',
+			'rxAudioDev' => 'alsa:plughw:0|1',
+			'txAudioDev' => 'alsa:plughw:0|1',
+			'portType' => 'GPIO',
+			'rxMode' => 'cos',
+			'rxGPIO' => '26',
+			'txGPIO' => '498',
+			'rxGPIO_active' => 'low',
+			'txGPIO_active' => 'high',
 
-	        'portDuplex'  => 'half',
-	        'portEnabled'  => '1',
-	        'linkGroup'  => '1',
-	    ],
+			'portDuplex' => 'full',
+			'portEnabled' => '1',
+			'linkGroup' => '1',
+		],
+*/
+
+/*
+		2 => [
+			'portNum' => '2',
+			'portLabel' => 'ICS 2X Port 2',
+			'rxAudioDev' => 'alsa:plughw:0|0',
+			'txAudioDev' => 'alsa:plughw:0|0',
+			'portType' => 'GPIO',
+			'rxMode' => 'cos',
+			'rxGPIO' => '23',
+			'txGPIO' => '499',
+			'rxGPIO_active' => 'low',
+			'txGPIO_active' => 'high',
+			'portDuplex' => 'full',
+			'portEnabled' => '1',
+			'linkGroup' => '1',
+		],
+*/
+	
+/*
+		3 => [
+			'portNum' => '3',
+			'portLabel' => 'DMK URI',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+			'portType' => 'HiDraw',
+			'hidrawDev' => '/dev/hidraw0',
+			'hidrawRX_cos' => 'VOL_DN',
+			'hidrawRX_cos_invert' => true,
+			'hidrawRX_ctcss' => 'VOL_UP',
+			'hidrawRX_ctcss_invert' => true,
+			'hidrawTX_ptt' => 'GPIO3',
+			'hidrawTX_ptt_invert' => false,
+
+			'portDuplex'  => 'half',
+			'portEnabled'  => '1',
+			'linkGroup'  => '1',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+		],
+*/
+
+/*
+		4 => [
+			'portNum' => '4',
+			'portLabel' => 'Test Serial',
+			'rxAudioDev' => 'alsa:plughw:0|0',
+			'txAudioDev' => 'alsa:plughw:0|0',
+			'portType' => 'Serial',
+			'rxMode' => 'cos',
+			'serialDev' => '/dev/ttyUSB1',
+			'serialRX_cos' => 'CTS',
+			'serialRX_cos_invert' => true,
+			'serialTX_ptt' => 'DTR',
+			'serialTX_ptt_invert' => false,
+
+			'portDuplex' => 'half',
+			'portEnabled' => '0',
+		],
+*/
+		22 => [
+			'portNum' => '22',
+			'portLabel' => 'VOIP/Network',
+			'portType' => 'Network',
+			'netHost' => '--RPI IP Address--',
+			'netPort' => '5210',
+			'netKey' => '--LINK KEY--',
+			'netCodec' => 'S16',
+
+			'netLogDisconnectsOnce' => '',
+
+			'netSpeexEncFramesPerPacket' => '',
+			'netSpeexEncQuality' => '',
+			'netSpeexEncBitrate' => '',
+			'netSpeexEncComplexity' => '',
+			'netSpeexEncVbr' => '',
+			'netSpeexEncVbrQuality' => '',
+			'netSpeexEncAbr' => '',
+			'netSpeexDecEnhancer' => '',
+
+			'netOpusEncFrameSize' => '',
+			'netOpusEncComplexity' => '',
+			'netOpusEncBitrate' => '',
+			'netOpusEncVbr' => '',
+
+			'portDuplex' => 'half',
+			'portEnabled' => '1',
+			'linkGroup' => '1',
+		],
 
 	];
 	

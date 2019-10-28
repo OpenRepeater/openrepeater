@@ -46,47 +46,63 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	foreach ($ports as $key => $val) {
 		if ( empty($val['portEnabled']) ) { $val['portEnabled'] = 1; } // Set port to enabled if variable doesn't exist
 		if ( $val['portEnabled'] == 1 ) {
-			###############################################
-			# Work around until new UI is in place
-			###############################################
-			if ( !isset($val['portDuplex']) ) {
-				switch ($settings['orp_Mode']) {
-				case "repeater":
-					if ($key == 1) { $val['portDuplex'] = 'full'; } else { $val['portDuplex'] = 'half'; }
-					$val['linkGroup'] = 1;
+			switch ($val['portType']) {
+				### LOCAL PORTS ###
+				case 'GPIO':
+				case 'HiDraw':
+				case 'Serial':
+					###############################################
+					# Work around until new UI is in place
+					###############################################
+					if ( !isset($val['portDuplex']) ) {
+						switch ($settings['orp_Mode']) {
+						case "repeater":
+							if ($key == 1) { $val['portDuplex'] = 'full'; } else { $val['portDuplex'] = 'half'; }
+							$val['linkGroup'] = 1;
+							break;
+						case "simplex":
+							$val['portDuplex'] = 'half'; // or full or half
+							$val['linkGroup'] = 1;
+							break;
+						}
+					}
+					###############################################
+
+					// Build Ports
+					$config_array += $classSVXLink->build_rx( $key, $val['portType'] ); // Build RX
+					$config_array += $classSVXLink->build_tx( $key, $val['portType'] ); // Build TX
+		
+					if ($val['portDuplex'] == 'full') {
+						// Full Duplex Logic
+						$config_array += $classSVXLink->build_full_duplex_logic($key);
+
+						$new_logic_name = $classSVXLink->logicFullPrefix . $key;
+						$new_logic_filename = $new_logic_name . '.tcl';
+						$new_event = $classSVXLinkTCL->alias_RepeaterLogic($new_logic_name);
+
+						$new_event = $classSVXLinkTCL->override_courtesy_tone($new_event);
+
+					} else {
+						// Half Duplex Logic
+						$config_array += $classSVXLink->build_half_duplex_logic($key);
+
+						$new_logic_name = $classSVXLink->logicHalfPrefix . $key;
+						$new_logic_filename = $new_logic_name . '.tcl';
+						$new_event = $classSVXLinkTCL->alias_SimplexLogic($new_logic_name);
+					}
+					$classFunctions->write_config($new_event, $new_logic_filename, 'text');
+
 					break;
-				case "simplex":
-					$val['portDuplex'] = 'half'; // or full or half
-					$val['linkGroup'] = 1;
+
+				### NETWORK PORTS ###
+				case 'Network':
+					$config_array += $classSVXLink->build_netRX( $key ); // Build Network RX
+					$config_array += $classSVXLink->build_netTX( $key ); // Build Network TX
+
+					$new_logic_name = ''; // Temp
 					break;
-				}
 			}
-			###############################################
 
-
-			// Build Ports
-			$config_array += $classSVXLink->build_rx( $key, $val['portType'] ); // Build RX
-			$config_array += $classSVXLink->build_tx( $key, $val['portType'] ); // Build TX
-
-			if ($val['portDuplex'] == 'full') {
-				// Full Duplex Logic
-				$config_array += $classSVXLink->build_full_duplex_logic($key);
-
-				$new_logic_name = $classSVXLink->logicFullPrefix . $key;
-				$new_logic_filename = $new_logic_name . '.tcl';
-				$new_event = $classSVXLinkTCL->alias_RepeaterLogic($new_logic_name);
-
-				$new_event = $classSVXLinkTCL->override_courtesy_tone($new_event);
-
-			} else {
-				// Half Duplex Logic
-				$config_array += $classSVXLink->build_half_duplex_logic($key);
-
-				$new_logic_name = $classSVXLink->logicHalfPrefix . $key;
-				$new_logic_filename = $new_logic_name . '.tcl';
-				$new_event = $classSVXLinkTCL->alias_SimplexLogic($new_logic_name);
-			}
-			$classFunctions->write_config($new_event, $new_logic_filename, 'text');
 
 			// Add to LinkGroup
 			if (isset($val['linkGroup'])) {

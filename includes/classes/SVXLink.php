@@ -102,7 +102,7 @@ class SVXLink {
 
 
 	###############################################
-	# Build RX Port
+	# Build Local RX Port
 	###############################################
 
 	public function build_rx($curPort, $curPortType = 'GPIO') {
@@ -198,7 +198,7 @@ class SVXLink {
 
 
 	###############################################
-	# Build TX Port
+	# Build Local TX Port
 	###############################################
 
 	public function build_tx($curPort, $curPortType = 'GPIO') {
@@ -420,6 +420,86 @@ class SVXLink {
 		}
 
 		return $logic_array;
+	}
+
+
+
+	###############################################
+	# Build Network RX Port
+	###############################################
+
+	public function build_netRX($curPort) {
+
+		$netRX_array['NetRX_Port'.$curPort] = [
+			'TYPE' => 'Net',
+			'HOST' => $this->portsArray[$curPort]['netHost'],
+			'TCP_PORT' => $this->portsArray[$curPort]['netPort'],
+			'AUTH_KEY' => $this->portsArray[$curPort]['netKey'],
+			'CODEC' => $this->portsArray[$curPort]['netCodec'], // RAW, S16, GSM, SPEEX, OPUS
+		];
+
+		# Other Settings
+		$netRX_array['NetRX_Port'.$curPort]['LOG_DISCONNECTS_ONCE'] = $this->portsArray[$curPort]['netLogDisconnectsOnce'];
+
+		if ( $this->portsArray[$curPort]['netCodec'] == 'SPEEX' ) {
+			$netRX_array['NetRX_Port'.$curPort]['SPEEX_ENC_FRAMES_PER_PACKET'] = $this->portsArray[$curPort]['netSpeexEncFramesPerPacket'];
+			$netRX_array['NetRX_Port'.$curPort]['SPEEX_ENC_QUALITY'] = $this->portsArray[$curPort]['netSpeexEncQuality'];
+			$netRX_array['NetRX_Port'.$curPort]['SPEEX_ENC_BITRATE'] = $this->portsArray[$curPort]['netSpeexEncBitrate'];
+			$netRX_array['NetRX_Port'.$curPort]['SPEEX_ENC_COMPLEXITY'] = $this->portsArray[$curPort]['netSpeexEncComplexity'];
+			$netRX_array['NetRX_Port'.$curPort]['SPEEX_ENC_VBR'] = $this->portsArray[$curPort]['netSpeexEncVbr'];
+			$netRX_array['NetRX_Port'.$curPort]['SPEEX_ENC_VBR_QUALITY'] = $this->portsArray[$curPort]['netSpeexEncVbrQuality'];
+			$netRX_array['NetRX_Port'.$curPort]['SPEEX_ENC_ABR'] = $this->portsArray[$curPort]['netSpeexEncAbr'];
+			$netRX_array['NetRX_Port'.$curPort]['SPEEX_DEC_ENHANCER'] = $this->portsArray[$curPort]['netSpeexDecEnhancer'];
+		}
+
+		if ( $this->portsArray[$curPort]['netCodec'] == 'OPUS' ) {
+			$netRX_array['NetRX_Port'.$curPort]['OPUS_ENC_FRAME_SIZE'] = $this->portsArray[$curPort]['netOpusEncFrameSize'];
+			$netRX_array['NetRX_Port'.$curPort]['OPUS_ENC_COMPLEXITY'] = $this->portsArray[$curPort]['netOpusEncComplexity'];
+			$netRX_array['NetRX_Port'.$curPort]['OPUS_ENC_BITRATE'] = $this->portsArray[$curPort]['netOpusEncBitrate'];
+			$netRX_array['NetRX_Port'.$curPort]['OPUS_ENC_VBR'] = $this->portsArray[$curPort]['netOpusEncVbr'];
+		}
+
+		return $netRX_array;
+	}
+
+
+
+	###############################################
+	# Build Network TX Port
+	###############################################
+
+	public function build_netTX($curPort) {
+
+		$netTX_array['NetTX_Port'.$curPort] = [
+		'TYPE' => 'Net',
+		'HOST' => $this->portsArray[$curPort]['netHost'],
+		'TCP_PORT' => $this->portsArray[$curPort]['netPort'],
+		'AUTH_KEY' => $this->portsArray[$curPort]['netKey'],
+		'CODEC' => $this->portsArray[$curPort]['netCodec'],
+		];
+
+		# Other Settings
+		$netTX_array['NetTX_Port'.$curPort]['LOG_DISCONNECTS_ONCE'] = $this->portsArray[$curPort]['netLogDisconnectsOnce'];
+
+		if ( $this->portsArray[$curPort]['netCodec'] == 'SPEEX' ) {
+			$netTX_array['NetTX_Port'.$curPort]['SPEEX_ENC_FRAMES_PER_PACKET'] = $this->portsArray[$curPort]['netSpeexEncFramesPerPacket'];
+			$netTX_array['NetTX_Port'.$curPort]['SPEEX_ENC_QUALITY'] = $this->portsArray[$curPort]['netSpeexEncQuality'];
+			$netTX_array['NetTX_Port'.$curPort]['SPEEX_ENC_BITRATE'] = $this->portsArray[$curPort]['netSpeexEncBitrate'];
+			$netTX_array['NetTX_Port'.$curPort]['SPEEX_ENC_COMPLEXITY'] = $this->portsArray[$curPort]['netSpeexEncComplexity'];
+			$netTX_array['NetTX_Port'.$curPort]['SPEEX_ENC_VBR'] = $this->portsArray[$curPort]['netSpeexEncVbr'];
+			$netTX_array['NetTX_Port'.$curPort]['SPEEX_ENC_VBR_QUALITY'] = $this->portsArray[$curPort]['netSpeexEncVbrQuality'];
+			$netTX_array['NetTX_Port'.$curPort]['SPEEX_ENC_ABR'] = $this->portsArray[$curPort]['netSpeexEncAbr'];
+			$netTX_array['NetTX_Port'.$curPort]['SPEEX_DEC_ENHANCER'] = $this->portsArray[$curPort]['netSpeexDecEnhancer'];
+		}
+
+		if ( $this->portsArray[$curPort]['netCodec'] == 'OPUS' ) {
+			$netTX_array['NetTX_Port'.$curPort]['OPUS_ENC_FRAME_SIZE'] = $this->portsArray[$curPort]['netOpusEncFrameSize'];
+			$netTX_array['NetTX_Port'.$curPort]['OPUS_ENC_COMPLEXITY'] = $this->portsArray[$curPort]['netOpusEncComplexity'];
+			$netTX_array['NetTX_Port'.$curPort]['OPUS_ENC_BITRATE'] = $this->portsArray[$curPort]['netOpusEncBitrate'];
+			$netTX_array['NetTX_Port'.$curPort]['OPUS_ENC_VBR'] = $this->portsArray[$curPort]['netOpusEncVbr'];
+		}
+
+		return $netTX_array;
 	}
 
 
