@@ -167,12 +167,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	/* CLEAR SETTINGS UPDATE FLAG TO CLEAR BANNER AT TOP OF PAGE */
 	$classDB->set_update_flag(false);
 
-	########
-	# Redundant GPIO teardown/setup to work around SVXLink issue
-	$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink gpio_down');
-	$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink gpio_up');
-	########
-
 	$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
 
 	/* WHAT PAGE TO GO BACK TO */

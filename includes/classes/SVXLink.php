@@ -145,9 +145,6 @@ class SVXLink {
 				$rx_array['RX_Port'.$curPort]['HID_DEVICE'] = $hidDev;
 				$rx_array['RX_Port'.$curPort]['HID_SQL_PIN'] = $hid_pin;
 				$rx_array['RX_Port'.$curPort]['SQL_HANGTIME'] = '10';
-
-				// Set Hidraw device permission, This should really be moved to the start of SVXLink.
-				exec("sudo orp_helper hidraw owner $hidDev", $result);
 				break;
 
 			case 'Serial':
@@ -161,9 +158,6 @@ class SVXLink {
 				$rx_array['RX_Port'.$curPort]['SERIAL_PORT'] = $serialDev;
 				$rx_array['RX_Port'.$curPort]['SERIAL_PIN'] = $serial_pin;
 				$rx_array['RX_Port'.$curPort]['SQL_HANGTIME'] = '10';
-
-				// Set Serial device permission, This should really be moved to the start of SVXLink.
-				exec("sudo orp_helper hidraw owner $serialDev", $result);
 				break;
 			}
 
@@ -230,9 +224,6 @@ class SVXLink {
 			$tx_array['TX_Port'.$curPort]['PTT_TYPE'] = 'Hidraw';
 			$tx_array['TX_Port'.$curPort]['HID_DEVICE'] = $hidDev;
 			$tx_array['TX_Port'.$curPort]['HID_PTT_PIN'] = $hid_pin;
-
-			// Set Hidraw device permission, This should really be moved to the start of SVXLink.
-			exec("sudo orp_helper hidraw owner $hidDev", $result);
 			break;
 
 		case 'Serial':
@@ -245,9 +236,6 @@ class SVXLink {
 			$tx_array['TX_Port'.$curPort]['PTT_TYPE'] = 'SerialPin';
 			$tx_array['TX_Port'.$curPort]['PTT_PORT'] = $serialDev;
 			$tx_array['TX_Port'.$curPort]['PTT_PIN'] = $serial_pin;
-
-			// Set Serial device permission, This should really be moved to the start of SVXLink.
-			exec("sudo orp_helper hidraw owner $serialDev", $result);
 			break;
 
 		}

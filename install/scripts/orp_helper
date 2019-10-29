@@ -42,17 +42,21 @@ function svxlink_enable {
 }
 
 function svxlink_restart {
-	service svxlink restart
-	svxlink_status
+	svxlink_stop
+	svxlink_gpio_down
+	svxlink_devices_permissions
+	svxlink_gpio_up
+	svxlink_start
 }
 
 function svxlink_stop {
-	service svxlink stop
+	systemctl stop svxlink
 	svxlink_status
 }
 
 function svxlink_start {
-	service svxlink start
+	svxlink_devices_permissions
+	systemctl start svxlink
 	svxlink_status
 }
 
@@ -62,12 +66,17 @@ function svxlink_status {
 
 function svxlink_gpio_up {
 	/usr/sbin/svxlink_gpio_up
-	echo up
+	echo "GPIO Up"
 }
 
 function svxlink_gpio_down {
 	/usr/sbin/svxlink_gpio_down
-	echo down
+	echo "GPIO Down"
+}
+
+function svxlink_devices_permissions {
+	/usr/sbin/svxlink_devices
+	echo "Set Device Permissions"
 }
 
 
@@ -86,12 +95,6 @@ function system_uptime {
 
 function system_user {
 	whoami
-}
-
-
-### HIDRAW FUNCTIONS ###
-function hidraw_ownership {
-	chown svxlink:svxlink "$1"
 }
 
 
@@ -275,11 +278,6 @@ while :; do
 			if [ "$2" == "backup" ]; then alsamixer_backup "$3"
 			elif [ "$2" == "restore" ]; then alsamixer_restore "$3"
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper alsa (backup|restore) [path]"
-			fi
-			exit;;
-        hidraw)
-			if [ "$2" == "owner" ]; then hidraw_ownership "$3"
-			else echo "INVALID OPTION"; echo "USAGE: orp_helper hidraw (owner) [path]"
 			fi
 			exit;;
         network)
