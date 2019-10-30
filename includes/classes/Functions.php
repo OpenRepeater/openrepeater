@@ -68,6 +68,9 @@ class Functions {
 		case "gpio.conf":
 			$filepath = '/etc/svxlink/';
 			break;
+		case "devices.conf":
+			$filepath = '/etc/svxlink/';
+			break;
 		case "Logic.tcl":
 			$filepath = '/usr/share/svxlink/events.d/local/';
 			break;

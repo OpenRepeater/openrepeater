@@ -114,7 +114,12 @@ class Database {
 	public function delete_row($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
 		$results = $db->query($sql) or die('Unable to delete from database.');
-		if ( $db->changes() > 0 ) { return true; } else { return false; }
+		if ( $db->changes() > 0 ) { 
+			$this->set_update_flag(true);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	// COUNT TABLE COLUMNS - Return Number
@@ -197,6 +202,8 @@ class Database {
 		} else {
 			$currPortArray = $this->get_ports($portNum);
 			if ($currPortArray[$portNum]['portType'] == 'GPIO') { $this->delete_gpio_pins('Port ' . $portNum);}
+			if ($currPortArray[$portNum]['portType'] == 'HiDraw') { $this->delete_devices('Port ' . $portNum);}
+			if ($currPortArray[$portNum]['portType'] == 'Serial') { $this->delete_devices('Port ' . $portNum);}
 			$sql = 'DELETE FROM ports WHERE portNum = "' . $portNum . '";';
 		}
 		$delete_result = $this->delete_row($sql);
@@ -209,6 +216,7 @@ class Database {
 		foreach($input_array as $portArr){  
 			$portNum = $portArr['portNum'];
 			$gpioFlag = 0;
+			$deviceFlag = 0;
 			$currColumns = [];
 			$portOptions = [];
 			foreach($portArr as $portColName => $portColValue){  
@@ -217,6 +225,7 @@ class Database {
 				else
 				    $portOptions[$portColName] = $portColValue;
 				    if ($portColName == 'rxGPIO' || $portColName == 'txGPIO') { $gpioFlag++; }
+				    if ($portColName == 'hidrawDev' || $portColName == 'serialDev') { $deviceFlag++; }
 			}
 			$currColumns['portOptions'] = serialize($portOptions);
 
@@ -252,6 +261,27 @@ class Database {
 				}
 
 			}
+
+
+			// Clear previous Devices for this port.
+			$this->delete_devices( 'Port ' . $portArr['portNum'] );
+
+			// Set new Devices if needed
+			if ($deviceFlag > 0) {
+				if ( isset($portOptions['hidrawDev']) ) {
+					$build_device_row = []; // reset array
+					$build_device_row[] = ['device_path' => $portOptions['hidrawDev'],'description' => 'Hidraw Device','type' => 'Port ' . $portArr['portNum']];
+					$this->update_device_table( $build_device_row );
+				}
+
+				if ( isset($portOptions['serialDev']) ) {
+					$build_device_row = []; // reset array
+					$build_device_row[] = ['device_path' => $portOptions['serialDev'],'description' => 'Serial Device','type' => 'Port ' . $portArr['portNum']];
+					$this->update_device_table( $build_device_row );
+				}
+
+			}
+
 		}
 		return $results;
 	}
@@ -302,6 +332,50 @@ class Database {
 				$escaped_values = array_values($gpioArr);
 				$values  = "'" . implode("','", $escaped_values) . "'";
 				$sql = "INSERT INTO gpio_pins(".$columns.") VALUES(".$values.");";
+				$results = $this->insert($sql);
+			}
+		}
+	}
+
+
+
+	###############################################
+	# Devices Table
+	###############################################
+
+	public function get_devices() {
+		$sql = 'SELECT * FROM "devices" ORDER BY "device_id" ASC';
+		$devices = $this->select_all('devices', $sql);
+		return $devices;	
+	}
+
+
+	public function delete_devices($type = 'ALL') {
+		if ($type == 'ALL') {
+			$sql = 'DELETE FROM devices;';
+		} else {
+			$sql = 'DELETE FROM devices WHERE type = "' . $type . '";';
+		}
+		$delete_result = $this->delete_row($sql);
+		return $delete_result;
+	}
+
+
+	public function update_device_table( $input_array = array() ) {
+		foreach($input_array as $deviceArr){  
+			// Update Existing Device
+			if ( $this->exists('devices','device_path', $deviceArr['device_path']) == true ) {
+				$sql = "UPDATE devices SET description='".$deviceArr['description']."', type='".$deviceArr['type']."' WHERE device_path='".$deviceArr['device_path']."';";
+				$results = $this->update($sql);
+				
+			// Create Device if it does not exist
+			} else {
+				$column_names = [];
+				$column_values = [];
+				$columns = implode(",",array_keys($deviceArr));
+				$escaped_values = array_values($deviceArr);
+				$values  = "'" . implode("','", $escaped_values) . "'";
+				$sql = "INSERT INTO devices(".$columns.") VALUES(".$values.");";
 				$results = $this->insert($sql);
 			}
 		}

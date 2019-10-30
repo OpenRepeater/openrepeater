@@ -31,12 +31,14 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	$module = $classDB->get_modules();
 	$ports = $classDB->get_ports();
 	$gpio = $classDB->get_gpios();
+	$devices = $classDB->get_devices();
 	$macros = $classDB->get_macros();
 
 	$classFunctions = new Functions();
 	$classSVXLink = new SVXLink($settings, $ports, $module);
 	$classSVXLinkTCL = new SVXLink_TCL($settings);
 	$classSVXLinkGPIO = new SVXLink_GPIO($gpio);
+	$classSVXLinkDevices = new SVXLink_Devices($devices);
 
 	/* ---------------------------------------------------------- */
 	/* --- LOGIC SETTINGS --- */
@@ -150,6 +152,9 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	// Build GPIO Config
 	$gpioConfigFile = $classSVXLinkGPIO->build_gpio_config();
 
+	// Build Devices Config
+	$devicesConfigFile = $classSVXLinkDevices->build_devices_config();
+
 	// Insert Logic TCL Overrides
 	$logicOverride = $classSVXLinkTCL->logic_override();
 
@@ -157,6 +162,8 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	$classFunctions->write_config($config_array, 'svxlink.conf', 'ini');
 	$classFunctions->write_config($logicOverride, 'Logic.tcl', 'text');
 	$classFunctions->write_config($gpioConfigFile, 'gpio.conf', 'text');
+
+	$classFunctions->write_config($devicesConfigFile, 'devices.conf', 'text');
 
 
 

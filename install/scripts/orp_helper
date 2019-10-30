@@ -44,7 +44,6 @@ function svxlink_enable {
 function svxlink_restart {
 	svxlink_stop
 	svxlink_gpio_down
-	svxlink_devices_permissions
 	svxlink_gpio_up
 	svxlink_start
 }

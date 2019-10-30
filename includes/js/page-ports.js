@@ -242,6 +242,7 @@ $(window).load(function(){
 					data: { del_id: portNum },
 					success: function(result) {
 						if (result == 'true') {
+							$('.server_bar_wrap').show(); 
 							//Display Message
 							var msgText = "The port has been successfully removed";
 							$('#alertWrap').html('<div class="alert alert-success">'+msgText+'</div>');
