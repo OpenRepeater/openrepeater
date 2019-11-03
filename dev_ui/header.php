@@ -142,6 +142,35 @@
 			text-shadow:0px 1px 0px #800909;
 		}
 
+		#locationForm {
+			
+		}
+
+		#locationForm div {
+			margin-bottom: 5px;
+   		}
+
+		#locationForm label {
+			width: 200px;
+			display: block;
+			float: left;
+		}
+		
+		#locationForm input {
+			width: 300px;
+		}
+
+		#locationForm input[type=number] {
+			width: 50px;
+		}
+		
+		.message {
+			background: yellow;
+			margin-bottom: 30px;
+			padding: 10;
+		}
+
+
 	</style>
 </head>
 
