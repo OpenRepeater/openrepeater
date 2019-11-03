@@ -1,4 +1,14 @@
 <?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: ../login.php'); // If they aren't logged in, send them to login page.
+} else { // If they are logged in and have set a callsign, show the page.
+// --------------------------------------------------------
+?>
+
+<?php
 ################################################################################
 # EDIT THIS FILE FIRST, THEN RUN! This is for adding settings for the LinkGroups
 #
@@ -20,8 +30,8 @@ if (isset($_POST['action'])){
 	# Edit the values for the settings in this array as you wish them to be saved to DB
 	$linkgrp_array = [
 		1 => [
-			'defaultActive' => '0',
-			'timeout' => '300', // Timeout/Timein in seconds. Set to 0 for no timeout
+			'defaultActive' => '1',
+			'timeout' => '0', // Timeout/Timein in seconds. Set to 0 for no timeout
 		],
 		2 => [
 			'defaultActive' => '0',
@@ -50,4 +60,11 @@ if (isset($_POST['action'])){
 	<?php
 	include('footer.php');
 }
+?>
+
+<?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
 ?>

@@ -1,4 +1,14 @@
 <?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: ../login.php'); // If they aren't logged in, send them to login page.
+} else { // If they are logged in and have set a callsign, show the page.
+// --------------------------------------------------------
+?>
+
+<?php
 # AUTOLOAD CLASSES
 require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
 
@@ -216,3 +226,10 @@ foreach ($ports as $key => $val) {
 
 
 <?php include('footer.php'); ?>
+
+<?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
+?>
