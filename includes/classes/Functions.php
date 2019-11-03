@@ -126,7 +126,9 @@ class Functions {
 		case 'svxlink':
 			$precision = 0;
 			$latitudeSeconds = round($latitudeSeconds,$precision);
+			$latitudeSeconds = $latitudeSeconds > 59 ? 59 : $latitudeSeconds; // Rounding Tweak
 			$longitudeSeconds = round($longitudeSeconds,$precision);
+			$longitudeSeconds = $longitudeSeconds > 59 ? 59 : $longitudeSeconds; // Rounding Tweak
 			$outputFormat = '%s.%s.%s%s'; // SVXLink Format
 			break;
 		default:
