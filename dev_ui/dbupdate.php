@@ -26,6 +26,9 @@ $classDB->add_record('settings','LinkGroup_Settings','');
 # Add macros table if it doesn't exist
 $classDB->insert('CREATE TABLE IF NOT EXISTS macros ( macroKey INTEGER PRIMARY KEY, macroEnabled INTEGER, macroNum INTEGER, macroLabel TEXT, macroModuleID INTEGER, macroString TEXT, macroPorts TEXT);');
 
+# Add devices table if it doesn't exist
+$classDB->insert('CREATE TABLE IF NOT EXISTS devices ( device_id INTEGER PRIMARY KEY NOT NULL, device_path TEXT, description TEXT, type TEXT);');
+
 ?>
 
 <?php
