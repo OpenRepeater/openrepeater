@@ -16,7 +16,7 @@ class BackupRestore {
 	private $archive_build_dir;
 	private $backup_restore_dir;
 	private $backup_db_file = 'backup.sql';
-	private $db_tables = ['settings','gpio_pins','ports','modules'];
+	private $db_tables = ['settings','gpio_pins','ports','modules','devices','macros'];
 	private $backup_ini_file = 'backup.ini';
 	private $alsa_state_file = 'alsamixer.state';
 	private $orp_sounds_dir = '/var/www/openrepeater/sounds/';
