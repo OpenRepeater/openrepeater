@@ -775,8 +775,8 @@ class Modules {
 					<p>Pressing ' . $cur_mod_loop['svxlinkID'] . '# will enable the ' . $currDisplayName . ' module.</p>';
 			
 					$dtmf_help_file = $this->modules_path . $cur_mod_loop['svxlinkName'] . '/dtmf.php';
-					include($dtmf_help_file);
 					if ($cur_mod_loop['moduleEnabled']==1 && file_exists($dtmf_help_file)) {
+						include($dtmf_help_file);
 						$return_html .= '<h4>Sub Commands:</h4>
 						<pre>'.$sub_subcommands.'</pre>
 						<br>';
