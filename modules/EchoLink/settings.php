@@ -85,6 +85,28 @@
 
   </fieldset>
 
+
+  <fieldset>
+	<legend>Auto Connect (Optional)</legend>
+	<span class="help-inline">Set these settings to automatically connect to an EchoLink Node. OpenRepeater will auto connect only when no other station is connected. Please ensure that you have permission to make persistent connections to the desired node and that their systems will allow this.<br></span>
+
+	<div class="control-group">
+		<label class="control-label">Auto Connect Node ID</label>
+		<div class="controls">
+		  <input type="text" id="auto_connect_id" name="auto_connect_id" value="<?php echo $moduleSettings['auto_connect_id']?>">
+		  <span class="help-inline">Set this variable to an EchoLink ID that you want to automatically connect to. (leave blank to disable)</span>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label">Auto Connect Retry Time</label>
+		<div class="controls">
+		  <input type="text" id="auto_connect_time" name="auto_connect_time" value="<?php echo !empty($moduleSettings['auto_connect_time']) ? $moduleSettings['auto_connect_time'] : '600'; ?>">
+		  <span class="help-inline">Set this to the time in seconds that you want in between auto connect attempts.</span>	
+		</div>
+	</div>
+  </fieldset>
+
+
   <fieldset>
 	<legend>Proxy Settings (Optional)</legend>
 	<span class="help-inline">Please see http://www.echolink.org/proxy.htm for details<br></span>

@@ -29,6 +29,18 @@ $module_config_array['Module'.$cur_mod['svxlinkName']] = [
 
 ];
 
+// EchoLink Auto Connect Options
+if($options['auto_connect_id']) {
+	$module_config_array['Module'.$cur_mod['svxlinkName']]['AUTOCON_ECHOLINK_ID'] = $options['auto_connect_id'];
+	if($options['auto_connect_time']) {
+		$module_config_array['Module'.$cur_mod['svxlinkName']]['AUTOCON_TIME'] = $options['auto_connect_time'];
+	} else {
+		$module_config_array['Module'.$cur_mod['svxlinkName']]['AUTOCON_TIME'] = '600'; // Otherwise default to 10 mins.
+	}
+
+}
+
+// Proxy Server Settings
 if($options['proxy_server']) {
 	$module_config_array['Module'.$cur_mod['svxlinkName']]['PROXY_SERVER'] = $options['proxy_server'];
 	if($options['proxy_port']) {
