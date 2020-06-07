@@ -206,6 +206,17 @@ function info_os {
 	uname -a
 }
 
+
+
+### GPS FUNCTIONS ###
+function gps_read {
+	#Read a few sentences of GPS data and return first TPV sentence which is JSON string
+	GPS_RESULT=$(gpspipe -w -n 5 | grep -m 1 TPV)
+	echo $GPS_RESULT
+}
+
+
+
 # TODO LIST
 # Setting Timezone
 # Expanding Filesystem
@@ -283,6 +294,11 @@ while :; do
 			if [ "$2" == "read" ]; then network_read
 			elif [ "$2" == "write" ]; then network_write
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper network (read|write)"
+			fi
+			exit;;
+        gps)
+			if [ "$2" == "read" ]; then gps_read
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper gps (read)"
 			fi
 			exit;;
 

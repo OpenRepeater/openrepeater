@@ -5,7 +5,7 @@
 
 class System {
 
-	private function orp_helper_call($section, $subfunc) {
+	public function orp_helper_call($section, $subfunc) {
 		return shell_exec( "sudo orp_helper " . trim($section) . " " . trim($subfunc) );
 	}
 

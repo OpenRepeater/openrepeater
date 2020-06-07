@@ -61,6 +61,7 @@ if(!empty($locationInfo)) {
 	$locationInfo = unserialize($locationInfo);
 }
 
+
 include('header.php');
 ?>
 
@@ -85,16 +86,24 @@ include('header.php');
 	<div>
 		<?php $Latitude = (!empty($locationInfo['Latitude'])) ? $locationInfo['Latitude'] : ''; ?>
 		<label for="Latitude">Latitude</label>
-		<input type="text" name="Latitude" value="<?=$Latitude?>" placeholder="40.781523" required>
+		<input type="text" id="gps_lat" name="Latitude" value="<?=$Latitude?>" placeholder="40.781523" required>
 		<em>In decimal format</em>
 	</div>
 
 	<div>
 		<?php $Longitude = (!empty($locationInfo['Longitude'])) ? $locationInfo['Longitude'] : ''; ?>
 		<label for="Longitude">Longitude</label>
-		<input type="text" name="Longitude" value="<?=$Longitude?>" placeholder="-73.966529" required>
+		<input type="text" id="gps_long" name="Longitude" value="<?=$Longitude?>" placeholder="-73.966529" required>
 		<em>In decimal format</em>
 	</div>
+
+
+	<div>
+		<label>&nbsp;</label>
+		<button class="gps_get_coordinates">GPS</button><span class="gps_status"> </span><br><br>
+	</div>
+ 
+
 
 	<div>
 		<?php $APRS_Station_Type = (!empty($locationInfo['APRS_Station_Type'])) ? $locationInfo['APRS_Station_Type'] : ''; ?>
@@ -220,6 +229,8 @@ include('header.php');
 </form>
 
 <?php include('footer.php'); ?>
+
+<script src="orp_gps.js"></script>
 
 <?php
 // --------------------------------------------------------

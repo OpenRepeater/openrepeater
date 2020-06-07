@@ -94,9 +94,80 @@ class Functions {
 
 
 	###############################################
+	# Internet Functions
+	###############################################
+
+	public function internet_connection() {
+	    $connected = @fsockopen("google.com", 443); 
+		if ($connected){
+			fclose($connected);
+			return true; // Has internet connection
+		} else {
+			return false; // No internet connection
+		}
+		return $is_conn;	
+	}
+
+
+	public function get_public_ip() {
+		$publicIP = file_get_contents("https://ipecho.net/plain"); // returns public IP only
+		return $publicIP;
+	}
+
+
+
+	###############################################
 	# Geo Functions
 	###############################################
 
+	public function get_geo_location() {
+		
+		### THIS FUNCTION IS A WORK IN PROGRESS ###
+
+		# Attempt to get location from GPS
+		$System = new System();
+		$gps_result = json_decode( $System->orp_helper_call('gps','read'), true );
+		
+		# Try GPS location first...
+		if ( isset($gps_result['lat']) && isset($gps_result['lon']) ) {
+			$geo_results = $gps_result;
+			$geo_results['status'] = 'gps_geo';
+
+		} else {
+			# If cannot get GPS location, then try locaiton of public IP address
+			if ($this->internet_connection() == true) {
+				$ip_loc_details = $this->get_ip_location();
+		
+				$geo_results['status'] = 'ip_geo';
+				$geo_results['lat'] = $ip_loc_details['lat']; // Latitude
+				$geo_results['lon'] = $ip_loc_details['lon']; // Longitude
+				$geo_results['ip'] = $ip_loc_details['ip']; // External IP
+
+			# No internet connection or GPS location
+			} else {
+				$geo_results['status'] = 'nofix';
+			}
+
+		}
+
+		return $geo_results;
+		
+	}
+	
+
+	public function get_ip_location() {
+		$public_ip = $this->get_public_ip();
+		$details = json_decode(file_get_contents("http://ipinfo.io/{$public_ip}/json"),true);
+
+		// Split location and add to array as separate latitude & longitude
+		$location_array = explode(',', $details['loc']);
+		$details['lat'] = trim($location_array[0]); // Latitude
+		$details['lon'] = trim($location_array[1]); // Longitude
+
+		return $details;
+	}
+	
+		
 	public function geo_convert($latitude, $longitude, $format=null) {
 		$latitudeDirection = $latitude < 0 ? 'S': 'N';
 		$longitudeDirection = $longitude < 0 ? 'W': 'E';
