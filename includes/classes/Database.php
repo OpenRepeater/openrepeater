@@ -440,8 +440,6 @@ class Database {
 		$macroOutput = [];
 		foreach ($macros as $curMacroNum => $curMacroArray) {
 			$macroOutput[$curMacroNum] = $curMacroArray;
-			$moduleID = $curMacroArray['macroModuleID'];
-			$macroOutput[$curMacroNum]['macroModuleName'] = $modulesArray[$moduleID]['svxlinkName'];
 		}
 		return $macroOutput;	
 	}
@@ -455,9 +453,9 @@ class Database {
 	
 
 	public function update_macro_table( $input_array = array() ) {
-		foreach($input_array as $macroArr){  
-			if ( $this->exists('macros','macroKey', $macroArr['macroKey']) == true ) {
-				$sql = "UPDATE macros SET macroEnabled='".$macroArr['macroEnabled']."', macroNum='".$macroArr['macroNum']."', macroLabel='".$macroArr['macroLabel']."', macroModuleID='".$macroArr['macroModuleID']."', macroString='".$macroArr['macroString']."', macroPorts='".$macroArr['macroPorts']."' WHERE macroKey='".$macroArr['macroKey']."';";
+		foreach($input_array as $curMacroKey => $macroArr){  
+			if ( $this->exists('macros','macroKey', $curMacroKey) == true ) {
+				$sql = "UPDATE macros SET macroEnabled='".$macroArr['macroEnabled']."', macroNum='".$macroArr['macroNum']."', macroLabel='".$macroArr['macroLabel']."', macroModuleKey='".$macroArr['macroModuleKey']."', macroString='".$macroArr['macroString']."', macroPorts='".$macroArr['macroPorts']."' WHERE macroKey='".$curMacroKey."';";
 				$results = $this->update($sql);
 				
 			} else {

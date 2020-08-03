@@ -540,40 +540,44 @@ class SVXLink {
 		$macroNamePrefix = 'Macros_Port';
 
 		foreach ($macrosArray as $currMacroArray) {
+			$currMacroKey = $currMacroArray['macroKey'];
+			$currMacroEnabled = $currMacroArray['macroEnabled'];
 			$currMacroNum = $currMacroArray['macroNum'];
-			$currMacroModuleID = $currMacroArray['macroModuleID'];
-			$currMacroModuleName = $currMacroArray['macroModuleName'];
+			$currMacroModuleKey = $currMacroArray['macroModuleKey'];
 			$currMacroString = $currMacroArray['macroString'];
 			$currMacroPorts = $currMacroArray['macroPorts'];
-			$currMacroEnabled = $currMacroArray['macroEnabled'];
+			
 
-			if ( $currMacroEnabled == 1 && $modulesArray[$currMacroModuleID]['moduleEnabled'] == 1 ) {
+			if ( $currMacroEnabled == 1 && $modulesArray[$currMacroModuleKey]['moduleEnabled'] == 1 ) {
+	
+				$currMacroModuleName = $modulesArray[$currMacroModuleKey]['svxlinkName'];
+
 				if ($currMacroPorts != 'ALL') {
 					if ($existPorts[$currMacroPorts]['portEnabled'] == 1) {
 						$currMacroName = $macroNamePrefix . $currMacroPorts;
 						if ($existPorts[$currMacroPorts]['portDuplex'] == 'full') {
 							$currLogicSection = $this->logicFullPrefix . $currMacroPorts;
 						} else if ($existPorts[$currMacroPorts]['portDuplex'] == 'half') {
-								$currLogicSection = $this->logicHalfPrefix . $currMacroPorts;
-							}
+							$currLogicSection = $this->logicHalfPrefix . $currMacroPorts;
+						}
 						$this->macros[$currLogicSection] = $currMacroName;
 						$macro_array[$currMacroName][$currMacroNum] = $currMacroModuleName . ':' . trim($currMacroString);
 					}
 
 				} else if ($currMacroPorts == 'ALL') {
-						foreach ($existPorts as $curPort => $curPortArray) {
-							if ($curPortArray['portEnabled'] == 1) {
-								$currMacroName = $macroNamePrefix . $curPort;
-								if ($curPortArray['portDuplex'] == 'full') {
-									$currLogicSection = $this->logicFullPrefix . $curPort;
-								} else if ($curPortArray['portDuplex'] == 'half') {
-										$currLogicSection = $this->logicHalfPrefix . $curPort;
-									}
-								$this->macros[$currLogicSection] = $currMacroName;
-								$macro_array[$currMacroName][$currMacroNum] = $currMacroModuleName . ':' . trim($currMacroString);
+					foreach ($existPorts as $curPort => $curPortArray) {
+						if ($curPortArray['portEnabled'] == 1) {
+							$currMacroName = $macroNamePrefix . $curPort;
+							if ($curPortArray['portDuplex'] == 'full') {
+								$currLogicSection = $this->logicFullPrefix . $curPort;
+							} else if ($curPortArray['portDuplex'] == 'half') {
+								$currLogicSection = $this->logicHalfPrefix . $curPort;
 							}
+							$this->macros[$currLogicSection] = $currMacroName;
+							$macro_array[$currMacroName][$currMacroNum] = $currMacroModuleName . ':' . trim($currMacroString);
 						}
 					}
+				}
 			}
 		}
 

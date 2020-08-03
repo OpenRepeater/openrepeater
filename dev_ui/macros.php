@@ -27,25 +27,24 @@ if (isset($_POST['action'])){
 	require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
 	
 	$classDB = new Database();
-	
 
 	# Edit the values for the settings in this array as you wish them to be saved to DB
 	$macroArray = [
-		0 => [
-			'macroEnabled' => '1', // 0 or 1
+		1 => [
+			'macroEnabled' => '0', // 0 or 1
 			'macroNum' => '1', // Desired DTMF Number
 			'macroLabel' => 'Sample EchoLink Macro', // Helpful Description
-			'macroModuleID' => '3', // "moduleKey" id number from modules table
+			'macroModuleKey' => '3', // "moduleKey" from modules table
 			'macroString' => '9999#', // Marco String
-			'macroPorts' => '2', // Use either a port number or 'ALL' to use for all ports.
+			'macroPorts' => '1', // Use either a port number or 'ALL' to use for all ports.
 		],
-		1 => [
+		2 => [
 			'macroEnabled' => '1', // 0 or 1
 			'macroNum' => '8', // Desired DTMF Number
 			'macroLabel' => 'Sample Parrot Macro', // Helpful Description
-			'macroModuleID' => '2', // "moduleKey" id number from modules table
+			'macroModuleKey' => '2', // "moduleKey" from modules table
 			'macroString' => '0123456789##', // Marco String
-			'macroPorts' => 'ALL', // Use either a port number or 'ALL' to use for all ports.
+			'macroPorts' => '1', // Use either a port number or 'ALL' to use for all ports.
 		]
 	];
 
@@ -62,6 +61,7 @@ if (isset($_POST['action'])){
 	include('footer.php');
 
 } else {
+
 	include('header.php');
 	?>
 	<h2>Macro Updater</h2>
