@@ -17,6 +17,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 <li><a href="linkGroups.php">Add/Update LinkGroup Settings</a> - This is for adding settings for the LinkGroups to the DB You MUST edit this file first.</li>
 <li><a href="location.php">Add Location Section</a> - This is for adding settings for the location information to share with Echolink & APRS for proper reporting.</li>
 <li><a href="macros.php">Add Macros Section</a> - This adds macro settings into the database from an array. You MUST edit this file first.</li>
+<li><a href="send_dtmf.php">Send DTMF Commands</a> - This is an AJAX input that allows sending DTMF to SVXLink logic cores utilizing PTYs.</li>
 </ul>
 
 <h4>Needs Work...</h4>

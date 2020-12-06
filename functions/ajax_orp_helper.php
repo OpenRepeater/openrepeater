@@ -21,6 +21,17 @@ if(isset($_POST)==true && empty($_POST)==false) {
 
 		if ($results) { echo json_encode($results); } else { echo json_encode(['status'=>'false']); }		
 	}
+
+	# Send DTMF to PTY
+	if($_POST['type'] == 'send_dtmf'){
+		$logicPath = $_POST['logicPath'];
+		$dtmfString = $_POST['dtmfString'];
+
+		$results = shell_exec('sudo /usr/sbin/orp_helper pty send "'.$logicPath.'" "'.$dtmfString.'"');
+
+		if ($results) { echo json_encode(['status'=>'true']); } else { echo json_encode(['status'=>'false']); }		
+	}
+
 } 
 
 

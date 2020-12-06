@@ -318,10 +318,14 @@ class SVXLink {
 		# Macro Section
 		$logic_array[$logicName]['MACROS'] = '';
 
+		# Online Command
 		if ($this->settingsArray['repeaterDTMF_disable'] == 'True') {
 			$logic_array[$logicName]['ONLINE_CMD'] = $this->settingsArray['repeaterDTMF_disable_pin'];
 		}
 
+		# EXPERIMENTAL: Create PTYs (pseudoterminals) for logic section
+		$logic_array[$logicName] += $this->build_pty($logicName,'dtmf');
+		$logic_array[$logicName] += $this->build_pty($logicName,'state');
 
 		### APPEND ADVANCED SVXLINK LOGIC SETTINGS...IF THEY EXIST ###
 		if ( isset($this->portsArray[$curPort]['SVXLINK_ADVANCED_LOGIC']) ) {
@@ -392,12 +396,17 @@ class SVXLink {
 		$logic_array[$logicName]['MACROS'] = '';
 
 		/*
+		# Online Command
 		if ($this->settingsArray['repeaterDTMF_disable'] == 'True') {
 			$logic_array[$logicName] += [
 				'ONLINE_CMD' => $this->settingsArray['repeaterDTMF_disable_pin'],
 			];
 		}
 		*/
+
+		# EXPERIMENTAL: Create PTYs (pseudoterminals) for logic section
+		$logic_array[$logicName] += $this->build_pty($logicName,'dtmf');
+		$logic_array[$logicName] += $this->build_pty($logicName,'state');
 
 		### APPEND ADVANCED SVXLINK LOGIC SETTINGS...IF THEY EXIST ###
 		if ( isset($this->portsArray[$curPort]['SVXLINK_ADVANCED_LOGIC']) ) {
@@ -408,6 +417,40 @@ class SVXLink {
 		}
 
 		return $logic_array;
+	}
+
+
+
+	###############################################
+	# Build PTY Variable (pseudoterminal)
+	###############################################
+
+	private function build_pty($logicSection,$ptyType) {
+
+		# EXPERIMENTAL: Create PTYs (pseudoterminals) for logic section
+		#DTMF_CTRL_PTY=/dev/shm/dtmf_ctrl
+		#DTMF_CTRL_PTY=/tmp/ORP
+
+		$base_pty_path = '/usr/share/svxlink/orp_pty/' . $logicSection;
+
+		switch ($ptyType) {
+			case 'state':
+				$svxlink_var_name = 'STATE_PTY';
+				$pty_sub_path = '/state';
+				break;
+	
+			case 'dtmf':
+				$svxlink_var_name = 'DTMF_CTRL_PTY';
+				$pty_sub_path = '/dtmf_ctrl';
+				break;
+		}
+
+		$pty_full_path = $base_pty_path . $pty_sub_path;
+
+		# Call orp_helper to create base pty directory if it doesn't exist.
+		shell_exec('sudo /usr/sbin/orp_helper pty set "'.$base_pty_path.'"');
+
+		return array( $svxlink_var_name => $pty_full_path );
 	}
 
 

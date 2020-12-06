@@ -208,6 +208,23 @@ function info_os {
 
 
 
+### SVXLINK PTY FUNCTIONS ###
+function set_pty {
+	if [ ! -d "$1" ] 
+	then
+		mkdir -p "$1"
+		chown svxlink:svxlink "$1" -R
+	fi
+}
+
+function send_pty {
+	echo "$2" > "$1"
+	echo "true"
+}
+
+
+
+
 ### GPS FUNCTIONS ###
 function gps_read {
 	#Read a few sentences of GPS data and return first TPV sentence which is JSON string
@@ -294,6 +311,12 @@ while :; do
 			if [ "$2" == "read" ]; then network_read
 			elif [ "$2" == "write" ]; then network_write
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper network (read|write)"
+			fi
+			exit;;
+        pty)
+			if [ "$2" == "set" ]; then set_pty "$3"
+			elif [ "$2" == "send" ]; then send_pty "$3" "$4"
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper pty (set|send) [path] (option)"
 			fi
 			exit;;
         gps)
