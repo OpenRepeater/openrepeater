@@ -1,4 +1,12 @@
 <?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: ../login.php');
+} else { // If they are, allow coded execution.
+// --------------------------------------------------------
+
 // This is part of an AJAX operation to pass data back and forth between JavaScript, PHP, and BASH (linux system). It lets ORP do things the web server normally wouldn't have privilages to do. Results polled from the the System Class are returned to JavaScript in JSON format.
 
 
@@ -50,4 +58,10 @@ if( isset($_GET['update']) ) {
 	header("Content-Type: application/json; charset=UTF-8");
 	echo json_encode($outputArray);
 }
+
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
+
 ?>
