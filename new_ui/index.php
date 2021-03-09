@@ -1,8 +1,10 @@
 <?php
 // DUMMY FUNCTION TO LATER BE REPLACE BY GETTEXT FOR TRANSLATIONS
+/*
 function _($input) {
 	return $input;
 }
+*/
 ?>
 
 <!DOCTYPE html>
@@ -18,16 +20,16 @@ function _($input) {
     <title><?=_('Welcome')?> | OpenRepeater</title>
 
     <!-- Bootstrap -->
-    <link href="/includes/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="includes/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link href="/includes/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="includes/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
     <!-- NProgress -->
-    <link href="/includes/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <link href="includes/vendors/nprogress/nprogress.css" rel="stylesheet">
     <!-- Animate.css -->
-    <link href="/includes/vendors/animate.css/animate.min.css" rel="stylesheet">
+    <link href="includes/vendors/animate.css/animate.min.css" rel="stylesheet">
 
     <!-- Custom Theme Style -->
-    <link href="/includes/css/custom.css" rel="stylesheet">
+    <link href="includes/css/custom.css" rel="stylesheet">
   </head>
 
   <body class="login">
@@ -66,10 +68,10 @@ function _($input) {
     </div>
 
     <!-- jQuery -->
-    <script src="/includes/vendors/jquery/dist/jquery.min.js"></script>
+    <script src="includes/vendors/jquery/dist/jquery.min.js"></script>
 
     <!-- Bootstrap -->
-    <script src="/includes/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="includes/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
     <!-- Bootstrap Show Password Plugin -->
 <!--

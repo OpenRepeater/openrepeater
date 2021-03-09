@@ -1,9 +1,10 @@
 <?php
 // DUMMY FUNCTION TO LATER BE REPLACE BY GETTEXT FOR TRANSLATIONS
+/*
 function _($input) {
-// 	return 'blah';
 	return $input;
 }
+*/
 ?>
 
 <!DOCTYPE html>
@@ -19,35 +20,35 @@ function _($input) {
     <title>OpenRepeater</title>
 
     <!-- Bootstrap -->
-    <link href="/includes/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link href="/includes/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
     <!-- NProgress -->
-    <link href="/includes/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/nprogress/nprogress.css" rel="stylesheet">
     <!-- iCheck -->
-    <link href="/includes/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
     <!-- bootstrap-wysiwyg -->
-    <link href="/includes/vendors/google-code-prettify/bin/prettify.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/google-code-prettify/bin/prettify.min.css" rel="stylesheet">
     <!-- Select2 -->
-    <link href="/includes/vendors/select2/dist/css/select2.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/select2/dist/css/select2.min.css" rel="stylesheet">
     <!-- Switchery -->
-    <link href="/includes/vendors/switchery/dist/switchery.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/switchery/dist/switchery.min.css" rel="stylesheet">
     <!-- starrr -->
-    <link href="/includes/vendors/starrr/dist/starrr.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/starrr/dist/starrr.css" rel="stylesheet">
     <!-- bootstrap-daterangepicker -->
-    <link href="/includes/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 
     <!-- PNotify -->
-    <link href="/includes/vendors/pnotify/dist/pnotify.css" rel="stylesheet">
-    <link href="/includes/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
-    <link href="/includes/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
 
     <!-- Datatables -->
-    <link href="/includes/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-    <link href="/includes/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
-    <link href="/includes/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
-    <link href="/includes/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
-    <link href="/includes/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="/new_ui/includes/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
 
 
 	<?php
@@ -57,7 +58,7 @@ function _($input) {
 		$customCSS = preg_replace('/\s+/', '', $customCSS);
 		$cssArray = explode(',',$customCSS);
 		foreach ($cssArray as $cssfile) {
-		  echo "\t<link href='/includes/css/".$cssfile."' rel='stylesheet'>\n";
+		  echo "\t<link href='/new_ui/includes/css/".$cssfile."' rel='stylesheet'>\n";
 		}
 	}
 	?>
@@ -78,7 +79,7 @@ function _($input) {
 
 
     <!-- Custom Theme Style -->
-    <link href="/includes/css/custom.css" rel="stylesheet">
+    <link href="/new_ui/includes/css/custom.css" rel="stylesheet">
   </head>
 
   <body class="nav-md">
@@ -101,33 +102,33 @@ function _($input) {
 
                 <ul class="nav side-menu">
 	                	
-                  <li><a href="/dashboard.php"><i class="fa fa-tachometer"></i> <?=_('Dashboard')?> </a></li>
-                  <li><a href="/settings.php"><i class="fa fa-cog"></i> <?=_('General Settings')?> </a></li>
-                  <li><a href="/identification.php"><i class="fa fa-volume-up"></i> <?=_('Identification')?> </a></li>
-                  <li><a href="/courtesy.php"><i class="fa fa-bell"></i> <?=_('Courtesy Tones')?> </a></li>
+                  <li><a href="/new_ui/dashboard.php"><i class="fa fa-tachometer"></i> <?=_('Dashboard')?> </a></li>
+                  <li><a href="/new_ui/settings.php"><i class="fa fa-cog"></i> <?=_('General Settings')?> </a></li>
+                  <li><a href="/new_ui/identification.php"><i class="fa fa-volume-up"></i> <?=_('Identification')?> </a></li>
+                  <li><a href="/new_ui/courtesy.php"><i class="fa fa-bell"></i> <?=_('Courtesy Tones')?> </a></li>
 
                   <li><a><i class="fa fa-plug"></i> <?=_('Modules')?> <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="/modules.php"><?=_('All Modules')?></a></li>
-                      <li><a href="/modules/EchoLink/settings.php">EchoLink</a></li>
-                      <li><a href="/modules/RemoteRelay/settings.php">Remote Relay</a></li>
-                      <li><a href="/modules/SiteStatus/settings.php">Site Status</a></li>
-                      <li><a href="/modules/TxFan/settings.php">TX Cooling Fan</a></li>
-                      <li><a href="/modules/MetarInfo/settings.php">METAR</a></li>
-                      <li><a href="/modules/VoiceMail/settings.php">Voice Mail <span class="badge badge-info">Dev</span></a></li>
-                      <li><a href="/modules/Frn/settings.php">FRN Gateway <span class="badge badge-info">Dev</span></a></li>
-                      <li><a href="/modules/RigCtl/settings.php">Rig Control <span class="badge badge-info">Dev</span></a></li>
-                      <li><a href="/modules/calendar.php">Announcements <span class="badge badge-info">Dev</span></a></li>
+                      <li><a href="/new_ui/modules.php"><?=_('All Modules')?></a></li>
+                      <li><a href="/new_ui/modules/EchoLink/settings.php">EchoLink</a></li>
+                      <li><a href="/new_ui/modules/RemoteRelay/settings.php">Remote Relay</a></li>
+                      <li><a href="/new_ui/modules/SiteStatus/settings.php">Site Status</a></li>
+                      <li><a href="/new_ui/modules/TxFan/settings.php">TX Cooling Fan</a></li>
+                      <li><a href="/new_ui/modules/MetarInfo/settings.php">METAR</a></li>
+                      <li><a href="/new_ui/modules/VoiceMail/settings.php">Voice Mail <span class="badge badge-info">Dev</span></a></li>
+                      <li><a href="/new_ui/modules/Frn/settings.php">FRN Gateway <span class="badge badge-info">Dev</span></a></li>
+                      <li><a href="/new_ui/modules/RigCtl/settings.php">Rig Control <span class="badge badge-info">Dev</span></a></li>
+                      <li><a href="/new_ui/modules/calendar.php">Announcements <span class="badge badge-info">Dev</span></a></li>
                     </ul>
                   </li>
 
-                  <li><a href="/ports.php"><i class="fa fa-sitemap"></i> <?=_('Interface')?> </a></li>
-                  <li><a href="/log.php"><i class="fa fa-edit"></i> <?=_('Log')?> </a></li>
-                  <li><a href="/macros.php"><i class="fa fa-play-circle"></i> <?=_('Macros')?> </a></li>
-                  <li><a href="/dtmf.php"><i class="fa fa-tty"></i> <?=_('DTMF Reference')?> </a></li>
+                  <li><a href="/new_ui/ports.php"><i class="fa fa-sitemap"></i> <?=_('Interface')?> </a></li>
+                  <li><a href="/new_ui/log.php"><i class="fa fa-edit"></i> <?=_('Log')?> </a></li>
+                  <li><a href="/new_ui/macros.php"><i class="fa fa-play-circle"></i> <?=_('Macros')?> </a></li>
+                  <li><a href="/new_ui/dtmf.php"><i class="fa fa-tty"></i> <?=_('DTMF Reference')?> </a></li>
 
-                  <li><a href="/wizard.php"><i class="fa fa-magic"></i> Wizard </a></li>
-                  <li><a href="/404.php"><i class="fa fa-exclamation-triangle"></i> 404 </a></li>
+                  <li><a href="/new_ui/wizard.php"><i class="fa fa-magic"></i> Wizard </a></li>
+                  <li><a href="/new_ui/404.php"><i class="fa fa-exclamation-triangle"></i> 404 </a></li>
 
                 </ul>
               </div>
@@ -140,13 +141,13 @@ function _($input) {
               <a class="change_password" data-toggle="tooltip" data-placement="top" title="<?=_('Change Password')?>">
                 <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="<?=_('Backup & Restore')?>" href="/backup.php">
+              <a data-toggle="tooltip" data-placement="top" title="<?=_('Backup & Restore')?>" href="/new_ui/backup.php">
                 <span class="fa fa-database" aria-hidden="true"></span>
               </a>
               <a data-toggle="tooltip" data-placement="top" title="<?=_('Support OpenRepeater')?>" href="https://openrepeater.com/donate" target="_blank">
                 <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="<?=_('Log Out')?>" href="/index.php">
+              <a data-toggle="tooltip" data-placement="top" title="<?=_('Log Out')?>" href="/new_ui/index.php">
                 <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
               </a>
             </div>
@@ -169,8 +170,8 @@ function _($input) {
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
                     <li><a class="change_password"><i class="fa fa-lock pull-right"></i><?=_('Change Password')?></a></li>
-                    <li><a href="/backup.php"><i class="fa fa-database pull-right"></i><?=_('Backup & Restore')?></a></li>
-                    <li><a href="/index.php"><i class="fa fa-sign-out pull-right"></i><?=_('Log Out')?></a></li>
+                    <li><a href="/new_ui/backup.php"><i class="fa fa-database pull-right"></i><?=_('Backup & Restore')?></a></li>
+                    <li><a href="/new_ui/index.php"><i class="fa fa-sign-out pull-right"></i><?=_('Log Out')?></a></li>
                   </ul>
                 </li>
 
