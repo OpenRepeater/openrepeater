@@ -1,0 +1,7 @@
+.portSection.portDisabled {
+	opacity: .5;
+}
+
+.portSection.remove_field {
+	color: red;
+}

@@ -1,0 +1,75 @@
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.sorting_1:before {
+	    top: 18px;
+    left: 8px;
+}
+
+
+
+
+.audio-table .orp_player {
+	float: left;
+}
+
+.audio-table .audio_name {
+	float: left;
+	font-size: 18px;
+	padding: 6px;
+}
+
+
+
+
+
+
+.orp_player {
+    width: 25px;
+    height: 25px;
+/*
+	background-color: aqua;
+*/
+    margin: 5px;
+}
+
+.orp_player button {
+	padding: 3px;
+	background: #ffffff;
+	border: 2px solid #626262;
+	border-radius: 50%;
+	height: 30px;
+	width: 30px;
+}
+
+.orp_player .play {
+    /*background: url('audio_play.png');*/
+    /*background-color: green;*/
+}
+
+.orp_player .pause {
+    /*background: url('audio_pause.png');*/
+    /*background-color: yellow;*/
+    border-color: #8dc63f;
+}
+
+.orp_player .play span, .orp_player .pause span {
+    display:block;
+    box-sizing:border-box;
+    width:0;
+    height:25px;
+    border-color:transparent transparent transparent #5a5a5a;
+    transition:50ms all ease;
+    cursor:pointer;
+}
+
+.orp_player .play span {
+	border-style: solid;
+	border-width: 10px 0 10px 17px;
+	margin: 0 0 0 4px;
+	height: 20px;
+}
+
+.orp_player .pause span {
+	border-style: double;
+	border-width: 0 0 0 14px;
+	margin: 2px 3px 2px 3px;
+	height: 16px;
+}

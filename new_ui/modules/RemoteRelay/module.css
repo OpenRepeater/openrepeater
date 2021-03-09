@@ -1,0 +1,50 @@
+/* Module CSS */
+
+#relaysWrap {
+	overflow: hidden;
+}
+
+.relayRow {
+	background-color: #f0f0f0;
+    overflow-x: auto;
+    white-space: normal;
+   	min-height: 38px;
+	padding: 5px;
+	width: 100%;
+	border-top: 1px solid silver;
+	border-bottom: 1px solid silver;
+}
+
+.relayRow.additional {
+	margin-top: 8px;
+}
+
+.relayRow span {
+    display: inline-block;
+    white-space: normal;
+	margin: 0 4px;
+	padding: 4px;
+	float: left;
+}
+
+.relayRow span.num {
+	font-size: 24px;
+	font-weight: bold;
+	color: #666;
+	padding-top: 8px;
+}
+
+.relayLabel {
+	min-width: 100;
+}
+
+.relayGPIO {
+	width: 35px;
+	text-align: center;
+}
+
+a#addRelay, #removeRelay {
+float:left;
+margin-top: 12px;
+margin-left: 5px;
+}

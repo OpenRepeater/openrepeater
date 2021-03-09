@@ -1,0 +1,106 @@
+.ui-sortable, #moduleList {
+	width: 100%;
+	margin: 0;
+    padding: 0; 
+}
+.ui-sortable .moduleRow, #moduleList .moduleRow { 
+	margin: 0; 
+	min-height: 90px;
+	color: #666;
+	outline: 0;
+	padding: 12px;
+	padding-left: 30px;
+	padding-right: 20px;
+	margin: 0;
+	margin-bottom: 5px;
+	background: #f4f4f4;
+	border-top: 1px solid rgba(255,255,255,.2);
+	border-bottom: 1px solid rgba(0,0,0,.5);
+	position: relative;
+/* 	cursor: pointer; */
+	clear: both;
+	overflow: hidden;
+}
+
+.ui-sortable .moduleRow:first-child {
+	border-top: 0; 
+}
+
+.ui-sortable .moduleRow:last-child {
+	border-bottom: 0;
+}
+
+.moduleRow .col-xs-12 {
+	margin-bottom: 8px;
+}
+
+.ui-sortable-placeholder {
+	border: 3px dashed #444444;
+	height: 90px;
+	width: 100%;
+	background: #777777;
+	margin-bottom: 5px;
+}
+
+.moduleRow.ui-sortable-helper {
+	opacity: .75;
+}
+
+.ui-sortable .moduleRow:after {
+	content: "\f0c9";
+    display: inline-block;
+    font-family: "FontAwesome";
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    cursor: move;
+    background-color: rgba(0,0,0,.1);
+    width: 30px;
+    text-align: center;
+    height: 100%;
+    padding: 4px;
+}
+
+
+.largeDigit {
+    color: rgba(0,0,0,.05);
+    position: absolute;
+    top: 6px;
+    right: -7px;
+    font-size: 87px;
+    font-weight: bold;
+    line-height: 84px;
+    text-align: right;
+}
+
+.moduleRow h3 {
+    margin-bottom: 8px;
+    float: left;
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.moduleRow .badge {
+    margin-top: 13px;
+}
+
+.moduleRow.deactive {
+    color: #cacaca;
+    background: #a2a2a2;
+    border-bottom-color: #757575;
+}
+.moduleRow.deactive .badge {
+	opacity: .5;
+}
+
+.moduleRow.deactive .btn-group {
+	display: none;
+}
+
+.moduleRow .delete-grp {
+	display: none;
+}
+
+.moduleRow.deactive .delete-grp {
+	display:inline-block;
+}

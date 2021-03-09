@@ -1,0 +1,50 @@
+.audio-actions {
+	float: right;
+}
+
+
+.id-type {
+    display: block;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+	margin-bottom: 20px;
+    padding-bottom: 20px;
+    width: fit-content;
+}
+
+
+/* Gray Box Toggle Options */
+.gray-box {
+	background-color: #f7f7f7;
+	padding-bottom: 6px;
+	overflow: auto;	
+}
+
+.gray-box span.switchery {
+	margin-top: 6px;
+    float: right;
+}
+
+.gray-box .col-md-3 {
+	float: right;
+}
+
+
+.knob_wrapper {
+    float: left;
+    width: 130px;
+    margin-top: 5px;
+    margin-right: 20px;
+    margin-bottom: 10px;    	
+}
+
+.knob_wrapper input {
+	font-size: 29px!important;
+	color: #5a5a5a!important;
+}
+
+.knob_wrapper label {
+	width: 100%;
+	text-align: center;
+}
