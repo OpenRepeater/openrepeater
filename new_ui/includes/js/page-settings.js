@@ -14,7 +14,9 @@ $(document).ready(function() {
 
 
 	// CTCSS Group - Visability Toggle
-	if ($('#useCTCSS').is(':checked')){
+	if ( $('#rxTone').val() > 0 || $('#txTone').val() > 0 ) {
+		// One or more CTCSS tones are set
+		$('#useCTCSS').trigger('click');
 		$('.useCTCSSgroup').removeClass('collapse');
 	}
     $('#useCTCSS').change(function() {
