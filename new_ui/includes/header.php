@@ -1,4 +1,15 @@
 <?php
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
+
+$Database = new Database();
+$settings = $Database->get_settings();
+?>
+
+
+<?php
 // DUMMY FUNCTION TO LATER BE REPLACE BY GETTEXT FOR TRANSLATIONS
 /*
 function _($input) {

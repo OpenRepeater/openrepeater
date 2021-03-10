@@ -1,7 +1,7 @@
         <!-- footer content -->
         <footer>
           <div class="pull-right">
-            <?=_('Designed by')?>: Aaron Crawford, N3MBH | <a target="_blank" href="https://openrepeater.com">OpenRepeater</a> <?=_('ver')?>: 3.0.0
+            <?=_('Designed by')?>: Aaron Crawford, N3MBH | <a target="_blank" href="https://openrepeater.com">OpenRepeater</a> <?=_('ver') . ': ' . $_SESSION['version_num'] ?>
           </div>
           <div class="clearfix"></div>
         </footer>

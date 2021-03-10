@@ -1,8 +1,10 @@
 <?php
 // DUMMY FUNCTION TO LATER BE REPLACE BY GETTEXT FOR TRANSLATIONS
+/*
 function _($input) {
 	return $input;
 }
+*/
 ?>
 
 <!DOCTYPE html>
