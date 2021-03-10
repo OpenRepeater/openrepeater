@@ -394,8 +394,6 @@ if(!empty($locationInfo)) {
         <!-- /page content -->
 
 
-<?php print_r($settings); ?>
-
         
 <script>
 	var modal_gpsTitle = '<?=_('Get Location')?>';
