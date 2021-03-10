@@ -143,7 +143,7 @@
 			});
 
 			// Change Password Modal
-			<?
+			<?php
 				$change_pw_form = '';
 				$change_pw_form .= '<div class="form-group"><label>' . _('Old Password') . '</label>';
 				$change_pw_form .= '<div><input type="password" id="password" name="password" value="old_password" class="form-control" data-toggle="password"></div></div>';
@@ -154,7 +154,6 @@
 				$change_pw_form .= '<div class="form-group"><label>' . _('Confirm Password') . '</label>';
 				$change_pw_form .= '<div><input type="password" id="password2" name="password2" value="new_password" class="form-control" data-toggle="password"></div></div>';
 // <input type="password" id="password" name="password" class="form-control" value="1234" data-toggle="password">
-				
 			?>
 			
 			$('.change_password').click(function(e) {
