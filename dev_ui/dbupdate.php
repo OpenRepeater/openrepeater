@@ -29,7 +29,26 @@ $classDB->insert('CREATE TABLE IF NOT EXISTS macros ( macroKey INTEGER PRIMARY K
 # Add devices table if it doesn't exist
 $classDB->insert('CREATE TABLE IF NOT EXISTS devices ( device_id INTEGER PRIMARY KEY NOT NULL, device_path TEXT, description TEXT, type TEXT);');
 
+
+# Convert to JSON function
+function serial2JSON($setting, $table, $db) {
+	$results = $db->select_single("SELECT value FROM $table WHERE keyID='LinkGroup_Settings'");
+
+	// Check if setting is serialized, and if it is converit it to JSON format
+	$data = @unserialize($results['value']);
+	if ($data !== false) {
+	    $converted = json_encode($data);
+		$db->update("UPDATE $table SET value='$converted' WHERE keyID='LinkGroup_Settings'");
+	}	
+}
+
+# Convert the follwoing to JSON format using above function
+serial2JSON('Location_Info','settings',$classDB);
+serial2JSON('LinkGroup_Settings','settings',$classDB);
+
 ?>
+
+
 
 <?php
 	
