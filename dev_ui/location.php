@@ -47,7 +47,7 @@ if (isset($_POST['action'])){
 		'Statistics_Interval' => $_POST['Statistics_Interval'],	
 	];
 	
-	$result = $classDB->update_settings(['Location_Info' => serialize($loc_array)]);
+	$result = $classDB->update_settings(['Location_Info' => json_encode($loc_array)]);
 
 	if ($result) { $message = 'Database Updated on <strong>' . date('Y-m-d h:i:sa') . '</strong>'; }
 
@@ -58,7 +58,7 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 $classDB = new Database();
 $locationInfo = $classDB->get_settings('Location_Info');
 if(!empty($locationInfo)) {
-	$locationInfo = unserialize($locationInfo);
+	$locationInfo = json_decode($locationInfo);
 }
 
 
@@ -72,26 +72,26 @@ include('header.php');
 <form id="locationForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 
 	<div>
-		<?php $Echolink_Status_Servers = (!empty($locationInfo['Echolink_Status_Servers'])) ? $locationInfo['Echolink_Status_Servers'] : ''; ?>
+		<?php $Echolink_Status_Servers = (!empty($locationInfo->Echolink_Status_Servers)) ? $locationInfo->Echolink_Status_Servers : ''; ?>
 		<label for="Echolink_Status_Servers">Echolink Status Servers</label>
 		<input type="text" name="Echolink_Status_Servers" value="<?=$Echolink_Status_Servers?>" placeholder="aprs.echolink.org:5199">
 	</div>
 
 	<div>
-		<?php $APRS_ServerList = (!empty($locationInfo['APRS_ServerList'])) ? $locationInfo['APRS_ServerList'] : ''; ?>
+		<?php $APRS_ServerList = (!empty($locationInfo->APRS_ServerList)) ? $locationInfo->APRS_ServerList : ''; ?>
 		<label for="APRS_ServerList">APRS Server List</label>
 		<input type="text" name="APRS_ServerList" value="<?=$APRS_ServerList?>" placeholder="i.e. noam.aprs2.net:14580">
 	</div>
 
 	<div>
-		<?php $Latitude = (!empty($locationInfo['Latitude'])) ? $locationInfo['Latitude'] : ''; ?>
+		<?php $Latitude = (!empty($locationInfo->Latitude)) ? $locationInfo->Latitude : ''; ?>
 		<label for="Latitude">Latitude</label>
 		<input type="text" id="gps_lat" name="Latitude" value="<?=$Latitude?>" placeholder="40.781523" required>
 		<em>In decimal format</em>
 	</div>
 
 	<div>
-		<?php $Longitude = (!empty($locationInfo['Longitude'])) ? $locationInfo['Longitude'] : ''; ?>
+		<?php $Longitude = (!empty($locationInfo->Longitude)) ? $locationInfo->Longitude : ''; ?>
 		<label for="Longitude">Longitude</label>
 		<input type="text" id="gps_long" name="Longitude" value="<?=$Longitude?>" placeholder="-73.966529" required>
 		<em>In decimal format</em>
@@ -106,7 +106,7 @@ include('header.php');
 
 
 	<div>
-		<?php $APRS_Station_Type = (!empty($locationInfo['APRS_Station_Type'])) ? $locationInfo['APRS_Station_Type'] : ''; ?>
+		<?php $APRS_Station_Type = (!empty($locationInfo->APRS_Station_Type)) ? $locationInfo->APRS_Station_Type : ''; ?>
 		<label for="APRS_Station_Type">APRS Station Type</label>
 		<select name="APRS_Station_Type">
 			<option value="repeater"<?=($APRS_Station_Type == 'repeater')?' selected':'';?>>Repeater</option>
@@ -115,14 +115,14 @@ include('header.php');
 	</div>
 
 	<div>
-		<?php $Frequency = (!empty($locationInfo['Frequency'])) ? $locationInfo['Frequency'] : ''; ?>
+		<?php $Frequency = (!empty($locationInfo->Frequency)) ? $locationInfo->Frequency : ''; ?>
 		<label for="Frequency">Frequency</label>
 		<input type="text" name="Frequency" value="<?=$Frequency?>" required>
 		<em>MHz</em>
 	</div>
 
 	<div>
-		<?php $Tone = (!empty($locationInfo['Tone'])) ? $locationInfo['Tone'] : '0'; ?>
+		<?php $Tone = (!empty($locationInfo->Tone)) ? $locationInfo->Tone : '0'; ?>
 		<label for="Tone">Tone</label>
 		<select name="Tone">
 			<option value="0"<?=($Tone === '0')?' selected':'';?>>None</option>
@@ -138,22 +138,22 @@ include('header.php');
 	</div>
 
 	<div>
-		<?php $TX_Power = (!empty($locationInfo['TX_Power'])) ? $locationInfo['TX_Power'] : ''; ?>
+		<?php $TX_Power = (!empty($locationInfo->TX_Power)) ? $locationInfo->TX_Power : ''; ?>
 		<label for="TX_Power">TX Power</label>
 		<input type="number" min="0" max="2000" name="TX_Power" value="<?=$TX_Power?>">
 		<em>Watts</em>
 	</div>
 
 	<div>
-		<?php $Antenna_Gain = (!empty($locationInfo['Antenna_Gain'])) ? $locationInfo['Antenna_Gain'] : ''; ?>
+		<?php $Antenna_Gain = (!empty($locationInfo->Antenna_Gain)) ? $locationInfo->Antenna_Gain : ''; ?>
 		<label for="Antenna_Gain">Antenna Gain</label>
 		<input type="number" min="0" max="100" name="Antenna_Gain" value="<?=$Antenna_Gain?>">
 		<em>dBd (not dBi)</em>
 	</div>
 
 	<div>
-		<?php $Antenna_Height = (!empty($locationInfo['Antenna_Height'])) ? $locationInfo['Antenna_Height'] : ''; ?>
-		<?php $Antenna_Height_Units = (!empty($locationInfo['Antenna_Height_Units'])) ? $locationInfo['Antenna_Height_Units'] : 'f'; ?>
+		<?php $Antenna_Height = (!empty($locationInfo->Antenna_Height)) ? $locationInfo->Antenna_Height : ''; ?>
+		<?php $Antenna_Height_Units = (!empty($locationInfo->Antenna_Height_Units)) ? $locationInfo->Antenna_Height_Units : 'f'; ?>
 		<label for="Antenna_Height">Antenna Height</label>
 		<input type="number" min="0" name="Antenna_Height" value="<?=$Antenna_Height?>">
 		<select name="Antenna_Height_Units">
@@ -163,7 +163,7 @@ include('header.php');
 	</div>
 
 	<div>
-		<?php $Antenna_Dir = (!empty($locationInfo['Antenna_Dir'])) ? $locationInfo['Antenna_Dir'] : ''; ?>
+		<?php $Antenna_Dir = (!empty($locationInfo->Antenna_Dir)) ? $locationInfo->Antenna_Dir : ''; ?>
 		<label for="Antenna_Dir">Antenna Direction</label>
 		<select name="Antenna_Dir" value="<?=$Antenna_Dir?>">
 			<option value=""<?=($Antenna_Dir == '')?' selected':'';?>>None</option>
@@ -189,21 +189,21 @@ include('header.php');
 	</div>
 
 	<div>
-		<?php $APRS_Path = (!empty($locationInfo['APRS_Path'])) ? $locationInfo['APRS_Path'] : ''; ?>
+		<?php $APRS_Path = (!empty($locationInfo->APRS_Path)) ? $locationInfo->APRS_Path : ''; ?>
 		<label for="APRS_Path">APRS Path</label>
 		<input type="text" name="APRS_Path" value="<?=$APRS_Path?>" placeholder="WIDE1-1">
 		<em>Examples: WIDE1-1, WIDE2-2</em>
 	</div>
 
 	<div>
-		<?php $Beacon_Interval = (!empty($locationInfo['Beacon_Interval'])) ? $locationInfo['Beacon_Interval'] : ''; ?>
+		<?php $Beacon_Interval = (!empty($locationInfo->Beacon_Interval)) ? $locationInfo->Beacon_Interval : ''; ?>
 		<label for="Beacon_Interval">Beacon Interval</label>
 		<input type="number" min="10" name="Beacon_Interval" value="<?=$Beacon_Interval?>" required>
 		<em>Minutes</em>
 	</div>
 
 	<div>
-		<?php $Statistics_Interval = (!empty($locationInfo['Statistics_Interval'])) ? $locationInfo['Statistics_Interval'] : ''; ?>
+		<?php $Statistics_Interval = (!empty($locationInfo->Statistics_Interval)) ? $locationInfo->Statistics_Interval : ''; ?>
 		<label for="Statistics_Interval">Statistics Interval</label>
 		<select name="Statistics_Interval">
 			<option value="5"<?=($Statistics_Interval == '5')?' selected':'';?>>5 mins</option>
