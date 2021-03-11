@@ -43,8 +43,36 @@ function serial2JSON($setting, $table, $db) {
 }
 
 # Convert the follwoing to JSON format using above function
+/*
 serial2JSON('Location_Info','settings',$classDB);
 serial2JSON('LinkGroup_Settings','settings',$classDB);
+*/
+
+
+# Convert Port Options to JSON
+$ports = $classDB->select_all('ports','SELECT * FROM ports');
+foreach($ports as $curPort) {
+	// Check if setting is serialized, and if it is converit it to JSON format
+	$curOptions = @unserialize($curPort['portOptions']);
+	if ($curOptions !== false) {
+		$curPortNum = $curPort['portNum'];
+	    $converted = json_encode($curOptions);
+		$classDB->update("UPDATE ports SET portOptions='$converted' WHERE portNum='$curPortNum'");
+	}	
+}
+
+# Convert Module Options to JSON
+$modules = $classDB->select_all('modules','SELECT * FROM modules');
+foreach($modules as $curModules) {
+	// Check if setting is serialized, and if it is converit it to JSON format
+	$curOptions = @unserialize($curModules['moduleOptions']);
+	if ($curOptions !== false) {
+		$curModuleKey = $curModules['moduleKey'];
+	    $converted = json_encode($curOptions);
+		$classDB->update("UPDATE modules SET moduleOptions='$converted' WHERE moduleKey='$curModuleKey'");
+	}	
+}
+
 
 ?>
 
