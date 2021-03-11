@@ -187,8 +187,16 @@ function _($input) {
                   </ul>
                 </li>
 
+	<!--  -->
+
+<?php
+	# Server Notifications
+// 	$current_page_url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	$updateFlage = $Database->get_update_flag();
+?>
+
                 <li role="presentation" class="dropdown">
-<button type="button" id="orp_restart_btn" class="btn btn-round btn-restart pulse"><i class="fa fa-refresh"></i> <?=_('Rebuild')?></button>
+<button type="button" id="orp_restart_btn" class="btn btn-round btn-restart pulse"<?= ($updateFlage == false) ? ' style="display: none;"':''; ?>><i class="fa fa-refresh"></i> <?=_('Rebuild')?></button>
                 </li>
               </ul>
             </nav>
