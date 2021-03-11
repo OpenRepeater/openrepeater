@@ -52,7 +52,7 @@ function _($input) {
 
               </div>
               <div>
-                <a class="btn btn-success btn-lg" href="settings.php"><?=_('Log in')?></a>
+                <a class="btn btn-success btn-lg" href="../login.php"><?=_('Log in')?></a>
               </div>
 
               <div class="clearfix"></div>
