@@ -27,7 +27,7 @@
 		<label class="control-label" for="timeout">Module Timeout</label>
 		<div class="controls">
 		  <div class="input-append">
-			<input id="timeout" name="timeout" size="16" type="text" value="<?php echo $moduleSettings['timeout']; ?>" required><span class="add-on">secs</span>
+			<input id="timeout" name="timeout" size="16" type="text" value="<?= $moduleSettings->timeout ?>" required><span class="add-on">secs</span>
 			<span class="help-inline">This is how many seconds of inactivity to wait for until the module is disabled.</span>
 		  </div>
 		</div>
@@ -38,7 +38,7 @@
 		<label class="control-label" for="callSign">EchoLink Callsign</label>
 		<div class="controls">
 		  <div class="input-prepend">
-			<span class="add-on"><i class="icon-user"></i></span><input id="callSign" style="text-transform: uppercase" size="16" type="text" name="callSign" value="<?php echo $moduleSettings['callSign']; ?>" required>
+			<span class="add-on"><i class="icon-user"></i></span><input id="callSign" style="text-transform: uppercase" size="16" type="text" name="callSign" value="<?= $moduleSettings->callSign ?>" required>
 			    <span class="help-inline">The callsign to use to login to the EchoLink directory server.</span>
 		  </div>
 		</div>
@@ -48,7 +48,7 @@
 		<label class="control-label" for="password">EchoLink Password</label>
 		<div class="controls">
 		  <div class="input-prepend">
-			<span class="add-on"><i class="icon-lock"></i></span><input id="password" size="16"  type="password" placeholder="Password" name="password" value="<?php echo $moduleSettings['password']; ?>" required>
+			<span class="add-on"><i class="icon-lock"></i></span><input id="password" size="16"  type="password" placeholder="Password" name="password" value="<?= $moduleSettings->password ?>" required>
 			    <span class="help-inline">The EchoLink directory server password to use.</span>
 		  </div>
 		</div>
@@ -57,7 +57,7 @@
 	  <div class="control-group">
 		<label class="control-label" for="sysop">Sysop Name</label>
 		<div class="controls">
-		  <input class="input-xlarge" id="sysop" type="text" name="sysop" value="<?php echo $moduleSettings['sysop']; ?>" required>
+		  <input class="input-xlarge" id="sysop" type="text" name="sysop" value="<?= $moduleSettings->sysop ?>" required>
 		  <span class="help-inline">The name of the person or club that is responsible for this system.</span>
 		</div>
 	  </div>
@@ -65,7 +65,7 @@
 	  <div class="control-group">
 		<label class="control-label" for="location">Location</label>
 		<div class="controls">
-		  <input class="input-xlarge" id="location" type="text" name="location" value="<?php echo $moduleSettings['location']; ?>" required>
+		  <input class="input-xlarge" id="location" type="text" name="location" value="<?= $moduleSettings->location ?>" required>
 		  <span class="help-inline">The location of the station.</span>
 		</div>
 	  </div>
@@ -73,14 +73,14 @@
 	  <div class="control-group">
 		<label class="control-label" for="description">Description</label>
 		<div class="controls">
-		  <textarea class="input-xlarge disabled" id="description" name="description" rows="4" required><?php echo $moduleSettings['description']; ?></textarea>
+		  <textarea class="input-xlarge disabled" id="description" name="description" rows="4" required><?= $moduleSettings->description ?></textarea>
 		  <span class="help-inline">A longer description that is sent to remote stations upon connection. This description should typically include detailed station information like QTH, transceiver frequency/power, antenna, CTCSS tone frequency etc.</span>
 		</div>
 	  </div>
 	  
 	  <input type="hidden" name="server" value="servers.echolink.org">
 	  <input type="hidden" name="max_qsos" value="4">
-	  <input type="hidden" name="connections" value="4">
+	  <input type="hidden" name="connections" value="5">
 	  <input type="hidden" name="idle_timeout" value="300">
 
   </fieldset>
@@ -93,14 +93,14 @@
 	<div class="control-group">
 		<label class="control-label">Auto Connect Node ID</label>
 		<div class="controls">
-		  <input type="text" id="auto_connect_id" name="auto_connect_id" value="<?php echo $moduleSettings['auto_connect_id']?>">
+		  <input type="text" id="auto_connect_id" name="auto_connect_id" value="<?= $moduleSettings->auto_connect_id ?>">
 		  <span class="help-inline">Set this variable to an EchoLink ID that you want to automatically connect to. (leave blank to disable)</span>
 		</div>
 	</div>
 	<div class="control-group">
 		<label class="control-label">Auto Connect Retry Time</label>
 		<div class="controls">
-		  <input type="text" id="auto_connect_time" name="auto_connect_time" value="<?php echo !empty($moduleSettings['auto_connect_time']) ? $moduleSettings['auto_connect_time'] : '600'; ?>">
+		  <input type="text" id="auto_connect_time" name="auto_connect_time" value="<?= !empty($moduleSettings->auto_connect_time) ? $moduleSettings->auto_connect_time : '600'; ?>">
 		  <span class="help-inline">Set this to the time in seconds that you want in between auto connect attempts.</span>	
 		</div>
 	</div>
@@ -113,21 +113,21 @@
 	<div class="control-group">
 		<label class="control-label">Proxy Server</label>
 		<div class="controls">
-		  <input type="text" id="proxy_server" name="proxy_server" value="<?php echo $moduleSettings['proxy_server']?>">
+		  <input type="text" id="proxy_server" name="proxy_server" value="<?= $moduleSettings->proxy_server ?>">
 		  <span class="help-inline">If set, connect to the given EchoLink proxy server host. All EchoLink connections, both incoming and outgoing, will then go through the proxy.</span>
 		</div>
 	</div>
 	<div class="control-group">
 		<label class="control-label">Proxy Port</label>
 		<div class="controls">
-		  <input type="text" id="proxy_port" name="proxy_port" value="<?php echo !empty($moduleSettings['proxy_port']) ? $moduleSettings['proxy_port'] : '8100'; ?>">
+		  <input type="text" id="proxy_port" name="proxy_port" value="<?= !empty($moduleSettings->proxy_port) ? $moduleSettings->proxy_port : '8100'; ?>">
 		  <span class="help-inline">Set the TCP port used for connecting to an EchoLink proxy server. Default is 8100.</span>	
 		</div>
 	</div>
 	<div class="control-group">
 		<label class="control-label">Proxy Password</label>
 		<div class="controls">
-		  <input type="password" id="proxy_password" name="proxy_password" value="<?php echo $moduleSettings['proxy_password']?>">
+		  <input type="password" id="proxy_password" name="proxy_password" value="<?= $moduleSettings->proxy_password ?>">
 		  <span class="help-inline">Set the EchoLink proxy password used when connecting to an EchoLink proxy server. Use the password PUBLIC for public proxy servers.</span>
 		</div>
 	</div>

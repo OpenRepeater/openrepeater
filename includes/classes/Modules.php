@@ -45,7 +45,7 @@ class Modules {
 	public function get_module_settings($id) {
 		$sql = 'SELECT moduleOptions FROM "modules" WHERE "moduleKey" = ' . $id;
 		$module = $this->Database->select_single($sql);
-		$moduleOptionsArray = unserialize($module['moduleOptions']);
+		$moduleOptionsArray = json_decode($module['moduleOptions']);
 		return $moduleOptionsArray;	
 	}
 
@@ -76,8 +76,8 @@ class Modules {
 		}
 		##########
 
-		$serializedSettings = serialize($settings_array);
-		$sql = "UPDATE modules SET moduleOptions = '$serializedSettings' WHERE moduleKey = '$moduleID';";
+		$jsonSettings = json_encode($settings_array);
+		$sql = "UPDATE modules SET moduleOptions = '$jsonSettings' WHERE moduleKey = '$moduleID';";
 		$insert_result = $this->Database->insert($sql);
 
 		if ($insert_result) { 

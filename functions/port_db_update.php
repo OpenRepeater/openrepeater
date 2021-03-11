@@ -41,8 +41,7 @@ if(isset($_POST)==true && empty($_POST)==false) {
 		$insertArray[$portNum] += ['portType' => 'GPIO'];
 		$insertArray[$portNum] += ['portEnabled' => $portEnabled[$portNum]];
 
-
-		// Columns to be serialized later
+		// Columns to be saved to JSON object later
 		$insertArray[$portNum] += ['rxMode' => $rxMode[$portNum]];
 		$insertArray[$portNum] += ['rxGPIO' => $rxGPIO[$portNum]];
 		$insertArray[$portNum] += ['txGPIO' => $txGPIO[$portNum]];

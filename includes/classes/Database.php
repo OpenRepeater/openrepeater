@@ -180,7 +180,7 @@ class Database {
 		$ports = $this->select_all('ports', $sql);
 		foreach($ports as $curPort) {
 			$curPortNum = $curPort['portNum'];
-			$curOptions = unserialize($curPort['portOptions']);
+			$curOptions = json_decode($curPort['portOptions']);
 			foreach($curOptions as $key=>$value) {
 				$ports[$curPortNum][$key] = $value;
 			}
@@ -227,7 +227,7 @@ class Database {
 				    if ($portColName == 'rxGPIO' || $portColName == 'txGPIO') { $gpioFlag++; }
 				    if ($portColName == 'hidrawDev' || $portColName == 'serialDev') { $deviceFlag++; }
 			}
-			$currColumns['portOptions'] = serialize($portOptions);
+			$currColumns['portOptions'] = json_encode($portOptions);
 
 			if ( $this->exists('ports','portNum', $portNum) == true ) {
 				// If port exists, update it
@@ -672,14 +672,14 @@ class Database {
 			$this->add_table_column('ports', 'portEnabled');
 			$this->add_table_column('ports', 'portOptions');
 		
-			// Migrate old columns into options field as serialized array
+			// Migrate old columns into options field as JSON object
 			$sql = 'SELECT * FROM "ports" ORDER BY "portNum" ASC';
 			$ports = $this->select_all('ports', $sql);
 			foreach($ports as $curPort){  
 				$curPortID = $curPort['portNum'];
 				if ($curPort['rxGPIO'] > 0) { $portType = 'GPIO'; } else { $portType = ''; }
 				$options_array = array_diff_key( $curPort, array_flip( ['portNum', 'portLabel', 'rxAudioDev', 'txAudioDev', 'portType', 'portEnabled',  'portOptions'] ) );
-				$newOptions = serialize($options_array);
+				$newOptions = json_encode($options_array);
 				$sql = "UPDATE ports SET portType='$portType', portOptions='$newOptions', portEnabled='1' WHERE portNum='$curPortID'";
 				$this->insert($sql);
 			}

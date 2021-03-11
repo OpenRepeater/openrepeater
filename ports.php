@@ -105,6 +105,8 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 								<?php if ($cur_port['portType'] == 'GPIO') { ?>
 									<div id="port<?=$cur_port['portNum']?>wrap">
 									<form id="port<?=$cur_port['portNum']?>form" class="portForm form-inline" role="form" action="functions/port_db_update.php" method="post">
+										
+									<input type="hidden" name="portNum" value="<?=$cur_port['portNum']?>">
 
 									<input type="hidden" name="portType[<?=$cur_port['portNum']?>]" value="GPIO">
 									<p id="port<?=$cur_port['portNum']?>" class="portRow<?php if ($idNum == 1) { echo ' first'; } else { echo ' additional'; } ?>" data-port-number="<?=$cur_port['portNum']?>">
