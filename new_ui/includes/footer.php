@@ -111,7 +111,9 @@
 	<script>
 		var modal_PleaseWaitText = '<?=_('Please Wait')?>';
 		$(function() {
+			/* *********************************************** */
 			// Rebuild & Restart Modal
+			/* *********************************************** */
 			$('#orp_restart_btn').click(function(e) {
 				e.preventDefault();
 				var modalDetails = {
@@ -126,23 +128,33 @@
 				$('#orp_modal_ok').off('click'); // Remove other click events
 				$('#orp_modal_ok').click(function() {
 					orpModalWaitBar();
+					$.ajax({
+						type: 'POST',
+						url: '../../functions/ajax_svxlink_update.php',
+						data: { del_id: 'test' },
+						success: function(result) {
+							if (result) {
+								//Display Message
+								$('#orp_modal .modal-body').html(result);
 
-					// TEMP SIMULATION OF REBUILD TIME
-					setTimeout(function() {
-						$('#orp_modal').modal('hide');
-						$('#orp_restart_btn').hide();
-						new PNotify({
-							title: '<?=_('Rebuild Complete')?>',
-							text: '<?=_('New configurations files have been created and the controller has restarted')?>',
-							type: 'success',
-							styling: 'bootstrap3'
-						});
-
-					}, 6000);
+								$('#orp_modal  .modal-header .close').show();
+								$('#orp_restart_btn').hide();
+								
+								new PNotify({
+									title: '<?=_('Rebuild Complete')?>',
+									text: '<?=_('New configurations files have been created and the controller has restarted')?>',
+									type: 'success',
+									styling: 'bootstrap3'
+								});
+							}
+						}
+					});
 				});
 			});
 
+			/* *********************************************** */
 			// Change Password Modal
+			/* *********************************************** */
 			<?php
 				$change_pw_form = '';
 				$change_pw_form .= '<div class="form-group"><label>' . _('Old Password') . '</label>';
