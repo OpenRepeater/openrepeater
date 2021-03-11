@@ -3,7 +3,7 @@
 // SESSION CHECK TO SEE IF USER IS LOGGED IN.
 session_start();
 if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
-	header('location: login.php'); // If they aren't logged in, send them to login page.
+	header('location: index.php'); // If they aren't logged in, send them to login page.
 } elseif (!isset($_SESSION['callsign'])) {
 	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
 } else { // If they are logged in and have set a callsign, show the page.
