@@ -131,22 +131,61 @@
 					$.ajax({
 						type: 'POST',
 						url: '../../functions/ajax_svxlink_update.php',
-						data: { del_id: 'test' },
 						success: function(result) {
-							if (result) {
-								//Display Message
-								$('#orp_modal .modal-body').html(result);
+							var response = $.parseJSON(result); // create an object with the key of the array
 
-								$('#orp_modal  .modal-header .close').show();
+							if (response.status == 'success' && response.svxlink == 'active') {
+								$('#orp_modal').modal('hide');
 								$('#orp_restart_btn').hide();
 								
+								//Display Message
 								new PNotify({
 									title: '<?=_('Rebuild Complete')?>',
-									text: '<?=_('New configurations files have been created and the controller has restarted')?>',
+									text: '<?=_('New configurations files have been created and the controller has restarted.')?>',
 									type: 'success',
 									styling: 'bootstrap3'
 								});
 							}
+
+							if (response.status == 'success' && response.svxlink == 'inactive') {
+								$('#orp_modal').modal('hide');
+								$('#orp_restart_btn').hide();
+								
+								//Display Message
+								new PNotify({
+									title: '<?=_('SVXLink Not Running')?>',
+									text: '<?=_('New configurations files have been created, but SVXLink could not be restarted.')?>',
+									type: 'info',
+									styling: 'bootstrap3'
+								});
+							}
+
+							if (response.status == 'not_logged_in') {
+								$('#orp_modal').modal('hide');
+								$('#orp_restart_btn').show();
+								
+								//Display Message
+								new PNotify({
+									title: '<?=_('Not Logged In')?>',
+									text: '<?=_('Could not build your configuration because your login timed out. Please login and try again.')?>',
+									type: 'error',
+									styling: 'bootstrap3'
+								});
+							}
+
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							$('#orp_modal').modal('hide');
+							$('#orp_restart_btn').show();
+
+							//Display Message
+							new PNotify({
+								title: '<?=_('Error')?>',
+								text: '<?=_('There was an error communicating with the controller. Please try again.')?>',
+								type: 'error',
+								styling: 'bootstrap3'
+							});
+							console.log(textStatus + ": " + jqXHR.status + " " + errorThrown);
 						}
 					});
 				});

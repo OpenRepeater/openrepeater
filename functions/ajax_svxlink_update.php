@@ -11,7 +11,11 @@ files for SVXLink. Responses are sent back to UI via AJAX.
 /* SESSION CHECK TO SEE IF USER IS LOGGED IN. */
 session_start();
 if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
-	echo "not_logged_in";
+	// If user is not logged in...STOP...and return not_logged_in status
+	$response = (object)[]; // New response object
+	$response->status = 'not_logged_in';	
+	echo json_encode($response);
+
 } else { // If they are, process the rebuild
 	/* ---------------------------------------------------------- */
 
@@ -171,29 +175,39 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	/* ---------------------------------------------------------- */
 	/* FINISH UP */
 
-	/* CLEAR SETTINGS UPDATE FLAG TO CLEAR BANNER AT TOP OF PAGE */
-// 	$classDB->set_update_flag(false);
-	$classDB->set_update_flag(true); // temp for developement. 
-
 	$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
-	echo $shellout;
 
-	/* WHAT PAGE TO GO BACK TO */
-	if (isset($_POST["return_url"])) {
-		// Return to page that sent here
+	######################################
+	# Return AJAX Response
+	######################################
+	// Note: if user is not logged in, then a 'not_logged_in' status will be returned. (See top of file.)
 
-		//$url = strtok($_POST["return_url"], '?'); //Clean parameters from URL
+	$response = (object)[]; // New response object
 
-		echo "return_url";
-	} else if (isset($_SESSION["new_repeater_settings"])) {
-		// Wizard was run. Go ahead and destroy session and logout
+	// Get last item of shell/orp_helper response for SVXLink status.
+	$pieces = explode(PHP_EOL, $shellout);
+	$filtered = array_filter($pieces);
+	$end = array_pop($filtered);
+	$response->svxlink = trim($end); // Add to response object.
+
+	// Wizard was run. Go ahead and destroy session and logout
+	if (isset($_SESSION["new_repeater_settings"])) {
 		session_destroy();
-		echo "wizard";
+		$response->status = 'wizard';	
+
+		// Clear update flag to remove rebuilt button
+		$classDB->set_update_flag(false);
+
 	} else {
-	// Otherwise just go to dashboard
-		echo "dashboard";
-	
+		// Otherwise normal status
+		$response->status = 'success';	
+
+		// Clear update flag to remove rebuilt button
+		$classDB->set_update_flag(false);
 	}
+
+	echo json_encode($response);
+
 ?>
 
 <?php
