@@ -1,4 +1,16 @@
 <?php
+session_start();
+
+################################################################################
+# AUTOLOAD CLASSES
+require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+################################################################################
+$Database = new Database();
+
+$versionNum = $Database->get_version();
+
+
+
 // DUMMY FUNCTION TO LATER BE REPLACE BY GETTEXT FOR TRANSLATIONS
 /*
 function _($input) {
@@ -58,7 +70,7 @@ function _($input) {
               <div class="clearfix"></div>
 
               <div class="separator">
-                <p><a target="_blank" href="https://openrepeater.com">OpenRepeater</a> <?=_('ver')?>: 3.0.0</p>
+                <p><a target="_blank" href="https://openrepeater.com">OpenRepeater</a> <?=_('ver') . ': ' . $versionNum ?></p>
               </div>
             </form>
           </section>
