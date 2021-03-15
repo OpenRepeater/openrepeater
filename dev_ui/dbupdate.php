@@ -29,6 +29,10 @@ $classDB->insert('CREATE TABLE IF NOT EXISTS macros ( macroKey INTEGER PRIMARY K
 # Add devices table if it doesn't exist
 $classDB->insert('CREATE TABLE IF NOT EXISTS devices ( device_id INTEGER PRIMARY KEY NOT NULL, device_path TEXT, description TEXT, type TEXT);');
 
+# Update Users Table to Newer Format
+# Check for "enabled" column and add it if it doesn't exist. Format INTEGER, Default value 1.
+# Check for "user_role" column and add it if it doesn't exist. Format TEXT, Default value empty, but set userID 1 to "admin".
+# Check for "user_meta" column and add it if it doesn't exist. Format TEXT, Default value empty.
 
 # Convert to JSON function
 function serial2JSON($setting, $table, $db) {
