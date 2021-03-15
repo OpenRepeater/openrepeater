@@ -60,7 +60,7 @@ class Database {
 	public function select_single($sql) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
 		$results = $db->querySingle($sql, true) or die('Unable to select single record from database');
-		return $results;
+		return $results;		
 	}
 
 	// VALUE EXISTS - Return True/False
@@ -87,11 +87,24 @@ class Database {
 	}
 
 	// INSERT ROW - Return True/False
-	public function insert($sql) {
+	// Can take an SQL input OR an Array input with table name, column names and values to insert
+	public function insert($input, $flag = true) {
+		if ( is_array($input) ) {
+			foreach($input as $tableName => $columnValues) {
+				$columns = implode(",",array_keys($columnValues));
+				$escaped_values = array_values($columnValues);
+				$values  = "'" . implode("','", $columnValues) . "'";
+				$sql = "INSERT INTO $tableName (".$columns.") VALUES(".$values.");";
+			}
+
+		} else {
+			$sql = $input;
+		}
+
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
 		$results = $db->query($sql) or die('Unable to insert record into database.');
 		if ( $db->changes() > 0 ) { 
-			$this->set_update_flag(true);
+			if ( $flag == true ) { $this->set_update_flag(true); }
 			return true;
 		} else {
 			return false;
