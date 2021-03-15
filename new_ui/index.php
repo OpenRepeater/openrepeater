@@ -28,6 +28,7 @@ function _($input) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
+	<link rel="shortcut icon" href="favicon.ico">
 
     <title><?=_('Welcome')?> | OpenRepeater</title>
 
@@ -39,6 +40,9 @@ function _($input) {
     <link href="includes/vendors/nprogress/nprogress.css" rel="stylesheet">
     <!-- Animate.css -->
     <link href="includes/vendors/animate.css/animate.min.css" rel="stylesheet">
+
+    <link href="includes/css/page-login.css" rel="stylesheet">
+
 
     <!-- Custom Theme Style -->
     <link href="includes/css/custom.css" rel="stylesheet">
@@ -54,25 +58,33 @@ function _($input) {
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
-            <form>
-              <h1><?=_('Login')?></h1>
-              <div>
-                <input type="text" class="form-control" placeholder="<?=_('Username')?>" required="" />
-              </div>
-              <div>
-				<input type="password" class="form-control" id="proxy_password" name="password" data-toggle="password" placeholder="<?=_('Password')?>" required="">
+            <h1><?=_('Login')?></h1>
 
-              </div>
+			<div id="loader" style="display:none;">Please Wait</div>
+
+            <form id="loginForm">
+			  <div id="alert" class="alert alert-warning" role="alert" style="display:none;"></div>
+
               <div>
-                <a class="btn btn-success btn-lg" href="../login.php"><?=_('Log in')?></a>
+                <input id="username" type="text" class="form-control" placeholder="<?=_('Username')?>" required="" />
+              </div>
+
+              <div>
+				<input id="password" type="password" class="form-control password" name="password" data-toggle="password" placeholder="<?=_('Password')?>" required="">
+              </div>
+
+              <div>
+                <button id="loginBtn" type="button" class="btn btn-success btn-lg"><?=_('Login')?></button>
               </div>
 
               <div class="clearfix"></div>
 
-              <div class="separator">
-                <p><a target="_blank" href="https://openrepeater.com">OpenRepeater</a> <?=_('ver') . ': ' . $versionNum ?></p>
-              </div>
             </form>
+
+            <div class="separator">
+              <p><a target="_blank" href="https://openrepeater.com">OpenRepeater</a> <?=_('ver') . ': ' . $versionNum ?></p>
+            </div>
+
           </section>
         </div>
 
@@ -86,12 +98,20 @@ function _($input) {
     <script src="includes/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
     <!-- Bootstrap Show Password Plugin -->
-<!--
-    <script src="/includes/js/bootstrap-show-password/bootstrap-show-password.min.js"></script>
-    <script type="text/javascript">
-		$("#password").password('toggle');
+    <script src="includes/js/bootstrap-show-password/bootstrap-show-password.min.js"></script>
+
+	<script>
+		var tooManyAttemptsMsg = 'You have made too many login in attempts. Try again later.';
+		var missingInfoMsg = 'It looks like you have forgot something important.';
+		var shortUsernamedMsg = 'Your username is too short. It needs to be longer than that.';
+		var shortPasswordMsg = 'Your password is too short. It needs to be longer than that.';
+		var incorrectLoginMsg = 'LOGIN FAILED: Your username and password combination are incorrect';
+		var commErrornMsg = 'There was an error communicating with the controller. Please try again.';
+		var showPassTitle = 'Click here to show/hide password';
 	</script>
--->
+
+    <script src="includes/js/page-login.js"></script>
+
 
   </body>
 </html>

@@ -159,7 +159,7 @@ function _($input) {
               <a data-toggle="tooltip" data-placement="top" title="<?=_('Support OpenRepeater')?>" href="https://openrepeater.com/donate" target="_blank">
                 <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="<?=_('Log Out')?>" href="/new_ui/index.php">
+              <a class="logoutORP" data-toggle="tooltip" data-placement="top" title="<?=_('Log Out')?>">
                 <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
               </a>
             </div>
@@ -183,7 +183,7 @@ function _($input) {
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
                     <li><a class="change_password"><i class="fa fa-lock pull-right"></i><?=_('Change Password')?></a></li>
                     <li><a href="/new_ui/backup.php"><i class="fa fa-database pull-right"></i><?=_('Backup & Restore')?></a></li>
-                    <li><a href="/new_ui/index.php"><i class="fa fa-sign-out pull-right"></i><?=_('Log Out')?></a></li>
+                    <li><a class="logoutORP"><i class="fa fa-sign-out pull-right"></i><?=_('Log Out')?></a></li>
                   </ul>
                 </li>
 

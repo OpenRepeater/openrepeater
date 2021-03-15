@@ -1,0 +1,71 @@
+#alert {
+	font-size: 16px;
+	padding: 10px 15px;
+	text-shadow: none;
+	color: #333333;	
+	background-color: rgba(243,156,18,0.7);
+	border: none;
+}
+
+.input-group {
+	margin-top: 20px;	
+}
+
+#username, #password, .form-control.password {
+	height: 50px!important;
+    color: #000!important;
+    font-size: 20px;
+    padding-left: 20px;
+    margin: 0!important;
+}
+
+span.add-on {
+	font-size: 18px;
+}
+
+#loginBtn {
+	margin-top: 15px;
+	font-size: 20px;
+}
+
+
+
+
+.login {
+	background:#fff;
+	background-image:url(../images/login-bg.jpg);
+	background-size:cover;
+	background-attachment:fixed;
+	background-position: center center;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+	.login { animation: login_pan 200s linear infinite alternate; }	
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+	.login { animation: login_pan 160s linear infinite alternate; }	
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+	.login { animation: login_pan 135s linear infinite alternate; }	
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+	.login { animation: login_pan 120s linear infinite alternate; }	
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+	.login { animation: login_pan 60s linear infinite alternate; }	
+}
+
+
+@keyframes login_pan {
+    0%   { background-position: left center; }
+    100% { background-position: right center; }
+}

@@ -236,6 +236,35 @@
 				});
 			});
 
+
+			/* *********************************************** */
+			// Logout Request
+			/* *********************************************** */
+
+			$('.logoutORP').click(function(e) {
+				e.preventDefault();
+				$.ajax({
+					url:'../functions/ajax_user_requests.php',
+					type:'post',
+					data:{ type: 'logout' },
+					success: function(response){ // success here means successful communication, not successful login.
+						var logout = $.parseJSON(response);
+						if(logout.result == 'success') {
+							window.location = logout.login_url;
+						} else {
+							// Invalid response from controller
+							console.log('Invalid response from controller');
+						}
+	
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						console.log(textStatus + ": " + jqXHR.status + " " + errorThrown);
+					}
+				});
+			});
+
+
+
 		});
 	</script>
 
