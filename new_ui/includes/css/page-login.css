@@ -26,6 +26,9 @@ span.add-on {
 #loginBtn {
 	margin-top: 15px;
 	font-size: 20px;
+    margin-right: 0;
+    margin-left: 0;
+    width: 100%	
 }
 
 

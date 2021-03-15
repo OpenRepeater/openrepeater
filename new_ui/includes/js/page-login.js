@@ -91,10 +91,10 @@ $(function() {
 					if(login.result == 'success') {
 						// Successful Login
 						$('#loginForm').hide();
-						$('#loader').fadeIn(300);						
-						
-						window.location = login.page_url;
-						console.log('Successful Login');
+						$('#loader').fadeIn(100);						
+						setTimeout(function(){
+							window.location = login.page_url;
+						}, 1000)
 
 					} else if(login.reason == 'invalid_login') {
 						// Unsuccessful Login
