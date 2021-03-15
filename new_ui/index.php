@@ -60,7 +60,12 @@ function _($input) {
           <section class="login_content">
             <h1><?=_('Login')?></h1>
 
-			<div id="loader" style="display:none;">Please Wait</div>
+			<div id="loader" style="display:none;">
+				<h5 style="text-align: center"><?=_('Please Wait')?></h5>
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%;"></div>
+				</div>
+			</div>
 
             <form id="loginForm">
 			  <div id="alert" class="alert alert-warning" role="alert" style="display:none;"></div>

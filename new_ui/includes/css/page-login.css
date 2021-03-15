@@ -29,6 +29,14 @@ span.add-on {
 }
 
 
+#loader h5 {
+	margin-top: 30px;
+}
+
+#loader .progress {
+	margin-bottom: 40px;
+}
+
 
 
 .login {
