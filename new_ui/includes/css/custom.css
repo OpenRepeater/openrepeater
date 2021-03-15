@@ -3977,25 +3977,6 @@ ul.project_files li a i {
 	font-size:35px;
 }
 
-.login {
-	background:#fff;
-	background-image:url(../images/login-bg.jpg);
-	background-size:cover;
-	background-attachment:fixed;
-	background-position: center center;
-	animation: login_pan 30s linear infinite alternate;
-}
-
-@keyframes login_pan {
-    0%   { background-position: left center; }
-    100% { background-position: right center; }
-}
-
-
-
-
-
-
 a.hiddenanchor {
 	display:none;
 }
@@ -4100,7 +4081,6 @@ a.hiddenanchor {
 	padding:0;
 	position:relative;
 	text-align:center;
-	text-shadow:0 1px 0 #fff;
 	min-width:280px;
 }
 
