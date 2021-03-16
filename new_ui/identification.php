@@ -1,4 +1,16 @@
 <?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: index.php'); // If they aren't logged in, send them to login page.
+} elseif (!isset($_SESSION['callsign'])) {
+	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
+} else { // If they are logged in and have set a callsign, show the page.
+// --------------------------------------------------------
+
+
+
 /*
 $customJS = 'dropzone.js, upload-file.js'; // 'file1.js, file2.js, ... '
 $customCSS = 'upload-file.css'; // 'file1.css, file2.css, ... '
@@ -8,18 +20,10 @@ $customJS = 'page-identification.js, orp-audio-player.js, dropzone.js, upload-fi
 $customCSS = 'page-identification.css, orp-audio-player.css, upload-file.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
+
+$AudioFiles = new AudioFiles();
+$identificationAudio = $AudioFiles->get_audio_files('identification');
 ?>
-
-
-
-
-<?php 
-	$temp_path = 'temporary/identification/';
-	$temp_array = ['Sample_Short_ID_Clip.wav', 'Sample_Long_ID_Clip.wav'];
-	$callSign = 'W1AW';
-?>
-
-
 
 
         <!-- page content -->
@@ -49,10 +53,10 @@ include('includes/header.php');
 
                       <div class="form-group">
                         <div class="btn-group btn-group-sm id-type" data-toggle="buttons">
-                          <label class="btn btn-default"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode1"  value="disabled"><?=_('Disabled')?></label>
-                          <label class="btn btn-default"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode2" value="morse"><?=_('Morse Only')?></label>
-                          <label class="btn btn-default"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode3" value="voice" ><?=_('Basic Voice')?></label>
-                          <label class="btn btn-default active"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode4" value="custom" checked><?=_('Custom')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Short_Mode'] == 'disabled' ? ' active':'' ?>"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode1"  value="disabled"<?= $settings['ID_Short_Mode'] == 'disabled' ? ' checked':'' ?>><?=_('Disabled')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Short_Mode'] == 'morse' ? ' active':'' ?>"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode2" value="morse"<?= $settings['ID_Short_Mode'] == 'morse' ? ' checked':'' ?>><?=_('Morse Only')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Short_Mode'] == 'voice' ? ' active':'' ?>"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode3" value="voice"<?= $settings['ID_Short_Mode'] == 'voice' ? ' checked':'' ?>><?=_('Basic Voice')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Short_Mode'] == 'custom' ? ' active':'' ?>"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode4" value="custom"<?= $settings['ID_Short_Mode'] == 'custom' ? ' checked':'' ?>><?=_('Custom')?></label>
                         </div>
                       </div>
 
@@ -61,7 +65,7 @@ include('includes/header.php');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-                          <input type="number" id="ID_Short_IntervalMin" class="form-control" value="60" placeholder="<?=_('Minutes')?>">
+                          <input type="number" id="ID_Short_IntervalMin" name="ID_Short_IntervalMin" class="form-control" value="<?= $settings['ID_Short_IntervalMin'] ?>" placeholder="<?=_('Minutes')?>" required>
                         </div>
                       </div>
 
@@ -70,11 +74,14 @@ include('includes/header.php');
                         	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-						  <select id="ID_Short_Custom_Audio" class="form-control">
+						  <select id="ID_Short_CustomFile" name="ID_Short_CustomFile" class="form-control">
 							<?php
-								foreach($temp_array as $temp_key => $temp_file) { 
-									$temp_name = str_replace( '_', ' ', pathinfo($temp_file, PATHINFO_FILENAME) );
-									echo '<option value="'.$temp_file.'">'.$temp_name.'</option>';
+								$activeShortFile = $settings['ID_Short_CustomFile'];
+								foreach($identificationAudio as $curFile) { 
+									$curOption = '<option value="'.$curFile['fileName'].'"';
+									$curOption .= $activeShortFile == $curFile['fileName'] ? ' selected': '';
+									$curOption .= '>'.$curFile['fileLabel'].'</option>';
+									echo $curOption;
 								}
 							?>
 						  </select>
@@ -87,7 +94,7 @@ include('includes/header.php');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-3">
-                          <input id="ID_After_TX" type="checkbox" class="js-switch" checked /> 
+                          <input id="ID_Only_When_Active" name="ID_Only_When_Active" type="checkbox" class="js-switch"<?= $settings['ID_Only_When_Active'] == 'True' ? ' checked':'' ?>/> 
                         </div>
                         </div>
                       </div>
@@ -98,7 +105,7 @@ include('includes/header.php');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-3">
-                          <input id="ShortMorse" type="checkbox" class="js-switch" checked /> 
+                          <input id="ID_Short_AppendMorse" name="ID_Short_AppendMorse" type="checkbox" class="js-switch"<?= $settings['ID_Short_AppendMorse'] == 'True' ? ' checked':'' ?>/> 
                         </div>
                         </div>
                       </div>
@@ -120,11 +127,13 @@ include('includes/header.php');
 
                       <div class="form-group">
                         <div class="btn-group btn-group-sm id-type" data-toggle="buttons">
-                          <label class="btn btn-default"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode1"  value="disabled"><?=_('Disabled')?></label>
-                          <label class="btn btn-default"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode2" value="morse"><?=_('Morse Only')?></label>
-                          <label class="btn btn-default"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode3" value="voice" ><?=_('Basic Voice')?></label>
-                          <label class="btn btn-default active"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode4" value="custom" checked><?=_('Custom')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Long_Mode'] == 'disabled' ? ' active':'' ?>"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode1"  value="disabled"<?= $settings['ID_Long_Mode'] == 'disabled' ? ' checked':'' ?>><?=_('Disabled')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Long_Mode'] == 'morse' ? ' active':'' ?>"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode2" value="morse"<?= $settings['ID_Long_Mode'] == 'morse' ? ' checked':'' ?>><?=_('Morse Only')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Long_Mode'] == 'voice' ? ' active':'' ?>"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode3" value="voice"<?= $settings['ID_Long_Mode'] == 'voice' ? ' checked':'' ?>><?=_('Basic Voice')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Long_Mode'] == 'custom' ? ' active':'' ?>"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode4" value="custom"<?= $settings['ID_Long_Mode'] == 'custom' ? ' checked':'' ?>><?=_('Custom')?></label>
                         </div>
+
+
                       </div>
 
                       <div id="ID_Long_Interval_Grp" class="form-group">
@@ -132,7 +141,7 @@ include('includes/header.php');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The number of minutes between long identifications. The purpose of the long identification is to transmit some more information about the station. A good value for a repeater is every 60 minutes.')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-                          <input type="number" id="ID_Long_IntervalMin" class="form-control" value="60" placeholder="<?=_('Minutes')?>">
+                          <input id="ID_Long_IntervalMin" name="ID_Long_IntervalMin" type="number" class="form-control" value="<?= $settings['ID_Long_IntervalMin'] ?>" placeholder="<?=_('Minutes')?>">
                         </div>
                       </div>
 
@@ -141,11 +150,14 @@ include('includes/header.php');
                         	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-						  <select id="ID_Long_Custom_Audio" class="form-control">
+						  <select id="ID_Long_CustomFile" name="ID_Long_CustomFile" class="form-control">
 							<?php
-								foreach($temp_array as $temp_key => $temp_file) { 
-									$temp_name = str_replace( '_', ' ', pathinfo($temp_file, PATHINFO_FILENAME) );
-									echo '<option value="'.$temp_file.'">'.$temp_name.'</option>';
+								$activeShortFile = $settings['ID_Long_CustomFile'];
+								foreach($identificationAudio as $curFile) { 
+									$curOption = '<option value="'.$curFile['fileName'].'"';
+									$curOption .= $activeShortFile == $curFile['fileName'] ? ' selected': '';
+									$curOption .= '>'.$curFile['fileLabel'].'</option>';
+									echo $curOption;
 								}
 							?>
 						  </select>
@@ -162,7 +174,7 @@ include('includes/header.php');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-3">
-                          <input id="LongTime" type="checkbox" class="js-switch" checked /> 
+                          <input id="ID_Long_AppendTime" name="ID_Long_AppendTime" type="checkbox" class="js-switch"<?= $settings['ID_Long_AppendTime'] == 'True' ? ' checked':'' ?>/> 
                         </div>
                         </div>
                       </div>
@@ -173,7 +185,7 @@ include('includes/header.php');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-3">
-                          <input id="LongMorse" type="checkbox" class="js-switch" checked /> 
+                          <input id="ID_Long_AppendMorse" name="ID_Long_AppendMorse" type="checkbox" class="js-switch"<?= $settings['ID_Long_AppendMorse'] == 'True' ? ' checked':'' ?>/> 
                         </div>
                         </div>
                       </div>
@@ -185,6 +197,7 @@ include('includes/header.php');
 
 
 
+                <?php $callSign = strtoupper($settings['callSign']); ?>
                 <div class="x_panel">
                   <div class="x_title"><h4><?=_('Global Morse ID Settings')?></h4></div>
 
@@ -193,49 +206,41 @@ include('includes/header.php');
                     <form class="form-horizontal form-label-left input_mask">
 
                       <div class="form-group">
-                        <label class="control-label col-md-5"><?=_('Morse Callsign')?>
+                        <label class="control-label col-md-12"><?=_('Morse Callsign')?>
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Use the following callsign variation for ALL morse code identification.')?>"></i>
                         </label>
-                        <div class="btn-group btn-group-sm col-md-7" data-toggle="buttons">
-                          <label class="btn btn-default"><input type="radio" name="ID_Morse_Suffix" id="morseSuffix1" value=""><?=$callSign?></label>
-                          <label class="btn btn-default active"><input type="radio" name="ID_Morse_Suffix" id="morseSuffix2" value="/R" checked><?=$callSign?><strong>/R</strong></label>
-                          <label class="btn btn-default"><input type="radio" name="ID_Morse_Suffix" id="morseSuffix3" value="/RPT"><?=$callSign?><strong>/RPT</strong></label>
+
+                        <div class="btn-group btn-group-sm col-md-12" data-toggle="buttons">
+                          <label class="btn btn-default<?= $settings['ID_Morse_Suffix'] == '' ? ' active':'' ?>"><input type="radio" name="ID_Morse_Suffix" id="morseSuffix1" value=""<?= $settings['ID_Morse_Suffix'] == '' ? ' checked':'' ?>><?=$callSign?></label>
+                          <label class="btn btn-default<?= $settings['ID_Morse_Suffix'] == '/R' ? ' active':'' ?>"><input type="radio" name="ID_Morse_Suffix" id="morseSuffix2" value="/R"<?= $settings['ID_Morse_Suffix'] == '/R' ? ' checked':'' ?>><?=$callSign?><strong>/R</strong></label>
+                          <label class="btn btn-default<?= $settings['ID_Morse_Suffix'] == '/RPT' ? ' active':'' ?>"><input type="radio" name="ID_Morse_Suffix" id="morseSuffix3" value="/RPT"<?= $settings['ID_Morse_Suffix'] == '/RPT' ? ' checked':'' ?>><?=$callSign?><strong>/RPT</strong></label>
                         </div>
                       </div>
 
 
                       <div class="form-group">
-                        <label class="control-label col-md-5"><?=_('Global speed and tone')?>
+                        <label class="control-label col-md-12"><?=_('Global speed and tone')?>
                         	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Set the speed (WPM) and tone (Hz) of ALL morse code identification.')?>"></i>
                         </label>
 
-                        <div class="col-md-7">
+                        <div class="col-md-12">
 	                        <div class="col-md-12">
 								<div class="knob_wrapper">
-									<input class="knob" name="ID_Morse_WPM" id="ID_Morse_WPM" data-width="130" data-height="85" data-min="5" data-max="35" data-step="5" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="25">
+									<input class="knob" id="ID_Morse_WPM" name="ID_Morse_WPM" data-width="130" data-height="85" data-min="5" data-max="35" data-step="5" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="<?=$settings['ID_Morse_WPM']?>">
 									<label><?=_('WPM')?></label>									
 								</div>
 
 								<div class="knob_wrapper">
-									<input class="knob" name="ID_Morse_Pitch" id="ID_Morse_Pitch" data-width="130" data-height="85" data-min="400" data-max="1200" data-step="100" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="700">
+									<input class="knob" id="ID_Morse_Pitch" name="ID_Morse_Pitch" data-width="130" data-height="85" data-min="400" data-max="1200" data-step="100" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="<?=$settings['ID_Morse_Pitch']?>">
 									<label><?=_('Pitch (Hz)')?></label>
 								</div>
 	                        </div>
 
 	                        <div class="col-md-12">
 								<button id="morsePreview" type="button" class="btn btn-primary"><i class="fa fa-play"></i> <?=_('Preview')?></button>
+								<input type="hidden" id="callSign" value="<?=$callSign?>">
+								<input type="hidden" id="morseOutput" value="">
 	                        </div>
-
-
-
-
-
-
-							<input type="hidden" id="callSign" value="<?=$callSign?>">
-							<input type="hidden" id="morseOutput" value="">
-
-
-
                         </div>
 
                       </div>
@@ -275,22 +280,20 @@ include('includes/header.php');
 					  </thead>   
 
                       <tbody>
-
 						<?php
-							foreach($temp_array as $temp_key => $temp_file) { 
-								$temp_name = str_replace( '_', ' ', pathinfo($temp_file, PATHINFO_FILENAME) );
+							foreach($identificationAudio as $curKey => $curFile) { 
 						?>
 
-							<tr id="clip<?=$temp_key?>" data-row-name="<?=str_replace( '_', ' ', pathinfo($temp_file, PATHINFO_FILENAME) )?>" data-row-file="<?=$temp_file?>">
+							<tr id="clip<?=$curKey?>" data-row-name="<?=$curFile['fileLabel']?>" data-row-file="<?=$curFile['fileName']?>">
 								<td>
-									<div id="player<?=$temp_key?>" class="orp_player">
+									<div id="player<?=$curKey?>" class="orp_player">
 									    <audio preload="true">
-									        <source src="<?=$temp_path . $temp_file?>">
+									        <source src="<?=$curFile['fileURL']?>">
 									    </audio>
 									    <button class="play"><span></span></button>
 									</div>
 
-									<span class="audio_name"><?=$temp_name?></span>
+									<span class="audio_name"><?=$curFile['fileLabel']?></span>
 								</td>
 
 								<td>			
@@ -348,3 +351,10 @@ include('includes/header.php');
 </script>
 
 <?php include('includes/footer.php'); ?>
+
+<?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
+?>

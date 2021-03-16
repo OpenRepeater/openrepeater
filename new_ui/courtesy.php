@@ -3,6 +3,9 @@ $customJS = 'page-courtesy.js, orp-audio-player.js, dropzone.js, upload-file.js'
 $customCSS = 'page-courtesy.css, orp-audio-player.css, upload-file.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
+
+$AudioFiles = new AudioFiles();
+$identificationAudio = $AudioFiles->get_audio_files('courtesy_tones');
 ?>
 
         <!-- page content -->
@@ -27,35 +30,31 @@ include('includes/header.php');
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
-					
-<?php $temp_array = ['temporary/courtesy_tones/3_Down.wav', 'temporary/courtesy_tones/3_Up.wav', 'temporary/courtesy_tones/3_Up_(Chord).wav', 'temporary/courtesy_tones/4_Down.wav', 'temporary/courtesy_tones/4_Up.wav', 'temporary/courtesy_tones/Apollo.wav', 'temporary/courtesy_tones/Bee_Boo.wav', 'temporary/courtesy_tones/Beep.wav', 'temporary/courtesy_tones/Blast_Off.wav', 'temporary/courtesy_tones/Boop.wav', 'temporary/courtesy_tones/Bumble_Bee.wav', 'temporary/courtesy_tones/Comet.wav', 'temporary/courtesy_tones/Duncecap.wav', 'temporary/courtesy_tones/Moonbounce.wav', 'temporary/courtesy_tones/NBC_(Fast).wav', 'temporary/courtesy_tones/NBC_(Medium).wav', 'temporary/courtesy_tones/NBC_(Slow).wav', 'temporary/courtesy_tones/Nextel.wav', 'temporary/courtesy_tones/Over_Here.wav', 'temporary/courtesy_tones/Piano_Chord.wav', 'temporary/courtesy_tones/RC210_Number_01.wav', 'temporary/courtesy_tones/RC210_Number_02.wav', 'temporary/courtesy_tones/RC210_Number_03.wav', 'temporary/courtesy_tones/RC210_Number_04.wav', 'temporary/courtesy_tones/RC210_Number_05.wav', 'temporary/courtesy_tones/RC210_Number_06.wav', 'temporary/courtesy_tones/RC210_Number_07.wav', 'temporary/courtesy_tones/RC210_Number_08.wav', 'temporary/courtesy_tones/RC210_Number_09.wav', 'temporary/courtesy_tones/RC210_Number_10.wav', 'temporary/courtesy_tones/Sat_Pass.wav', 'temporary/courtesy_tones/Shooting_Star.wav', 'temporary/courtesy_tones/Stardust.wav', 'temporary/courtesy_tones/Target.wav', 'temporary/courtesy_tones/TelRing.wav', 'temporary/courtesy_tones/Tumbleweed.wav', 'temporary/courtesy_tones/Waterdrop.wav', 'temporary/courtesy_tones/Whippoorwhill.wav', 'temporary/courtesy_tones/XP_Error.wav', 'temporary/courtesy_tones/XPok.wav', 'temporary/courtesy_tones/Yellow_Jacket.wav']; ?>
-					
-					
+
+
                     <table id="datatable-responsive" class="audio-table table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
 					  <thead>
 						  <tr>
-							  <th>Name</th>
-							  <th class="button_grp">Actions</th>
+							  <th><?=_('Name')?></th>
+							  <th class="button_grp"><?=_('Actions')?></th>
 						  </tr>
 					  </thead>   
 
                       <tbody>
-
 						<?php
-							foreach($temp_array as $temp_key => $temp_file) { 
-								$temp_name = str_replace( '_', ' ', pathinfo($temp_file, PATHINFO_FILENAME) );
+							foreach($identificationAudio as $curKey => $curFile) { 
 						?>
 
-							<tr id="<?=$temp_key?>" data-row-name="<?=str_replace( '_', ' ', pathinfo($temp_file, PATHINFO_FILENAME) )?>" data-row-file="<?=pathinfo($temp_file, PATHINFO_FILENAME)?>">
+							<tr id="clip<?=$curKey?>" data-row-name="<?=$curFile['fileLabel']?>" data-row-file="<?=$curFile['fileName']?>">
 								<td>
-									<div id="player<?=$temp_key?>" class="orp_player">
+									<div id="player<?=$curKey?>" class="orp_player">
 									    <audio preload="true">
-									        <source src="<?=$temp_file?>">
+									        <source src="<?=$curFile['fileURL']?>">
 									    </audio>
 									    <button class="play"><span></span></button>
 									</div>
 
-									<span class="audio_name"><?=$temp_name?></span>
+									<span class="audio_name"><?=$curFile['fileLabel']?></span>
 								</td>
 
 								<td>			
