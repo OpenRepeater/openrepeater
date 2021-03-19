@@ -35,7 +35,7 @@ $board_definitions[] = [
 		0 => [
 			'Headphone' => '86%',
 			'PCM' => '75%',
-			'Lineout' => '58%',
+			'Lineout' => '80% unmute',
 			'Mic' => '59%',
 			'Capture Mux' => 'LINE_IN'
 		]
@@ -74,7 +74,7 @@ $board_definitions[] = [
 		0 => [
 			'Headphone' => '86%',
 			'PCM' => '75%',
-			'Lineout' => '58%',
+			'Lineout' => '80% unmute',
 			'Mic' => '59%',
 			'Capture Mux' => 'LINE_IN'
 		]
@@ -238,7 +238,7 @@ $board_definitions[] = [
 		0 => [
 			'Headphone' => '86%',
 			'PCM' => '75%',
-			'Lineout' => '58%',
+			'Lineout' => '80% unmute',
 			'Mic' => '59%',
 			'Capture Mux' => 'LINE_IN'
 		]
