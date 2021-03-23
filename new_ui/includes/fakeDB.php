@@ -151,9 +151,9 @@ $fakeModules = [
         'svxlinkID' => '0',
         'moduleOptions' => '',
 
-        'tempDesc' => 'A voice based help system that provides DTMF commands over the air on active modules. If you do not want this broadcast to the general public, then you should disable this module.',
-        'tempType' => 'core',
-        'tempDTMF' => 'yup',
+        'desc' => 'A voice based help system that provides DTMF commands over the air on active modules. If you do not want this broadcast to the general public, then you should disable this module.',
+        'type' => 'core',
+        'dtmf' => 'false',
 
         'tempSubCommands' => [
 	        '0#' => 'Overview of the Help Module',
@@ -173,9 +173,9 @@ $fakeModules = [
         'svxlinkID' => '1',
         'moduleOptions' => '',
 
-        'tempDesc' => 'Play back everything that is received.',
-        'tempType' => 'core',
-        'tempDTMF' => 'yup',
+        'desc' => 'Play back everything that is received.',
+        'type' => 'core',
+        'dtmf' => 'true',
 
         'tempSubCommands' => [
 	        '#' => 'Exit Parrot',
@@ -190,16 +190,16 @@ $fakeModules = [
         'svxlinkID' => '2',
         'moduleOptions' => '',
 
-        'tempDesc' => 'The EchoLink® network allows licensed Amateur Radio stations to communicate with one another over the Internet using VOIP technology. This module allows worldwide connections to be made between this and other repeaters or to individuals using EchoLink nodes.',
-        'tempType' => 'core',
-        'tempSettings' => 'yup',
-        'tempDTMF' => 'yup',
+        'desc' => 'The EchoLink® network allows licensed Amateur Radio stations to communicate with one another over the Internet using VOIP technology. This module allows worldwide connections to be made between this and other repeaters or to individuals using EchoLink nodes.',
+        'type' => 'core',
+        'settings' => 'true',
+        'dtmf' => 'true',
 
         'tempSubCommands' => [
 	        '9999#' => 'Connect to EchoLink by Node ID. (Node 9999 is ECHOTEST)',
 	        '#' => 'Disconnect from last connected station',
 	        '##' => 'Disconnect station and deactivate EchoLink Module',
-	        'hr1' => '<hr>',
+	        'hr1' => 'hr',
 	        '0#' => 'Play the help message',
 	        '1#' => 'List all connected stations',
 	        '2#' => 'Play local EchoLink node id',
@@ -220,9 +220,9 @@ $fakeModules = [
         'svxlinkID' => '3',
         'moduleOptions' => '',
 
-        'tempDesc' => 'The ORP Remote Relay Module is a module to add the ability to control relays by DTMF tones remotely via GPIO pins. It will support up to 8 relays and offers the ability to restrict access with a pin code.',
-        'tempSettings' => 'yup',
-        'tempDTMF' => 'yup',
+        'desc' => 'The ORP Remote Relay Module is a module to add the ability to control relays by DTMF tones remotely via GPIO pins. It will support up to 8 relays and offers the ability to restrict access with a pin code.',
+        'settings' => 'true',
+        'dtmf' => 'true',
 
         'tempSubCommands' => [
 
@@ -264,12 +264,12 @@ $fakeModules = [
         'displayName' => 'Site Status',
         'svxlinkID' => '',
         'moduleOptions' => '',
-        'tempSettings' => 'yup',
+        'settings' => 'true',
 
-        'tempType' => 'daemon',
-        'tempDTMF' => 'yup',
+        'type' => 'daemon',
+        'dtmf' => 'true',
 
-        'tempDesc' => 'The SiteStatus module is useful for monitoring the general status of a repeater site remotely. Through the use of Digital and Analog sensors, you can be audibly notified of events and things of interest from a maintenance perspective...',
+        'desc' => 'The SiteStatus module is useful for monitoring the general status of a repeater site remotely. Through the use of Digital and Analog sensors, you can be audibly notified of events and things of interest from a maintenance perspective...',
     ],
 
     '6' => [
@@ -280,9 +280,9 @@ $fakeModules = [
         'svxlinkID' => '5',
         'moduleOptions' => '',
 
-        'tempDesc' => 'The ORP Rig Control Module is a module to add the ability to control supported radios remotely by DTMF tones. This is a more advanced modules and requires the use of the HamLib Library which must also be installed. Radio support is limited in part by what HamLib supports.',
-        'tempSettings' => 'yup',
-        'tempDTMF' => 'yup',
+        'desc' => 'The ORP Rig Control Module is a module to add the ability to control supported radios remotely by DTMF tones. This is a more advanced modules and requires the use of the HamLib Library which must also be installed. Radio support is limited in part by what HamLib supports.',
+        'settings' => 'true',
+        'dtmf' => 'true',
     ],
 
     '7' => [
@@ -293,9 +293,9 @@ $fakeModules = [
         'svxlinkID' => '6',
         'moduleOptions' => '',
 
-        'tempDesc' => 'ORP Voicemail is an adaptation of the TclVoiceMail module design specifically to run on OpenRepeater.',
-        'tempSettings' => 'yup',
-        'tempDTMF' => 'yup',
+        'desc' => 'ORP Voicemail is an adaptation of the TclVoiceMail module design specifically to run on OpenRepeater.',
+        'settings' => 'true',
+        'dtmf' => 'true',
 
 		'tempSubCommands' => [
 			'2#' => 'Record a voice message',
@@ -311,9 +311,9 @@ $fakeModules = [
         'svxlinkID' => '7',
         'moduleOptions' => '',
 
-        'tempDesc' => 'The FRN module is used to connect to Free Radio Network (FRN) servers. This service is more common in Europe. Check the legality in your country prior to use.',
-        'tempSettings' => 'yup',
-        'tempDTMF' => 'yup',
+        'desc' => 'The FRN module is used to connect to Free Radio Network (FRN) servers. This service is more common in Europe. Check the legality in your country prior to use.',
+        'settings' => 'true',
+        'dtmf' => 'true',
 
 		'tempSubCommands' => [
 			'#' => 'Exit FRN Gateway',
@@ -328,9 +328,9 @@ $fakeModules = [
         'svxlinkID' => '8',
         'moduleOptions' => '',
 
-        'tempDesc' => 'The METAR information module is used to get METAR (weather) information from ICAO locations, usually airports, and announces them over the air. You can request a METAR from an airport of your interest.',
-        'tempSettings' => 'yup',
-        'tempDTMF' => 'yup',
+        'desc' => 'The METAR information module is used to get METAR (weather) information from ICAO locations, usually airports, and announces them over the air. You can request a METAR from an airport of your interest.',
+        'settings' => 'true',
+        'dtmf' => 'true',
 
         'tempSubCommands' => [
 	        '0#' => 'Help general',
@@ -350,9 +350,9 @@ $fakeModules = [
         'svxlinkID' => '',
         'moduleOptions' => '',
 
-        'tempType' => 'daemon',
-        'tempDesc' => 'This module allows control of a cooling fan via a GPIO pin. It follows the PTT activity or comes on after a delay.',
-        'tempSettings' => 'yup',
+        'type' => 'daemon',
+        'desc' => 'This module allows control of a cooling fan via a GPIO pin. It follows the PTT activity or comes on after a delay.',
+        'settings' => 'true',
     ],
 
 ];
