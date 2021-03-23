@@ -1,11 +1,21 @@
-<?php include('includes/fakeDB.php'); ?>
+<?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: index.php'); // If they aren't logged in, send them to login page.
+} elseif (!isset($_SESSION['callsign'])) {
+	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
+} else { // If they are logged in and have set a callsign, show the page.
+// --------------------------------------------------------
 
-
-<?php 
+	
 $customJS = 'page-modules.js, jquery-ui.min.js, jquery.ui.touch-punch.min.js, dropzone.js, upload-file.js'; // 'file1.js, file2.js, ... '
 $customCSS = 'page-modules.css, upload-file.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
+$ModulesClass = new Modules();
+$moduleList = $ModulesClass->getModulesJSON();
 ?>
 
         <!-- page content -->
@@ -25,110 +35,90 @@ include('includes/header.php');
                   <div class="x_title">
                     <h4 class="navbar-left"><?=_('Installed Modules')?></h4>
                     <div class="nav navbar-right">
+<button type="button" id="tempBtn" class="btn btn-success">TEST</button>
                       <button type="button" class="btn btn-success upload_file" data-upload-type="module"><i class="fa fa-upload"></i> <?=_('Upload Module')?></button>
                       <a class="btn btn-success" href="https://openrepeater.com/downloads/modules" target="_blank"><i class="fa fa-search"></i> <?=_('Find Modules on OpenRepeater.com')?></a>
                     </div>
                     <div class="clearfix"></div>
                   </div>
-                  <div class="x_content">
+                  <div id="moduleWrap" class="x_content">
 
-					<?php 
-					// 	print_r($fakeModules);
-						$nonSortableModules = '<div id="moduleList">';
-						$sortableModules = '<div id="moduleListSort">';
-						
-						foreach($fakeModules as $cur_mod) { 
-							if ($cur_mod['moduleEnabled'] == 1) {
-								$moduleClass = '';
-								$moduleEnabled = ' checked';
-							} else {
-								$moduleClass = ' deactive';
-								$moduleEnabled = '';
-							}
+					<div id="moduleList"></div>
+					<div id="moduleListSort"></div>
 
-							$curModHTML = '
-							<div class="moduleRow' . $moduleClass . '" data-module-id="' . $cur_mod['moduleKey'] . '" data-svxlink-id="' . $cur_mod['svxlinkID'] . '">
-								<span class="largeDigit">' . $cur_mod['svxlinkID'] . '</span>
-
-								<div class="col-md-4 col-sm-4 col-xs-12">
-									<h3><i class="fa fa-plug"></i> ' . $cur_mod['displayName'] . '</h3>
-									<!-- <h4 class="svxlinkID">' . $cur_mod['svxlinkID'] . '#</h4> -->';
-									if (!isset($cur_mod['tempType'])) { $cur_mod['tempType'] = 'addon';	}
-
-									switch ($cur_mod['tempType']) {
-									    case 'core':
-											$curModHTML .= '<span class="badge bg-orange">'._('Core').'</span>';
-									        break;
-									    case 'daemon':
-											$curModHTML .= '<span class="badge bg-red">'._('Daemon').'</span>';
-									        break;
-									    default:
-											$curModHTML .= '<span class="badge bg-green">'._('Add-on').'</span>';
-									}										
-										
-										
-
-									$curModHTML .= '
-									<div style="clear: both;">
-										<input type="checkbox" class="js-switch modActive"'.$moduleEnabled.' /> 
-										<div class="btn-group btn-group-sm">';
-											if (isset($cur_mod['tempSettings'])) {
-												$curModHTML .= '<a class="btn btn-default" href="/modules/' . trim($cur_mod['svxlinkName']) . '/settings.php"><i class="fa fa-cog"></i> '._('Settings').'</a>';
-											}
-											if (isset($cur_mod['tempDTMF'])) {
-												$curModHTML .= '<a class="btn btn-default" href="/dtmf.php#' . $cur_mod['svxlinkName'] . '"><i class="fa fa-tty"></i> '._('DTMF').'</a>';
-											}
-										$curModHTML .= '
-										</div>';
-
-										// Delete options is not avaialbe for core modules
-										if ( empty($cur_mod['tempType']) ) {
-											$curModHTML .= '
-											<div class="btn-group btn-group-sm delete-grp">
-												<button class="btn btn-danger" type="button"><i class="fa fa-trash"></i> '._('Delete').'</button>
-											</div>';
-										}
-
-									$curModHTML .= '
-									</div>
-								</div>
-								<div class="col-md-8 col-sm-8 col-xs-12">
-									' . $cur_mod['tempDesc'] . '
-								</div>
-								<div class="clearfix"></div>
-							</div>';
+					<? ### ROW TEMPLATE ######################################################## ?>
+					<div id="rowTemplate" class="moduleRow" data-module-id="" data-svxlink-id="" style="display:none;">
+						<span class="largeDigit">++</span>
 					
-					
-							if ($cur_mod['moduleKey'] == '1' || $cur_mod['svxlinkID'] =='' ) {
-								$nonSortableModules .= $curModHTML;
-							} else {
-								$sortableModules .= $curModHTML;
-							}
-						}
-						$nonSortableModules .= '</div>';
-						$sortableModules .= '</div>';
-						
-						echo $nonSortableModules;
-						echo $sortableModules;
-					?>
+						<div class="col-md-4 col-sm-4 col-xs-12">
+							<h3><i class="fa fa-plug"></i> <span class="modName">Template</span></h3>
+							<span class="modType badge"></span>
+							<div style="clear: both;">
+								<input type="checkbox" class="js-switch modActive" />
+								<div class="btn-group btn-group-sm">
+									<a class="btn btn-default settings" href="#"><i class="fa fa-cog"></i> <?=_('Settings')?></a>
+									<a class="btn btn-default dtmf" href="#"><i class="fa fa-tty"></i> <?=_('DTMF')?></a>
+								</div>
+								<div class="btn-group btn-group-sm delete-grp">
+									<button class="btn btn-danger delete" type="button"><i class="fa fa-trash"></i> <?=_('Delete')?></button>
+								</div>
+							</div>
+						</div>
+						<div class="modInfo col-md-8 col-sm-8 col-xs-12">
+							<span class="modDesc"></span>
+						</div>
+						<div class="clearfix"></div>
+			
+					</div>
+					<? ######################################################################### ?>
 
                   </div>
                 </div>
               </div>
             </div>
-            
-            
+
+
+<?php
+/*
+# Fake Module List Override
+include('includes/fakeDB.php');
+$fakeModuleList = json_encode($fakeModules);
+// $moduleList = $fakeModuleList;
+print_r($fakeModuleList);
+echo '<hr>';
+print_r($moduleList);
+*/
+?>
+
           </div>
         </div>
         <!-- /page content -->
 
 <!-- Upload Dialog Modal -->
 <script>
+	var moduleList = '<?= $moduleList ?>';
+	var modTypeCore = '<?=_('Core')?>';
+	var modTypeAddOn = '<?=_('Add-on')?>';
+	var modTypeDaemon = '<?=_('Daemon')?>';
+
 	var modal_UploadTitle = '<?=_('Upload New Module')?>';
 	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';
 	var modal_dzCustomDesc = '<?=_('Upload an OpenRepeater module to add additional functionality. These are specially packaged SVXLink Modules along with the required sound files and user interface components zipped up in an easy to install file. Modules must be compressed with a ".zip" extension. Upon upload the modules will be unzipped, verified, and installed. You will then need to active the module, configure any settings (if applicable), and rebuild the configuration.')?>';
 	var uploadSuccessTitle = '<?=_('Module Installed')?>';
 	var uploadSuccessText = '<?=_('New module was successfully uploaded and installed. You must activate first to use it.')?>';
+
+	var modDelConfirmTitle = '<?=_('Delete Module')?>';
+	var modDelConfirmBody = '<?=_('Are you sure you wish to delete the following Module?')?>';
+	var modDelConfirmBtn = '<?=_('Delete')?>';
+	var modDelSuccessTitle = '<?=_('Success')?>';
+	var modDelSuccessBody = '<?=_('The module has been successfully deleted.')?>';
 </script>
 
 <?php include('includes/footer.php'); ?>
+
+<?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
+?>

@@ -85,9 +85,9 @@
 }
 
 .moduleRow.deactive {
-    color: #cacaca;
-    background: #a2a2a2;
-    border-bottom-color: #757575;
+    color: #cacaca!important;
+    background: #a2a2a2!important;
+    border-bottom-color: #757575!important;
 }
 .moduleRow.deactive .badge {
 	opacity: .5;
@@ -101,6 +101,20 @@
 	display: none;
 }
 
+.moduleRow .delete-grp {
+	display: none;
+}
+
 .moduleRow.deactive .delete-grp {
-	display:inline-block;
+	display: inline-block;
+}
+
+.modInfo span {
+	display: block;
+    margin-bottom: 10px;	
+}
+
+.modVersion {
+	font-style: italic;
+    font-size: .8em;
 }

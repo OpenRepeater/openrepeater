@@ -533,6 +533,7 @@ class Modules {
 	# Display All Modules
 	###############################################
 
+	### OLD 2.2.X AND PRIOR UI ####
 	public function display_all() {
 		$modules = $this->get_modules();
 
@@ -618,6 +619,71 @@ class Modules {
 		$return_html .= '</tbody></table>';
 		
 		return $return_html;	
+	}
+
+
+	public function getModulesJSON() {
+		$modules = $this->get_modules();
+
+		foreach($modules as $cur_mod) { 
+			$curID = $cur_mod['moduleKey'];
+
+			unset($modules[$curID]['moduleOptions']);
+
+			$mod_ini_file = $this->modules_path.$cur_mod['svxlinkName'].'/info.ini';
+			$mod_settings_file = $this->modules_path.$cur_mod['svxlinkName'].'/settings.php';
+			$dtmf_help_file = $this->modules_path.$cur_mod['svxlinkName'].'/dtmf.php';
+
+			$curr_mod_ini = $this->read_ini($cur_mod['svxlinkName']);
+
+			// Moudle Display Name
+			if (isset($curr_mod_ini['Module_Info']['display_name'])) {
+				$modules[$curID]['displayName'] = $curr_mod_ini['Module_Info']['display_name'];
+			} else {
+			    $modules[$curID]['displayName'] = $currDisplayName = $cur_mod['svxlinkName'];
+			}
+
+			// Module type		
+			if ( in_array($cur_mod['svxlinkName'], $this->core_modules) ) {
+				$modules[$curID]['type'] = 'core';
+			} else if ( isset($curr_mod_ini['Module_Info']['mod_type']) ) {
+				if ($curr_mod_ini['Module_Info']['mod_type'] == 'daemon') { $modules[$curID]['type'] = 'daemon'; }
+			} else {
+				$modules[$curID]['type'] = 'add-on';				
+			}
+
+			// Settings Link...if Applicable
+			if (file_exists($mod_settings_file)) {
+				$modules[$curID]['settings'] = true;
+			} else {
+				$modules[$curID]['settings'] = false;
+			}
+
+			// DTMF Link...if Applicable
+			if (file_exists($dtmf_help_file)) {
+				$modules[$curID]['dtmf'] = true;
+			} else {
+				$modules[$curID]['dtmf'] = false;
+			}
+
+			// Module Description
+			if (isset($curr_mod_ini['Module_Info']['mod_desc'])) {
+				$curDesc = $curr_mod_ini['Module_Info']['mod_desc'];
+				$modules[$curID]['desc'] = $curDesc;
+			} else {
+				$modules[$curID]['desc'] = '<em>(' . _('No Description') . ')</em>';
+			}
+
+			// Version / Author Info
+			$versionInfo = '';
+			if (isset($curr_mod_ini['Module_Info']['version'])) { $versionInfo .= _('Version') . ': ' . $curr_mod_ini['Module_Info']['version']; }
+			if ( isset($curr_mod_ini['Module_Info']['version']) && isset($curr_mod_ini['Module_Info']['authors'])) { $versionInfo .= ' | '; }
+			if (isset($curr_mod_ini['Module_Info']['authors'])) { $versionInfo .= _('Authors') . ': ' . $curr_mod_ini['Module_Info']['authors']; }
+			$modules[$curID]['version'] = $versionInfo;
+
+		} /* End Current Module */
+
+		return json_encode($modules);
 	}
 
 
