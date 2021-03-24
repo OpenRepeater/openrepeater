@@ -21,7 +21,7 @@ if (!isset($_POST["page"])) {
 		"courtesy"				=>		"4_Up.wav",
 		"repeaterTimeoutSec"	=>		"230",
 		"rxTone"				=>		"",
-		"txTailValueSec"		=>		"4",
+		"txTailValueSec"		=>		"2",
 		"txTone"				=>		"",
 		"courtesyMode"			=>		"beep",
 		"ID_Short_Mode"			=>		"morse",
