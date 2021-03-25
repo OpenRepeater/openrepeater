@@ -52,7 +52,10 @@ include('includes/header.php');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The amount of time before the transmitter drops.')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-                          <input id="txTailValueSec" name="txTailValueSec" type="number" class="form-control" value="<?= $settings['txTailValueSec'] ?>" placeholder="<?=_('Seconds')?>" required>
+						  <div class="input-group">
+							<input id="txTailValueSec" name="txTailValueSec" type="number" class="form-control" value="<?= $settings['txTailValueSec'] ?>" placeholder="<?=_('Seconds')?>" aria-describedby="basic-addon2" required>
+						    <span class="input-group-addon" id="basic-addon2"><?=_('Secs')?></span>
+						  </div>
                         </div>
                       </div>
 
@@ -61,7 +64,10 @@ include('includes/header.php');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Timeout timer in seconds. (i.e. 4 minutes would equal 240 seconds.)')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-                          <input id="repeaterTimeoutSec" name="repeaterTimeoutSec" type="number" class="form-control" value="<?= $settings['repeaterTimeoutSec'] ?>" placeholder="<?=_('Seconds')?>">
+						  <div class="input-group">
+							<input id="repeaterTimeoutSec" name="repeaterTimeoutSec" type="number" class="form-control" value="<?= $settings['repeaterTimeoutSec'] ?>" placeholder="<?=_('Seconds')?>" aria-describedby="basic-addon2">
+						    <span class="input-group-addon" id="basic-addon2"><?=_('Secs')?></span>
+						  </div>
                         </div>
                       </div>
 
@@ -243,7 +249,10 @@ if(!empty($locationInfo)) {
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
 						  <?php $Frequency = (!empty($locationInfo->Frequency)) ? $locationInfo->Frequency : ''; ?>
-                          <input id="Frequency" name="Frequency" type="number" class="form-control" value="<?=$Frequency?>" placeholder="444.65">
+						  <div class="input-group">
+                            <input id="Frequency" name="Frequency" type="number" class="form-control" value="<?=$Frequency?>" placeholder="444.65"  aria-describedby="basic-addon2">
+						    <span class="input-group-addon" id="basic-addon2"><?=_('MHz')?></span>
+						  </div>
                         </div>
                       </div>
 
@@ -276,7 +285,11 @@ if(!empty($locationInfo)) {
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
 						  <?php $TX_Power = (!empty($locationInfo->TX_Power)) ? $locationInfo->TX_Power : ''; ?>
-                          <input id="TX_Power" name="TX_Power" type="number" class="form-control" value="<?=$TX_Power?>" min="0" max="2000" placeholder="100">
+						  <div class="input-group">
+						  	<input id="TX_Power" name="TX_Power" type="number" class="form-control" value="<?=$TX_Power?>" min="0" max="2000" placeholder="100" aria-describedby="basic-addon2">
+						    <span class="input-group-addon" id="basic-addon2"><?=_('Watts')?></span>
+						  </div>
+
                         </div>
                       </div>
 
@@ -286,7 +299,10 @@ if(!empty($locationInfo)) {
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
 						  <?php $Antenna_Gain = (!empty($locationInfo->Antenna_Gain)) ? $locationInfo->Antenna_Gain : ''; ?>
-                          <input id="Antenna_Gain" name="Antenna_Gain" type="number" class="form-control" value="<?=$Antenna_Gain?>" min="0" max="100" placeholder="9">
+						  <div class="input-group">
+							<input id="Antenna_Gain" name="Antenna_Gain" type="number" class="form-control" value="<?=$Antenna_Gain?>" min="0" max="100" placeholder="9" aria-describedby="basic-addon2">
+						    <span class="input-group-addon" id="basic-addon2"><?=_('dBd')?></span>
+						  </div>
                         </div>
                       </div>
 
@@ -354,7 +370,11 @@ if(!empty($locationInfo)) {
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
 						  <?php $Beacon_Interval = (!empty($locationInfo->Beacon_Interval)) ? $locationInfo->Beacon_Interval : ''; ?>
-                          <input id="Beacon_Interval" name="Beacon_Interval" type="number" class="form-control" value="<?=$Beacon_Interval?>" min="10" placeholder="10">
+						  <div class="input-group">
+							<input id="Beacon_Interval" name="Beacon_Interval" type="number" class="form-control" value="<?=$Beacon_Interval?>" min="10" placeholder="10"  aria-describedby="basic-addon2">
+						    <span class="input-group-addon" id="basic-addon2"><?=_('Mins')?></span>
+						  </div>
+
                         </div>
                       </div>
 
