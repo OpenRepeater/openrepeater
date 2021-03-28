@@ -45,6 +45,7 @@ $fakePorts = [
         
 		'SVXLINK_ADVANCED_LOGIC' => [
 			'DTMF_CTRL_PTY' => '123',
+			'OPEN_ON_1750' => 'maybe',
 		],
 		'SVXLINK_ADVANCED_RX' => [
 			'AUDIO_DEV_KEEP_OPEN' => '456',
