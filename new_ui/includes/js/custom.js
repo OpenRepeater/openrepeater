@@ -58,6 +58,12 @@ function init_sidebar() {
 			contentHeight -= $NAV_MENU.height() + footerHeight;
 			$RIGHT_COL.css('min-height', contentHeight);
 		};
+
+	// If linking to page that has navLink class, load exit loader while waiting for slow response.
+	$SIDEBAR_MENU.find('a.navLink').on('click', function(ev) {
+		exitOverlay();
+	});
+
 	$SIDEBAR_MENU.find('a').on('click', function(ev) {
 		console.log('clicked - sidebar_menu');
 		var $li = $(this).parent();

@@ -5088,3 +5088,33 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
 .login_content .input-group-addon {
 	height: 40px;
 }
+
+
+
+
+/* ORP Loader Overlay */
+#orp_loader_overlay svg {
+	width: 25%;
+	height: auto;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
+
+#tower { fill: #ffffff; }
+#wavesAll path { fill: #8dc63f; }
+#waves1, #waves2, #waves3, #waves4, #waves5, #waves6 { animation: radiowaves 1s ease infinite; }
+#waves1 { animation-delay: 0.1s; }
+#waves2 { animation-delay: 0.2s; }
+#waves3 { animation-delay: 0.3s; }
+#waves4 { animation-delay: 0.4s; }
+#waves5 { animation-delay: 0.5s; }
+#waves6 { animation-delay: 0.6s; }
+
+@keyframes radiowaves {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+

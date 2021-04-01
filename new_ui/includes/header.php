@@ -114,30 +114,30 @@ function _($input) {
 
                 <ul class="nav side-menu">
 	                	
-                  <li><a href="/new_ui/dashboard.php"><i class="fa fa-tachometer"></i> <?=_('Dashboard')?> </a></li>
-                  <li><a href="/new_ui/settings.php"><i class="fa fa-cog"></i> <?=_('General Settings')?> </a></li>
-                  <li><a href="/new_ui/identification.php"><i class="fa fa-volume-up"></i> <?=_('Identification')?> </a></li>
-                  <li><a href="/new_ui/courtesy.php"><i class="fa fa-bell"></i> <?=_('Courtesy Tones')?> </a></li>
+                  <li><a class="navLink" href="/new_ui/dashboard.php"><i class="fa fa-tachometer"></i> <?=_('Dashboard')?> </a></li>
+                  <li><a class="navLink" href="/new_ui/settings.php"><i class="fa fa-cog"></i> <?=_('General Settings')?> </a></li>
+                  <li><a class="navLink" href="/new_ui/identification.php"><i class="fa fa-volume-up"></i> <?=_('Identification')?> </a></li>
+                  <li><a class="navLink" href="/new_ui/courtesy.php"><i class="fa fa-bell"></i> <?=_('Courtesy Tones')?> </a></li>
 
                   <li><a><i class="fa fa-plug"></i> <?=_('Modules')?> <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="/new_ui/modules.php"><?=_('All Modules')?></a></li>
-                      <li><a href="/new_ui/modules/EchoLink/settings.php">EchoLink</a></li>
-                      <li><a href="/new_ui/modules/RemoteRelay/settings.php">Remote Relay</a></li>
-                      <li><a href="/new_ui/modules/SiteStatus/settings.php">Site Status</a></li>
-                      <li><a href="/new_ui/modules/TxFan/settings.php">TX Cooling Fan</a></li>
-                      <li><a href="/new_ui/modules/MetarInfo/settings.php">METAR</a></li>
-                      <li><a href="/new_ui/modules/VoiceMail/settings.php">Voice Mail <span class="badge badge-info">Dev</span></a></li>
-                      <li><a href="/new_ui/modules/Frn/settings.php">FRN Gateway <span class="badge badge-info">Dev</span></a></li>
-                      <li><a href="/new_ui/modules/RigCtl/settings.php">Rig Control <span class="badge badge-info">Dev</span></a></li>
-                      <li><a href="/new_ui/modules/calendar.php">Announcements <span class="badge badge-info">Dev</span></a></li>
+                      <li><a class="navLink" href="/new_ui/modules.php"><?=_('All Modules')?></a></li>
+                      <li><a class="navLink" href="/new_ui/modules/EchoLink/settings.php">EchoLink</a></li>
+                      <li><a class="navLink" href="/new_ui/modules/RemoteRelay/settings.php">Remote Relay</a></li>
+                      <li><a class="navLink" href="/new_ui/modules/SiteStatus/settings.php">Site Status</a></li>
+                      <li><a class="navLink" href="/new_ui/modules/TxFan/settings.php">TX Cooling Fan</a></li>
+                      <li><a class="navLink" href="/new_ui/modules/MetarInfo/settings.php">METAR</a></li>
+                      <li><a class="navLink" href="/new_ui/modules/VoiceMail/settings.php">Voice Mail <span class="badge badge-info">Dev</span></a></li>
+                      <li><a class="navLink" href="/new_ui/modules/Frn/settings.php">FRN Gateway <span class="badge badge-info">Dev</span></a></li>
+                      <li><a class="navLink" href="/new_ui/modules/RigCtl/settings.php">Rig Control <span class="badge badge-info">Dev</span></a></li>
+                      <li><a class="navLink" href="/new_ui/modules/calendar.php">Announcements <span class="badge badge-info">Dev</span></a></li>
                     </ul>
                   </li>
 
-                  <li><a href="/new_ui/ports.php"><i class="fa fa-sitemap"></i> <?=_('Interface')?> </a></li>
-                  <li><a href="/new_ui/log.php"><i class="fa fa-edit"></i> <?=_('Log')?> </a></li>
-                  <li><a href="/new_ui/macros.php"><i class="fa fa-play-circle"></i> <?=_('Macros')?> </a></li>
-                  <li><a href="/new_ui/dtmf.php"><i class="fa fa-tty"></i> <?=_('DTMF Reference')?> </a></li>
+                  <li><a class="navLink" href="/new_ui/ports.php"><i class="fa fa-sitemap"></i> <?=_('Interface')?> </a></li>
+                  <li><a class="navLink" href="/new_ui/log.php"><i class="fa fa-edit"></i> <?=_('Log')?> </a></li>
+                  <li><a class="navLink" href="/new_ui/macros.php"><i class="fa fa-play-circle"></i> <?=_('Macros')?> </a></li>
+                  <li><a class="navLink" href="/new_ui/dtmf.php"><i class="fa fa-tty"></i> <?=_('DTMF Reference')?> </a></li>
 
                   <li><a href="/new_ui/wizard.php"><i class="fa fa-magic"></i> Wizard </a></li>
                   <li><a href="/new_ui/404.php"><i class="fa fa-exclamation-triangle"></i> 404 </a></li>
