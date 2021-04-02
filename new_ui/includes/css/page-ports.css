@@ -5,3 +5,25 @@
 .portSection.remove_field {
 	color: red;
 }
+
+
+.lg_toggle_table td {
+	min-width: 40px;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+.lgCount {
+	margin-top: 10px;
+}
+
+.lgCount p {
+	text-align: center;
+}
+
+#no_lg_msg h4 {
+	text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}

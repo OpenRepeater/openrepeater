@@ -100,7 +100,8 @@ $device_out_count = $SoundDevices->get_device_out_count();
 
                   <div class="x_content">
 
-		              <div class="col-md-3 col-sm-6 col-xs-12">
+		            <div id='linkGroup1' data-port-count="0" style="display: none;">
+		              <div class="lg_wrapper">
 					  	<div class="x_title"><h4><?=_('Link Group 1')?></h4></div>
 		
 			              <div class="form-group">
@@ -122,10 +123,17 @@ $device_out_count = $SoundDevices->get_device_out_count();
 		                      <input id="LG1_timeout" name="LG1_timeout" type="number" class="form-control" placeholder="0">
 		                    </div>
 		                  </div>
+
+						  <div class="clearfix"></div>
+
+						  <div class="lgCount col-md-12 col-sm-12 col-xs-12">
+						    <p><?=_('Ports in Group')?>: <span id="LG1_count">0</span></p>
+						  </div>
 		              </div>
-		
-		
-		              <div class="col-md-3 col-sm-6 col-xs-12">
+		            </div>
+
+		            <div id='linkGroup2' data-port-count="0" style="display: none;">
+		              <div class="lg_wrapper">
 					  	<div class="x_title"><h4><?=_('Link Group 2')?></h4></div>
 		
 			              <div class="form-group">
@@ -147,10 +155,17 @@ $device_out_count = $SoundDevices->get_device_out_count();
 		                      <input id="LG2_timeout" name="LG2_timeout" type="number" class="form-control" placeholder="0">
 		                    </div>
 		                  </div>
+
+						  <div class="clearfix"></div>
+
+						  <div class="lgCount col-md-12 col-sm-12 col-xs-12">
+						    <p><?=_('Ports in Group')?>: <span id="LG2_count">0</span></p>
+						  </div>
 		              </div>
-		
-		
-		              <div class="col-md-3 col-sm-6 col-xs-12">
+		            </div>
+
+		            <div id='linkGroup3' data-port-count="0" style="display: none;">
+		              <div class="lg_wrapper">
 					  	<div class="x_title"><h4><?=_('Link Group 3')?></h4></div>
 		
 			              <div class="form-group">
@@ -172,10 +187,17 @@ $device_out_count = $SoundDevices->get_device_out_count();
 		                      <input id="LG3_timeout" name="LG3_timeout" type="number" class="form-control" placeholder="0">
 		                    </div>
 		                  </div>
+
+						  <div class="clearfix"></div>
+
+						  <div class="lgCount col-md-12 col-sm-12 col-xs-12">
+						    <p><?=_('Ports in Group')?>: <span id="LG3_count">0</span></p>
+						  </div>
 		              </div>
-		
-		
-		              <div class="col-md-3 col-sm-6 col-xs-12">
+		            </div>
+
+		            <div id='linkGroup4' data-port-count="0" style="display: none;">
+		              <div class="lg_wrapper">
 					  	<div class="x_title"><h4><?=_('Link Group 4')?></h4></div>
 		
 			              <div class="form-group">
@@ -197,7 +219,18 @@ $device_out_count = $SoundDevices->get_device_out_count();
 		                      <input id="LG4_timeout" name="LG4_timeout" type="number" class="form-control" placeholder="0">
 		                    </div>
 		                  </div>
+
+						  <div class="clearfix"></div>
+
+						  <div class="lgCount col-md-12 col-sm-12 col-xs-12">
+						    <p><?=_('Ports in Group')?>: <span id="LG4_count">0</span></p>
+						  </div>
 		              </div>
+		            </div>
+
+                    <div id="no_lg_msg" class="col-md-12 col-sm-12 col-xs-12">
+                      <h4><?=_('You must selected a link group under at least 2 ports to make them available.')?></h4>
+                    </div>
 		
 
                   </div>
@@ -344,27 +377,31 @@ $device_out_count = $SoundDevices->get_device_out_count();
 
                   <div class="form-group">
                     <label class="control-label col-md-4 col-sm-4 col-xs-12">
-                    	<?=_('Link Group')?> 
-                    	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('This allows you to add the port to a Link Group. Ports in the same link group will be linked together. This is useful for linking two repeaters on different bands together or adding RF links to a repeater.')?>"></i>
+                    	<?=_('Link Groups')?> 
+                    	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('This allows you to add the port to one or more Link Groups. Ports in the same link group will be linked together. This is useful for linking two repeaters on different bands together or adding RF links to a repeater.')?>"></i>
                     </label>
+
                     <div class="col-md-8 col-sm-8 col-xs-12">
-						<div class="btn-group linkGroup" data-toggle="buttons">
-							<label class="btn btn-default">
-								<input type="radio" id="linkGroupOff_Port%%currPortNum%%" name="linkGroup" value=""><?=_('OFF')?>
-							</label>
-							<label class="btn btn-success">
-								<input type="radio" id="linkGroup1_Port%%currPortNum%%" name="linkGroup" value="1">1
-							</label>
-							<label class="btn btn-success">
-								<input type="radio" id="linkGroup2_Port%%currPortNum%%" name="linkGroup" value="2">2
-							</label>
-							<label class="btn btn-success">
-								<input type="radio" id="linkGroup3_Port%%currPortNum%%" name="linkGroup" value="3">3
-							</label>
-							<label class="btn btn-success">
-								<input type="radio" id="linkGroup4_Port%%currPortNum%%" name="linkGroup" value="4">4
-							</label>
-						</div>
+
+						<table class="lg_toggle_table">
+						<tbody>
+						  <tr>
+						    <td><input type="checkbox" id="linkGroup1_Port%%currPortNum%%" class="js-switch linkGroup" data-linkGroup-num="1"></td>
+						    <td><input type="checkbox" id="linkGroup2_Port%%currPortNum%%" class="js-switch linkGroup" data-linkGroup-num="2"></td>
+						    <td><input type="checkbox" id="linkGroup3_Port%%currPortNum%%" class="js-switch linkGroup" data-linkGroup-num="3"></td>
+						    <td><input type="checkbox" id="linkGroup4_Port%%currPortNum%%" class="js-switch linkGroup" data-linkGroup-num="4"></td>
+						  </tr>
+						  <tr>
+						    <td><?=_('1')?></td>
+						    <td><?=_('2')?></td>
+						    <td><?=_('3')?></td>
+						    <td><?=_('4')?></td>
+						  </tr>
+						</tbody>
+						</table>
+
+						<input type="text" id="linkGroup_Port%%currPortNum%%" name="linkGroup" class="linkGroup">
+
                     </div>
                   </div>
 
@@ -538,17 +575,16 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The HID device that you wish to toggle pins on.')?>"></i>
                     </label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
-					  <?php $hidrawDev = (isset($currPortSettings['hidrawDev'])) ? $currPortSettings['hidrawDev'] : ''; ?>
-					  <select id="hidrawDev%%currPortNum%%" name="hidrawDev[%%currPortNum%%]" class="form-control hidrawDev">
+					  <select id="hidrawDev%%currPortNum%%" name="hidrawDev" class="form-control hidrawDev">
 						<option value="">---</option>
-					  	<option value="/dev/hidraw0" <?=($hidrawDev == '/dev/hidraw0') ? ' selected' : '';?>>/dev/hidraw0</option>
-					  	<option value="/dev/hidraw1" <?=($hidrawDev == '/dev/hidraw1') ?  ' selected' : '';?>>/dev/hidraw1</option>
-					  	<option value="/dev/hidraw2" <?=($hidrawDev == '/dev/hidraw2') ? ' selected' : '';?>>/dev/hidraw2</option>
-					  	<option value="/dev/hidraw3" <?=($hidrawDev == '/dev/hidraw3') ?  ' selected' : '';?>>/dev/hidraw3</option>
-					  	<option value="/dev/hidraw4" <?=($hidrawDev == '/dev/hidraw4') ? ' selected' : '';?>>/dev/hidraw4</option>
-					  	<option value="/dev/hidraw5" <?=($hidrawDev == '/dev/hidraw5') ?  ' selected' : '';?>>/dev/hidraw5</option>
-					  	<option value="/dev/hidraw6" <?=($hidrawDev == '/dev/hidraw6') ? ' selected' : '';?>>/dev/hidraw6</option>
-					  	<option value="/dev/hidraw7" <?=($hidrawDev == '/dev/hidraw7') ?  ' selected' : '';?>>/dev/hidraw7</option>
+					  	<option value="/dev/hidraw0">/dev/hidraw0</option>
+					  	<option value="/dev/hidraw1">/dev/hidraw1</option>
+					  	<option value="/dev/hidraw2">/dev/hidraw2</option>
+					  	<option value="/dev/hidraw3">/dev/hidraw3</option>
+					  	<option value="/dev/hidraw4">/dev/hidraw4</option>
+					  	<option value="/dev/hidraw5">/dev/hidraw5</option>
+					  	<option value="/dev/hidraw6">/dev/hidraw6</option>
+					  	<option value="/dev/hidraw7">/dev/hidraw7</option>
 					  </select>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12"></div>
@@ -563,18 +599,17 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The pin that receives the COS signal from the receiver. You have the option of inverting the control logic of this pin.')?>"></i>
                     </label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
-					  <?php $hidrawRX_cos = (isset($currPortSettings['hidrawRX_cos'])) ? $currPortSettings['hidrawRX_cos'] : ''; ?>
-					  <select id="hidrawRX_cos%%currPortNum%%" name="hidrawRX_cos[%%currPortNum%%]" class="form-control hidrawRX_cos">
+					  <select id="hidrawRX_cos%%currPortNum%%" name="hidrawRX_cos" class="form-control hidrawRX_cos">
 						<option value="">---</option>
-					  	<option value="VOL_UP" <?=($hidrawRX_cos == 'VOL_UP') ? ' selected' : '';?>>VOL_UP</option>
-					  	<option value="VOL_DN" <?=($hidrawRX_cos == 'VOL_DN') ?  ' selected' : '';?>>VOL_DN</option>
-					  	<option value="MUTE_PLAY" <?=($hidrawRX_cos == 'MUTE_PLAY') ? ' selected' : '';?>>MUTE_PLAY</option>
-					  	<option value="MUTE_REC" <?=($hidrawRX_cos == 'MUTE_REC') ?  ' selected' : '';?>>MUTE_REC</option>
+					  	<option value="VOL_UP">VOL_UP</option>
+					  	<option value="VOL_DN">VOL_DN</option>
+					  	<option value="MUTE_PLAY">MUTE_PLAY</option>
+					  	<option value="MUTE_REC">MUTE_REC</option>
 					  </select>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12">
 					  <?php $hidrawRX_cos_invert = (isset($currPortSettings['hidrawRX_cos_invert'])) ? $currPortSettings['hidrawRX_cos_invert'] : 'false'; ?>
-					  <input type="checkbox" name="hidrawRX_cos_invert[%%currPortNum%%]" class="js-switch" value="true"<?=($hidrawRX_cos_invert == 'true' ? ' checked' : '')?>>
+					  <input id="hidrawRX_cos_invert%%currPortNum%%" name="hidrawRX_cos_invert" type="checkbox" class="js-switch" value="true">
                       <label><?=_('Invert Pin')?></label>
                     </div>
                   </div>
@@ -586,19 +621,16 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The pin that sends the PTT signal to the transmitter. You have the option of inverting the control logic of this pin.')?>"></i>
                     </label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
-					  <?php $hidrawTX_ptt = (isset($currPortSettings['hidrawTX_ptt'])) ? $currPortSettings['hidrawTX_ptt'] : ''; ?>
-					  <?(isset($currPortSettings['hidrawTX_ptt'])) ? $hidrawTX_ptt=$currPortSettings['hidrawTX_ptt'] : $hidrawTX_ptt ='';?>
-					  <select id="hidrawTX_ptt%%currPortNum%%" name="hidrawTX_ptt[%%currPortNum%%]" class="form-control hidrawTX_ptt">
+					  <select id="hidrawTX_ptt%%currPortNum%%" name="hidrawTX_ptt" class="form-control hidrawTX_ptt">
 						<option value="">---</option>
-					  	<option value="GPIO1" <?=($hidrawTX_ptt == 'GPIO1') ? ' selected' : '';?>>GPIO1</option>
-					  	<option value="GPIO2" <?=($hidrawTX_ptt == 'GPIO2') ?  ' selected' : '';?>>GPIO2</option>
-					  	<option value="GPIO3" <?=($hidrawTX_ptt == 'GPIO3') ? ' selected' : '';?>>GPIO3</option>
-					  	<option value="GPIO4" <?=($hidrawTX_ptt == 'GPIO4') ?  ' selected' : '';?>>GPIO4</option>
+					  	<option value="GPIO1">GPIO1</option>
+					  	<option value="GPIO2">GPIO2</option>
+					  	<option value="GPIO3">GPIO3</option>
+					  	<option value="GPIO4">GPIO4</option>
 					  </select>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12">
-					  <?php $hidrawTX_ptt_invert = (isset($currPortSettings['hidrawTX_ptt_invert'])) ? $currPortSettings['hidrawTX_ptt_invert'] : 'false'; ?>
-					  <input type="checkbox" name="hidrawTX_ptt_invert[%%currPortNum%%]" class="js-switch" value="true"<?=($hidrawTX_ptt_invert == 'true' ? ' checked' : '')?>>
+					  <input id="hidrawTX_ptt_invert%%currPortNum%%" name="hidrawTX_ptt_invert" type="checkbox" class="js-switch" value="true">
                       <label><?=_('Invert Pin')?></label>
                     </div>
                   </div>
@@ -622,17 +654,16 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The serial device that you wish to toggle pins on.')?>"></i>
                     </label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
-					  <?php $serialDev = (isset($currPortSettings['serialDev'])) ? $currPortSettings['serialDev'] : ''; ?>
-					  <select id="serialDev%%currPortNum%%" name="serialDev[%%currPortNum%%]" class="form-control serialDev">
+					  <select id="serialDev%%currPortNum%%" name="serialDev" class="form-control serialDev">
 						<option value="">---</option>
-					  	<option value="/dev/hidraw0" <?=($serialDev == '/dev/ttyUSB0') ? ' selected' : '';?>>/dev/ttyUSB0</option>
-					  	<option value="/dev/hidraw1" <?=($serialDev == '/dev/ttyUSB1') ?  ' selected' : '';?>>/dev/ttyUSB1</option>
-					  	<option value="/dev/hidraw2" <?=($serialDev == '/dev/ttyUSB2') ? ' selected' : '';?>>/dev/ttyUSB2</option>
-					  	<option value="/dev/hidraw3" <?=($serialDev == '/dev/ttyUSB3') ?  ' selected' : '';?>>/dev/ttyUSB3</option>
-					  	<option value="/dev/hidraw4" <?=($serialDev == '/dev/ttyUSB4') ? ' selected' : '';?>>/dev/ttyUSB4</option>
-					  	<option value="/dev/hidraw5" <?=($serialDev == '/dev/ttyUSB5') ?  ' selected' : '';?>>/dev/ttyUSB5</option>
-					  	<option value="/dev/hidraw6" <?=($serialDev == '/dev/ttyUSB6') ? ' selected' : '';?>>/dev/ttyUSB6</option>
-					  	<option value="/dev/hidraw7" <?=($serialDev == '/dev/ttyUSB7') ?  ' selected' : '';?>>/dev/ttyUSB7</option>
+					  	<option value="/dev/ttyUSB0">/dev/ttyUSB0</option>
+					  	<option value="/dev/ttyUSB1">/dev/ttyUSB1</option>
+					  	<option value="/dev/ttyUSB2">/dev/ttyUSB2</option>
+					  	<option value="/dev/ttyUSB3">/dev/ttyUSB3</option>
+					  	<option value="/dev/ttyUSB4">/dev/ttyUSB4</option>
+					  	<option value="/dev/ttyUSB5">/dev/ttyUSB5</option>
+					  	<option value="/dev/ttyUSB6">/dev/ttyUSB6</option>
+					  	<option value="/dev/ttyUSB7">/dev/ttyUSB7</option>
 					  </select>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12"></div>
@@ -647,18 +678,16 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The pin that receives the COS signal from the receiver. You have the option of inverting the control logic of this pin.')?>"></i>
                     </label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
-					  <?php $serialRX_cos = (isset($currPortSettings['serialRX_cos'])) ? $currPortSettings['serialRX_cos'] : ''; ?>
-					  <select id="serialRX_cos%%currPortNum%%" name="serialRX_cos[%%currPortNum%%]" class="form-control serialRX_cos">
+					  <select id="serialRX_cos%%currPortNum%%" name="serialRX_cos" class="form-control serialRX_cos">
 						<option value="">---</option>
-					  	<option value="DCD" <?=($serialRX_cos == 'DCD') ? ' selected' : '';?>>DCD</option>
-					  	<option value="CTS" <?=($serialRX_cos == 'CTS') ?  ' selected' : '';?>>CTS</option>
-					  	<option value="DSR" <?=($serialRX_cos == 'DSR') ? ' selected' : '';?>>DSR</option>
-					  	<option value="RI" <?=($serialRX_cos == 'RI') ?  ' selected' : '';?>>RI</option>
+					  	<option value="DCD"><?=_('DCD')?></option>
+					  	<option value="CTS"><?=_('CTS')?></option>
+					  	<option value="DSR"><?=_('DSR')?></option>
+					  	<option value="RI"><?=_('RI')?></option>
 					  </select>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12">
-					  <?php $serialRX_cos_invert = (isset($currPortSettings['serialRX_cos_invert'])) ? $currPortSettings['serialRX_cos_invert'] : 'false'; ?>
-					  <input type="checkbox" name="serialRX_cos_invert[%%currPortNum%%]" class="js-switch" value="true"<?=($serialRX_cos_invert == 'true' ? ' checked' : '')?>>
+					  <input id="serialRX_cos_invert%%currPortNum%%" name="serialRX_cos_invert" type="checkbox" class="js-switch" value="true">
                       <label><?=_('Invert Pin')?></label>
                     </div>
                   </div>
@@ -670,16 +699,14 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The pin that sends the PTT signal to the transmitter. You have the option of inverting the control logic of this pin.')?>"></i>
                     </label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
-					  <?php $serialTX_ptt = (isset($currPortSettings['serialTX_ptt'])) ? $currPortSettings['serialTX_ptt'] : ''; ?>
-					  <select id="serialTX_ptt%%currPortNum%%" name="serialTX_ptt[%%currPortNum%%]" class="form-control serialTX_ptt">
+					  <select id="serialTX_ptt%%currPortNum%%" name="serialTX_ptt" class="form-control serialTX_ptt">
 						<option value="">---</option>
-					  	<option value="RTS" <?=($serialTX_ptt == 'RTS') ?  ' selected' : '';?>>RTS</option>
-					  	<option value="DTR" <?=($serialTX_ptt == 'DTR') ? ' selected' : '';?>>DTR</option>
+					  	<option value="RTS"><?=_('RTS')?></option>
+					  	<option value="DTR"><?=_('DTR')?></option>
 					  </select>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12">
-					  <?php $serialTX_ptt_invert = (isset($currPortSettings['serialTX_ptt_invert'])) ? $currPortSettings['serialTX_ptt_invert'] : 'false'; ?>
-					  <input type="checkbox" name="serialTX_ptt_invert[%%currPortNum%%]" class="js-switch" value="true"<?=($serialTX_ptt_invert == 'true' ? ' checked' : '')?>>
+					  <input id="serialTX_ptt_invert%%currPortNum%%" name="serialTX_ptt_invert" type="checkbox" class="js-switch" value="true">
                       <label><?=_('Invert Pin')?></label>
                     </div>
                   </div>
@@ -773,8 +800,8 @@ $device_out_count = $SoundDevices->get_device_out_count();
 
 <script id="advFieldsTemplate" type = "text/template">
 	<div>
-		<select id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_name" name="%%ARRAY_NAME%%[%%PORT%%][%%ROW%%][name]" class="form-control advOptionKey">%%OPTIONS%%</select>
-		<input class="form-control advOptionValue" type="text" id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_value" name="%%ARRAY_NAME%%[%%PORT%%][%%ROW%%][value]" placeholder="<?=_('Value')?>">
+		<select id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_name" name="%%ARRAY_NAME%%[][%%ROW%%][name]" class="form-control advOptionKey">%%OPTIONS%%</select>
+		<input class="form-control advOptionValue" type="text" id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_value" name="%%ARRAY_NAME%%[][%%ROW%%][value]" placeholder="<?=_('Value')?>">
 		<button class="form-control remove_field">
 			<i class="fa fa-minus-circle" data-toggle="tooltip" data-placement="top" title="Delete Row"></i>
 		</button>

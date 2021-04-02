@@ -4,7 +4,11 @@ $(function() {
 	var advLogicOptions = buildSelectOptions(logicOptions);
 	var advRxOptions = buildSelectOptions(rxOptions);
 	var advTxOptions = buildSelectOptions(txOptions);
-	
+
+	var linkGroup1_PortCount = $('#linkGroup1').attr('data-port-count');
+	var linkGroup2_PortCount = $('#linkGroup2').attr('data-port-count');
+	var linkGroup3_PortCount = $('#linkGroup3').attr('data-port-count');
+	var linkGroup4_PortCount = $('#linkGroup4').attr('data-port-count');
 
 	/*
 	**********************************************************************
@@ -14,6 +18,8 @@ $(function() {
 
 	// Loop through JSON array of ports and build display
 	fullPortObj = JSON.parse(portList);
+console.log(portList);
+console.log(fullPortObj);
 	$.each(fullPortObj, function(index, curPort) {
 		displayPort(curPort);
 	});
@@ -25,12 +31,7 @@ $(function() {
 		$template = $template.replace(/%%currPortNum%%/g, port.portNum)
 			.replace(/%%currPortLabel%%/g, port.portLabel);
 
-
-// 			$template.hide();                        // Hide while updating
-
 	    $("#portList").append($template);
-
-
 
 		portID = '#portNum' + port.portNum; 
 		
@@ -51,7 +52,6 @@ $(function() {
 
 
 		/* GENERAL TAB SETTINGS */
-
 
 		// Set Port Type and Show Corresponding Tab
 		switch(port.portType) {
@@ -86,31 +86,12 @@ $(function() {
 
 
 		// Set Link Group Buttons
-		if(port.linkGroup == '') {
-			$('#linkGroupOff_Port'+port.portNum).parents('label').addClass('active');
-			$('#linkGroupOff_Port'+port.portNum).attr('checked',true);
-// 			$(portID + ' .portLabelLinkGrp.1' ).show();
-		}
-		if(port.linkGroup == '1') {
-			$('#linkGroup1_Port'+port.portNum).parents('label').addClass('active');
-			$('#linkGroup1_Port'+port.portNum).attr('checked',true);
-			$(portID + ' .portLabelLinkGrp.1' ).show();
-		}
-		if(port.linkGroup == '2') {
-			$('#linkGroup2_Port'+port.portNum).parents('label').addClass('active');
-			$('#linkGroup2_Port'+port.portNum).attr('checked',true);
-			$(portID + ' .portLabelLinkGrp.2' ).show();
-		}
-		if(port.linkGroup == '3') {
-			$('#linkGroup3_Port'+port.portNum).parents('label').addClass('active');
-			$('#linkGroup3_Port'+port.portNum).attr('checked',true);
-			$( portID + ' .portLabelLinkGrp.3' ).show();
-		}
-		if(port.linkGroup == '4') {
-			$('#linkGroup4_Port'+port.portNum).parents('label').addClass('active');
-			$('#linkGroup4_Port'+port.portNum).attr('checked',true);
-			$(portID + ' .portLabelLinkGrp.4' ).show();
-		}
+		addLinkGroup('1', port.portNum, port.linkGroup);
+		addLinkGroup('2', port.portNum, port.linkGroup);
+		addLinkGroup('3', port.portNum, port.linkGroup);
+		addLinkGroup('4', port.portNum, port.linkGroup);
+		$('#linkGroup_Port'+port.portNum).val(port.linkGroup);
+		showLinkGroups();
 
 
 		// Setup Port Enable/Disable Switch
@@ -139,11 +120,51 @@ $(function() {
 		$('#txGPIO' + port.portNum).val(port.txGPIO);
 		$('#txGPIO_active' + port.portNum).val(port.txGPIO_active);
 
-/* HIDRAW TAB SETTINGS */
-/* SERIAL TAB SETTINGS */
-/* MODULE TAB SETTINGS */
+
+		/* HIDRAW TAB SETTINGS */
+		$('#hidrawDev' + port.portNum).val(port.hidrawDev);
+		
+		$('#hidrawRX_cos' + port.portNum).val(port.hidrawRX_cos);
+		if(port.hidrawRX_cos_invert == 'true') {
+			$('#hidrawRX_cos_invert'+port.portNum).prop( 'checked', true );
+		} else {
+			$('#hidrawRX_cos_invert'+port.portNum).prop( 'checked', false );
+		}
+		resetSwitchery('#hidrawRX_cos_invert'+port.portNum);
+		
+		$('#hidrawTX_ptt' + port.portNum).val(port.hidrawTX_ptt);
+		if(port.hidrawTX_ptt_invert == 'true') {
+			$('#hidrawTX_ptt_invert'+port.portNum).prop( 'checked', true );
+		} else {
+			$('#hidrawTX_ptt_invert'+port.portNum).prop( 'checked', false );
+		}
+		resetSwitchery('#hidrawTX_ptt_invert'+port.portNum);
 
 
+		/* SERIAL TAB SETTINGS */
+		
+		$('#serialDev' + port.portNum).val(port.serialDev);
+		
+		$('#serialRX_cos' + port.portNum).val(port.serialRX_cos);
+		if(port.serialRX_cos_invert == 'true') {
+			$('#serialRX_cos_invert'+port.portNum).prop( 'checked', true );
+		} else {
+			$('#serialRX_cos_invert'+port.portNum).prop( 'checked', false );
+		}
+		resetSwitchery('#serialRX_cos_invert'+port.portNum);
+		
+		$('#serialTX_ptt' + port.portNum).val(port.serialTX_ptt);
+		if(port.serialTX_ptt_invert == 'true') {
+			$('#serialTX_ptt_invert'+port.portNum).prop( 'checked', true );
+		} else {
+			$('#serialTX_ptt_invert'+port.portNum).prop( 'checked', false );
+		}
+		resetSwitchery('#serialTX_ptt_invert'+port.portNum);
+
+
+		/* MODULE TAB SETTINGS */
+
+		// Future Code Here...
 
 
 		/* OVERRIDE TAB SETTINGS */
@@ -166,10 +187,8 @@ $(function() {
 		}
 
 
-		/* DISPLAY PORT */
-
-		$(portID).fadeIn(1000); // Fade In to Display
-
+		// DISPLAY PORT
+		$(portID).fadeIn(1000);
 	}
 
 
@@ -264,16 +283,6 @@ $(function() {
 				$('#portNum' + portNum).slideUp(1000);
 			}, 2000);
 		});
-
-/*
-		var portLabel = $(this).val().trim();
-		if ( portLabel == '' ) {
-			$('#portNum' + portNum + ' .panel-title span').html('(no label set yet)');
-		} else {
-			$('#portNum' + portNum + ' .panel-title span').html(portLabel);
-		}
-*/
-
 	});
 
 
@@ -328,44 +337,6 @@ $(function() {
 	});
 
 
-	// 	Link Group Change
-	$('.linkGroup input[type=radio]').change(function() {
-		var portNum = $(this).parents('.portSection').attr('data-port-number');
-		switch ($(this).val()) {
-			case '':
-				$('#portNum' + portNum + ' .portLabelLinkGrp.1').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.2').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.3').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.4').hide();
-				break;
-			case '1':
-				$('#portNum' + portNum + ' .portLabelLinkGrp.1').show();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.2').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.3').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.4').hide();
-				break;
-			case '2':
-				$('#portNum' + portNum + ' .portLabelLinkGrp.1').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.2').show();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.3').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.4').hide();
-				break;
-			case '3':
-				$('#portNum' + portNum + ' .portLabelLinkGrp.1').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.2').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.3').show();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.4').hide();
-				break;
-			case '4':
-				$('#portNum' + portNum + ' .portLabelLinkGrp.1').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.2').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.3').hide();
-				$('#portNum' + portNum + ' .portLabelLinkGrp.4').show();
-				break;
-		}
-	});
-
-
 	// 	Port Enable/Disable
 	$('.portEnabled').change(function() {
 		var portNum = $(this).parents('.portSection').attr('data-port-number');
@@ -387,41 +358,6 @@ $(function() {
 		} else {
 			$('#voxMsg' + portNum).fadeOut(1000);
 		}
-	});
-
-
-
-	/*
-	**********************************************************************
-	 UPDATE DATABASE SETTINGS VIA AJAX CALL
-	**********************************************************************
-	*/
-
-	$('.portForm').change(function() {
-		var formID = $(this).attr('id');
-		var portNum = $(this).attr('data-port-form');;
-		
-		// Remove empty form entries and serialize results
-		var formArray = $( '#' + formID + " :input")
-		    .filter(function(index, element) {
-		        return $(element).val() != '';
-		    })
-		    .serializeArray();		
-		
-		// Set portEnabled to 0 if not enabled
-		if (typeof formArray.find(item => item.name === 'portEnabled') == 'undefined') {
-			formArray.push({name: 'portEnabled', value: '0'});
-		}
-
-		
-// 		formArray.find(item => item.name === 'portEnabled').value = "something else";
-
-// 		console.log('form changed: '+portNum);
-		console.log(formArray);
-
-
-		$('#orp_restart_btn').show();
-
 	});
 
 
@@ -550,7 +486,7 @@ $(function() {
 
 	/*
 	**********************************************************************
-	 ADVANCED SVXLINK FIELDS
+	 LINK GROUPS
 	**********************************************************************
 	*/
 
@@ -588,12 +524,146 @@ $(function() {
 		var returnString = '{"1":{"defaultActive":"'+lg1_active+'","timeout":"'+lg1_timeout+'"},"2":{"defaultActive":"'+lg2_active+'","timeout":"'+lg2_timeout+'"},"3":{"defaultActive":"'+lg3_active+'","timeout":"'+lg3_timeout+'"},"4":{"defaultActive":"'+lg4_active+'","timeout":"'+lg4_timeout+'"}}';
 				
 		console.log(returnString);
-		// Replease with AJAX Call
+		// Replace with AJAX Call
 		
 		$('#orp_restart_btn').show();
 
 	});
 
+
+	// 	Link Group Change
+	$('#portList').on('change', '.linkGroup', function() {
+		var portNum = $(this).parents('.portSection').attr('data-port-number');
+		var linkNum = $(this).attr('data-linkGroup-num');
+		if ( $(this).prop('checked') == true ) {
+			$('#portNum' + portNum + ' .portLabelLinkGrp.'+linkNum).show(); // Show badge
+			eval('linkGroup'+linkNum+'_PortCount++;'); // Dynamic Port Variable, incremented.
+		} else {
+			$('#portNum' + portNum + ' .portLabelLinkGrp.'+linkNum).hide(); // Hide badge
+			eval('linkGroup'+linkNum+'_PortCount--;'); // Dynamic Port Variable, decreased.
+		}
+		$( '#linkGroup'+linkNum).attr('data-port-count', eval('linkGroup'+linkNum+'_PortCount') ); // Set updated count on Link Group
+		updateLinkGroupField(portNum);
+		showLinkGroups();
+	});
+
+
+	// Setup linkGroups on Page Load
+	function addLinkGroup(linkNum, portNum, linkGroupInput) {
+		if( $.inArray( parseInt(linkNum), linkGroupInput) > -1 ) {
+			eval('linkGroup'+linkNum+'_PortCount++;'); // Dynamic Port Variable, incremented.
+			$( '#linkGroup'+linkNum).attr('data-port-count', eval('linkGroup'+linkNum+'_PortCount') ); // Set updated count on Link Group
+			$('#linkGroup'+linkNum+'_Port'+portNum).attr('checked', true);
+			$('#portNum' + portNum + ' .portLabelLinkGrp.'+linkNum).show();
+		} else {
+			$('#linkGroup'+linkNum+'_Port'+portNum).attr('checked', false);
+			$('#portNum' + portNum + ' .portLabelLinkGrp.'+linkNum).hide();			
+		}
+		resetSwitchery('#linkGroup'+linkNum+'_Port'+portNum);
+	}
+
+
+	// Update linkGroup Field (hidden)
+	function updateLinkGroupField(portNum) {
+		var linkGroupArray = [];
+	    for(L = 1; L < 5; L++) {
+			if( $('#linkGroup'+L+'_Port'+portNum).prop('checked') ){ linkGroupArray.push(L); }
+		}
+		$('#linkGroup_Port'+portNum).val(linkGroupArray);
+
+        console.log(linkGroupArray);
+	}
+
+
+	function showLinkGroups() {
+		var linkGroupsVisible = 0;	
+
+	    // Loop through 4 link groups
+	    for(L = 1; L < 5; L++) {
+			$('#linkGroup' + L).attr( 'data-port-count', eval('linkGroup' + L + '_PortCount') );
+			if(eval('linkGroup' + L + '_PortCount') >= 2) {
+				$('#LG' + L + '_count').html( eval('linkGroup' + L + '_PortCount') );
+				$('#linkGroup' + L).fadeIn(500);
+				linkGroupsVisible++;
+			} else {
+				$('#linkGroup' + L).fadeOut(500);
+			}
+		}
+		
+		// Remove existing column classes
+		$('.lg_wrapper').removeClass (function (index, className) {
+			return (className.match (/(^|\s)col-\S+/g) || []).join(' ');
+		});
+
+		// Add new column classes based on visable link groups
+		switch(linkGroupsVisible) {
+			case 0:
+				$('#no_lg_msg').show();				
+				break;
+			case 1:
+				$('#no_lg_msg').hide();				
+				$('.lg_wrapper').addClass('col-md-6 col-sm-6 col-xs-12');
+				break;
+			case 2:
+				$('#no_lg_msg').hide();				
+				$('.lg_wrapper').addClass('col-md-6 col-sm-6 col-xs-12');
+				break;
+			case 3:
+				$('#no_lg_msg').hide();				
+				$('.lg_wrapper').addClass('col-md-4 col-sm-4 col-xs-12');
+				break;
+			default:
+				$('#no_lg_msg').hide();				
+				$('.lg_wrapper').addClass('col-md-3 col-sm-6 col-xs-12');			
+		}
+
+	}
+
+
+
+	/*
+	**********************************************************************
+	 UPDATE DATABASE SETTINGS VIA AJAX CALL
+	**********************************************************************
+	*/
+
+	$('.portForm').change(function() {
+		var formID = $(this).attr('id');
+		var portNum = $(this).attr('data-port-form');;
+
+		updateLinkGroupField(portNum); // HACK: Refire this function since execution is not in order. Updates hidden linkGroup field.
+		
+		// Get current port entries, remove empty fields and create an object of results.
+		var portFieldsObj = {};
+		$.each($('#' + formID + " :input")
+		    .filter(function(index, element) {
+		        return $(element).val() != '';
+		    })
+			.serializeArray(), 
+			function(_, kv) {
+				portFieldsObj[kv.name] = kv.value;
+			}
+		);
+
+		// Set portEnabled to 0 if not defined
+		if (typeof portFieldsObj.portEnabled === 'undefined') {
+			portFieldsObj.portEnabled = '0';
+		}
+
+		// Update linkGroup values to be an integer sub array for storage
+		if (portFieldsObj.linkGroup != '') {
+			portFieldsObj.linkGroup = $.map(portFieldsObj.linkGroup.split(','), function(value){ return parseInt(value, 10); });
+		}
+
+		// Nest object under port number to match input array format and return as JSON string for port.
+		var portJSON = '{"' + portFieldsObj.portNum + '":' + JSON.stringify(portFieldsObj) + '}';
+
+		console.log(portJSON);
+		// Replace with AJAX Call
+
+		$('#orp_restart_btn').show();
+
+	});
 
 
 })
