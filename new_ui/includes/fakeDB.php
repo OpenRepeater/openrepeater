@@ -41,7 +41,7 @@ $fakePorts = [
 
         'portDuplex'  => 'full',
         'portEnabled'  => '1',
-        'linkGroup'  => '1',
+        'linkGroup'  => '1,2,4',
         
 		'SVXLINK_ADVANCED_LOGIC' => [
 			'DTMF_CTRL_PTY' => '123',
