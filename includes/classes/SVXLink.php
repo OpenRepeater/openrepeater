@@ -16,6 +16,8 @@ class SVXLink {
 	private $web_path = '/var/www/openrepeater/';
 	public $logicFullPrefix = 'ORP_FullDuplexLogic_Port';
 	public $logicHalfPrefix = 'ORP_HalfDuplexLogic_Port';
+	public $configFileArray = []; // Array of written config files
+
 
 	public function __construct($settingsArray, $portsArray, $modulesArray) {
 		$this->settingsArray = $settingsArray;
@@ -67,9 +69,12 @@ class SVXLink {
 				}
 
 				// Write out Module Config File for SVXLink
+				$curModuleFilename = 'Module'.$cur_mod['svxlinkName'].'.conf';
 				$classFunctions = new Functions();
-				$classFunctions->write_config($module_config_array, 'Module'.$cur_mod['svxlinkName'].'.conf', 'ini');
+				$classFunctions->write_config($module_config_array, $curModuleFilename, 'ini');
 
+				// Save this config information to array
+				$this->configFileArray[] = [ 'fileLabel' => $curModuleFilename, 'filePath' => '/etc/svxlink/svxlink.d/' . $curModuleFilename ];
 			}
 		}
 	}

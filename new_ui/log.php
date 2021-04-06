@@ -1,5 +1,32 @@
 <?php
-// $customJS = 'page-ports.js'; // 'file1.js, file2.js, ... '
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: index.php'); // If they aren't logged in, send them to login page.
+} elseif (!isset($_SESSION['callsign'])) {
+	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
+} else { // If they are logged in and have set a callsign, show the page.
+// --------------------------------------------------------
+
+
+if (!empty($_POST)) {
+	switch ($_POST['request']) {
+		case 'get_file':
+// 			echo $_POST['file_path'];
+			$fileArray = [];
+			$fileArray['fileContents'] = file_get_contents( $_POST['file_path'] );
+			$fileArray['fileDate'] = date( "F d Y H:i:s.", filemtime( $_POST['file_path'] ) );
+			echo json_encode($fileArray);
+			exit();
+	}
+/*
+	$option = $_POST['post_option'];
+	echo exec_orp_helper($service, $option);
+*/
+}
+
+ $customJS = 'page-log.js'; // 'file1.js, file2.js, ... '
 // $customCSS = 'page-ports.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
@@ -24,18 +51,19 @@ include('includes/header.php');
                   <div class="x_content">
 
                     <div class="" role="tabpanel" data-example-id="togglable-tabs">
-                      <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">svxlink.conf</a>
+                      <ul id="logTabs" class="nav nav-tabs bar_tabs" role="tablist">
+                        <li role="presentation"><a href="#svxlink_content" id="svxlink_tab" role="tab" data-toggle="tab" aria-expanded="false">svxlink.log</a>
                         </li>
-<!--
-                        <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Profile</a>
+
+                        <li role="presentation" class="active"><a href="#config_content" id="config_tab" role="tab" data-toggle="tab" aria-expanded="true"><?=_('Configuration Files')?></a>
                         </li>
-                        <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Profile</a>
-                        </li>
--->
                       </ul>
-                      <div id="myTabContent" class="tab-content">
-                        <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+
+					  <div class="clearfix spacer height10"></div>
+
+                      <div id="logContent" class="tab-content">
+
+                        <div id="svxlink_content" role="tabpanel" class="tab-pane fade in" aria-labelledby="svxlink_tab">
 							<pre>
 Sat Aug  1 18:42:23 2020: TX_Port1: Turning the transmitter ON
 Sat Aug  1 18:42:27 2020: TX_Port1: Turning the transmitter OFF
@@ -55,14 +83,17 @@ Sat Aug  1 19:30:00 2020: ORP_FullDuplexLogic_Port1: Sending short identificatio
 Sat Aug  1 19:30:00 2020: TX_Port1: Turning the transmitter ON
 Sat Aug  1 19:30:04 2020: TX_Port1: Turning the transmitter OFF
 							</pre>
+                        </div>
 
+                        <div id="config_content" role="tabpanel" class="tab-pane fade active in" aria-labelledby="config_tab">
+							<select id="selConfigFile">
+								<option><?=_('Choose a File')?></option>
+							</select>
+							<div id="configFileDisplay"></div>
+							<div id="configFileDate"></div>
+							<div id="configFileLoc" style="display: none;"><?=_('File Location')?>: <span></span></div>
                         </div>
-                        <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
-                          <p>...</p>
-                        </div>
-                        <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
-                          <p>...</p>
-                        </div>
+
                       </div>
                     </div>
 
@@ -75,4 +106,32 @@ Sat Aug  1 19:30:04 2020: TX_Port1: Turning the transmitter OFF
         </div>
         <!-- /page content -->
 
+<? ######################################################################### ?>
+
+<script id="tabTemplate" type = "text/template">
+	<li role="presentation"><a href="#%%URL_TO_CONTENT%%" id="%%TAB_ID%%" role="tab" data-toggle="tab" aria-expanded="false">%%TAB_LABEL%%</a></li>
+</script>
+
+<script id="contentTemplate" type = "text/template">
+    <div id="%%CONTENT_ID%%" class="tab-pane fade" role="tabpanel" aria-labelledby="%%TAB_ID%%">
+      <p>Template...%%CONTENT_BODY%%</p>
+    </div>
+</script>
+
+<?php
+	$configFilesArray = $Database->select_single("SELECT value FROM system_flags WHERE keyID='config_files'");
+	$configFilesList = $configFilesArray['value'];	
+?>
+
+<script>
+	var configFilesList = '<?= $configFilesList ?>';
+</script>
+
 <?php include('includes/footer.php'); ?>
+
+<?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
+?>

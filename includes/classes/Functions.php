@@ -5,8 +5,9 @@
 
 class Functions {
 
+	public $configFileArray = []; // Array of written config files
 	private $orpFileHeader;
-
+	
 
 	public function __construct() {
 		$orpFileHeader = '
@@ -89,6 +90,19 @@ class Functions {
 
 		// Write the File.
 		file_put_contents( $full_file_path, $file_output );
+		
+		// Save this config information to array
+		$this->configFileArray[] = [ 'fileLabel' => $filename, 'filePath' => $full_file_path ];
+		
+		}
+
+
+	// Write Active Config Files & Modules to DB for later reference. 
+	public function save_config_list($inputArray) {
+		$configFileArray = json_encode($inputArray);
+		$Database = new Database();
+		$sql = "UPDATE system_flags SET value='$configFileArray' WHERE keyID='config_files'";
+		$Database->update($sql);
 	}
 
 

@@ -117,6 +117,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 
 		}
 	}
+	$moduleConfigFileArray = $classSVXLink->configFileArray;
 
 
 	// BUILD LINK SECTION - If link group contains 2 or more ports...built config
@@ -169,7 +170,9 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 
 	$classFunctions->write_config($devicesConfigFile, 'devices.conf', 'text');
 
-
+	// Write Active Config Files & Modules to DB for later reference. 
+	$configFileArray = $classFunctions->configFileArray;
+	$classFunctions->save_config_list(array_merge($configFileArray,$moduleConfigFileArray));
 
 
 	/* ---------------------------------------------------------- */
