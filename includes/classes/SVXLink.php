@@ -17,6 +17,8 @@ class SVXLink {
 	public $logicFullPrefix = 'ORP_FullDuplexLogic_Port';
 	public $logicHalfPrefix = 'ORP_HalfDuplexLogic_Port';
 	public $configFileArray = []; // Array of written config files
+    private $idPath = "/var/lib/openrepeater/sounds/identification/";
+    private $courtesyPath = "/var/lib/openrepeater/sounds/courtesy_tones/";
 
 
 	public function __construct($settingsArray, $portsArray, $modulesArray) {
@@ -288,29 +290,16 @@ class SVXLink {
 
 		$logic_array[$logicName]['CALLSIGN'] = $this->settingsArray['callSign'];
 
-		# Short ID
-		if ($this->settingsArray['ID_Short_Mode'] == 'disabled') {
-			$logic_array[$logicName]['#SHORT_IDENT_INTERVAL'] = '0';
-		} else {
-			$logic_array[$logicName]['SHORT_IDENT_INTERVAL'] = $this->settingsArray['ID_Short_IntervalMin'];
-		}
+		# Build Identification
+		$logic_array[$logicName] += $this->build_identification();
 
-		# ID only if there is activity, only affect short IDs
-		if ($this->settingsArray['ID_Only_When_Active'] == 'True') {
-			$logic_array[$logicName]['IDENT_ONLY_AFTER_TX'] = '4';
-		}
-
-		# Long ID
-		if ($this->settingsArray['ID_Long_Mode'] == 'disabled') {
-			$logic_array[$logicName]['#LONG_IDENT_INTERVAL'] = '0';
-		} else {
-			$logic_array[$logicName]['LONG_IDENT_INTERVAL'] = $this->settingsArray['ID_Long_IntervalMin'];
-		}
+		# Build Courtesy Tone
+		$logic_array[$logicName] += $this->build_courtesy_tone();
+		$logic_array[$logicName]['RGR_SOUND_DELAY'] = '1';
 
 		# Fixed Settings
 		$logic_array[$logicName]['EVENT_HANDLER'] = '/usr/share/svxlink/events.tcl';
 		$logic_array[$logicName]['DEFAULT_LANG'] = 'en_US';
-		$logic_array[$logicName]['RGR_SOUND_DELAY'] = '1';
 		$logic_array[$logicName]['REPORT_CTCSS'] = $this->settingsArray['rxTone'];
 		$logic_array[$logicName]['TX_CTCSS'] = 'ALWAYS';
 		$logic_array[$logicName]['FX_GAIN_NORMAL'] = '0';
@@ -331,6 +320,7 @@ class SVXLink {
 		# EXPERIMENTAL: Create PTYs (pseudoterminals) for logic section
 		$logic_array[$logicName] += $this->build_pty($logicName,'dtmf');
 		$logic_array[$logicName] += $this->build_pty($logicName,'state');
+		
 
 		### APPEND ADVANCED SVXLINK LOGIC SETTINGS...IF THEY EXIST ###
 		if ( isset($this->portsArray[$curPort]['SVXLINK_ADVANCED_LOGIC']) ) {
@@ -365,29 +355,16 @@ class SVXLink {
 
 		$logic_array[$logicName]['CALLSIGN'] = $this->settingsArray['callSign'];
 
-		# Short ID
-		if ($this->settingsArray['ID_Short_Mode'] == 'disabled') {
-			$logic_array[$logicName]['#SHORT_IDENT_INTERVAL'] = '0';
-		} else {
-			$logic_array[$logicName]['SHORT_IDENT_INTERVAL'] = $this->settingsArray['ID_Short_IntervalMin'];
-		}
-
-		# ID only if there is activity, only affect short IDs
-		if ($this->settingsArray['ID_Only_When_Active'] == 'True') {
-			$logic_array[$logicName]['IDENT_ONLY_AFTER_TX'] = '4';
-		}
-
-		#Long ID
-		if ($this->settingsArray['ID_Long_Mode'] == 'disabled') {
-			$logic_array[$logicName]['#LONG_IDENT_INTERVAL'] = '0';
-		} else {
-			$logic_array[$logicName]['LONG_IDENT_INTERVAL'] = $this->settingsArray['ID_Long_IntervalMin'];
-		}
+		# Build Identification
+		$logic_array[$logicName] += $this->build_identification();
+		
+		# Build Courtesy Tone
+		$logic_array[$logicName] += $this->build_courtesy_tone();
+		$logic_array[$logicName]['RGR_SOUND_DELAY'] = '1';
 
 		# Fixed Settings
 		$logic_array[$logicName]['EVENT_HANDLER'] = '/usr/share/svxlink/events.tcl';
 		$logic_array[$logicName]['DEFAULT_LANG'] = 'en_US';
-		$logic_array[$logicName]['RGR_SOUND_DELAY'] = '1';
 		$logic_array[$logicName]['REPORT_CTCSS'] = $this->settingsArray['rxTone'];
 		$logic_array[$logicName]['TX_CTCSS'] = 'ALWAYS';
 		$logic_array[$logicName]['FX_GAIN_NORMAL'] = '0';
@@ -422,6 +399,141 @@ class SVXLink {
 		}
 
 		return $logic_array;
+	}
+
+
+
+	###############################################
+	# Build Identificaiton
+	###############################################
+
+	private function build_identification() {
+		# Short ID
+		switch ($this->settingsArray['ID_Short_Mode']) {
+		    case "disabled":
+		    	// Short ID - DISABLED
+				$id_array['SHORT_IDENT_INTERVAL'] = '0';
+				$id_array['SHORT_VOICE_ID_ENABLE'] = '0';
+		        break;
+		
+		    case "morse":
+		    	// Short ID - MORSE
+				$id_array['SHORT_IDENT_INTERVAL'] = $this->settingsArray['ID_Short_IntervalMin'];
+				$id_array['SHORT_VOICE_ID_ENABLE'] = '0';
+				$id_array['SHORT_CW_ID_ENABLE'] = '1';
+		        break;
+		
+		    case "voice":
+		    	// Short ID - VOICE ID
+				$id_array['SHORT_IDENT_INTERVAL'] = $this->settingsArray['ID_Short_IntervalMin'];
+				$id_array['SHORT_VOICE_ID_ENABLE'] = '1';
+				if ($this->settingsArray['ID_Short_AppendMorse'] == 'True') {
+					$id_array['SHORT_CW_ID_ENABLE'] = '1';
+				}
+		        break;
+		
+		    case "custom":
+		    	// Short ID - CUSTOM ID
+				$id_array['SHORT_IDENT_INTERVAL'] = $this->settingsArray['ID_Short_IntervalMin'];
+				$id_array['SHORT_VOICE_ID_ENABLE'] = '0';
+				$id_array['SHORT_ANNOUNCE_ENABLE'] = '1';
+				$id_array['SHORT_ANNOUNCE_FILE'] = $this->idPath . $this->settingsArray['ID_Short_CustomFile'];
+
+				if ($this->settingsArray['ID_Short_AppendMorse'] == 'True') {
+					$id_array['SHORT_CW_ID_ENABLE'] = '1';
+				}
+		        break;
+		}
+		# ID only if there is activity, only affect short IDs
+		if ($this->settingsArray['ID_Only_When_Active'] == 'True') {
+			$id_array['IDENT_ONLY_AFTER_TX'] = '4';
+		}
+
+
+		#Long ID
+		switch ($this->settingsArray['ID_Long_Mode']) {
+		    case "disabled":
+				$id_array['LONG_IDENT_INTERVAL'] = '0';
+				$id_array['LONG_VOICE_ID_ENABLE'] = '0';
+		        break;
+		
+		    case "morse":
+		    	// Long ID - MORSE
+				$id_array['LONG_IDENT_INTERVAL'] = $this->settingsArray['ID_Long_IntervalMin'];
+				$id_array['LONG_VOICE_ID_ENABLE'] = '0';
+				$id_array['LONG_CW_ID_ENABLE'] = '1';
+		        break;
+		
+		    case "voice":
+		    	// Long ID - VOICE ID
+				$id_array['LONG_IDENT_INTERVAL'] = $this->settingsArray['ID_Long_IntervalMin'];
+				$id_array['LONG_VOICE_ID_ENABLE'] = '1';
+				if ($this->settingsArray['ID_Long_AppendTime'] == 'True') {
+					$proc_content .= $this->buildTime();
+				}
+				if ($this->settingsArray['ID_Long_AppendTone'] == 'True') {
+					// FUTURE - Option to announce CTCSS / PL Tone;
+				}
+				if ($this->settingsArray['ID_Long_AppendMorse'] == 'True') {
+					$id_array['LONG_CW_ID_ENABLE'] = '1';
+				}		
+		        break;
+		
+		    case "custom":
+		    	// Long ID - CUSTOM ID
+				$id_array['LONG_IDENT_INTERVAL'] = $this->settingsArray['ID_Long_IntervalMin'];
+				$id_array['LONG_VOICE_ID_ENABLE'] = '0';
+				$id_array['LONG_ANNOUNCE_ENABLE'] = '1';
+				$id_array['LONG_ANNOUNCE_FILE'] = $this->idPath . $this->settingsArray['ID_Long_CustomFile'];
+
+				if ($this->settingsArray['ID_Long_AppendTime'] == 'True') {
+					$id_array['ORP_ANNC_TIME'] = '1';
+				}
+				if ($this->settingsArray['ID_Long_AppendTone'] == 'True') {
+					// FUTURE - Option to announce CTCSS / PL Tone;
+				}
+				if ($this->settingsArray['ID_Long_AppendMorse'] == 'True') {
+					$id_array['LONG_CW_ID_ENABLE'] = '1';
+				}		
+		        break;
+		}
+
+		$id_array['PHONETIC_SPELLING'] = '1';
+
+		# CW Settings
+		$id_array['CW_PITCH'] = $this->settingsArray['ID_Morse_Pitch'];
+		$id_array['CW_WPM'] = $this->settingsArray['ID_Morse_WPM'];
+		$id_array['CW_AMP'] = $this->settingsArray['ID_Morse_Amplitude'];
+		$id_array['ORP_CW_SUFFIX'] = $this->settingsArray['ID_Morse_Suffix'];
+
+		return $id_array;
+	}
+
+
+
+	###############################################
+	# Build Courtesy Tone
+	###############################################
+
+	private function build_courtesy_tone() {
+		switch ($this->settingsArray['courtesyMode']) {
+		    case 'disabled':
+				// No Courtesy Tone Played 
+				$courtesy_array['ORP_RGR_TYPE'] = 'none';
+		        break;
+		
+		    case 'beep':
+				// Generic Beep Played
+				$courtesy_array['ORP_RGR_TYPE'] = 'beep';
+		        break;
+		
+		    case 'custom':
+				// Play Custom Courtesy Tone
+				$courtesy_array['ORP_RGR_TYPE'] = 'custom';
+				$courtesy_array['ORP_RGR_FILE'] = $this->courtesyPath . $this->settingsArray['courtesy'];
+		        break;
+		}
+		return $courtesy_array;
 	}
 
 
@@ -706,7 +818,7 @@ class SVXLink {
 	public function get_adv_svxlink_options($section = 'logic') {
 		switch ($section) {
 		case 'logic':
-			$logicCommonArray = ['MODULES', 'CALLSIGN', 'SHORT_VOICE_ID_ENABLE', 'SHORT_CW_ID_ENABLE', 'SHORT_ANNOUNCE_ENABLE', 'SHORT_ANNOUNCE_FILE', 'LONG_VOICE_ID_ENABLE', 'LONG_CW_ID_ENABLE', 'LONG_ANNOUNCE_ENABLE', 'LONG_ANNOUNCE_FILE', 'CW_AMP', 'CW_PITCH', 'CW_CPM', 'CW_WPM', 'PHONETIC_SPELLING', 'TIME_FORMAT', 'SHORT_IDENT_INTERVAL', 'LONG_IDENT_INTERVAL', 'IDENT_ONLY_AFTER_TX', 'EXEC_CMD_ON_SQL_CLOSE', 'EVENT_HANDLER', 'DEFAULT_LANG', 'RGR_SOUND_DELAY', 'REPORT_CTCSS', 'TX_CTCSS', 'MACROS', 'FX_GAIN_NORMAL', 'FX_GAIN_LOW', 'QSO_RECORDER', 'SEL5_MACRO_RANGE', 'ONLINE_CMD', 'STATE_PTY', 'DTMF_CTRL_PTY'];
+			$logicCommonArray = ['ORP_CW_SUFFIX', 'ORP_ANNC_TIME', 'ORP_RGR_TYPE', 'ORP_RGR_FILE', 'MODULES', 'CALLSIGN', 'SHORT_VOICE_ID_ENABLE', 'SHORT_CW_ID_ENABLE', 'SHORT_ANNOUNCE_ENABLE', 'SHORT_ANNOUNCE_FILE', 'LONG_VOICE_ID_ENABLE', 'LONG_CW_ID_ENABLE', 'LONG_ANNOUNCE_ENABLE', 'LONG_ANNOUNCE_FILE', 'CW_AMP', 'CW_PITCH', 'CW_CPM', 'CW_WPM', 'PHONETIC_SPELLING', 'TIME_FORMAT', 'SHORT_IDENT_INTERVAL', 'LONG_IDENT_INTERVAL', 'IDENT_ONLY_AFTER_TX', 'EXEC_CMD_ON_SQL_CLOSE', 'EVENT_HANDLER', 'DEFAULT_LANG', 'RGR_SOUND_DELAY', 'REPORT_CTCSS', 'TX_CTCSS', 'MACROS', 'FX_GAIN_NORMAL', 'FX_GAIN_LOW', 'QSO_RECORDER', 'SEL5_MACRO_RANGE', 'ONLINE_CMD', 'STATE_PTY', 'DTMF_CTRL_PTY'];
 			# SETTINGS REMOVED:
 			# TYPE, RX, TX
 
