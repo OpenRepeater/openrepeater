@@ -601,12 +601,13 @@ class Database {
 
 
 	// ADD NEW COLUMN TO TABLE
-	public function add_table_column($table, $column_name) {
+	public function add_table_column($table, $column_name, $type = 'TEXT', $default = '') {
 		if ($this->exists_column($table, $column_name) == false) {
 			$old_num_columns = $this->count_table_columns($table);
 
 			$update_sql = "ALTER TABLE $table ADD COLUMN $column_name";
-			$update_sql .= " TEXT";
+			$update_sql .= " " . $type;
+			if ($default != '') { $update_sql .= " default $default"; }
 			$results = $this->update($update_sql);
 
 			$new_num_columns = $this->count_table_columns($table);
