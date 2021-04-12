@@ -28,7 +28,8 @@ if(isset($_POST)==true && empty($_POST)==false) {
 	$txGPIO=$_POST['txGPIO'];
 	$rxGPIO_active=$_POST['rxGPIO_active'];					
 	$txGPIO_active=$_POST['txGPIO_active'];					
-	$linkGroup=$_POST['linkGroup'];					
+	$linkGroup=$_POST['linkGroup'];
+
 
 	$insertArray = [];
 	foreach($portLabel as $portNum => $portArr) {
@@ -47,7 +48,8 @@ if(isset($_POST)==true && empty($_POST)==false) {
 		$insertArray[$portNum] += ['txGPIO' => $txGPIO[$portNum]];
 		$insertArray[$portNum] += ['rxGPIO_active' => $rxGPIO_active[$portNum]];
 		$insertArray[$portNum] += ['txGPIO_active' => $txGPIO_active[$portNum]];
-		$insertArray[$portNum] += ['linkGroup' => $linkGroup[$portNum]];
+// 		$insertArray[$portNum] += ['linkGroup' => $linkGroup[$portNum]];
+		$insertArray[$portNum] += [ 'linkGroup' => [intval($linkGroup[$portNum])] ];
 	}
 
 	// Write settings into Port DB Table

@@ -657,8 +657,9 @@ class SVXLink {
 	###############################################
 
 	public function build_link($linkGroupNum, $logicsArray) {
-		$linkGroupSettingsArray = @unserialize( $this->settingsArray['LinkGroup_Settings'] );
-		// only build this section if a serialized settings array is retrived.
+// 		$linkGroupSettingsArray = @unserialize( $this->settingsArray['LinkGroup_Settings'] );
+		$linkGroupSettingsArray = json_decode( $this->settingsArray['LinkGroup_Settings'], true );
+		// only build this section if a JSON settings array is retrived.
 		if ($this->settingsArray['LinkGroup_Settings'] === 'b:0;' || $linkGroupSettingsArray !== false) {
 			$linkName = 'LinkGroup' . $linkGroupNum;
 			$this->links[] = $linkName; // Add this link section to link list for declaration in Globals Section

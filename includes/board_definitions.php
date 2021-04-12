@@ -24,6 +24,8 @@ $board_definitions[170923] = [
 			'rxGPIO_ctcss_active' => 'low',
 			'txGPIO_ctcss' => '13',
 			'txGPIO_ctcss_active' => 'low',
+	        'portDuplex'  => 'full',
+	        'linkGroup'  => [1],
 		],
 		2 => [
 			'portLabel' => 'Port 2',
@@ -39,6 +41,8 @@ $board_definitions[170923] = [
 			'rxGPIO_ctcss_active' => 'low',
 			'txGPIO_ctcss' => '27',
 			'txGPIO_ctcss_active' => 'low',
+	        'portDuplex'  => 'half',
+	        'linkGroup'  => [1],
 		]
 	],
 	'alsa_settings' => [
@@ -76,6 +80,8 @@ $board_definitions[171231] = [
 			'rxGPIO_ctcss_active' => 'low',
 			'txGPIO_ctcss' => '13',
 			'txGPIO_ctcss_active' => 'low',
+	        'portDuplex'  => 'full',
+	        'linkGroup'  => '',
 		]
 	],
 	'alsa_settings' => [
@@ -109,6 +115,8 @@ $board_definitions[160430] = [
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '16',
 			'txGPIO_active' => 'high',
+	        'portDuplex'  => 'full',
+	        'linkGroup'  => [1],
 		],
 		2 => [
 			'portLabel' => 'Link',
@@ -120,6 +128,8 @@ $board_definitions[160430] = [
 			'rxGPIO_active' => 'low',
 			'txGPIO' => '17',
 			'txGPIO_active' => 'high',
+	        'portDuplex'  => 'half',
+	        'linkGroup'  => [1],
 		]
 	],
 	'alsa_settings' => [
@@ -185,6 +195,8 @@ $board_definitions[161021] = [
 			'rxGPIO_active' => 'high',
 			'txGPIO' => '24',
 			'txGPIO_active' => 'high',
+	        'portDuplex'  => 'full',
+	        'linkGroup'  => [1],
 		],
 		2 => [
 			'portLabel' => 'Link Port',
@@ -196,6 +208,8 @@ $board_definitions[161021] = [
 			'rxGPIO_active' => 'high',
 			'txGPIO' => '18',
 			'txGPIO_active' => 'high',
+	        'portDuplex'  => 'half',
+	        'linkGroup'  => [1],
 		]
 	],
 	'alsa_settings' => [
@@ -232,6 +246,7 @@ $board_definitions[110326] = [
 			'hidrawRX_ctcss_invert' => true,
 			'hidrawTX_ptt' => 'GPIO3',
 			'hidrawTX_ptt_invert' => false,
+	        'portDuplex'  => 'full',
 		],
 	],
 	'gpios' => [
@@ -272,6 +287,7 @@ $board_definitions[170306] = [
 			'hidrawRX_ctcss_invert' => true,
 			'hidrawTX_ptt' => 'GPIO3',
 			'hidrawTX_ptt_invert' => false,
+	        'portDuplex'  => 'full',
 		],
 	],
 	'alsa_settings' => [
@@ -306,6 +322,8 @@ $board_definitions[170402] = [
 			'rxGPIO_ctcss_active' => 'low',
 			'txGPIO_ctcss' => '13',
 			'txGPIO_ctcss_active' => 'low',
+	        'portDuplex'  => 'full',
+	        'linkGroup'  => [1],
 		],
 		2 => [
 			'portLabel' => 'Port 2',
@@ -321,6 +339,8 @@ $board_definitions[170402] = [
 			'rxGPIO_ctcss_active' => 'low',
 			'txGPIO_ctcss' => '27',
 			'txGPIO_ctcss_active' => 'low',
+	        'portDuplex'  => 'half',
+	        'linkGroup'  => [1],
 		]
 	],
 	'alsa_settings' => [

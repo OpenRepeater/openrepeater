@@ -41,7 +41,7 @@ $fakePorts = [
 
         'portDuplex'  => 'full',
         'portEnabled'  => '1',
-        'linkGroup'  => '1,2,4',
+        'linkGroup'  => [1,2,4],
         
 		'SVXLINK_ADVANCED_LOGIC' => [
 			'DTMF_CTRL_PTY' => '123',
@@ -70,7 +70,7 @@ $fakePorts = [
 
 		'portDuplex'  => 'half',
         'portEnabled'  => '0',
-        'linkGroup'  => '1',
+        'linkGroup'  => [1],
     ],
 
 	3 => [
@@ -89,7 +89,7 @@ $fakePorts = [
 	
 	    'portDuplex'  => 'full',
 	    'portEnabled'  => '1',
-	    'linkGroup'  => '2',
+	    'linkGroup'  => [2],
 	
 // 		    'hidrawRX_cos_invert' => false,
 	],
@@ -111,7 +111,7 @@ $fakePorts = [
 
             'portDuplex'  => 'half',
             'portEnabled'  => '1',
-            'linkGroup'  => '1',
+            'linkGroup'  => [1],
             'rxAudioDev' => 'alsa:plughw:1|0',
             'txAudioDev' => 'alsa:plughw:1|0',
         ],

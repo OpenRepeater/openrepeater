@@ -57,23 +57,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 				case 'GPIO':
 				case 'HiDraw':
 				case 'Serial':
-					###############################################
-					# Work around until new UI is in place
-					###############################################
-					if ( !isset($val['portDuplex']) ) {
-						switch ($settings['orp_Mode']) {
-						case "repeater":
-							if ($key == 1) { $val['portDuplex'] = 'full'; } else { $val['portDuplex'] = 'half'; }
-							$val['linkGroup'] = 1;
-							break;
-						case "simplex":
-							$val['portDuplex'] = 'half'; // or full or half
-							$val['linkGroup'] = 1;
-							break;
-						}
-					}
-					###############################################
-
 					// Build Ports
 					$config_array += $classSVXLink->build_rx( $key, $val['portType'] ); // Build RX
 					$config_array += $classSVXLink->build_tx( $key, $val['portType'] ); // Build TX
@@ -111,8 +94,10 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 
 
 			// Add to LinkGroup
-			if (isset($val['linkGroup'])) {
-				$linkGroupArray[$val['linkGroup']][$key] = $new_logic_name;
+			if (is_array($val['linkGroup'])) {
+				foreach ($val['linkGroup'] as $curLink) {
+					$linkGroupArray[$curLink][$key] = $new_logic_name;
+				}
 			}
 
 		}

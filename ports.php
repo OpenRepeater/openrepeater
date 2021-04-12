@@ -101,7 +101,15 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 						$idNum = 1;
 						
 						if ($ports) {
-							foreach($ports as $cur_port) { ?>
+							foreach($ports as $cur_port) { 
+								if (is_array($cur_port['linkGroup'])) {
+									$curFirstLinkGrp = $cur_port['linkGroup'][0];
+								} else {
+									$curFirstLinkGrp = '';									
+								}
+
+								$cur_port['linkGroup']
+							?>
 
 								<?php if ($cur_port['portType'] == 'GPIO') { ?>
 									<div id="port<?=$cur_port['portNum']?>wrap">
@@ -220,11 +228,11 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 												<label class="control-label" for="linkGroup<?=$cur_port['portNum']?>">Link Group</label>
 												<div class="controls">
 												  <select id="linkGroup<?=$cur_port['portNum']?>" name="linkGroup[<?=$cur_port['portNum']?>]">
-												  	<option value="" <?php if ($cur_port['linkGroup'] == '') { echo ' selected'; } ?>>None</option>
-												  	<option value="1" <?php if ($cur_port['linkGroup'] == '1') { echo ' selected'; } ?>>Group 1</option>
-												  	<option value="2" <?php if ($cur_port['linkGroup'] == '2') { echo ' selected'; } ?>>Group 2</option>
-												  	<option value="3" <?php if ($cur_port['linkGroup'] == '3') { echo ' selected'; } ?>>Group 3</option>
-												  	<option value="4" <?php if ($cur_port['linkGroup'] == '4') { echo ' selected'; } ?>>Group 4</option>
+												  	<option value="" <?php if ($curFirstLinkGrp == '') { echo ' selected'; } ?>>None</option>
+												  	<option value="1" <?php if ($curFirstLinkGrp == '1') { echo ' selected'; } ?>>Group 1</option>
+												  	<option value="2" <?php if ($curFirstLinkGrp == '2') { echo ' selected'; } ?>>Group 2</option>
+												  	<option value="3" <?php if ($curFirstLinkGrp == '3') { echo ' selected'; } ?>>Group 3</option>
+												  	<option value="4" <?php if ($curFirstLinkGrp == '4') { echo ' selected'; } ?>>Group 4</option>
 												  </select>
 												</div>
 											  </div>
