@@ -17,7 +17,7 @@
 <?php if ( isset($jsCode) ) { ?>
 	<script type='text/javascript'>
 	$(document).ready(function() {
-		var max_fields = 5; //maximum input boxes allowed
+		var max_fields = 10; //maximum input boxes allowed
 		var baseRow = '<?php echo $jsCode; ?>';
 		var logicOptions = '<?php echo $jsLogicOptions; ?>';
 		var rxOptions = '<?php echo $jsRxOptions; ?>';
