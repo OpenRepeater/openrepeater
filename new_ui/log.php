@@ -68,10 +68,11 @@ include('includes/header.php');
 								<span>Loading...</span>
 								<span class="data"></span>
 							</pre>
+							<div><?=_('File Location')?>: /var/log/svxlink</div>
                         </div>
 
                         <div id="config_content" role="tabpanel" class="tab-pane fade active in" aria-labelledby="config_tab">
-							<select id="selConfigFile">
+							<select id="selConfigFile" class="form-control" style="margin-bottom: 10px;">
 								<option><?=_('Choose a File')?></option>
 							</select>
 							<div id="configFileDisplay"></div>

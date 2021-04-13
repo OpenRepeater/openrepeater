@@ -2964,10 +2964,8 @@ span.tag a {
 
 ul.bar_tabs {
 	overflow:visible;
-	background:#F5F7FA;
 	height:25px;
 	margin:21px 0 14px;
-	padding-left:14px;
 	position:relative;
 	z-index:1;
 	width:100%;
@@ -2985,7 +2983,6 @@ ul.bar_tabs>li {
 }
 
 ul.bar_tabs>li.active {
-	border-right:6px solid #D3D6DA;
 	border-top:0;
 	margin-top:-15px;
 }
