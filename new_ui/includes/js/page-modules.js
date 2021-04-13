@@ -107,7 +107,7 @@ $(function() {
 	function resetSwitchery(checkboxID) {
  		 $(checkboxID).next().remove('span'); // remove inital switcher span
  		 var elems = $(document).find(checkboxID);
- 		 var switchery = new Switchery(elems[0]);
+ 		 var switchery = new Switchery( elems[0], { color: '#8dc63f' } );
  		 switchery.handleOnchange();
 	}
 
