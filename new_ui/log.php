@@ -26,8 +26,8 @@ if (!empty($_POST)) {
 */
 }
 
- $customJS = 'page-log.js'; // 'file1.js, file2.js, ... '
-// $customCSS = 'page-ports.css'; // 'file1.css, file2.css, ... '
+$customCSS = "orp_logtail.css"; // "file1.css, file2.css, ... "
+$customJS = "orp_logtail.js, page-log.js"; // "file1.js, file2.js, ... "
 
 include('includes/header.php');
 ?>
@@ -64,24 +64,9 @@ include('includes/header.php');
                       <div id="logContent" class="tab-content">
 
                         <div id="svxlink_content" role="tabpanel" class="tab-pane fade in" aria-labelledby="svxlink_tab">
-							<pre>
-Sat Aug  1 18:42:23 2020: TX_Port1: Turning the transmitter ON
-Sat Aug  1 18:42:27 2020: TX_Port1: Turning the transmitter OFF
-Sat Aug  1 18:50:00 2020: ORP_FullDuplexLogic_Port1: Sending short identification...
-Sat Aug  1 18:50:00 2020: TX_Port1: Turning the transmitter ON
-Sat Aug  1 18:50:04 2020: TX_Port1: Turning the transmitter OFF
-Sat Aug  1 19:00:00 2020: ORP_FullDuplexLogic_Port1: Sending long identification...
-Sat Aug  1 19:00:00 2020: TX_Port1: Turning the transmitter ON
-Sat Aug  1 19:00:08 2020: TX_Port1: Turning the transmitter OFF
-Sat Aug  1 19:10:00 2020: ORP_FullDuplexLogic_Port1: Sending short identification...
-Sat Aug  1 19:10:00 2020: TX_Port1: Turning the transmitter ON
-Sat Aug  1 19:10:04 2020: TX_Port1: Turning the transmitter OFF
-Sat Aug  1 19:20:00 2020: ORP_FullDuplexLogic_Port1: Sending short identification...
-Sat Aug  1 19:20:00 2020: TX_Port1: Turning the transmitter ON
-Sat Aug  1 19:20:04 2020: TX_Port1: Turning the transmitter OFF
-Sat Aug  1 19:30:00 2020: ORP_FullDuplexLogic_Port1: Sending short identification...
-Sat Aug  1 19:30:00 2020: TX_Port1: Turning the transmitter ON
-Sat Aug  1 19:30:04 2020: TX_Port1: Turning the transmitter OFF
+							<pre id="orp_log">
+								<span>Loading...</span>
+								<span class="data"></span>
 							</pre>
                         </div>
 

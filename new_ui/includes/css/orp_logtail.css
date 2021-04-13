@@ -1,0 +1,33 @@
+#orp_log {
+	background-color: #232323;
+    color: #5fff55;
+	height: 600px;
+    max-height: 100%;    
+    overflow-y: auto;
+    line-height: 1.2em;
+    padding: 0 20px;
+    border-radius: 10px;
+    border: solid 2px #232323;
+}
+
+#orp_log span {
+	display: block;
+}
+
+#orp_log::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+#orp_log::-webkit-scrollbar:vertical {
+    width: 11px;
+}
+
+#orp_log::-webkit-scrollbar:horizontal {
+    height: 11px;
+}
+
+#orp_log::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid #232323; /* should match background, can't be transparent */
+    background-color: rgba(255, 255, 255, .5);
+}
