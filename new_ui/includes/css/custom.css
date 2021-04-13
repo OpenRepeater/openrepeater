@@ -5092,6 +5092,34 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
 
 
 
+.modal-content {
+	background-color: transparent;
+    border: solid 2px #232323;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.modal-body {
+	color: #232323;
+	background-color: rgba(255,255,255,.75);
+}
+
+.modal-header, .modal-footer {
+	color: #ffffff;
+	background-color: rgba(0,0,0,.75);
+}
+
+.modal-header button {
+	color: #ffffff;
+    opacity: .4;
+}
+
+.modal-header button:hover {
+	color: #ffffff;
+    opacity: .75;
+}
+
+
 /* ORP Loader Overlay */
 #orp_loader_overlay svg {
 	width: 25%;
