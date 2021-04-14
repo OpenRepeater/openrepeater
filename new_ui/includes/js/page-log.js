@@ -11,12 +11,12 @@ $(function() {
 		    data: { request: 'get_file', file_path: filePath },
             success: function (results) {
 				results = JSON.parse(results);
+				$('#configFileDisplay .data').html(results.fileContents);
+				$('#configFileDisplay').fadeIn(500);
 
-				$('#configFileDisplay').html('<pre>' + results.fileContents + '</pre>');
-				$('#configFileDate').html(results.fileDate);
-
-				$('#configFileLoc span').html(filePath);
 				$('#configFileLoc').fadeIn(500);
+				$('#configFileLoc span').html(filePath);
+				$('#configFileDate').html(results.fileDate);
             } 
 		});	
 
@@ -61,5 +61,32 @@ $(function() {
 	    $("#logContent").append($tabContent);
 
 	}
+
+
+
+	$("#copyBtnLog").on('click', function(){
+		copyToClipboard('#logContent .data');
+	});
+
+	$("#copyBtnFiles").on('click', function(){
+		copyToClipboard('#configFileDisplay .data');
+	});
+
+	function copyToClipboard(element) {
+	    var $tempField = $("<textarea>");
+	    $("body").append($tempField);
+	    $tempField.val($(element).text()).select();
+	    document.execCommand("copy");
+	    $tempField.remove();
+
+		//Display Message
+		new PNotify({
+			title: copyMsgTitle,
+			text: copyMsgText,
+			type: 'success',
+			styling: 'bootstrap3'
+		});
+	}
+
 
 })

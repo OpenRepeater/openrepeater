@@ -135,7 +135,7 @@ function _($input) {
                   </li>
 
                   <li><a class="navLink" href="/new_ui/ports.php"><i class="fa fa-sitemap"></i> <?=_('Interface')?> </a></li>
-                  <li><a class="navLink" href="/new_ui/log.php"><i class="fa fa-edit"></i> <?=_('Log')?> </a></li>
+                  <li><a class="navLink" href="/new_ui/log.php"><i class="fa fa-edit"></i> <?=_('Log & Files')?> </a></li>
                   <li><a class="navLink" href="/new_ui/macros.php"><i class="fa fa-play-circle"></i> <?=_('Macros')?> </a></li>
                   <li><a class="navLink" href="/new_ui/dtmf.php"><i class="fa fa-tty"></i> <?=_('DTMF Reference')?> </a></li>
 

@@ -13,20 +13,15 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 if (!empty($_POST)) {
 	switch ($_POST['request']) {
 		case 'get_file':
-// 			echo $_POST['file_path'];
 			$fileArray = [];
 			$fileArray['fileContents'] = file_get_contents( $_POST['file_path'] );
 			$fileArray['fileDate'] = date( "F d Y H:i:s.", filemtime( $_POST['file_path'] ) );
 			echo json_encode($fileArray);
 			exit();
 	}
-/*
-	$option = $_POST['post_option'];
-	echo exec_orp_helper($service, $option);
-*/
 }
 
-$customCSS = "orp_logtail.css"; // "file1.css, file2.css, ... "
+$customCSS = "orp_logtail.css, page-log.css"; // "file1.css, file2.css, ... "
 $customJS = "orp_logtail.js, page-log.js"; // "file1.js, file2.js, ... "
 
 include('includes/header.php');
@@ -37,7 +32,7 @@ include('includes/header.php');
           <div class="">
             <div class="page-title">
               <div class="title_full">
-                <h3><i class="fa fa-edit"></i> <?=_('Activity Log')?></h3>
+                <h3><i class="fa fa-edit"></i> <?=_('Activity Log & Files')?></h3>
               </div>
             </div>
 
@@ -52,10 +47,10 @@ include('includes/header.php');
 
                     <div class="" role="tabpanel" data-example-id="togglable-tabs">
                       <ul id="logTabs" class="nav nav-tabs bar_tabs" role="tablist">
-                        <li role="presentation"><a href="#svxlink_content" id="svxlink_tab" role="tab" data-toggle="tab" aria-expanded="false">svxlink.log</a>
+                        <li role="presentation" class="active"><a href="#svxlink_content" id="svxlink_tab" role="tab" data-toggle="tab" aria-expanded="true"><?=_('SVXLink Log')?></a>
                         </li>
 
-                        <li role="presentation" class="active"><a href="#config_content" id="config_tab" role="tab" data-toggle="tab" aria-expanded="true"><?=_('Configuration Files')?></a>
+                        <li role="presentation"><a href="#config_content" id="config_tab" role="tab" data-toggle="tab" aria-expanded="false"><?=_('Configuration Files')?></a>
                         </li>
                       </ul>
 
@@ -63,19 +58,22 @@ include('includes/header.php');
 
                       <div id="logContent" class="tab-content">
 
-                        <div id="svxlink_content" role="tabpanel" class="tab-pane fade in" aria-labelledby="svxlink_tab">
-							<pre id="orp_log">
-								<span>Loading...</span>
-								<span class="data"></span>
-							</pre>
+                        <div id="svxlink_content" role="tabpanel" class="tab-pane fade active in" aria-labelledby="svxlink_tab">
+							<div id="orp_log">
+								<button id="copyBtnLog" class="copyBtn" data-toggle="tooltip" data-placement="left" title="<?=_('Copy this to the clipboard')?>"><i class="fa fa-copy"></i> <?=_('Copy')?></button>
+								<span class="data"><?=_('Loading')?>...</span>
+							</div>
 							<div><?=_('File Location')?>: /var/log/svxlink</div>
                         </div>
 
-                        <div id="config_content" role="tabpanel" class="tab-pane fade active in" aria-labelledby="config_tab">
+                        <div id="config_content" role="tabpanel" class="tab-pane fade in" aria-labelledby="config_tab">
 							<select id="selConfigFile" class="form-control" style="margin-bottom: 10px;">
 								<option><?=_('Choose a File')?></option>
 							</select>
-							<div id="configFileDisplay"></div>
+							<div id="configFileDisplay" style="display: none;">
+								<button id="copyBtnFiles" class="copyBtn" data-toggle="tooltip" data-placement="left" title="<?=_('Copy this to the clipboard')?>"><i class="fa fa-copy"></i> <?=_('Copy')?></button>
+								<span class="data"></span>
+							</div>
 							<div id="configFileDate"></div>
 							<div id="configFileLoc" style="display: none;"><?=_('File Location')?>: <span></span></div>
                         </div>
@@ -92,18 +90,6 @@ include('includes/header.php');
         </div>
         <!-- /page content -->
 
-<? ######################################################################### ?>
-
-<script id="tabTemplate" type = "text/template">
-	<li role="presentation"><a href="#%%URL_TO_CONTENT%%" id="%%TAB_ID%%" role="tab" data-toggle="tab" aria-expanded="false">%%TAB_LABEL%%</a></li>
-</script>
-
-<script id="contentTemplate" type = "text/template">
-    <div id="%%CONTENT_ID%%" class="tab-pane fade" role="tabpanel" aria-labelledby="%%TAB_ID%%">
-      <p>Template...%%CONTENT_BODY%%</p>
-    </div>
-</script>
-
 <?php
 	$configFilesArray = $Database->select_single("SELECT value FROM system_flags WHERE keyID='config_files'");
 	$configFilesList = $configFilesArray['value'];	
@@ -111,6 +97,8 @@ include('includes/header.php');
 
 <script>
 	var configFilesList = '<?= $configFilesList ?>';
+	var copyMsgTitle = '<?=_('Success')?>';
+	var copyMsgText = '<?=_('Your text has been copied to the clipboard')?>';
 </script>
 
 <?php include('includes/footer.php'); ?>

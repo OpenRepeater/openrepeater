@@ -1,0 +1,50 @@
+.copyBtn {
+    color: #ffffff;
+    position: absolute;
+    top: 9px;
+    right: 8px;
+    background-color: transparent;
+    border: solid 1px #ffffff;
+    padding: 7px;
+    font-size: 13px;
+    border-radius: 10px;
+}
+
+.copyBtn:hover {
+    background-color: rgba(255,255,255,.1);
+}
+
+
+
+#configFileDisplay {
+	background-color: #232323;
+    border-radius: 10px;
+    border: solid 2px #232323;
+	position: relative;
+}
+
+#configFileDisplay .data {
+	display: block;
+    padding: 20px;
+    color: #5fff55;
+    line-height: 1.2em;
+    font-family: monospace;
+    white-space: pre;
+}
+#configFileDisplay .data::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+#configFileDisplay .data::-webkit-scrollbar:vertical {
+    width: 11px;
+}
+
+#configFileDisplay .data::-webkit-scrollbar:horizontal {
+    height: 11px;
+}
+
+#configFileDisplay .data::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid #232323; /* should match background, can't be transparent */
+    background-color: rgba(255, 255, 255, .5);
+}
