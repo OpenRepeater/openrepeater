@@ -819,10 +819,15 @@ $device_out_count = $SoundDevices->get_device_out_count();
 	var rxOptions = <?=$SVXLink->get_adv_svxlink_options('rx')?>;
 	var txOptions = <?=$SVXLink->get_adv_svxlink_options('tx')?>;
 
-
 	var modal_AddPortTitle = '<?=_('Add Port')?>';
 	var modal_AddPortBody = '<p><?=_('What type of port do you wish to add?')?></p><select id="addPortType" name="addPortType" class="form-control"><option value="local" selected><?=_('Local Analog Port')?></option><option value="voip"><?=_('Test VOIP')?></option></select>';
 
+	var modal_DeletePortTitle = '<?= _('Delete Port') ?>';
+	var modal_DeletePortBody = '<?= _('Are you sure you want to delete this port?') ?>';
+	var modal_DeletePortBtnOK = '<?= _('Delete Forever') ?>';
+	var modal_DeletePortProgressTitle = '<?= _('Deleting Port') ?>';
+	var modal_DeletePortNotifyTitle = '<?= _('Port Deleted') ?>';
+	var modal_DeletePortNotifyDesc = '<?= _('The port has been successfully deleted.') ?>';
 </script>
 
 

@@ -264,9 +264,9 @@ console.log(fullPortObj);
 
 		var modalDetails = {
 			modalSize: 'small',
-			title: '<i class="fa fa-trash"></i> Delete Port',
-			body: '<p>Are you sure you want to delete<br><strong>'+portDesc+'</strong>?</p>',
-			btnOK: 'Delete Forever',
+			title: '<i class="fa fa-trash"></i> '+modal_DeletePortTitle,
+			body: '<p>'+modal_DeletePortBody+'<br><strong>'+portDesc+'</strong></p>',
+			btnOK: modal_DeletePortBtnOK,
 			btnOKclass: 'btn-danger',
 			progressWait: false,
 		};
@@ -275,12 +275,23 @@ console.log(fullPortObj);
 
 		$('#orp_modal_ok').off('click'); // Remove other click events
 		$('#orp_modal_ok').click(function() {
-			console.log('submit');
-			orpModalWaitBar('Deleting Port');
+			deleteString = { deletePort: portNum };
+			console.log( JSON.stringify(deleteString) );
+
+			orpModalWaitBar(modal_DeletePortProgressTitle);
 
 			setTimeout(function() {
 				$('#orp_modal').modal('hide');
-				$('#portNum' + portNum).slideUp(1000);
+
+				$('#portNum' + portNum).slideUp(500);
+
+				//Display Message
+				new PNotify({
+					title: modal_DeletePortNotifyTitle,
+					text: modal_DeletePortNotifyDesc,
+					type: 'success',
+					styling: 'bootstrap3'
+				});
 			}, 2000);
 		});
 	});
