@@ -39,7 +39,7 @@ if (isset($_POST['action'])){
 		],
 	];
 	
-	$result = $classDB->update_settings(['LinkGroup_Settings' => serialize($linkgrp_array)]);
+	$result = $classDB->update_settings(['LinkGroup_Settings' => json_encode($linkgrp_array)]);
 
 	include('header.php');
 	echo '<h2>LinkGroup Updater</h2>';
