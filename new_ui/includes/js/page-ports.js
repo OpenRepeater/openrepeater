@@ -253,7 +253,6 @@ console.log(fullPortObj);
 		});
 	});
 
-
 	// Delete Port Function and Modal Display
 	$('.deletePort').click(function(e) {
 		e.preventDefault();

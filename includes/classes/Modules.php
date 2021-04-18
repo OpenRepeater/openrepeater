@@ -622,7 +622,7 @@ class Modules {
 	}
 
 
-	public function getModulesJSON() {
+	public function getModulesJSON($listType = 'full') {
 		$modules = $this->get_modules();
 
 		foreach($modules as $cur_mod) { 
@@ -644,43 +644,53 @@ class Modules {
 			}
 
 			// Module type		
-			if ( in_array($cur_mod['svxlinkName'], $this->core_modules) ) {
-				$modules[$curID]['type'] = 'core';
-			} else if ( isset($curr_mod_ini['Module_Info']['mod_type']) ) {
-				if ($curr_mod_ini['Module_Info']['mod_type'] == 'daemon') { $modules[$curID]['type'] = 'daemon'; }
-			} else {
-				$modules[$curID]['type'] = 'add-on';				
+			if ($listType == 'full') {
+				if ( in_array($cur_mod['svxlinkName'], $this->core_modules) ) {
+					$modules[$curID]['type'] = 'core';
+				} else if ( isset($curr_mod_ini['Module_Info']['mod_type']) ) {
+					if ($curr_mod_ini['Module_Info']['mod_type'] == 'daemon') { $modules[$curID]['type'] = 'daemon'; }
+				} else {
+					$modules[$curID]['type'] = 'add-on';				
+				}				
 			}
 
+
 			// Settings Link...if Applicable
-			if (file_exists($mod_settings_file)) {
-				$modules[$curID]['settings'] = true;
-			} else {
-				$modules[$curID]['settings'] = false;
+			if ($listType == 'full') {
+				if (file_exists($mod_settings_file)) {
+					$modules[$curID]['settings'] = true;
+				} else {
+					$modules[$curID]['settings'] = false;
+				}
 			}
 
 			// DTMF Link...if Applicable
-			if (file_exists($dtmf_help_file)) {
-				$modules[$curID]['dtmf'] = true;
-			} else {
-				$modules[$curID]['dtmf'] = false;
+			if ($listType == 'full') {
+				if (file_exists($dtmf_help_file)) {
+					$modules[$curID]['dtmf'] = true;
+				} else {
+					$modules[$curID]['dtmf'] = false;
+				}
 			}
 
 			// Module Description
-			if (isset($curr_mod_ini['Module_Info']['mod_desc'])) {
-				$curDesc = $curr_mod_ini['Module_Info']['mod_desc'];
-				$modules[$curID]['desc'] = $curDesc;
-			} else {
-				$modules[$curID]['desc'] = '<em>(' . _('No Description') . ')</em>';
+			if ($listType == 'full') {
+				if (isset($curr_mod_ini['Module_Info']['mod_desc'])) {
+					$curDesc = $curr_mod_ini['Module_Info']['mod_desc'];
+					$modules[$curID]['desc'] = $curDesc;
+				} else {
+					$modules[$curID]['desc'] = '<em>(' . _('No Description') . ')</em>';
+				}
 			}
 
 			// Version / Author Info
-			$versionInfo = '';
-			if (isset($curr_mod_ini['Module_Info']['version'])) { $versionInfo .= _('Version') . ': ' . $curr_mod_ini['Module_Info']['version']; }
-			if ( isset($curr_mod_ini['Module_Info']['version']) && isset($curr_mod_ini['Module_Info']['authors'])) { $versionInfo .= ' | '; }
-			if (isset($curr_mod_ini['Module_Info']['authors'])) { $versionInfo .= _('Authors') . ': ' . $curr_mod_ini['Module_Info']['authors']; }
-			$modules[$curID]['version'] = $versionInfo;
-
+			if ($listType == 'full') {
+				$versionInfo = '';
+				if (isset($curr_mod_ini['Module_Info']['version'])) { $versionInfo .= _('Version') . ': ' . $curr_mod_ini['Module_Info']['version']; }
+				if ( isset($curr_mod_ini['Module_Info']['version']) && isset($curr_mod_ini['Module_Info']['authors'])) { $versionInfo .= ' | '; }
+				if (isset($curr_mod_ini['Module_Info']['authors'])) { $versionInfo .= _('Authors') . ': ' . $curr_mod_ini['Module_Info']['authors']; }
+				$modules[$curID]['version'] = $versionInfo;
+			}
 		} /* End Current Module */
 
 		return json_encode($modules);

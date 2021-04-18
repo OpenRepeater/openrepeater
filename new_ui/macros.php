@@ -1,27 +1,25 @@
-<?php include('includes/fakeDB.php'); ?>
-
-
 <?php
-// $customJS = 'page-ports.js'; // 'file1.js, file2.js, ... '
-// $customCSS = 'page-ports.css'; // 'file1.css, file2.css, ... '
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: index.php'); // If they aren't logged in, send them to login page.
+} elseif (!isset($_SESSION['callsign'])) {
+	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
+} else { // If they are logged in and have set a callsign, show the page.
+// --------------------------------------------------------
+
+include('includes/fakeDB.php');
+
+$customJS = 'page-macros.js'; // 'file1.js, file2.js, ... '
+$customCSS = 'page-macros.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
-?>
+$ModulesClass = new Modules();
+$moduleList = $ModulesClass->getModulesJSON('short');
+$portList = $Database->get_ports('ALL', 'Short');
 
-<?php
-# Get port info once and put array.
-foreach ($fakePorts as $portKey => $portDetails) {
-	$portListArray[$portDetails['portNum']] = $portDetails['portLabel'];
-}
-?>
-
-<?php
-# Get module info once and put array.
-foreach ($fakeModules as $moduleKey => $moduleDetails) {
-	if ( intval($moduleDetails['svxlinkID']) > 0 ) {
-		$moduleListArray[$moduleKey] = $moduleDetails['displayName'];
-	}
-}
+$macroList = $Database->get_macros();
 ?>
 
         <!-- page content -->
@@ -39,115 +37,36 @@ foreach ($fakeModules as $moduleKey => $moduleDetails) {
               <div class="col-md-12 col-xs-12">
 
                 <div class="x_panel">
-                  <div class="x_title"><h4><?=_('Coming Soon')?></h4></div>
+                  <div class="x_title">
+                    <h4 class="navbar-left"><?=_('Macros')?></h4>
+                    <div class="nav navbar-right">
+                      <button type="button" class="btn btn-success add_macro"><i class="fa fa-plus"></i> <?=_('Add Macro')?></button>
+                    </div>
+                    <div class="clearfix"></div>
+                  </div>
                   
                   <div class="x_content">
-                    <form class="form-horizontal form-label-left input_mask">
 
-					<p><?=_('NOTE: You can create macros for all available ports and installed modules, but if a port or module is disabled at the time of rebuild then those macros will not be available until the chosen port and module have been reenabled and another rebuild completed.')?></p>
+					<p><?=_('NOTE: You can create macros for all available ports and installed modules, but if a port or module is disabled at the time of rebuild then those macros will not be available until the chosen port or module has been reenabled and another rebuild is performed.')?></p>
 						
+					<div id="no_macros" style="display: none;"><h4><?=_('There are no macros setup yet. Click the add button above to create one.')?></h4></div>
+
                     <table id="macro-table-responsive" class="table table-striped dt-responsive" cellspacing="0" width="100%">
                       <thead>
                         <tr>
                           <th><?=_('Enabled')?></th>
                           <th><?=_('Num')?></th>
                           <th><?=_('Description')?></th>
-                          <th><?=_('Module')?></th>
+                          <th><?=_('Module')?> / <?=_('Ports')?></th>
                           <th><?=_('Macro String')?></th>
-                          <th><?=_('Ports')?></th>
+                          <th></th>
                         </tr>
                       </thead>
                       <tbody>
-						<?php foreach ($fakeMacroArray as $curMacroKey => $curMacroSubArr) { ?>
-                        <tr>
-                          <td>
-	                          <?php
-		                          if ($curMacroSubArr['macroEnabled'] == 1) { $curMacroEnabled = ' checked'; } else { $curMacroEnabled = ''; }
-		                      ?>
-	                          <input id="remoteDisable" type="checkbox" class="js-switch"<?=$curMacroEnabled?>>
-	                      </td>
-                          
-                          <td>
-							  <?php 
-								$currentMacroSel = '';
-								$macroNum = $curMacroSubArr['macroNum'];
-								for ($m = 1 ; $m < 100; $m++) { 
-									if($m == $macroNum) {
-										$currentMacroSel .= '<option value="'.$m.'" selected>D'.$m.'</option>';
-									} else {
-										$currentMacroSel .= '<option value="'.$m.'">D'.$m.'</option>';
-									}
-								}
-							  ?>
-	                          <select id="rxCTCSS" class="form-control">
-							  	<?=$currentMacroSel?>
-	                          </select>
-                          </td>
 
-                          <td>
-						  	  <textarea class="form-control" placeholder="A macro that does something"><?=$curMacroSubArr['macroLabel']?></textarea>
-                          </td>
-
-                          <td>
-							<?php
-								$curModOptions = '';
-								foreach($moduleListArray as $modKey => $modLabel) {
-								 	if ($curMacroSubArr['macroModuleKey'] == $modKey) {
-										$curModOptions .= '<option value="' . $modKey . '" selected>' . $modLabel . '</option>';
-								 	} else {
-										$curModOptions .= '<option value="' . $modKey . '">' . $modLabel . '</option>';
-								 	}
-								}
-							?>
-	                          <select id="rxCTCSS" class="form-control">
-							  	<?=$curModOptions?>
-	                          </select>
-                          </td>
-
-                          <td>
-	                          <input type="text" class="form-control" value="<?=$curMacroSubArr['macroString']?>" placeholder="1234#">
-                          </td>
-
-                          <td>
-							<?php
-								$curPortOptions = '';
-								if ($curMacroSubArr['macroPorts'] == 'ALL') {
-									$curPortOptions .= '<option value="ALL" selected>All Ports</option>';
-								} else {
-									$curPortOptions .= '<option value="ALL">All Ports</option>';
-								}
-								
-								foreach($portListArray as $portNum => $portLabel) {
-									$curPortLabel = _('Port') . ' ' . $portNum . ' (' . $portLabel . ')';
-								 	if ($curMacroSubArr['macroPorts'] == $portNum) {
-										$curPortOptions .= '<option value="' . $portNum . '" selected>' . $curPortLabel . '</option>';
-								 	} else {
-										$curPortOptions .= '<option value="' . $portNum . '">' . $curPortLabel . '</option>';
-								 	}
-								}
-							?>
-
-	                          <select id="rxCTCSS" class="form-control">
-	                            <?=$curPortOptions?>
-	                          </select>
-                          </td>
-                        </tr>
-						<?php } ?>
                       </tbody>
                     </table>
 
-<pre>
-<?php print_r($fakeModules); ?>
-</pre>
-
-<pre>
-<?php 
-foreach ($fakeModules as $modDetails) { $modulesArray[$modDetails['svxlinkName']] = $modDetails; }
-	print_r($modulesArray);
-?>
-</pre>
-
-                    </form>
                   </div>
                 </div>
 
@@ -157,4 +76,75 @@ foreach ($fakeModules as $modDetails) { $modulesArray[$modDetails['svxlinkName']
         </div>
         <!-- /page content -->
 
+<? ######################################################################### ?>
+
+<script id="macroRowTemplate" type = "text/template">
+    <tr id="macroRow%%MACRO%%" class="macroRow" data-macro-number="%%MACRO%%">
+      <td>
+          <input type="hidden" name="macroKey" value="%%MACRO%%">
+          <input type="hidden" name="macroEnabled" value="0">
+          <input id="macroEnabled%%MACRO%%" name="macroEnabled" type="checkbox" value="1" class="js-switch form-control macroEnabled">
+      </td>
+      
+      <td>
+		  <?php 
+			$currentMacroSel = '';
+			for ($m = 1 ; $m < 100; $m++) { 
+				$currentMacroSel .= '<option value="'.$m.'">D'.$m.'</option>';
+			}
+		  ?>
+          <select id="macroNum%%MACRO%%" name="macroNum" class="form-control macroNum">
+		  	<?=$currentMacroSel?>
+          </select>
+      </td>
+
+      <td>
+	  	  <textarea id="macroLabel%%MACRO%%" name="macroLabel" class="form-control macroLabel" placeholder="A macro that does something"></textarea>
+      </td>
+
+      <td>
+          <select id="macroModuleKey%%MACRO%%" name="macroModuleKey" class="form-control macroModuleKey" required>
+	          <option value="" disabled selected><?= _('Select a Module') ?></option>
+	          %%MODULE_OPTIONS%%
+	      </select>
+          <select id="macroPorts%%MACRO%%" name="macroPorts" class="form-control macroPorts" required>
+	          <option value="" disabled selected><?= _('Select a Port') ?></option>
+	          %%PORT_OPTIONS%%
+	      </select>
+      </td>
+
+      <td>
+	  	  <textarea id="macroString%%MACRO%%" name="macroString" class="form-control macroString" placeholder="1234#"></textarea>
+      </td>
+
+      <td>
+	  	  <a href="#" id="deleteMacro%%MACRO%%" class="deleteMacro"><i class="fa fa-trash-o"></i></a>
+      </td>
+    </tr>
+</script>
+
+
+<script>
+	var macroList = '<?= json_encode($macroList) ?>';
+
+	var modulesAvailable = '{"1":{"moduleKey":1,"moduleEnabled":1,"svxlinkName":"Help","svxlinkID":0,"displayName":"Help"},"2":{"moduleKey":2,"moduleEnabled":1,"svxlinkName":"Parrot","svxlinkID":1,"displayName":"Parrot"},"3":{"moduleKey":3,"moduleEnabled":0,"svxlinkName":"EchoLink","svxlinkID":2,"displayName":"EchoLink"}}';
+	var portsAvailable = '<?= json_encode($portList) ?>';
+	var portName = '<?= _('Port') ?>';
+	var allPortsName = '<?= _('All Ports') ?>';
+
+	var modal_DeleteMacroTitle = '<?= _('Delete Macro') ?>';
+	var modal_DeleteMacroBody = '<?= _('Are you sure you want to delete this macro?') ?>';
+	var modal_DeleteMacroBtnOK = '<?= _('Delete Forever') ?>';
+	var modal_DeleteMacroProgressTitle = '<?= _('Deleting Macro') ?>';
+	var modal_DeleteMacroNotifyTitle = '<?= _('Macro Deleted') ?>';
+	var modal_DeleteMacroNotifyDesc = '<?= _('The macro has been successfully deleted.') ?>';
+</script>
+
 <?php include('includes/footer.php'); ?>
+
+<?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
+?>

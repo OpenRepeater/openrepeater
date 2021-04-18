@@ -1,0 +1,71 @@
+.macroNum {
+	min-width: 75px;
+}
+
+.macroLabel {
+	min-width: 200px;
+	min-height: 68px;
+}
+
+.macroModuleKey, .macroPorts {
+	
+}
+
+.macroString {
+	min-width: 250px;
+	min-height: 68px;
+	text-transform: uppercase;
+}
+
+
+#no_macros h4 {
+    text-align: center;
+    padding: 30px;
+}
+
+
+/* Fake select "placeholder" styling */
+.macroRow select:required:invalid {
+  color: gray;
+}
+
+.macroRow option[value=""][disabled] {
+  display: none;
+}
+
+.macroRow option {
+  color: #555;
+}
+
+
+/*
+@media (min-width: 768px) {
+	.macroRow td {
+		
+	}
+}
+
+@media (min-width: 992px) {
+	.macroRow td {
+		
+	}
+}
+
+@media (min-width: 1200px) {
+	.macroRow td {
+		
+	}
+}
+
+@media (min-width: 192px) and (max-width: 1100px) {
+	
+	.macroRow thead tr {
+		display: none!important;
+	}
+	
+	.macroRow td {
+		display: block;
+		width: 100%;
+	}
+}
+*/

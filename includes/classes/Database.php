@@ -184,7 +184,7 @@ class Database {
 	# Ports Table
 	###############################################
 
-	public function get_ports($portNum = 'ALL') {
+	public function get_ports($portNum = 'ALL', $returnType = 'ALL') {
 		if ($portNum == 'ALL') {
 			$sql = 'SELECT * FROM ports ORDER BY "portNum" ASC';
 		} else {
@@ -193,9 +193,11 @@ class Database {
 		$ports = $this->select_all('ports', $sql);
 		foreach($ports as $curPort) {
 			$curPortNum = $curPort['portNum'];
-			$curOptions = json_decode($curPort['portOptions']);
-			foreach($curOptions as $key=>$value) {
-				$ports[$curPortNum][$key] = $value;
+			if ($returnType == 'ALL') {
+				$curOptions = json_decode($curPort['portOptions']);
+				foreach($curOptions as $key=>$value) {
+					$ports[$curPortNum][$key] = $value;
+				}
 			}
 			unset($ports[$curPortNum]['portOptions']);
 		}
