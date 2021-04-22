@@ -61,7 +61,7 @@ function _($input) {
     <link href="/new_ui/includes/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
     <link href="/new_ui/includes/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
     <link href="/new_ui/includes/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
-
+    <link href="/new_ui/includes/vendors/datatables.net-select/css/select.dataTables.min.css" rel="stylesheet">
 
 	<?php
 	// Display custom CSS if defined by page

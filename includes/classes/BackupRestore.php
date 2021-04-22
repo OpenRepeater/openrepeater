@@ -338,6 +338,7 @@ class BackupRestore {
 	# Upload Backup Files
 	###############################################
 
+	// Depreciated. See FileSystem Class
 	public function upload_backup_files($fileNameArray) {
 
 		$maxFileSize = 500000000; // size in bytes
@@ -470,6 +471,7 @@ class BackupRestore {
 	# Display Backup Files
 	###############################################
 
+	### OLD 2.2.X AND PRIOR UI ####
 	public function display_backup_files() {
 
 		$backupLib = $this->get_backup_files();
@@ -521,10 +523,44 @@ class BackupRestore {
 
 
 
+
+
+	public function getBackupFilesJSON() {
+		$backupLib = $this->get_backup_files();
+		$hidden_array = ['build','restore','.gitignore'];
+		$total_dir_size = 0;		
+		if ($backupLib) {			
+			$returnFileArray = [];
+			$curFileNum = 0;
+			$displayHTML = '';
+
+			foreach($backupLib as $fileArray) {
+				if (!in_array($fileArray['fileName'], $hidden_array, true)) {
+					$curFileNum++;
+					
+					$total_dir_size = $total_dir_size + $fileArray['fileSize'];
+
+					$returnFileArray[$curFileNum]['fileName'] = $fileArray['fileName'];
+					$returnFileArray[$curFileNum]['fileDate'] = date("YmdHis",$fileArray['fileDate']);
+					$returnFileArray[$curFileNum]['fileSize'] = $fileArray['fileSize'];
+					$returnFileArray[$curFileNum]['downloadURL'] = $this->baseDownloadPath . $fileArray['fileName'];
+				}
+			}
+			$returnFileArray['totalDirSize'] = $total_dir_size;
+
+		} else {
+			$returnFileArray['totalDirSize'] = 0;
+		}
+		return json_encode($returnFileArray);
+	}
+
+
+
 	###############################################
 	# Delete Backup
 	###############################################
 
+	// Depreciated. See FileSystem Class
 	public function deleteBackup($file) {
 		unlink($this->backupPath . $file);
 

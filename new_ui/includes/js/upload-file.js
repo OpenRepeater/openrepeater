@@ -38,38 +38,40 @@ $(function() {
 
 
 		// Spawn Dropzone Region
-		$("div#orpDropzone").dropzone({ 
-			url: "/dz/upload.php",
+		$('div#orpDropzone').dropzone({ 
+			url: '/functions/ajax_file_system.php',
 			autoProcessQueue: true,
 			acceptedFiles: acceptedFilesTypes,
 			maxFilesize: maxFileSizeMB,
 			uploadMultiple: true,
 			createImageThumbnails: false,
-			addRemoveLinks: true,
 			dictDefaultMessage: '<span class="defaultMessage">'+modal_dzDefaultText+'</span><span class="customDesc">'+modal_dzCustomDesc+'</span>',
-			queuecomplete: function() {
-				processUpload();
+			params: {'action': 'upload', 'uploadType': uploadType},
+			init: function () {
+				this.on('processingmultiple', function (file) {
+					orpModalWaitBar();
+				});
+				
+				this.on('successmultiple', function (file, response) {
+					addRow( JSON.parse(response) );
+					resetModal();
+				});
+				
+				this.on('errormultiple', function (file, error, xhr) {
+					console.log('error: '+error);
+					orpNotify('error', 'Error', error);
+					resetModal();
+				});
 			}
 		});
 
-
-		// Process Upload Function
-		function processUpload() {
-			orpModalWaitBar();
-
-			// TEMP SIMULATION OF REBUILD TIME
-			setTimeout(function() {
-
-				// Re-enable buttons
-				$('#orp_modal_cancel').prop('disabled', false);
-				$('#orp_modal_ok').prop('disabled', false);
-			
-				$('#orp_modal').modal('hide');
-
-				// Display Notification
-				orpNotify('success', uploadSuccessTitle, uploadSuccessText);
-			}, 2000);
-
+		// Reset Modal
+		function resetModal() {
+			// Re-enable buttons
+			$('#orp_modal_cancel').prop('disabled', false);
+			$('#orp_modal_ok').prop('disabled', false);
+		
+			$('#orp_modal').modal('hide');
 		}
 
 	});

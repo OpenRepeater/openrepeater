@@ -1,8 +1,19 @@
 <?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: index.php'); // If they aren't logged in, send them to login page.
+} elseif (!isset($_SESSION['callsign'])) {
+	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
+} else { // If they are logged in and have set a callsign, show the page.
+// --------------------------------------------------------
+
 $customJS = 'page-backup.js, dropzone.js, upload-file.js'; // 'file1.js, file2.js, ... '
 $customCSS = 'page-backup.css, upload-file.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
+$BackupRestore = new BackupRestore();
 ?>
 
         <!-- page content -->
@@ -33,9 +44,10 @@ include('includes/header.php');
                   
                   <div class="x_content">
 
+					<div id="no_backups" style="display: none;">
+						<h4><?=_('There are no snapshots made yet. Click the Create Backup button above to create one.')?></h4>
+					</div>
 
-<!-- table table-striped dt-responsive nowrap dataTable no-footer dtr-inline -->
-<!-- table table-striped table-bordered dt-responsive nowrap -->
                     <table id="backup-table-responsive" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
                       <thead>
                         <tr>
@@ -46,28 +58,7 @@ include('includes/header.php');
                         </tr>
                       </thead>
                       <tbody>
-						<?php for ($k = 0 ; $k < 4; $k++){ ?>
-                        <tr>
-                          <td><strong>n3mbh_2019-11-30_11-45-08.orp</strong></td>
-                          <td>November 30 2019 11:45:14</td>
-                          <td>721.87 KB</td>
-                          <td>
-			                  <ul class="nav nav-pills" role="tablist">
-			                    <li role="presentation" class="dropdown">
-			                      <a id="drop6" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false"><i class="fa fa-cog"></i> <span class="caret"></span></a>
-			                      <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6">
-			                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><i class="fa fa-refresh"></i> <?=_('Restore')?></a>
-			                        </li>
-			                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><i class="fa fa-download"></i> <?=_('Download')?></a>
-			                        </li>
-			                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><i class="fa fa-remove"></i> <?=_('Delete')?></a>
-			                        </li>
-			                      </ul>
-			                    </li>
-			                  </ul>
-                          </td>
-                        </tr>
-						<?php } ?>
+
                       </tbody>
                     </table>
 
@@ -80,15 +71,51 @@ include('includes/header.php');
         </div>
         <!-- /page content -->
 
-<script>
-	var modal_CreateBackupTitle = '<?=_('Create Backup')?>';
-	var modal_CreateBackupBody = '<p><?=_('Are you ready to create a backup now? Once created, the backup will show up in the Local Backup Library on this controller. From there you can restore the backup. This is useful to make snapshots to use as a restore point. It is also recommend that you download some backups as well to use in the event of a failure such as a corrupted drive.')?></p>';
-	var modal_CreateBackupBtnOKText = '<?=_('Create Backup')?>';
+<? ######################################################################### ?>
+
+<script id="backupRowTemplate" type = "text/template">
+    <tr id="backupRow%%INDEX%%" class="backupRow" data-backup-number="%%INDEX%%" data-backup-file="%%FILENAME%%" data-file-size="%%RAWSIZE%%">
+      <td><strong>%%FILENAME%%</strong></td>
+      <td data-sort="%%ISODATE%%"><span title="%%FULLDATE%%"><i class="fa fa-calendar"></i> %%DATE%%</span></td>
+      <td data-sort="%%RAWSIZE%%"><i class="fa fa-hdd-o"></i> %%SIZE%%</td>
+      <td>
+          <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" class="dropdown">
+              <a id="drop6" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false"><i class="fa fa-cog"></i> <span class="caret"></span></a>
+              <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><i class="fa fa-refresh"></i> <?=_('Restore')?></a>
+                </li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="%%URL%%"><i class="fa fa-download"></i> <?=_('Download')?></a>
+                </li>
+                <li role="presentation"><a role="menuitem" class="deleteBackup" tabindex="-1"><i class="fa fa-remove"></i> <?=_('Delete')?></a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+      </td>
+    </tr>
 </script>
 
 
-<!-- Upload Dialog Modal -->
 <script>
+	var backupList = '<?= $BackupRestore->getBackupFilesJSON() ?>';
+	var fileCountLabel = '<?= _('Total Files') ?>';
+	var allBackupsSizeLabel = '<?= _('Total Space Used') ?>';
+
+	var modal_DeleteBackupTitle = '<?= _('Delete Backup') ?>';
+	var modal_DeleteBackupBody = '<?= _('Are you sure you want to delete this backup?') ?>';
+	var modal_DeleteBackupBtnOK = '<?= _('Delete Forever') ?>';
+	var modal_DeleteBackupProgressTitle = '<?= _('Deleting Backup') ?>';
+	var modal_DeleteBackupNotifyTitle = '<?= _('Backup Deleted') ?>';
+	var modal_DeleteBackupNotifyDesc = '<?= _('The backup has been successfully deleted.') ?>';
+
+	var modal_CreateBackupTitle = '<?=_('Create Backup')?>';
+	var modal_CreateBackupBody = '<p><?=_('Are you ready to create a backup now? Once created, the backup will show up in the Local Backup Library on this controller. From there you can restore the backup. This is useful to make snapshots to use as a restore point. It is also recommend that you download some backups as well to use in the event of a failure such as a corrupted drive.')?></p>';
+	var modal_CreateBackupBtnOKText = '<?=_('Create Backup')?>';
+	var modal_CreateBackupProgressTitle = '<?= _('Creating Backup') ?>';
+	var modal_CreateBackupNotifyTitle = '<?= _('Backup Created') ?>';
+	var modal_CreateBackupNotifyDesc = '<?= _('The backup was created successfully.') ?>';
+
 	var modal_UploadTitle = '<?=_('Upload a Restore File')?>';
 	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';
 	var modal_dzCustomDesc = '<?=_('Upload an offline OpenRepeater backup file. These are special package files that end with an ".orp" extension. These can be either copies that you have previously download from this controller for offline archiving or backups that you wish to transfer from another OpenRepeater controller. Once uploaded, they will appear in the Local Backup Library where you can then initiate a restore.')?>';
@@ -97,3 +124,10 @@ include('includes/header.php');
 </script>
 
 <?php include('includes/footer.php'); ?>
+
+<?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
+?>
