@@ -1,5 +1,17 @@
 $(function() {
 	
+	$('#courtesy-table-responsive').DataTable({
+		responsive: true,
+		bFilter: true,
+        bSort: true,
+        aaSorting: [],
+        paging: true,
+		"columns": [
+			null,
+			{ "orderable": false },
+		]
+    });
+
 	// RENAME FILE FUNCTION AND MODAL
 	$('.rename_file').click(function(e) {
 		e.preventDefault();
