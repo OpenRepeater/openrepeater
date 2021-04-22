@@ -43,7 +43,7 @@ $identificationAudio = $AudioFiles->get_audio_files('courtesy_tones');
                   <div class="x_content">
 
 
-                    <table id="datatable-responsive" class="audio-table table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
+                    <table id="courtesy-datatable-responsive" class="audio-table table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
 					  <thead>
 						  <tr>
 							  <th><?=_('Name')?></th>
