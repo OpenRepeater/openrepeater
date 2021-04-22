@@ -10,9 +10,15 @@
 
 	<div class="splash_content">
 
-		<a href="dashboard.php" class="btn" title="Administer OpenRepeater">LOGIN</a>
+		<a href="dashboard.php" class="btn">Old UI (2.2.x and earlier)</a>
+		<a href="new_ui/" class="btn">New UI (3.0 dev)</a>
+		<br>
+		<br>
+		<br>
+		<a href="dev_ui/" class="btn" target="_blank">Dev UI</a>
+		<a href="dev/edit.php" class="btn" target="_blank">DB Editor</a>
 
-		<p class="footer_text">Powered by <a href="http://www.svxlink.org/" target="_blank">SvxLink</a>. For more information on this project visit <a href="http://openrepeater.com" target="_blank">OpenRepeater.com</a></p>
+		<p class="footer_text">Note that New UI will replace old UI when it is fully completed. Old UI is only offered during development.</p>
 
 	</div>
 </body>
