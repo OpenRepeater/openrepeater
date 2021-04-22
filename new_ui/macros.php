@@ -49,7 +49,9 @@ $macroList = $Database->get_macros();
 
 					<p><?=_('NOTE: You can create macros for all available ports and installed modules, but if a port or module is disabled at the time of rebuild then those macros will not be available until the chosen port or module has been reenabled and another rebuild is performed.')?></p>
 						
-					<div id="no_macros" style="display: none;"><h4><?=_('There are no macros setup yet. Click the add button above to create one.')?></h4></div>
+					<div id="no_macros" style="display: none;">
+						<h4><?=_('There are no macros setup yet. Click the add button above to create one.')?></h4>
+					</div>
 
                     <table id="macro-table-responsive" class="table table-striped dt-responsive" cellspacing="0" width="100%">
                       <thead>
