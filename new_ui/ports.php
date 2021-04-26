@@ -400,7 +400,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
 						</tbody>
 						</table>
 
-						<input type="text" id="linkGroup_Port%%currPortNum%%" name="linkGroup" class="linkGroup">
+						<input type="hidden" id="linkGroup_Port%%currPortNum%%" name="linkGroup" class="linkGroup">
 
                     </div>
                   </div>
@@ -443,7 +443,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
 						for ($device = 0; $device <  count($device_list); $device++) {
 						   if ($device_list[$device]['direction'] == "IN") {
 								$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-								echo '<option value="'.$rxValue.'">INPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+								echo '<option value="'.$rxValue.'">'._('INPUT').' '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
 							}
 						}
 						?>
@@ -469,7 +469,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
 						for ($device = 0; $device <  count($device_list); $device++) {
 						   if ($device_list[$device]['direction'] == "OUT") {
 								$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-								echo '<option value="'.$txValue.'">INPUT '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
+								echo '<option value="'.$txValue.'">'._('OUTPUT').' '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
 							}
 						}
 						?>
@@ -516,7 +516,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                   </div>
                   </div>
 
-                  <div class="form-group">
+                  <div id="rxGPIO_Grp%%currPortNum%%" class="form-group">
                     <label class="control-label col-md-5 col-sm-4 col-xs-12">
                     	<?=_('Receive COS Pin')?> 
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The pin that receives the COS signal from the receiver.')?>"></i>

@@ -114,7 +114,13 @@ console.log(fullPortObj);
 		/* GPIO TAB SETTINGS */
 
 		$('#rxMode' + port.portNum).val(port.rxMode);
-		if ( $('#rxMode' + port.portNum).val(port.rxMode) == 'vox' ) { $('#voxMsg' + port.portNum).show(); } else { $('#voxMsg' + port.portNum).hide(); }
+		if ( port.rxMode == 'vox' ) { 
+			$('#voxMsg' + port.portNum).show();
+			$('#rxGPIO_Grp' + port.portNum).hide();
+		} else {
+			$('#voxMsg' + port.portNum).hide();
+			$('#rxGPIO_Grp' + port.portNum).show();
+		}
 		$('#rxGPIO' + port.portNum).val(port.rxGPIO);
 		$('#rxGPIO_active' + port.portNum).val(port.rxGPIO_active);
 		$('#txGPIO' + port.portNum).val(port.txGPIO);
@@ -365,8 +371,10 @@ console.log(fullPortObj);
 		var portNum = $(this).parents('.portSection').attr('data-port-number');
 		if ( $('#rxMode' + portNum).val() == 'vox' ) {
 			$('#voxMsg' + portNum).fadeIn(1000);
+			$('#rxGPIO_Grp' + portNum).fadeOut(1000);
 		} else {
 			$('#voxMsg' + portNum).fadeOut(1000);
+			$('#rxGPIO_Grp' + portNum).fadeIn(1000);
 		}
 	});
 
