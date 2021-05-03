@@ -121,3 +121,63 @@ function orpNotify(type, title, text) {
 
 	new PNotify(notifyProperties);
 }
+
+
+// #########################################################
+
+function rebuildActive() {
+	$('#orp_restart_btn').fadeIn(1000);
+}
+
+
+function rebuildDeactive() {
+	$('#orp_restart_btn').fadeOut(1000);
+}
+
+
+// #########################################################
+
+function sectionStatus(formID, parentClass, status) {
+	switch (status) {
+		case 'processing':
+			$('#'+formID).closest('.'+parentClass).find('.sectionStatus i')
+				.removeClass (function (index, className) {
+				    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
+				})
+				.addClass('fa-spinner fa-spin');
+
+
+			console.log('processing');
+			break;
+
+		case 'saved':
+			$('#'+formID).closest('.'+parentClass).find('.sectionStatus i')
+				.removeClass (function (index, className) {
+				    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
+				})
+				.addClass('fa-check-circle');
+
+				setTimeout(function() {
+					$('#'+formID).closest('.'+parentClass).find('.sectionStatus i')
+						.removeClass (function (index, className) {
+						    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
+						});
+				}, 3000);
+			break;
+
+		case 'error':
+			$('#'+formID).closest('.'+parentClass).find('.sectionStatus i')
+				.removeClass (function (index, className) {
+				    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
+				})
+				.addClass('fa-warning');
+
+				setTimeout(function() {
+					$('#'+formID).closest('.'+parentClass).find('.sectionStatus i')
+						.removeClass (function (index, className) {
+						    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
+						});
+				}, 20000);
+			break;
+	}
+}

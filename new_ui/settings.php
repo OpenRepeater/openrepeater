@@ -32,11 +32,12 @@ include('includes/header.php');
               <div class="col-md-6 col-xs-12">
 
                 <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
                   <div class="x_title"><h4><?=_('Basic Settings')?></h4></div>
                   
                   <div class="x_content">
                     <br />
-                    <form class="form-horizontal form-label-left input_mask">
+                    <form id="settingsFormBasic" class="settingsForm form-horizontal form-label-left input_mask">
 
                       <div class="form-group">
                         <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Call Sign')?>
@@ -80,18 +81,20 @@ include('includes/header.php');
 
 
                 <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
                   <div class="x_title"><h4><?=_('DTMF Remote Disable')?></h4></div>
 
                   <div class="x_content">
                     <br />
-                    <form class="form-horizontal form-label-left input_mask">
+                    <form id="settingsFormRemoteDisable" class="settingsForm form-horizontal form-label-left input_mask">
 
                       <div class="form-group">
                         <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Use Remote Disable?')?>
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Enable this to be able to disable the transmitter by entering DTMF command.')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-                          <input id="remoteDisable" type="checkbox" class="js-switch"<?= ($settings['repeaterDTMF_disable'] == 'True') ? ' checked': ''; ?>/>
+	                      <input type="hidden" name="repeaterDTMF_disable" value="False">
+                          <input id="repeaterDTMF_disable" name="repeaterDTMF_disable" type="checkbox" class="js-switch" value="True" <?= ($settings['repeaterDTMF_disable'] == 'True') ? ' checked': ''; ?>/>
                         </div>
                       </div>
 
@@ -110,17 +113,18 @@ include('includes/header.php');
 
 
                 <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
                   <div class="x_title"><h4><?=_('CTCSS Settings')?></h4></div>
 
                   <div class="x_content">
-                    <form class="form-horizontal form-label-left input_mask">
+                    <form id="settingsFormCTCSS" class="settingsForm form-horizontal form-label-left input_mask">
 
                       <div class="form-group">
                         <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Enable Software CTCSS')?>
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('This will enable software based CTCSS Encoding.')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-                          <input id="useCTCSS" type="checkbox" class="js-switch" /> 
+                          <input id="useCTCSS" type="checkbox" class="js-switch"<?= ($settings['rxTone'] > 0 || $settings['rxTone'] > 0) ? ' checked': ''; ?> /> 
                         </div>
                       </div>
 
@@ -187,10 +191,11 @@ if(!empty($locationInfo)) {
               <div class="col-md-6 col-xs-12">
 
                 <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
                   <div class="x_title"><h4><?=_('Location Settings')?></h4></div>
 
                   <div class="x_content">
-                    <form class="form-horizontal form-label-left input_mask">
+                    <form id="locationForm" class="locationForm form-horizontal form-label-left input_mask">
 
                       <div class="form-group">
                         <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('EchoLink Status Servers')?>

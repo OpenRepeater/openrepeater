@@ -1,10 +1,11 @@
 $(document).ready(function() {
 
 	// Remote Disable Group - Visability Toggle
-	if ($('#remoteDisable').is(':checked')){
+	if ($('#repeaterDTMF_disable').is(':checked')){
+		console.log('other checked');
 		$('.remoteDisableGroup').removeClass('collapse');
 	}
-    $('#remoteDisable').change(function() {
+    $('#repeaterDTMF_disable').change(function() {
         if(this.checked) {
 			$('.remoteDisableGroup').removeClass('collapse');
         } else {
@@ -14,9 +15,8 @@ $(document).ready(function() {
 
 
 	// CTCSS Group - Visability Toggle
-	if ( $('#rxTone').val() > 0 || $('#txTone').val() > 0 ) {
+	if ( $('#useCTCSS').is(':checked') ) {
 		// One or more CTCSS tones are set
-		$('#useCTCSS').trigger('click');
 		$('.useCTCSSgroup').removeClass('collapse');
 	}
     $('#useCTCSS').change(function() {
@@ -24,8 +24,8 @@ $(document).ready(function() {
 			$('.useCTCSSgroup').removeClass('collapse');
         } else {
 			$('.useCTCSSgroup').addClass('collapse');
-			$('#rxCTCSS').val('0');
-			$('#txCTCSS').val('0');
+			$('#rxTone').val('0');
+			$('#txTone').val('0');
         }
     });
 
@@ -54,7 +54,7 @@ $(document).ready(function() {
 
 				new PNotify({
 					title: modal_gpsSuccessMsgTitle,
-					text: modal_gpsSuccessMsg,
+					text: 1 + modal_gpsSuccessMsg,
 					type: 'success',
 					styling: 'bootstrap3'
 				});
@@ -69,6 +69,82 @@ $(document).ready(function() {
 
 			}, 2000);
 		});
+	});
+
+
+
+	/*
+	**********************************************************************
+	 UPDATE DATABASE SETTINGS VIA AJAX CALL
+	**********************************************************************
+	*/
+
+	$('.settingsForm').change(function() {
+		var formID = $(this).attr('id');
+		sectionStatus(formID, 'x_panel', 'processing');
+
+		// Get current settings, remove empty fields and create an object of results.
+		var settingsFieldsObj = {};
+		$.each($('#' + formID + " :input")
+		    .filter(function(index, element) {
+		        return $(element).val() != '';
+		    })
+			.serializeArray(), 
+			function(_, kv) {
+				settingsFieldsObj[kv.name] = kv.value;
+			}
+		);
+
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: {'settings': JSON.stringify(settingsFieldsObj)},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					console.log('Login Timed Out');
+				} else if (response.status == 'success') {
+					sectionStatus(formID, 'x_panel', 'saved');
+					rebuildActive();
+				} else {
+					sectionStatus(formID, 'x_panel', 'error');
+				}
+			}
+		});
+
+	});
+
+
+	$('.locationForm').change(function() {
+		var formID = $(this).attr('id');
+		sectionStatus(formID, 'x_panel', 'processing');
+
+		// Get current location settings and create an object of results. Leave empty fields intact.
+		var locationFieldsObj = {};
+		$.each($('#' + formID + " :input")
+			.serializeArray(), 
+			function(_, kv) {
+				locationFieldsObj[kv.name] = kv.value;
+			}
+		);
+
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: {'location': JSON.stringify(locationFieldsObj)},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					console.log('Login Timed Out');
+				} else if (response.status == 'success') {
+					sectionStatus(formID, 'x_panel', 'saved');
+					rebuildActive();
+				} else {
+					sectionStatus(formID, 'x_panel', 'error');
+				}
+			}
+		});
+
 	});
 
 

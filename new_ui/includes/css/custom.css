@@ -5117,6 +5117,21 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
 }
 
 
+
+
+.sectionStatus {
+/* 	display: none; */
+	color: silver;
+	float: right;
+	position: relative;
+    right: 0;
+    top: 10px;
+}
+
+
+
+
+
 /* ORP Loader Overlay */
 #orp_loader_overlay svg {
 	width: 25%;

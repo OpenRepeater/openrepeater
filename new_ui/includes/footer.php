@@ -137,7 +137,7 @@
 
 							if (response.status == 'success' && response.svxlink == 'active') {
 								$('#orp_modal').modal('hide');
-								$('#orp_restart_btn').hide();
+								rebuildDeactive();
 								
 								//Display Message
 								new PNotify({
@@ -150,7 +150,7 @@
 
 							if (response.status == 'success' && response.svxlink == 'inactive') {
 								$('#orp_modal').modal('hide');
-								$('#orp_restart_btn').hide();
+								rebuildDeactive();
 								
 								//Display Message
 								new PNotify({
@@ -163,7 +163,7 @@
 
 							if (response.status == 'not_logged_in') {
 								$('#orp_modal').modal('hide');
-								$('#orp_restart_btn').show();
+								rebuildActive();
 								
 								//Display Message
 								new PNotify({
@@ -177,7 +177,7 @@
 						},
 						error: function(jqXHR, textStatus, errorThrown) {
 							$('#orp_modal').modal('hide');
-							$('#orp_restart_btn').show();
+							rebuildActive();
 
 							//Display Message
 							new PNotify({
@@ -225,7 +225,7 @@
 					// TEMP SIMULATION OF REBUILD TIME
 					setTimeout(function() {
 						$('#orp_modal').modal('hide');
-						$('#orp_restart_btn').hide();
+						rebuildDeactive();
 						new PNotify({
 							title: '<?=_('Success')?>',
 							text: '<?=_('Your Password has been changed.')?>',
