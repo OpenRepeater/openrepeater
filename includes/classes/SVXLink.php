@@ -752,10 +752,15 @@ class SVXLink {
 	###############################################
 
 	public function build_location() {
-		$locationSettings = @unserialize( $this->settingsArray['Location_Info'] );
+// 		$locationSettings = @unserialize( $this->settingsArray['Location_Info'] );
+		$locationSettings = json_decode( $this->settingsArray['Location_Info'], true );
+
 		// only build this section if a serialized settings array is retrived.
 		if ($this->settingsArray['Location_Info'] === 'b:0;' || $locationSettings !== false) {
 			if ( !empty($locationSettings['Echolink_Status_Servers']) || !empty($locationSettings['APRS_ServerList']) ) {
+	
+				// Guard clause - return false if one or both geo coordinates are not provided. 
+				if ( $locationSettings['Latitude'] == '' || $locationSettings['Longitude'] == '' ) { return false; }
 	
 				$locSection = 'LocationInfo';
 				$this->location = $locSection; // used to set in global seciton
