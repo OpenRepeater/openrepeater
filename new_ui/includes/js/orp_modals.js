@@ -145,9 +145,6 @@ function sectionStatus(formID, parentClass, status) {
 				    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
 				})
 				.addClass('fa-spinner fa-spin');
-
-
-			console.log('processing');
 			break;
 
 		case 'saved':

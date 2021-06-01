@@ -1,11 +1,56 @@
+var fileCount = 0;
+
 $(function() {
 	
+
+console.log(identificationAudio);
+
+	var settingsObj = JSON.parse(settingsJSON);
+
+	Short_ID_Update(settingsObj.ID_Short_Mode);
+	Long_ID_Update(settingsObj.ID_Long_Mode);
+
+
+
+	$('#testBtn').on('click', function(){
+		console.log('clicked');
+		buildIDRow({
+			fileIndex: "22",
+			fileLabel: "Test",
+			fileName: "test.wav",
+			downloadURL: "https://google.com",
+		})
+	});
+
+
+	fullIDObj = JSON.parse(identificationAudio);
+	$.each(fullIDObj, function(index, curFile) {
+		curFile['fileIndex'] = index;
+		buildIDRow(curFile);
+console.log(curFile);		
+		fileCount++;
+	});
     $('#id_library').DataTable( {
         "ordering": false,
         "searching":     false,
-        "info":   true,
+        "info":   false,
         "paging":   true,
     } );
+
+
+
+	function buildIDRow(input) {
+		var $template = $('#idRowTemplate').html();
+		$template = $template.replace(/%%INDEX%%/g, input.fileIndex)
+			.replace(/%%FILE_LABEL%%/g, input.fileLabel)
+			.replace(/%%FILE_NAME%%/g, input.fileName)
+			.replace(/%%FILE_URL%%/g, input.fileURL);
+
+	    $('#id_library tbody').append($template);		
+	}
+
+
+
 
 	/* ------------------------------------------------------------------------- */
 	// SHORT ID MODE CHANGE
@@ -245,6 +290,45 @@ $('#'+curRowID+' audio').load(); // Reload the new filename into player
 		playM(morseCallSign, morseWPM, morsePitch);
 	});
 
+
+
+	/*
+	**********************************************************************
+	 UPDATE DATABASE SETTINGS VIA AJAX CALL
+	**********************************************************************
+	*/
+
+	$('.idForm').change(function() {
+		var formID = $(this).attr('id');
+		sectionStatus(formID, 'x_panel', 'processing');
+
+		// Get current settings, remove empty fields and create an object of results.
+		var settingsFieldsObj = {};
+		$.each($('#' + formID + " :input")
+			.serializeArray(), 
+			function(_, kv) {
+				settingsFieldsObj[kv.name] = kv.value;
+			}
+		);
+
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: {'settings': JSON.stringify(settingsFieldsObj)},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					console.log('Login Timed Out');
+				} else if (response.status == 'success') {
+					sectionStatus(formID, 'x_panel', 'saved');
+					rebuildActive();
+				} else {
+					sectionStatus(formID, 'x_panel', 'error');
+				}
+			}
+		});
+
+	});
 
 
 })

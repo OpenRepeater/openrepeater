@@ -22,7 +22,7 @@ $customCSS = 'page-identification.css, orp-audio-player.css, upload-file.css'; /
 include('includes/header.php');
 
 $AudioFiles = new AudioFiles();
-$identificationAudio = $AudioFiles->get_audio_files('identification');
+$identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 ?>
 
 
@@ -45,11 +45,11 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
 
 
                 <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
                   <div class="x_title"><h4><?=_('Short ID Settings')?></h4></div>
 
                   <div class="x_content">
-
-                    <form class="form-horizontal form-label-left input_mask">
+                    <form id="idFormShort" class="idForm form-horizontal form-label-left input_mask">
 
                       <div class="form-group">
                         <div class="btn-group btn-group-sm id-type" data-toggle="buttons">
@@ -60,7 +60,7 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
                         </div>
                       </div>
 
-                      <div id="ID_Short_Interval_Grp" class="form-group">
+                      <div id="ID_Short_Interval_Grp" class="form-group" style="display:none;">
                         <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Short ID Time')?>
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
@@ -69,7 +69,7 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
                         </div>
                       </div>
 
-                      <div id="ID_Short_Custom_Audio_Grp" class="form-group">
+                      <div id="ID_Short_Custom_Audio_Grp" class="form-group" style="display:none;">
                         <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Audio File')?>
                         	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
@@ -88,24 +88,26 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
                         </div>
                       </div>
 
-                      <div id="ID_After_TX_Grp" class="form-group col-md-6 col-sm-6 col-xs-12">
+                      <div id="ID_After_TX_Grp" class="form-group col-md-6 col-sm-6 col-xs-12" style="display:none;">
                         <div class="gray-box">
                         <label class="control-label col-md-9"><?=_('ID after TX')?>
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-3">
-                          <input id="ID_Only_When_Active" name="ID_Only_When_Active" type="checkbox" class="js-switch"<?= $settings['ID_Only_When_Active'] == 'True' ? ' checked':'' ?>/> 
+						  <input type="hidden" name="ID_Only_When_Active" value="False">
+                          <input id="ID_Only_When_Active" name="ID_Only_When_Active" type="checkbox" value="True" class="js-switch"<?= $settings['ID_Only_When_Active'] == 'True' ? ' checked':'' ?>/> 
                         </div>
                         </div>
                       </div>
 
-                      <div id="ID_Short_Append_Morse_Grp" class="form-group col-md-6 col-sm-6 col-xs-12">
+                      <div id="ID_Short_Append_Morse_Grp" class="form-group col-md-6 col-sm-6 col-xs-12" style="display:none;">
                         <div class="gray-box">
                         <label class="control-label col-md-9"><?=_('Append Morse ID')?>
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-3">
-                          <input id="ID_Short_AppendMorse" name="ID_Short_AppendMorse" type="checkbox" class="js-switch"<?= $settings['ID_Short_AppendMorse'] == 'True' ? ' checked':'' ?>/> 
+						  <input type="hidden" name="ID_Short_AppendMorse" value="False">
+                          <input id="ID_Short_AppendMorse" name="ID_Short_AppendMorse" type="checkbox" value="True" class="js-switch"<?= $settings['ID_Short_AppendMorse'] == 'True' ? ' checked':'' ?>/> 
                         </div>
                         </div>
                       </div>
@@ -119,11 +121,11 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
 
 
                 <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
                   <div class="x_title"><h4><?=_('Long ID Settings')?></h4></div>
 
                   <div class="x_content">
-
-                    <form class="form-horizontal form-label-left input_mask">
+                    <form id="idFormLong" class="idForm form-horizontal form-label-left input_mask">
 
                       <div class="form-group">
                         <div class="btn-group btn-group-sm id-type" data-toggle="buttons">
@@ -136,7 +138,7 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
 
                       </div>
 
-                      <div id="ID_Long_Interval_Grp" class="form-group">
+                      <div id="ID_Long_Interval_Grp" class="form-group" style="display:none;">
                         <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Long ID Time')?>
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The number of minutes between long identifications. The purpose of the long identification is to transmit some more information about the station. A good value for a repeater is every 60 minutes.')?>"></i>
                         </label>
@@ -145,7 +147,7 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
                         </div>
                       </div>
 
-                      <div id="ID_Long_Custom_Audio_Grp" class="form-group">
+                      <div id="ID_Long_Custom_Audio_Grp" class="form-group" style="display:none;">
                         <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Audio File')?>
                         	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
@@ -168,24 +170,26 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
 
 <!-- <div class="divider"></div> -->
 
-                      <div id="ID_Long_Annc_Time_Grp" class="form-group col-md-6 col-sm-6 col-xs-12">
+                      <div id="ID_Long_Annc_Time_Grp" class="form-group col-md-6 col-sm-6 col-xs-12" style="display:none;">
                         <div class="gray-box">
                         <label class="control-label col-md-9"><?=_('Announce Time')?>
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-3">
-                          <input id="ID_Long_AppendTime" name="ID_Long_AppendTime" type="checkbox" class="js-switch"<?= $settings['ID_Long_AppendTime'] == 'True' ? ' checked':'' ?>/> 
+						  <input type="hidden" name="ID_Long_AppendTime" value="False">
+                          <input id="ID_Long_AppendTime" name="ID_Long_AppendTime" type="checkbox" value="True" class="js-switch"<?= $settings['ID_Long_AppendTime'] == 'True' ? ' checked':'' ?>/> 
                         </div>
                         </div>
                       </div>
 
-                      <div id="ID_Long_Append_Morse_Grp" class="form-group col-md-6 col-sm-6 col-xs-12">
+                      <div id="ID_Long_Append_Morse_Grp" class="form-group col-md-6 col-sm-6 col-xs-12" style="display:none;">
                         <div class="gray-box">
                         <label class="control-label col-md-9"><?=_('Append Morse ID')?>
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-3">
-                          <input id="ID_Long_AppendMorse" name="ID_Long_AppendMorse" type="checkbox" class="js-switch"<?= $settings['ID_Long_AppendMorse'] == 'True' ? ' checked':'' ?>/> 
+						  <input type="hidden" name="ID_Long_AppendMorse" value="False">
+                          <input id="ID_Long_AppendMorse" name="ID_Long_AppendMorse" type="checkbox" value="True" class="js-switch"<?= $settings['ID_Long_AppendMorse'] == 'True' ? ' checked':'' ?>/> 
                         </div>
                         </div>
                       </div>
@@ -199,11 +203,11 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
 
                 <?php $callSign = strtoupper($settings['callSign']); ?>
                 <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
                   <div class="x_title"><h4><?=_('Global Morse ID Settings')?></h4></div>
 
                   <div class="x_content">
-
-                    <form class="form-horizontal form-label-left input_mask">
+                    <form id="idFormMorse" class="idForm form-horizontal form-label-left input_mask">
 
                       <div class="form-group">
                         <label class="control-label col-md-12"><?=_('Morse Callsign')?>
@@ -226,15 +230,17 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
                         <div class="col-md-12">
 	                        <div class="col-md-12">
 								<div class="knob_wrapper">
-									<input class="knob" id="ID_Morse_WPM" name="ID_Morse_WPM" data-width="130" data-height="85" data-min="5" data-max="35" data-step="5" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="<?=$settings['ID_Morse_WPM']?>">
+									<input class="knob" id="ID_Morse_WPM" data-width="130" data-height="85" data-min="5" data-max="35" data-step="5" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="<?=$settings['ID_Morse_WPM']?>">
 									<label><?=_('WPM')?></label>									
 								</div>
 
 								<div class="knob_wrapper">
-									<input class="knob" id="ID_Morse_Pitch" name="ID_Morse_Pitch" data-width="130" data-height="85" data-min="400" data-max="1200" data-step="100" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="<?=$settings['ID_Morse_Pitch']?>">
+									<input class="knob" id="ID_Morse_Pitch" data-width="130" data-height="85" data-min="400" data-max="1200" data-step="100" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="<?=$settings['ID_Morse_Pitch']?>">
 									<label><?=_('Pitch (Hz)')?></label>
 								</div>
 	                        </div>
+							<input type="hidden" name="ID_Morse_WPM" value="<?=$settings['ID_Morse_WPM']?>">
+							<input type="hidden" name="ID_Morse_Pitch" value="<?=$settings['ID_Morse_Pitch']?>">							
 
 	                        <div class="col-md-12">
 								<button id="morsePreview" type="button" class="btn btn-primary"><i class="fa fa-play"></i> <?=_('Preview')?></button>
@@ -265,6 +271,8 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
                   <div class="x_title">
                     <h4 class="navbar-left"><?=_('Identification Clip Library')?></h4>
                     <div class="nav navbar-right">
+<button type="button" id="testBtn" class="btn btn-success">TEST</button>
+
                       <button type="button" class="btn btn-success upload_file" data-upload-type="identification"><i class="fa fa-upload"></i> <?=_('Upload ID Clip')?></button>
                     </div>
                     <div class="clearfix"></div>
@@ -280,41 +288,10 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
 					  </thead>   
 
                       <tbody>
-						<?php
-							foreach($identificationAudio as $curKey => $curFile) { 
-						?>
-
-							<tr id="clip<?=$curKey?>" data-row-name="<?=$curFile['fileLabel']?>" data-row-file="<?=$curFile['fileName']?>">
-								<td>
-									<div id="player<?=$curKey?>" class="orp_player">
-									    <audio preload="true">
-									        <source src="<?=$curFile['fileURL']?>">
-									    </audio>
-									    <button class="play"><span></span></button>
-									</div>
-
-									<span class="audio_name"><?=$curFile['fileLabel']?></span>
-								</td>
-
-								<td>			
-									<div class="btn-group btn-group-sm audio-actions" role="group">
-										<button class="rename_file btn btn-secondary" type="button"><i class="fa fa-repeat"></i> <?=_('Rename')?></button>
-										<button class="delete_file btn btn-danger" type="button"><i class="fa fa-remove"></i> <?=_('Delete')?></button>
-									</div>
-								</td>
-							</tr>
-
-						<?php } ?>
 
                       </tbody>
 
-
-
                     </table>
-					
-					
-
-
 
                   </div>
                 </div>
@@ -325,7 +302,52 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
         </div>
         <!-- /page content -->
 
+<? ######################################################################### ?>
+
+<script id="idRowTemplate" type = "text/template">
+	<tr id="clip%%INDEX%%" data-row-name="%%FILE_LABEL%%" data-row-file="%%FILE_NAME%%">
+		<td>
+			<div id="player%%INDEX%%" class="orp_player">
+			    <audio preload="true">
+			        <source src="%%FILE_URL%%">
+			    </audio>
+			    <button class="play"><span></span></button>
+			</div>
+
+			<span class="audio_name">%%FILE_LABEL%%</span>
+		</td>
+
+		<td>			
+          <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" class="dropdown">
+              <a id="drop6" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false"><i class="fa fa-cog"></i> <span class="caret"></span></a>
+              <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><i class="fa fa-repeat"></i> <?=_('Rename')?></a>
+                </li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="%%FILE_URL%%"><i class="fa fa-download"></i> <?=_('Download')?></a>
+                </li>
+                <li role="presentation"><a role="menuitem" class="deleteBackup" tabindex="-1"><i class="fa fa-remove"></i> <?=_('Delete')?></a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+		</td>
+	</tr>
+
+</script>
+
+
+<?php 
+	$shortSettings = [
+		'ID_Short_Mode' => $settings['ID_Short_Mode'],
+		'ID_Long_Mode' => $settings['ID_Long_Mode'],
+	];
+?>
+
 <script>
+	var settingsJSON = '<?= json_encode($shortSettings) ?>';
+	var identificationAudio = '<?= $identificationAudio ?>';
+
 	var modal_RenameTitle = '<?=_('Rename Clip')?>';
 	var modal_RenameBody = '<p><?=_('Please enter the new file name')?></p>';
 	var modal_RenameBtnOK = '<?=_('Rename')?>';
@@ -338,11 +360,7 @@ $identificationAudio = $AudioFiles->get_audio_files('identification');
 	var modal_DeleteErrorTitle = '<?=_('Delete Error')?>';
 	var modal_DeleteErrorBody = '<p><?=_('You cannot delete the following clip as it is in use.')?></p>';
 	var modal_DeleteErrorBtnOK = '<?=_('Dismiss')?>';
-</script>
 
-
-<!-- Upload Dialog Modal -->
-<script>
 	var modal_UploadTitle = '<?=_('Upload Identification')?>';
 	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';
 	var modal_dzCustomDesc = '<?=_('Upload your own custom recorded audio files for identification. The file should be in MP3 or WAV format and any excess dead air should be trimmed off of the clip and audio levels normalized. DO NOT UPLOAD FILES THAT CONTAIN MUSIC, CLIPS OF MUSIC, OR OTHER COPYRIGHTED MATERIAL...IT IS ILLEGAL.')?>';

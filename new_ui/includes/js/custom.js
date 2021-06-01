@@ -1368,8 +1368,7 @@ function init_knob() {
 			//console.log("change : " + value);
 		},
 		release: function(value) {
-			//console.log(this.$.attr('value'));
-			console.log("release : " + value);
+			$('input[name="'+this.$.attr('id')+'"]').val(value).trigger('change');
 		},
 		cancel: function() {
 			console.log("cancel : ", this);
