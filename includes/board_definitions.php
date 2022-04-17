@@ -2,6 +2,98 @@
 $board_definitions = array();
 
 #################################################################################
+# ICS Controllers - Pi Repeater 4X
+#################################################################################
+
+### DEVELOPMENT/TESTING ###
+### ALSA Settings Need Work ###
+$board_definitions[210512] = [
+	'manufacturer' => 'ICS Controllers',
+	'model' => 'Pi Repeater 4X',
+	'version' => 'v1.0',
+	'ports' => [
+		1 => [
+			'portLabel' => 'Port 1',
+			'rxAudioDev' => 'alsa:plughw:1|1',
+			'txAudioDev' => 'alsa:plughw:1|1',
+			'portType' => 'GPIO',
+			'rxMode' => 'cos',
+			'rxGPIO' => '478',
+			'rxGPIO_active' => 'low',
+			'txGPIO' => '474',
+			'txGPIO_active' => 'high',
+			'rxGPIO_ctcss' => '24',
+			'rxGPIO_ctcss_active' => 'low',
+			'txGPIO_ctcss' => '13',
+			'txGPIO_ctcss_active' => 'low',
+	        'portDuplex'  => 'full',
+	        'linkGroup'  => [1],
+		],
+		2 => [
+			'portLabel' => 'Port 2',
+			'rxAudioDev' => 'alsa:plughw:1|0',
+			'txAudioDev' => 'alsa:plughw:1|0',
+			'portType' => 'GPIO',
+			'rxMode' => 'cos',
+			'rxGPIO' => '479',
+			'rxGPIO_active' => 'low',
+			'txGPIO' => '475',
+			'txGPIO_active' => 'high',
+			'rxGPIO_ctcss' => '25',
+			'rxGPIO_ctcss_active' => 'low',
+			'txGPIO_ctcss' => '27',
+			'txGPIO_ctcss_active' => 'low',
+	        'portDuplex'  => 'half',
+	        'linkGroup'  => [1],
+		],
+		3 => [
+			'portLabel' => 'Port 3',
+			'rxAudioDev' => 'alsa:plughw:1|3',
+			'txAudioDev' => 'alsa:plughw:1|3',
+			'portType' => 'GPIO',
+			'rxMode' => 'cos',
+			'rxGPIO' => '486',
+			'rxGPIO_active' => 'low',
+			'txGPIO' => '482',
+			'txGPIO_active' => 'high',
+			'rxGPIO_ctcss' => '25',
+			'rxGPIO_ctcss_active' => 'low',
+			'txGPIO_ctcss' => '27',
+			'txGPIO_ctcss_active' => 'low',
+	        'portDuplex'  => 'half',
+	        'linkGroup'  => [1],
+		],
+		4 => [
+			'portLabel' => 'Port 4',
+			'rxAudioDev' => 'alsa:plughw:1|2',
+			'txAudioDev' => 'alsa:plughw:1|2',
+			'portType' => 'GPIO',
+			'rxMode' => 'cos',
+			'rxGPIO' => '487',
+			'rxGPIO_active' => 'low',
+			'txGPIO' => '483',
+			'txGPIO_active' => 'high',
+			'rxGPIO_ctcss' => '25',
+			'rxGPIO_ctcss_active' => 'low',
+			'txGPIO_ctcss' => '27',
+			'txGPIO_ctcss_active' => 'low',
+	        'portDuplex'  => 'half',
+	        'linkGroup'  => [1],
+		]
+	],
+	'alsa_settings' => [
+		0 => [
+			'Headphone' => '86%',
+			'PCM' => '75%',
+			'Lineout' => '80% unmute',
+			'Mic' => '59%',
+			'Capture Mux' => 'LINE_IN'
+		]
+	]
+];
+
+
+#################################################################################
 # ICS Controllers - Pi Repeater 2X
 #################################################################################
 
