@@ -5,8 +5,8 @@ Maintainer: Richard Neese <kb3vw@gmail.com>
 Build-Depends: debhelper (>= 9), 
 Standards-Version: 3.9.6
 Homepage: http://www.openrepeater.com
-Vcs-Browser: https://github.com/kb3vgw/openrepeater/webap
-Vcs-Git: https://github.com/kb3vgw/openrepeater/webapp.git
+Vcs-Browser: https://github.com/r.neese/openrepeater/webap
+Vcs-Git: https://github.com/r.neese/openrepeater/webapp.git
 
 Package: openrepeater
 Architecture: all
