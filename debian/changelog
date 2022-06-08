@@ -2,7 +2,7 @@ openrepeater (1.1.0.3-1) stable; urgency=low
 
   * Make fixes for Firefox GUI bugs
 
- -- Richard Neese <kb3vgw@gmail.com>  Sat, 12 Dec 2015 10:02:23 -0600
+ -- Richard Neese <r.neese@gmail.com>  Sat, 12 Dec 2015 10:02:23 -0600
 
 openrepeater (1.1.0.2-1) stable; urgency=low
 
@@ -10,10 +10,10 @@ openrepeater (1.1.0.2-1) stable; urgency=low
   * css fixes
   * other "1.1.0.2" updates
 
- -- Richard Neese <kb3vgw@gmail.com>  Sat, 05 Dec 2015 10:02:23 -0600
+ -- Richard Neese <r.neese@gmail.com>  Sat, 05 Dec 2015 10:02:23 -0600
 
 openrepeater (1.1.0.1-1) stable; urgency=low
 
   * Initial release new openrepeater "1.1.0.1"
 
- -- Richard Neese <kb3vgw@gmail.com>  Wed, 02 Dec 2015 10:02:23 -0600
+ -- Richard Neese <r.neese@gmail.com>  Wed, 02 Dec 2015 10:02:23 -0600
