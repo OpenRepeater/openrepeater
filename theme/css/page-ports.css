@@ -80,7 +80,7 @@ input, select {
 }
 
 .rxAudioDev {
-	width: 180px;	
+	width: 250px;	
 }
 
 .txGPIO {
@@ -89,7 +89,7 @@ input, select {
 }
 
 .txAudioDev {
-	width: 180px;
+	width: 250px;
 }
 
 
