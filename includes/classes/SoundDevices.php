@@ -59,9 +59,9 @@ class SoundDevices {
 			preg_match('/card\s.*?\[(.*?)\]/', $in_val, $in_label);
 			preg_match('/card\s.*?\[.*?\].*?\[(.*?)\]/', $in_val, $in_type);
 		
-		
+			$channels = [passthru ("sudo orp_helper audio channels $in_cardnum[1]")];
 			// Write Left & Right Channels to Array
-			$this->device_list[] = array('card' => $in_cardnum[1], 'label' => $in_label[1], 'type' => $in_type[1], 'direction' => "IN", 'channel' => 0, 'channel_label' => "Left");
+			$this->device_list[] = array('card' => $in_cardnum[1], 'label' => $in_label[1], 'type' => $in_type[1], 'direction' => "IN", 'channel' => 0, 'channel_label' => "ch:$channels");
 			$this->device_list[] = array('card' => $in_cardnum[1], 'label' => $in_label[1], 'type' => $in_type[1], 'direction' => "IN", 'channel' => 1, 'channel_label' => "Right");
 			$this->device_in_count = $this->device_in_count + 2; // this is because left and right are currently hard coded
 		

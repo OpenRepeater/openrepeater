@@ -110,8 +110,16 @@ function audio_version {
 	cat /proc/asound/version 2>&1
 }
 
+function audio_channels  {
+    if [ $(svxlink_status & ) ]; then
+        svxlink_stop
+        ((arecord -vvv -f dat /dev/null --duration=1 --device=plughw:$1,0) 2> >( grep -Pa "channels"))| grep -o '[0-9][0-9]*'
+        svxlink_start
+    else
+        echo $(((arecord -vvv -f dat /dev/null --duration=1 --device=plughw:$1,0) 2> >( grep -Pa "channels" ))| grep -o  '[0-9][0-9]*')
+    fi
+}
 
-### AUDIO FUNCTIONS ###
 function set_mixer {
 	if [ -n "$3" ]; then
 		amixer -c$3 set "$1" $2
@@ -254,6 +262,7 @@ while :; do
 			elif [ "$2" == "disable" ]; then svxlink_disable
 			elif [ "$2" == "gpio_up" ]; then svxlink_gpio_up
 			elif [ "$2" == "gpio_down" ]; then svxlink_gpio_down
+			elif [ "$2" == "sound_channels" ]; then soundcard_channels
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper svxlink (start|stop|restart|status|enable|disable|gpio_up|gpio_down)"
 			fi
 			exit;;
@@ -291,6 +300,7 @@ while :; do
         audio)
 			if [ "$2" == "inputs" ]; then audio_inputs
 			elif [ "$2" == "outputs" ]; then audio_outputs
+			elif [ "$2" == "channels" ]; then audio_channels $3
 			elif [ "$2" == "version" ]; then audio_version
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper audio (inputs|outputs|version)"
 			fi
