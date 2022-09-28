@@ -105,19 +105,12 @@ function audio_inputs {
 function audio_outputs {
 	aplay -l
 }
-
-function audio_version {
-	cat /proc/asound/version 2>&1
+function audio_channels_in  {
+    ((arecord -vvv -f dat /dev/null --duration=1 --device=plughw:$1,0) 2> >( grep  -PA 50 "(Hardware PCM card $1)"))| grep -Pa "(channels)"| grep -o '[0-9][0-9]*'
 }
 
-function audio_channels  {
-    if [ $(svxlink_status & ) ]; then
-        svxlink_stop
-        ((arecord -vvv -f dat /dev/null --duration=1 --device=plughw:$1,0) 2> >( grep -Pa "channels"))| grep -o '[0-9][0-9]*'
-        svxlink_start
-    else
-        echo $(((arecord -vvv -f dat /dev/null --duration=1 --device=plughw:$1,0) 2> >( grep -Pa "channels" ))| grep -o  '[0-9][0-9]*')
-    fi
+function audio_channels_out  {
+	((aplay -d 1 -t raw /dev/null -vvv --device=plughw:$1,0) 2> >( grep  -PA 50 "(Hardware PCM card $1)"))| grep -Pa "(channels)"| grep -o '[0-9][0-9]*'
 }
 
 function set_mixer {
@@ -300,7 +293,8 @@ while :; do
         audio)
 			if [ "$2" == "inputs" ]; then audio_inputs
 			elif [ "$2" == "outputs" ]; then audio_outputs
-			elif [ "$2" == "channels" ]; then audio_channels $3
+			elif [ "$2" == "channels_in" ]; then audio_channels_in $3
+			elif [ "$2" == "channels_out" ]; then audio_channels_out $3
 			elif [ "$2" == "version" ]; then audio_version
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper audio (inputs|outputs|version)"
 			fi
