@@ -27,6 +27,9 @@ function display_help {
 	echo "perform due to security reasons in Linux."
 	echo ""
 	echo "USAGE: orp_helper [service] [option]"
+	echo "[service] options:"
+	echo "svxlink|system|info|www|audio|set_mixer|alsa|network|pty|gps|test"
+	echo ""
 }
 
 function svxlink_disable {
@@ -109,9 +112,15 @@ function audio_outputs {
 function audio_version {
 	cat /proc/asound/version 2>&1
 }
+### get detailed information from the arecord verbose dump by plughw (card) number, then filter it down to only return the "channels" detail
+function audio_channels_in  {
+    ((arecord -vvv -f dat /dev/null --duration=1 --device=plughw:$1,0) 2> >( grep  -PA 50 "(Hardware PCM card $1)"))| grep -Pa "(channels)"| grep -o '[0-9][0-9]*'
+}
+### get detailed information from the aplay verbose dump by plughw (card) number, then filter it down to only return the "channels" detail
+function audio_channels_out  {
+	((aplay -d 1 -t raw /dev/null -vvv --device=plughw:$1,0) 2> >( grep  -PA 50 "(Hardware PCM card $1)"))| grep -Pa "(channels)"| grep -o '[0-9][0-9]*'
+}
 
-
-### AUDIO FUNCTIONS ###
 function set_mixer {
 	if [ -n "$3" ]; then
 		amixer -c$3 set "$1" $2
@@ -291,8 +300,13 @@ while :; do
         audio)
 			if [ "$2" == "inputs" ]; then audio_inputs
 			elif [ "$2" == "outputs" ]; then audio_outputs
+			elif [ "$2" == "channels_in" ]; then audio_channels_in $3
+			elif [ "$2" == "channels_out" ]; then audio_channels_out $3
 			elif [ "$2" == "version" ]; then audio_version
-			else echo "INVALID OPTION"; echo "USAGE: orp_helper audio (inputs|outputs|version)"
+			else 
+				echo "INVALID OPTION"; 
+				echo "USAGE: orp_helper audio (inputs|outputs|channels_in <input plughw#>|channels_out <output plughw#>|version)";
+				echo "EXAMPLE: orp_helper audio channels_in 0";
 			fi
 			exit;;
         set_mixer)
