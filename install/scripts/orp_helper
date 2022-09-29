@@ -1,5 +1,6 @@
 #!/bin/bash
-# Copyright ©2017 OpenRepeater Project - Aaron Crawford, N3MBH & Richard Neese KB3VGW
+# OpenRepeater Project
+# Aaron Crawford (N3MBH), Richard Neese (N4CNR), and Daniel Loranger (KG7PAR)
 # Licended under GPL v2 or later
 
 # This is a helper script for OpenRepeater. This script is primarily intended
@@ -12,7 +13,6 @@
 
 # NOTE: NO NEED TO PREFIX COMMANDS WITH SUDO AS THIS SCRIPT IS INTENDED TO BE RUN AS ROOT USING SUDO COMMAND
 
-####### WORK IN PROGRESS........
 
 ###############################################################################
 # DEFINE FUNCTIONS
@@ -28,7 +28,7 @@ function display_help {
 	echo ""
 	echo "USAGE: orp_helper [service] [option]"
 	echo "[service] options:"
-	echo "svxlink|system|info|www|audio|set_mixer|alsa|network|pty|gps|test"
+	echo "svxlink|system|info|www|audio|set_mixer|alsa|network|pty|gps"
 	echo ""
 }
 
@@ -112,11 +112,13 @@ function audio_outputs {
 function audio_version {
 	cat /proc/asound/version 2>&1
 }
-### get detailed information from the arecord verbose dump by plughw (card) number, then filter it down to only return the "channels" detail
+
+# get detailed information from the arecord verbose dump by plughw (card) number, then filter it down to only return the "channels" detail
 function audio_channels_in  {
     ((arecord -vvv -f dat /dev/null --duration=1 --device=plughw:$1,0) 2> >( grep  -PA 50 "(Hardware PCM card $1)"))| grep -Pa "(channels)"| grep -o '[0-9][0-9]*'
 }
-### get detailed information from the aplay verbose dump by plughw (card) number, then filter it down to only return the "channels" detail
+
+# get detailed information from the aplay verbose dump by plughw (card) number, then filter it down to only return the "channels" detail
 function audio_channels_out  {
 	((aplay -d 1 -t raw /dev/null -vvv --device=plughw:$1,0) 2> >( grep  -PA 50 "(Hardware PCM card $1)"))| grep -Pa "(channels)"| grep -o '[0-9][0-9]*'
 }
@@ -245,7 +247,7 @@ function gps_read {
 
 # TODO LIST
 # Setting Timezone
-# Expanding Filesystem
+
 
 
 ###############################################################################
@@ -287,7 +289,6 @@ while :; do
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper info (timezone|cpu_type|cpu_speed|cpu_load|cpu_temp|uptime|memory_usage|disk_usage|os)"
 			fi
 			exit;;
-#info_uptime
         www)
 			if [ "$2" == "stop" ]; then www_stop
 			elif [ "$2" == "start" ]; then www_start
@@ -337,10 +338,6 @@ while :; do
 			if [ "$2" == "read" ]; then gps_read
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper gps (read)"
 			fi
-			exit;;
-
-        TEST)
-			echo "Testing..."
 			exit;;
 
         -h|-\?|--help|*)   # Display general help/info.
