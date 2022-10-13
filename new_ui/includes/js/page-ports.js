@@ -27,7 +27,7 @@ console.log(fullPortObj);
 
 	// Dynamically Build Port
 	function displayPort(port) {
-		var $template = $('#rowTemplate').html();
+		var $template = $('#rowTemplateAnalog').html();
 		$template = $template.replace(/%%currPortNum%%/g, port.portNum)
 			.replace(/%%currPortLabel%%/g, port.portLabel);
 
@@ -427,6 +427,8 @@ console.log(fullPortObj);
 			var deleteField = '<input type="hidden" id="'+wrapper+'DELETE" name="'+deleteFieldName+'" value="DELETE">';
 			$('#'+wrapper).append(deleteField); //add row
 		}
+		
+		$("#port"+curPort+"form").trigger("change"); // Trigger port form to resubmit
 	})
 
 

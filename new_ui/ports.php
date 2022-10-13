@@ -252,7 +252,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
 
 
 <? ### ROW TEMPLATE ######################################################## ?>
-<script id="rowTemplate" type = "text/template">
+<script id="rowTemplateAnalog" type = "text/template">
   <div id="portNum%%currPortNum%%" class="panel portSection">
     <a class="panel-heading collapsed" role="tab" id="accordionHeading%%currPortNum%%" data-toggle="collapse" data-parent="#accordion" href="#accordionCollapse%%currPortNum%%" aria-expanded="false" aria-controls="accordionCollapse%%currPortNum%%">
 	  <div class="col-md-6 col-sm-6 col-xs-6">
@@ -413,6 +413,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('This allows the port to be disabled, but retain the current settings.')?>"></i>
                     </label>
                     <div class="col-md-8 col-sm-8 col-xs-12">
+					  <input type="hidden" name="portEnabled" value="0">
 					  <input type="checkbox" id="portEnabled%%currPortNum%%" name="portEnabled" class="js-switch portEnabled" value="1"> 
 					  <a href="#" id="deletePort%%currPortNum%%" class="deletePort"><i class="fa fa-trash-o"></i> Delete</a>
                     </div>
