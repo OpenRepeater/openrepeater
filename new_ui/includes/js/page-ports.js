@@ -678,8 +678,15 @@ console.log(fullPortObj);
 		// Nest object under port number to match input array format and return as JSON string for port.
 		var portJSON = '{"' + portFieldsObj.portNum + '":' + JSON.stringify(portFieldsObj) + '}';
 
-		console.log(portJSON);
 		// Replace with AJAX Call
+		console.log(portJSON);
+
+		// TESTING FOR SAVE STATUS SIMULAITON
+		// sectionStatus(formID, 'portSection', 'processing');
+		sectionStatus(formID, 'portSection', 'saved');
+		// sectionStatus(formID, 'portSection', 'error');
+
+
 
 		$('#orp_restart_btn').show();
 

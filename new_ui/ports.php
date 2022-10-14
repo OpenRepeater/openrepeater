@@ -270,6 +270,9 @@ $device_out_count = $SoundDevices->get_device_out_count();
 		  <span class="portLabelLinkGrp 4 badge bg-orange" data-toggle="tooltip" data-placement="top" title="<?=_('Belongs to Link Group')?> 4" style="display: none;"><i class="fa fa-link"></i> <span>4</span></span>
 
         </span> 
+
+        <div class="sectionStatus"><i class="fa"></i></div>
+
 	  </div>
 	  <div class="clearfix"></div>
     </a>
