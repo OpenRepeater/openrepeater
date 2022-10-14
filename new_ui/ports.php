@@ -94,7 +94,10 @@ $device_out_count = $SoundDevices->get_device_out_count();
 
 
                 <div class="x_panel">
-                  <div class="x_title"><h4><i class="fa fa-link"></i> <?=_('Link Group Settings')?></h4></div>
+                  <div class="x_title">
+			        <div class="sectionStatus linkGroupStatus"><i class="fa"></i></div>
+                    <h4><i class="fa fa-link"></i> <?=_('Link Group Settings')?></h4>
+                  </div>
 
 				  <form id="linkGroupForm" class="linkGroupForm">
 
@@ -271,7 +274,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
 
         </span> 
 
-        <div class="sectionStatus"><i class="fa"></i></div>
+        <div class="sectionStatus portStatus"><i class="fa"></i></div>
 
 	  </div>
 	  <div class="clearfix"></div>

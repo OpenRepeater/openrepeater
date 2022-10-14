@@ -543,8 +543,13 @@ console.log(fullPortObj);
 		
 		var returnString = '{"1":{"defaultActive":"'+lg1_active+'","timeout":"'+lg1_timeout+'"},"2":{"defaultActive":"'+lg2_active+'","timeout":"'+lg2_timeout+'"},"3":{"defaultActive":"'+lg3_active+'","timeout":"'+lg3_timeout+'"},"4":{"defaultActive":"'+lg4_active+'","timeout":"'+lg4_timeout+'"}}';
 				
-		console.log(returnString);
 		// Replace with AJAX Call
+		console.log(returnString);
+
+		// TESTING FOR SAVE STATUS SIMULAITON
+		// sectionStatus('linkGroupForm', 'x_panel', 'processing');
+		sectionStatus('linkGroupForm', 'x_panel', 'saved');
+		// sectionStatus('linkGroupForm', 'x_panel', 'error');
 		
 		$('#orp_restart_btn').show();
 
@@ -685,8 +690,6 @@ console.log(fullPortObj);
 		// sectionStatus(formID, 'portSection', 'processing');
 		sectionStatus(formID, 'portSection', 'saved');
 		// sectionStatus(formID, 'portSection', 'error');
-
-
 
 		$('#orp_restart_btn').show();
 

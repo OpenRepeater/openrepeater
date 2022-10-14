@@ -29,8 +29,11 @@
 }
 
 
-.sectionStatus {
-    color: gray!important;
-    top: 3px!important;
-    right: 10px!important;
+.sectionStatus.portStatus {
+    color: gray;
+    top: 3px;
+    right: 10px;
+}
+
+.sectionStatus.linkGroupStatus {
 }
