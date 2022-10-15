@@ -675,6 +675,29 @@ console.log(fullPortObj);
 			portFieldsObj.portEnabled = '0';
 		}
 
+		// Clean Up Unused fields based on Triggering Type
+		if (portFieldsObj.portType != 'GPIO') {
+			delete portFieldsObj.rxMode;
+			delete portFieldsObj.rxGPIO;
+			delete portFieldsObj.rxGPIO_active;
+			delete portFieldsObj.txGPIO;
+			delete portFieldsObj.txGPIO_active;
+		}
+		if (portFieldsObj.portType != 'HiDraw') {
+			delete portFieldsObj.hidrawDev;
+			delete portFieldsObj.hidrawRX_cos;
+			delete portFieldsObj.hidrawRX_cos_invert;
+			delete portFieldsObj.hidrawTX_ptt;
+			delete portFieldsObj.hidrawTX_ptt_invert;
+		}
+		if (portFieldsObj.portType != 'Serial') {
+			delete portFieldsObj.serialDev;
+			delete portFieldsObj.serialRX_cos;
+			delete portFieldsObj.serialRX_cos_invert;
+			delete portFieldsObj.serialTX_ptt;
+			delete portFieldsObj.serialTX_ptt_invert;
+		}
+
 		// Update linkGroup values to be an integer sub array for storage
 		if (portFieldsObj.linkGroup != '') {
 			portFieldsObj.linkGroup = $.map(portFieldsObj.linkGroup.split(','), function(value){ return parseInt(value, 10); });
