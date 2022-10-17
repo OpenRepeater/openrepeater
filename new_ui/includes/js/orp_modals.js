@@ -30,7 +30,7 @@ function orpModalDisplay(parameters) {
 
 	$('#orp_modal').modal({backdrop: 'static', keyboard: false}) 
 
-	// OPTIONAL: Change primary button text
+	// OPTIONAL: Hide primary button for user input
 	if (parameters['btnOKshow'] == false) {
 		$('#orp_modal_ok').hide();
 	} else {
