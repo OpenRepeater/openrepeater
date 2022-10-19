@@ -16,13 +16,41 @@ $(function() {
 	**********************************************************************
 	*/
 
-	// Loop through JSON array of ports and build display
-	fullPortObj = JSON.parse(portList);
-console.log(portList);
-console.log(fullPortObj);
-	$.each(fullPortObj, function(index, curPort) {
-		displayPort(curPort);
-	});
+	audioScanWarning();
+
+	// Warning Modal for Audio Port Scan
+	// Wrapped as function to allow for future reloading of audio with expansion of function
+	function audioScanWarning() {
+		var modalDetails = {
+			modalSize: 'large',
+			title: '<i class="fa fa-warning"></i> ' + modal_AudioScanWarningTitle,
+			body: '<h4>' + modal_AudioScanWarningBody + '</h4>',
+			btnOK: modal_AudioScanWarningBtnOK,
+			btnCancel: modal_AudioScanWarningBtnCancel,
+		};
+
+		orpModalDisplay(modalDetails);
+
+		$('#orp_modal_close_x').hide();
+
+		$('#orp_modal_ok').off('click'); // Remove other click events
+		$('#orp_modal_ok').click(function() {
+			// Loop through JSON array of ports and build display
+			fullPortObj = JSON.parse(portList);
+			console.log(portList);
+			console.log(fullPortObj);
+			$.each(fullPortObj, function(index, curPort) {
+				displayPort(curPort);
+			});
+			$('#orp_modal').modal('hide');
+		});
+
+		$('#orp_modal_cancel').removeAttr('data-dismiss'); // Prevent Normal Dismiss on Cancel
+		$('#orp_modal_cancel').click(function() {
+			window.open('dashboard.php','_self'); // Redirect to somewhere safe.
+		});
+
+	}
 
 
 	// Dynamically Build Port
