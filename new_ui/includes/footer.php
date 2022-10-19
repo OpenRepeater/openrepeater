@@ -17,7 +17,7 @@
           <div class="modal-content">
 
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+              <button type="button" id="orp_modal_close_x" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
               <h4 class="modal-title">Modal title</h4>
             </div>
             <div class="modal-body">
@@ -30,6 +30,11 @@
           </div>
         </div>
       </div>
+
+      <script>
+        var modal_DefaultOK = '<?=_('OK')?>';
+        var modal_DefaultCanel = '<?=_('Cancel')?>';
+      </script>
 	  <!-- END Modal -->
 
     <!-- jQuery -->

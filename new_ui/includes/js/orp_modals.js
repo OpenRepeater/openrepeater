@@ -41,7 +41,7 @@ function orpModalDisplay(parameters) {
 	if (parameters['btnOK']) {
 		$('#orp_modal_ok').html(parameters['btnOK']);
 	} else {
-		$('#orp_modal_ok').html('OK');
+		$('#orp_modal_ok').html(modal_DefaultOK);
 	}
 
 	// OPTIONAL: Change primary button class
@@ -50,6 +50,13 @@ function orpModalDisplay(parameters) {
 		$('#orp_modal_ok').addClass(parameters['btnOKclass']);
 	} else {
 		$('#orp_modal_ok').addClass('btn btn-primary');
+	}
+
+	// OPTIONAL: Change secondary/cancel button text
+	if (parameters['btnCancel']) {
+		$('#orp_modal_cancel').html(parameters['btnCancel']);
+	} else {
+		$('#orp_modal_cancel').html(modal_DefaultCanel);
 	}
 
 	// OPTIONAL: Add Wait/Progress Bar
@@ -71,6 +78,7 @@ function orpModalDisplay(parameters) {
 function orpModalWaitBar(newTitle) {
 	$('#orp_modal  .modal-header .close').hide();
 	$('#orp_modal_cancel').prop('disabled', true);
+
 	$('#orp_modal_ok').prop('disabled', true);
 	if(newTitle) {
 		$('#orp_modal .modal-title').html(newTitle);			
@@ -84,6 +92,7 @@ function orpModalWaitBar(newTitle) {
 function orpModalReset() {
 	$('#orp_modal  .modal-header .close').show();
 	$('#orp_modal_cancel').prop('disabled', false);
+	$('#orp_modal_cancel').attr('data-dismiss','modal');
 	$('#orp_modal_ok').prop('disabled', false);
 	$('#orp_modal').modal({backdrop: 'static', keyboard: false}) 
 
