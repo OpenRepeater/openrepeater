@@ -85,7 +85,14 @@ class SoundDevices {
 						$currChlLabel = 'Channel ' . ($currChan+1); // Offset from zero
 				}
 
-				$this->device_list[] = array('card' => $in_cardnum[1], 'label' => $in_label[1], 'type' => $in_type[1], 'direction' => "IN", 'channel' => 0, 'channel_label' => $currChlLabel);
+				$this->device_list[] = array(
+					'card' => $in_cardnum[1],
+					'label' => $in_label[1],
+					'type' => $in_type[1],
+					'direction' => "IN",
+					'channel' => $currChan,
+					'channel_label' => $currChlLabel
+				);
 				$this->device_in_count = $this->device_in_count++;
 			}
 		}
@@ -119,7 +126,14 @@ class SoundDevices {
 						$currChlLabel = 'Channel ' . ($currChan+1); // Offset from zero
 				}
 
-				$this->device_list[] = array('card' => $out_cardnum[1], 'label' => $out_label[1], 'type' => $out_type[1], 'direction' => "OUT", 'channel' => 0, 'channel_label' => $currChlLabel);
+				$this->device_list[] = array(
+					'card' => $out_cardnum[1],
+					'label' => $out_label[1],
+					'type' => $out_type[1],
+					'direction' => "OUT",
+					'channel' => $currChan,
+					'channel_label' => $currChlLabel
+				);
 				$this->device_out_count = $this->device_out_count ++;
 			}
 		}
