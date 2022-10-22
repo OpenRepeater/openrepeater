@@ -15,11 +15,6 @@ $customCSS = 'page-ports.css'; // 'file1.css, file2.css, ... '
 include('includes/header.php');
 $ports = $Database->get_ports();
 $SVXLink = new SVXLink(null, null, null);
-
-$SoundDevices = new SoundDevices();
-$device_list = $SoundDevices->get_device_list();
-$device_in_count = $SoundDevices->get_device_in_count();
-$device_out_count = $SoundDevices->get_device_out_count();
 ?>
 
         <!-- page content -->
@@ -443,18 +438,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Audio coming out of the receiver into the controller.')?>"></i>
                 	</label>
                     <div class="col-md-7 col-sm-7 col-xs-12">
-					  <?php $rxAudioDev = (isset($currPortSettings['rxAudioDev'])) ? $currPortSettings['rxAudioDev'] : ''; ?>
-					  <select id="rxAudioDev%%currPortNum%%" name="rxAudioDev" class="form-control rxAudioDev">
-						<option value="">---</option>
-						<?php
-						for ($device = 0; $device <  count($device_list); $device++) {
-						   if ($device_list[$device]['direction'] == "IN") {
-								$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-								echo '<option value="'.$rxValue.'">'._('INPUT').' '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
-							}
-						}
-						?>
-                      </select>
+					  <select id="rxAudioDev%%currPortNum%%" name="rxAudioDev" class="form-control rxAudioDev"></select>
                     </div>
                   </div>
 
@@ -469,18 +453,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Audio coming out of the controller going into the transmitter.')?>"></i>
                     </label>
                     <div class="col-md-7 col-sm-7 col-xs-12">
-					  <?php $txAudioDev = (isset($currPortSettings['txAudioDev'])) ? $currPortSettings['txAudioDev'] : ''; ?>
-					  <select id="txAudioDev%%currPortNum%%" name="txAudioDev" class="form-control txAudioDev">
-						<option value="">---</option>
-						<?php
-						for ($device = 0; $device <  count($device_list); $device++) {
-						   if ($device_list[$device]['direction'] == "OUT") {
-								$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-								echo '<option value="'.$txValue.'">'._('OUTPUT').' '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
-							}
-						}
-						?>
-                      </select>
+					  <select id="txAudioDev%%currPortNum%%" name="txAudioDev" class="form-control txAudioDev"></select>
                     </div>
                   </div>
 

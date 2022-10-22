@@ -16,6 +16,14 @@ $(function() {
 	**********************************************************************
 	*/
 
+	// Loop through JSON array of ports and build display
+	fullPortObj = JSON.parse(portList);
+	console.log(portList);
+	console.log(fullPortObj);
+	$.each(fullPortObj, function(index, curPort) {
+		displayPort(curPort);
+	});
+
 	audioScanWarning();
 
 	// Warning Modal for Audio Port Scan
@@ -35,13 +43,7 @@ $(function() {
 
 		$('#orp_modal_ok').off('click'); // Remove other click events
 		$('#orp_modal_ok').click(function() {
-			// Loop through JSON array of ports and build display
-			fullPortObj = JSON.parse(portList);
-			console.log(portList);
-			console.log(fullPortObj);
-			$.each(fullPortObj, function(index, curPort) {
-				displayPort(curPort);
-			});
+			getSoundDevices();
 			$('#orp_modal').modal('hide');
 		});
 
@@ -135,8 +137,8 @@ $(function() {
 
 		/* AUDIO TAB SETTINGS */
 
-		$('#rxAudioDev' + port.portNum).val(port.rxAudioDev);
-		$('#txAudioDev' + port.portNum).val(port.txAudioDev);
+		$('#rxAudioDev' + port.portNum).attr('data-default-selected',port.rxAudioDev);
+		$('#txAudioDev' + port.portNum).attr('data-default-selected',port.txAudioDev);
 
 
 		/* GPIO TAB SETTINGS */
@@ -624,7 +626,7 @@ $(function() {
 		}
 		$('#linkGroup_Port'+portNum).val(linkGroupArray);
 
-        console.log(linkGroupArray);
+//         console.log(linkGroupArray);
 	}
 
 
@@ -672,6 +674,55 @@ $(function() {
 
 	}
 
+	/*
+	**********************************************************************
+	 GET LIST OF SOUND DEVICES FROM SYSTEM
+	**********************************************************************
+	*/
+
+	function getSoundDevices() {
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_ports.php',
+			data: {'getSoundDevices':''},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					console.log('Login Timed Out');
+				} else if (response.status == 'error') {
+					console.log('Error!!!');
+				} else { // Success: Results Returned
+					// Clear previous options and set defaults
+					$('.rxAudioDev').empty();
+					$('.rxAudioDev').append($('<option></option>').text('---'));
+					$('.txAudioDev').empty();
+					$('.txAudioDev').append($('<option></option>').text('---'));
+
+					// Populate with available device options
+					$.each(response, function(index, curDev) {
+						var curDevValue = 'alsa:plughw:'+curDev.card+'|'+curDev.channel;
+						var curDevText = curDev.label+' ('+curDev.channel_label+')';
+						if(curDev.direction == 'IN') {
+							$('.rxAudioDev').append($('<option></option>').val(curDevValue).text(curDevText));
+						} else if(curDev.direction == 'OUT') {
+							$('.txAudioDev').append($('<option></option>').val(curDevValue).text(curDevText));
+						}
+					});
+
+					// Loop through dropdowns and select defaults save in database
+					$('.rxAudioDev').each(function(){
+						var currDefault = $(this).attr('data-default-selected');
+						$(this).val( $(this).attr('data-default-selected') );
+					});
+					$('.txAudioDev').each(function(){
+						var currDefault = $(this).attr('data-default-selected');
+						$(this).val( $(this).attr('data-default-selected') );
+					});
+
+				}
+			}
+		});
+	}
 
 
 	/*
@@ -724,6 +775,14 @@ $(function() {
 			delete portFieldsObj.serialRX_cos_invert;
 			delete portFieldsObj.serialTX_ptt;
 			delete portFieldsObj.serialTX_ptt_invert;
+		}
+
+		// Store Audio Settings Client Side in case of reload of devices
+		if (portFieldsObj.rxAudioDev) {
+			$('#rxAudioDev' + portFieldsObj.portNum).attr('data-default-selected',portFieldsObj.rxAudioDev);
+		}
+		if (portFieldsObj.txAudioDev) {
+			$('#txAudioDev' + portFieldsObj.portNum).attr('data-default-selected',portFieldsObj.txAudioDev);
 		}
 
 		// Update linkGroup values to be an integer sub array for storage
