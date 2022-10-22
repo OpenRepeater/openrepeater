@@ -52,20 +52,7 @@ $(document).ready(function() {
 				$('#locLatitude').val('41.714762');
 				$('#locLongitude').val('-72.727193');
 
-				new PNotify({
-					title: modal_gpsSuccessMsgTitle,
-					text: 1 + modal_gpsSuccessMsg,
-					type: 'success',
-					styling: 'bootstrap3'
-				});
-				/*
-				new PNotify({
-					title: modal_gpsFailMsgTitle,
-					text: modal_gpsFailMsg,
-					type: 'error',
-					styling: 'bootstrap3'
-				});
-				*/
+				orpNotify('success', modal_gpsSuccessMsgTitle, modal_gpsSuccessMsg);
 
 			}, 2000);
 		});

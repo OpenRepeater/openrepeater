@@ -121,6 +121,11 @@ function orpNotify(type, title, text) {
 			notifyProperties['delay'] = 7000;
 			notifyProperties['hide'] = true;
 			break;
+		case 'info':
+			notifyProperties['type'] = 'info';
+			notifyProperties['delay'] = 7000;
+			notifyProperties['hide'] = true;
+			break;
 		case 'error':
 			notifyProperties['type'] = 'error';
 			notifyProperties['delay'] = 10000;

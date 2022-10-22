@@ -321,12 +321,8 @@ $(function() {
 				$('#portNum' + portNum).slideUp(500);
 
 				//Display Message
-				new PNotify({
-					title: modal_DeletePortNotifyTitle,
-					text: modal_DeletePortNotifyDesc,
-					type: 'success',
-					styling: 'bootstrap3'
-				});
+				orpNotify('success', modal_DeletePortNotifyTitle, modal_DeletePortNotifyDesc);
+
 			}, 2000);
 		});
 	});

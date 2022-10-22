@@ -159,12 +159,7 @@ $(function() {
 
 				rebuildActive();
 				
-				new PNotify({
-					title: modDelSuccessTitle,
-					text: modDelSuccessBody,
-					type: 'success',
-					styling: 'bootstrap3'
-				});
+				orpNotify('success', modDelSuccessTitle, modDelSuccessBody);
 
 			}, 2000);
 		});
