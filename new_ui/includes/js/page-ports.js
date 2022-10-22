@@ -584,10 +584,11 @@ $(function() {
 			success: function(jsonResponse){
 				var response = JSON.parse(jsonResponse);
 				if (response.login == 'timeout') {
-					console.log('Login Timed Out');
+					sectionStatus(formID, 'portSection', 'error');
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
 				} else if (response.status == 'success') {
 					sectionStatus('linkGroupForm', 'x_panel', 'saved');
-					$('#orp_restart_btn').show();
+					rebuildActive();
 				} else {
 					sectionStatus('linkGroupForm', 'x_panel', 'error');
 				}
@@ -817,10 +818,11 @@ console.log(portJSON);
 			success: function(jsonResponse){
 				var response = JSON.parse(jsonResponse);
 				if (response.login == 'timeout') {
-					console.log('Login Timed Out');
+					sectionStatus(formID, 'portSection', 'error');
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
 				} else if (response.status == 'success') {
 					sectionStatus(formID, 'portSection', 'saved');
-					$('#orp_restart_btn').show();
+					rebuildActive();
 				} else {
 					sectionStatus(formID, 'portSection', 'error');
 				}

@@ -102,7 +102,8 @@ $(document).ready(function() {
 			success: function(jsonResponse){
 				var response = JSON.parse(jsonResponse);
 				if (response.login == 'timeout') {
-					console.log('Login Timed Out');
+					sectionStatus(formID, 'x_panel', 'error');
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
 				} else if (response.status == 'success') {
 					sectionStatus(formID, 'x_panel', 'saved');
 					rebuildActive();
@@ -135,7 +136,8 @@ $(document).ready(function() {
 			success: function(jsonResponse){
 				var response = JSON.parse(jsonResponse);
 				if (response.login == 'timeout') {
-					console.log('Login Timed Out');
+					sectionStatus(formID, 'x_panel', 'error');
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
 				} else if (response.status == 'success') {
 					sectionStatus(formID, 'x_panel', 'saved');
 					rebuildActive();

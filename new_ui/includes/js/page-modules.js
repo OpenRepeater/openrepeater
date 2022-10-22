@@ -157,7 +157,8 @@ $(function() {
 
 				$( '#Row' + moduleID ).fadeOut('1000');
 
-				$('#orp_restart_btn').show();
+				rebuildActive();
+				
 				new PNotify({
 					title: modDelSuccessTitle,
 					text: modDelSuccessBody,

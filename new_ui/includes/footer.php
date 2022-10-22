@@ -347,6 +347,10 @@
 	}
 	?>
 
+    <script>
+      var notify_LoggedOutTitle = '<?=_('Logged Out')?>';
+      var notify_LoggedOutText = '<?=_('There was an error saving your settings because you have been logged out. Please log back in and try again.')?>';
+    </script>
 
   </body>
 </html>
