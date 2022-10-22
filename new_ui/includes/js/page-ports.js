@@ -558,6 +558,9 @@ $(function() {
 	// Pass Link Group Settings to Database
 	$('.linkGroupForm').change(function() {
 
+		// Set Processing Status
+		sectionStatus('linkGroupForm', 'x_panel', 'processing');
+
 		// Primitive approach but it works. 
 		if ( $('#LG1_defaultActive').prop('checked') == true ) { var lg1_active = 1; } else { var lg1_active = 0; }
 		if ( $('#LG1_timeout').val() != '' ) { var lg1_timeout = $('#LG1_timeout').val(); } else { var lg1_timeout = 0; }
@@ -571,17 +574,26 @@ $(function() {
 		if ( $('#LG4_defaultActive').prop('checked') == true ) { var lg4_active = 1; } else { var lg4_active = 0; }
 		if ( $('#LG4_timeout').val() != '' ) { var lg4_timeout = $('#LG4_timeout').val(); } else { var lg4_timeout = 0; }
 		
-		var returnString = '{"1":{"defaultActive":"'+lg1_active+'","timeout":"'+lg1_timeout+'"},"2":{"defaultActive":"'+lg2_active+'","timeout":"'+lg2_timeout+'"},"3":{"defaultActive":"'+lg3_active+'","timeout":"'+lg3_timeout+'"},"4":{"defaultActive":"'+lg4_active+'","timeout":"'+lg4_timeout+'"}}';
+		var linkGroupString = '{"1":{"defaultActive":"'+lg1_active+'","timeout":"'+lg1_timeout+'"},"2":{"defaultActive":"'+lg2_active+'","timeout":"'+lg2_timeout+'"},"3":{"defaultActive":"'+lg3_active+'","timeout":"'+lg3_timeout+'"},"4":{"defaultActive":"'+lg4_active+'","timeout":"'+lg4_timeout+'"}}';
 				
-		// Replace with AJAX Call
-		console.log(returnString);
+		// Write to DB in backgruond
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: {'linkGroups': linkGroupString},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					console.log('Login Timed Out');
+				} else if (response.status == 'success') {
+					sectionStatus('linkGroupForm', 'x_panel', 'saved');
+					$('#orp_restart_btn').show();
+				} else {
+					sectionStatus('linkGroupForm', 'x_panel', 'error');
+				}
+			}
+		});
 
-		// TESTING FOR SAVE STATUS SIMULAITON
-		// sectionStatus('linkGroupForm', 'x_panel', 'processing');
-		sectionStatus('linkGroupForm', 'x_panel', 'saved');
-		// sectionStatus('linkGroupForm', 'x_panel', 'error');
-		
-		$('#orp_restart_btn').show();
 
 	});
 
@@ -735,6 +747,8 @@ $(function() {
 		var formID = $(this).attr('id');
 		var portNum = $(this).attr('data-port-form');;
 
+		sectionStatus(formID, 'portSection', 'processing');
+
 		updateLinkGroupField(portNum); // HACK: Refire this function since execution is not in order. Updates hidden linkGroup field.
 		
 		// Get current port entries, remove empty fields and create an object of results.
@@ -793,15 +807,25 @@ $(function() {
 		// Nest object under port number to match input array format and return as JSON string for port.
 		var portJSON = '{"' + portFieldsObj.portNum + '":' + JSON.stringify(portFieldsObj) + '}';
 
-		// Replace with AJAX Call
-		console.log(portJSON);
+// DEV TESTING ONLY
+console.log(portJSON);
 
-		// TESTING FOR SAVE STATUS SIMULAITON
-		// sectionStatus(formID, 'portSection', 'processing');
-		sectionStatus(formID, 'portSection', 'saved');
-		// sectionStatus(formID, 'portSection', 'error');
-
-		$('#orp_restart_btn').show();
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: {'updatePort': portJSON},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					console.log('Login Timed Out');
+				} else if (response.status == 'success') {
+					sectionStatus(formID, 'portSection', 'saved');
+					$('#orp_restart_btn').show();
+				} else {
+					sectionStatus(formID, 'portSection', 'error');
+				}
+			}
+		});
 
 	});
 

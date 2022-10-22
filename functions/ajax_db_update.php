@@ -11,10 +11,10 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 # AUTOLOAD CLASSES
 require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
 ################################################################################
-$classDB = new Database();
 
-# Update Settings
+# Settings Table Operations
 if ( isset($_POST['settings']) ) {
+	$classDB = new Database();
 	$updateArray = json_decode($_POST['settings']);
 	$result = $classDB->update_settings($updateArray);
 	if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
@@ -22,6 +22,7 @@ if ( isset($_POST['settings']) ) {
 }
 
 if ( isset($_POST['location']) ) {
+	$classDB = new Database();
 	$locationArray = json_decode($_POST['location']);
 	$updateArray['Location_Info'] = json_encode($locationArray);
 	$result = $classDB->update_settings($updateArray);
@@ -29,6 +30,25 @@ if ( isset($_POST['location']) ) {
 	exit;
 }
 
+
+
+# Ports Operations
+if ( isset($_POST['updatePort']) ) {
+	$classDB = new Database();
+	$updateArray = json_decode($_POST['updatePort'], true);
+	$result = $classDB->update_ports_table($updateArray);
+	if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
+	exit;
+}
+
+if ( isset($_POST['linkGroups']) ) {
+	$classDB = new Database();
+	$linkGroupsArray = json_decode($_POST['linkGroups']);
+	$updateArray['LinkGroup_Settings'] = json_encode($linkGroupsArray);
+	$result = $classDB->update_settings($updateArray);
+	if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
+	exit;
+}
 
 
 
