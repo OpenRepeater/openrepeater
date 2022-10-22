@@ -163,7 +163,8 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	/* ---------------------------------------------------------- */
 	/* FINISH UP */
 
-	$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
+/*
+ 	$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
 
 	######################################
 	# Return AJAX Response
@@ -195,6 +196,11 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	}
 
 	echo json_encode($response);
+*/
+
+$fakeResponse = '{"status":"success","svxlink":"inactive"}';
+echo $fakeResponse;
+
 
 ?>
 
