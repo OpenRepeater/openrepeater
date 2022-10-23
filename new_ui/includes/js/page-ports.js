@@ -422,7 +422,6 @@ $(function() {
 		var realCount = $('#'+wrapper).attr('data-real-count');
 		var sectionType = $('#'+wrapper).attr('data-section-type');
 		if(realCount < max_fields) {
-			$('#'+wrapper+'DELETE').remove(); // Remove delete field if it exists
 			buildAdvFields(curPort, sectionType, null, null);
 		}
 	});
@@ -448,10 +447,7 @@ $(function() {
 				case 'tx':
 					var deleteFieldName = 'SVXLINK_ADVANCED_TX['+curPort+'][delete]'; break;
 					break;
-			} 
-
-			var deleteField = '<input type="hidden" id="'+wrapper+'DELETE" name="'+deleteFieldName+'" value="DELETE">';
-			$('#'+wrapper).append(deleteField); //add row
+			}
 		}
 		
 		$("#port"+curPort+"form").trigger("change"); // Trigger port form to resubmit
@@ -795,6 +791,53 @@ $(function() {
 		if (portFieldsObj.txAudioDev) {
 			$('#txAudioDev' + portFieldsObj.portNum).attr('data-default-selected',portFieldsObj.txAudioDev);
 		}
+
+
+		// RETRIEVE AND REFORMAT SVXLINK OVERRIDES FOR DB INSERTION
+		// Note that name values for advanced fields are removed, so while they will trigger the change event on this
+		// parent function, the won't submit data normally. The functions below iterate over those values and format them.
+
+
+		// Advanced Logic
+		var svxlinkAdvLogic = {};
+		$('#'+formID+' .advLocal_wrap select').each(function (index) {
+			var currOptKey = $(this).val();
+			var currOptValue = $(this).parent('div').find('.advOptionValue').val();
+			if (currOptKey && currOptValue) {
+				svxlinkAdvLogic[currOptKey] = currOptValue;		
+			}
+		});
+		if ($.isEmptyObject(svxlinkAdvLogic) === false) {
+			portFieldsObj.SVXLINK_ADVANCED_LOGIC = svxlinkAdvLogic;
+		}
+		
+		// Advanced RX
+		var svxlinkAdvRX = {};
+		$('#'+formID+' .advRX_wrap select').each(function (index) {
+			var currOptKey = $(this).val();
+			var currOptValue = $(this).parent('div').find('.advOptionValue').val();
+			if (currOptKey && currOptValue) {
+				svxlinkAdvRX[currOptKey] = currOptValue;		
+			}
+		});
+		if ($.isEmptyObject(svxlinkAdvRX) === false) {
+			portFieldsObj.SVXLINK_ADVANCED_RX = svxlinkAdvRX;
+		}
+		
+		// Advanced TX
+		var svxlinkAdvTX = {};
+		$('#'+formID+' .advTX_wrap select').each(function (index) {
+			var currOptKey = $(this).val();
+			var currOptValue = $(this).parent('div').find('.advOptionValue').val();
+			if (currOptKey && currOptValue) {
+				svxlinkAdvTX[currOptKey] = currOptValue;		
+			}
+		});
+		if ($.isEmptyObject(svxlinkAdvTX) === false) {
+			portFieldsObj.SVXLINK_ADVANCED_TX = svxlinkAdvTX;
+		}
+
+
 
 		// Update linkGroup values to be an integer sub array for storage
 		if (portFieldsObj.linkGroup != '') {

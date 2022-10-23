@@ -723,7 +723,7 @@ $SVXLink = new SVXLink(null, null, null);
                     <div class="clearfix"></div>
                   </div>
 
-				  <div class="input_fields_wrap" id="port%%currPortNum%%local" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="local">
+				  <div class="input_fields_wrap advLocal_wrap" id="port%%currPortNum%%local" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="local">
 						<div class="innerWrap"></div>
 						<button class="btn btn-success btn-xs add_field_button"><i class="fa fa-plus-circle"></i> <?=_('Add Field')?></button>
 				  </div>
@@ -736,7 +736,7 @@ $SVXLink = new SVXLink(null, null, null);
                     <div class="clearfix"></div>
                   </div>
 
-					<div class="input_fields_wrap" id="port%%currPortNum%%rx" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="rx">
+					<div class="input_fields_wrap advRX_wrap" id="port%%currPortNum%%rx" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="rx">
 						<div class="innerWrap"></div>
 						<button class="btn btn-success btn-xs add_field_button"><i class="fa fa-plus-circle"></i> <?=_('Add Field')?></button>
 					</div>
@@ -752,7 +752,7 @@ $SVXLink = new SVXLink(null, null, null);
                     <div class="clearfix"></div>
                   </div>
 
-					<div class="input_fields_wrap" id="port%%currPortNum%%tx" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="tx">
+					<div class="input_fields_wrap advTX_wrap" id="port%%currPortNum%%tx" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="tx">
 						<div class="innerWrap"></div>
 						<button class="btn btn-success btn-xs add_field_button"><i class="fa fa-plus-circle"></i> <?=_('Add Field')?></button>
 					</div>
@@ -780,8 +780,8 @@ $SVXLink = new SVXLink(null, null, null);
 
 <script id="advFieldsTemplate" type = "text/template">
 	<div>
-		<select id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_name" name="%%ARRAY_NAME%%[][%%ROW%%][name]" class="form-control advOptionKey">%%OPTIONS%%</select>
-		<input class="form-control advOptionValue" type="text" id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_value" name="%%ARRAY_NAME%%[][%%ROW%%][value]" placeholder="<?=_('Value')?>">
+		<select id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_name" class="form-control advOptionKey">%%OPTIONS%%</select>
+		<input class="form-control advOptionValue" type="text" id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_value" placeholder="<?=_('Value')?>">
 		<button class="form-control remove_field">
 			<i class="fa fa-minus-circle" data-toggle="tooltip" data-placement="top" title="Delete Row"></i>
 		</button>
