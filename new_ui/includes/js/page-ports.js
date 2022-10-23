@@ -254,16 +254,50 @@ $(function() {
 
 			$('#orp_modal').modal('hide');
 
+			// Get next port ID
+			var usedPortNums = [];
+			var portCount = 0;
+			$('#portList .portSection').each(function (index) {
+				usedPortNums.push($(this).attr('data-port-number'));
+				portCount++;
+			});
+
+			for(i = 1; i<100; i++) {
+				if( $.inArray( i.toString(), usedPortNums ) == -1 ) {
+					var newPortNum = i.toString(); break;
+				}
+			}
+
+			console.log(newPortNum);
+			console.log(portCount);
+
+
 			switch(addPortType) {
 				case 'local':
-					templatePortObj = JSON.parse('{"portNum":10,"portLabel":"New Port","rxAudioDev":"alsa:plughw:0|1","txAudioDev":"alsa:plughw:1|1","portType":"GPIO","portEnabled":1,"rxMode":"cos","rxGPIO":"26","txGPIO":"498","rxGPIO_active":"low","txGPIO_active":"high","linkGroup":"1"}');
+					templatePortObj = JSON.parse('{"portNum":'+newPortNum+',"portLabel":"New Port","rxAudioDev":"","txAudioDev":"","portType":"GPIO","portDuplex":"half","portEnabled":1,"rxMode":"cos","rxGPIO":"","txGPIO":"","rxGPIO_active":"low","txGPIO_active":"high","linkGroup":[1]}');
 					displayPort(templatePortObj);
+
+					// Copy audio options from first port if they exist to save stopping svxlink, otherwise reload.
+					if ($('#rxAudioDev1')[0] && $('#txAudioDev1')[0]){
+						$('#rxAudioDev'+newPortNum).append( $("#rxAudioDev1 > option").clone() ); // Copy RX Options
+						$('#txAudioDev'+newPortNum).append( $("#txAudioDev1 > option").clone() ); // Copy TX Options
+					} else {
+// 						audioScanWarning(); // Reinvoke sound device scan. Needs Work. 
+					}
+					
 					break;
+
 				case 'voip':
-					templatePortObj = JSON.parse('{"portNum":20,"portLabel":"New VOIP Port","rxAudioDev":"alsa:plughw:0|1","txAudioDev":"alsa:plughw:1|1","portType":"VOIP","portEnabled":1,"rxMode":"cos","rxGPIO":"26","txGPIO":"498","rxGPIO_active":"low","txGPIO_active":"high","linkGroup":"1"}');
+					templatePortObj = JSON.parse('{"portNum":20,"portLabel":"New VOIP Port","rxAudioDev":"alsa:plughw:0|1","txAudioDev":"alsa:plughw:1|1","portType":"VOIP","portEnabled":1,"rxMode":"cos","rxGPIO":"26","txGPIO":"498","rxGPIO_active":"low","txGPIO_active":"high","linkGroup":[1]}');
 					displayPort(templatePortObj);
 					break;
 			}
+
+			// Collapse all ports, expand new port and scroll too it. 
+			$('.panel-collapse.collapse').removeClass('in').attr('aria-expanded','false');
+			$('#accordionCollapse'+newPortNum).addClass('in').attr('aria-expanded','true');
+			$('html, body').animate({ scrollTop: $('#portNum'+newPortNum).offset().top }, 1500);
+
 		});
 
 	});
@@ -736,7 +770,7 @@ $(function() {
 	**********************************************************************
 	*/
 
-	$('.portForm').change(function() {
+	$('#portList').on('change', '.portForm' ,function() {
 		var formID = $(this).attr('id');
 		var portNum = $(this).attr('data-port-form');;
 

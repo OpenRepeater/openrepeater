@@ -800,7 +800,8 @@ $SVXLink = new SVXLink(null, null, null);
 	var txOptions = <?=$SVXLink->get_adv_svxlink_options('tx')?>;
 
 	var modal_AddPortTitle = '<?=_('Add Port')?>';
-	var modal_AddPortBody = '<p><?=_('What type of port do you wish to add?')?></p><select id="addPortType" name="addPortType" class="form-control"><option value="local" selected><?=_('Local Analog Port')?></option><option value="voip"><?=_('Test VOIP')?></option></select>';
+	var modal_AddPortBody = '<p><?=_('What type of port do you wish to add?')?></p><select id="addPortType" name="addPortType" class="form-control"><option value="local" selected><?=_('Local Analog Port')?></option></select>';
+// 	<option value="voip"><?=_('Test VOIP')?></option>
 
 	var modal_DeletePortTitle = '<?= _('Delete Port') ?>';
 	var modal_DeletePortBody = '<?= _('Are you sure you want to delete this port?') ?>';
