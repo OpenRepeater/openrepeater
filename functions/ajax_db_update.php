@@ -41,6 +41,14 @@ if ( isset($_POST['updatePort']) ) {
 	exit;
 }
 
+if ( isset($_POST['deletePort']) ) {
+	$classDB = new Database();
+	$updateArray = json_decode($_POST['deletePort'], true);
+	$result = $classDB->delete_ports($updateArray);
+	if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
+	exit;
+}
+
 if ( isset($_POST['linkGroups']) ) {
 	$classDB = new Database();
 	$linkGroupsArray = json_decode($_POST['linkGroups']);

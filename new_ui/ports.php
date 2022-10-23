@@ -809,6 +809,8 @@ $SVXLink = new SVXLink(null, null, null);
 	var modal_DeletePortProgressTitle = '<?= _('Deleting Port') ?>';
 	var modal_DeletePortNotifyTitle = '<?= _('Port Deleted') ?>';
 	var modal_DeletePortNotifyDesc = '<?= _('The port has been successfully deleted.') ?>';
+	var modal_DeletePortErrorTitle = '<?= _('Error Deleting') ?>';
+	var modal_DeletePortErrorDesc = '<?= _('There was an error deleting the requested port. Please try again later.') ?>';
 
 	var modal_AudioScanWarningTitle = '<?= strtoupper( _('Warning') ) ?>';
 	var modal_AudioScanWarningBody = '<?= _('By proceeding, SVXLink will need to be briefly stopped in order to query the system for available sound devices. This will interrupt any active communications. Please ensure that there is no activity before proceeding.') ?>';

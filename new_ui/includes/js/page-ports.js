@@ -349,15 +349,24 @@ $(function() {
 
 			orpModalWaitBar(modal_DeletePortProgressTitle);
 
-			setTimeout(function() {
-				$('#orp_modal').modal('hide');
-
-				$('#portNum' + portNum).slideUp(500);
-
-				//Display Message
-				orpNotify('success', modal_DeletePortNotifyTitle, modal_DeletePortNotifyDesc);
-
-			}, 2000);
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_db_update.php',
+				data: deleteString,
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					if (response.login == 'timeout') {
+						orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+					} else if (response.status == 'success') {
+						$('#portNum' + portNum).slideUp(500);
+						orpNotify('success', modal_DeletePortNotifyTitle, modal_DeletePortNotifyDesc);
+						rebuildActive();
+					} else {
+						orpNotify('error', modal_DeletePortErrorTitle, modal_DeletePortErrorDesc);
+					}
+					$('#orp_modal').modal('hide');
+				}
+			});
 		});
 	});
 
