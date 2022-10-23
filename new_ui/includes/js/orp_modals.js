@@ -92,6 +92,7 @@ function orpModalWaitBar(newTitle) {
 function orpModalReset() {
 	$('#orp_modal  .modal-header .close').show();
 	$('#orp_modal_cancel').prop('disabled', false);
+	$('#orp_modal_cancel').off('click');
 	$('#orp_modal_cancel').attr('data-dismiss','modal');
 	$('#orp_modal_ok').prop('disabled', false);
 	$('#orp_modal').modal({backdrop: 'static', keyboard: false}) 
