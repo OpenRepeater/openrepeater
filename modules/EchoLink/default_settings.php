@@ -24,6 +24,6 @@ $default_settings = [
 	'proxy_server' => '',
 	'proxy_port' => '8100',
 	'proxy_password' => '',
-	'DEFAULT_LANG' => 'eng_US'
+	'default_lang' => 'eng_US'
 ];
 ?>
