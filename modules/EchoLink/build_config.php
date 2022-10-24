@@ -18,6 +18,7 @@ $module_config_array['Module'.$cur_mod['svxlinkName']] = [
 	'TIMEOUT' => $options->timeout,
 	'SERVERS' => $options->server,
 	'CALLSIGN' => trim( strtoupper($options->callSign) ),
+	'DEFAULT_LANG' => $options->default_lang,
 	'PASSWORD' => $options->password,
 	'SYSOPNAME' => trim($options->sysop),
 	'LOCATION' => '[ORP] '.trim($options->location),

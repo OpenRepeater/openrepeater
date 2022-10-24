@@ -82,6 +82,7 @@
 	  <input type="hidden" name="max_qsos" value="<?= $moduleSettings->max_qsos ?>">
 	  <input type="hidden" name="connections" value="<?= $moduleSettings->connections ?>">  
 	  <input type="hidden" name="idle_timeout" value="<?= $moduleSettings->idle_timeout ?>">
+	  <input type="hidden" name="default_lang" value="<?= $moduleSettings->default_lang ?>">
 
   </fieldset>
 
