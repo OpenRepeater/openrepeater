@@ -23,6 +23,7 @@ $default_settings = [
 	'idle_timeout' => '300',
 	'proxy_server' => '',
 	'proxy_port' => '8100',
-	'proxy_password' => ''
+	'proxy_password' => '',
+	'DEFAULT_LANG' => 'eng_US'
 ];
 ?>
