@@ -78,10 +78,11 @@
 		</div>
 	  </div>
 	  
-	  <input type="hidden" name="server" value="servers.echolink.org">
-	  <input type="hidden" name="max_qsos" value="4">
-	  <input type="hidden" name="connections" value="5">
-	  <input type="hidden" name="idle_timeout" value="300">
+	  <input type="hidden" name="server" value="<?= $moduleSettings->server ?>">
+	  <input type="hidden" name="max_qsos" value="<?= $moduleSettings->max_qsos ?>">
+	  <input type="hidden" name="connections" value="<?= $moduleSettings->connections ?>">  
+	  <input type="hidden" name="idle_timeout" value="<?= $moduleSettings->idle_timeout ?>">
+	  <input type="hidden" name="default_lang" value="<?= $moduleSettings->default_lang ?>">
 
   </fieldset>
 

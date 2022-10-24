@@ -19,10 +19,11 @@ $default_settings = [
 	'description' => '',
 	'server' => 'servers.echolink.org',
 	'max_qsos' => '4',
-	'connections' => '4',
+	'connections' => '5', // This should always be +1 greater than max_qsos
 	'idle_timeout' => '300',
 	'proxy_server' => '',
 	'proxy_port' => '8100',
-	'proxy_password' => ''
+	'proxy_password' => '',
+	'default_lang' => 'eng_US'
 ];
 ?>
