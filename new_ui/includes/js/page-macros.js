@@ -140,12 +140,7 @@ console.log(selectedMacros);
 				$('#macroRow' + macroNum).remove();
 
 				//Display Message
-				new PNotify({
-					title: modal_DeleteMacroNotifyTitle,
-					text: modal_DeleteMacroNotifyDesc,
-					type: 'success',
-					styling: 'bootstrap3'
-				});
+				orpNotify('success', modal_DeleteMacroNotifyTitle, modal_DeleteMacroNotifyDesc);
 
 				// If no rows remain, then hide table and show message
 				if ( $('.macroRow').length == 0 ) {

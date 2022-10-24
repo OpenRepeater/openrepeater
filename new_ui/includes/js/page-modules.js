@@ -157,13 +157,9 @@ $(function() {
 
 				$( '#Row' + moduleID ).fadeOut('1000');
 
-				$('#orp_restart_btn').show();
-				new PNotify({
-					title: modDelSuccessTitle,
-					text: modDelSuccessBody,
-					type: 'success',
-					styling: 'bootstrap3'
-				});
+				rebuildActive();
+				
+				orpNotify('success', modDelSuccessTitle, modDelSuccessBody);
 
 			}, 2000);
 		});

@@ -80,12 +80,7 @@ $(function() {
 	    $tempField.remove();
 
 		//Display Message
-		new PNotify({
-			title: copyMsgTitle,
-			text: copyMsgText,
-			type: 'success',
-			styling: 'bootstrap3'
-		});
+		orpNotify('success', copyMsgTitle, copyMsgText);
 	}
 
 

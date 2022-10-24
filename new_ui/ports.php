@@ -15,11 +15,6 @@ $customCSS = 'page-ports.css'; // 'file1.css, file2.css, ... '
 include('includes/header.php');
 $ports = $Database->get_ports();
 $SVXLink = new SVXLink(null, null, null);
-
-$SoundDevices = new SoundDevices();
-$device_list = $SoundDevices->get_device_list();
-$device_in_count = $SoundDevices->get_device_in_count();
-$device_out_count = $SoundDevices->get_device_out_count();
 ?>
 
         <!-- page content -->
@@ -94,7 +89,10 @@ $device_out_count = $SoundDevices->get_device_out_count();
 
 
                 <div class="x_panel">
-                  <div class="x_title"><h4><i class="fa fa-link"></i> <?=_('Link Group Settings')?></h4></div>
+                  <div class="x_title">
+			        <div class="sectionStatus linkGroupStatus"><i class="fa"></i></div>
+                    <h4><i class="fa fa-link"></i> <?=_('Link Group Settings')?></h4>
+                  </div>
 
 				  <form id="linkGroupForm" class="linkGroupForm">
 
@@ -252,7 +250,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
 
 
 <? ### ROW TEMPLATE ######################################################## ?>
-<script id="rowTemplate" type = "text/template">
+<script id="rowTemplateAnalog" type = "text/template">
   <div id="portNum%%currPortNum%%" class="panel portSection">
     <a class="panel-heading collapsed" role="tab" id="accordionHeading%%currPortNum%%" data-toggle="collapse" data-parent="#accordion" href="#accordionCollapse%%currPortNum%%" aria-expanded="false" aria-controls="accordionCollapse%%currPortNum%%">
 	  <div class="col-md-6 col-sm-6 col-xs-6">
@@ -270,6 +268,9 @@ $device_out_count = $SoundDevices->get_device_out_count();
 		  <span class="portLabelLinkGrp 4 badge bg-orange" data-toggle="tooltip" data-placement="top" title="<?=_('Belongs to Link Group')?> 4" style="display: none;"><i class="fa fa-link"></i> <span>4</span></span>
 
         </span> 
+
+        <div class="sectionStatus portStatus"><i class="fa"></i></div>
+
 	  </div>
 	  <div class="clearfix"></div>
     </a>
@@ -413,6 +414,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('This allows the port to be disabled, but retain the current settings.')?>"></i>
                     </label>
                     <div class="col-md-8 col-sm-8 col-xs-12">
+					  <input type="hidden" name="portEnabled" value="0">
 					  <input type="checkbox" id="portEnabled%%currPortNum%%" name="portEnabled" class="js-switch portEnabled" value="1"> 
 					  <a href="#" id="deletePort%%currPortNum%%" class="deletePort"><i class="fa fa-trash-o"></i> Delete</a>
                     </div>
@@ -436,18 +438,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Audio coming out of the receiver into the controller.')?>"></i>
                 	</label>
                     <div class="col-md-7 col-sm-7 col-xs-12">
-					  <?php $rxAudioDev = (isset($currPortSettings['rxAudioDev'])) ? $currPortSettings['rxAudioDev'] : ''; ?>
-					  <select id="rxAudioDev%%currPortNum%%" name="rxAudioDev" class="form-control rxAudioDev">
-						<option value="">---</option>
-						<?php
-						for ($device = 0; $device <  count($device_list); $device++) {
-						   if ($device_list[$device]['direction'] == "IN") {
-								$rxValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-								echo '<option value="'.$rxValue.'">'._('INPUT').' '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
-							}
-						}
-						?>
-                      </select>
+					  <select id="rxAudioDev%%currPortNum%%" name="rxAudioDev" class="form-control rxAudioDev"></select>
                     </div>
                   </div>
 
@@ -462,18 +453,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Audio coming out of the controller going into the transmitter.')?>"></i>
                     </label>
                     <div class="col-md-7 col-sm-7 col-xs-12">
-					  <?php $txAudioDev = (isset($currPortSettings['txAudioDev'])) ? $currPortSettings['txAudioDev'] : ''; ?>
-					  <select id="txAudioDev%%currPortNum%%" name="txAudioDev" class="form-control txAudioDev">
-						<option value="">---</option>
-						<?php
-						for ($device = 0; $device <  count($device_list); $device++) {
-						   if ($device_list[$device]['direction'] == "OUT") {
-								$txValue = 'alsa:plughw:'.$device_list[$device]['card'].'|'.$device_list[$device]['channel'];
-								echo '<option value="'.$txValue.'">'._('OUTPUT').' '.$device_list[$device]['card'].': '.$device_list[$device]['label'].' ('.$device_list[$device]['channel_label'].')</option>';
-							}
-						}
-						?>
-                      </select>
+					  <select id="txAudioDev%%currPortNum%%" name="txAudioDev" class="form-control txAudioDev"></select>
                     </div>
                   </div>
 
@@ -743,7 +723,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     <div class="clearfix"></div>
                   </div>
 
-				  <div class="input_fields_wrap" id="port%%currPortNum%%local" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="local">
+				  <div class="input_fields_wrap advLocal_wrap" id="port%%currPortNum%%local" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="local">
 						<div class="innerWrap"></div>
 						<button class="btn btn-success btn-xs add_field_button"><i class="fa fa-plus-circle"></i> <?=_('Add Field')?></button>
 				  </div>
@@ -756,7 +736,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     <div class="clearfix"></div>
                   </div>
 
-					<div class="input_fields_wrap" id="port%%currPortNum%%rx" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="rx">
+					<div class="input_fields_wrap advRX_wrap" id="port%%currPortNum%%rx" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="rx">
 						<div class="innerWrap"></div>
 						<button class="btn btn-success btn-xs add_field_button"><i class="fa fa-plus-circle"></i> <?=_('Add Field')?></button>
 					</div>
@@ -772,7 +752,7 @@ $device_out_count = $SoundDevices->get_device_out_count();
                     <div class="clearfix"></div>
                   </div>
 
-					<div class="input_fields_wrap" id="port%%currPortNum%%tx" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="tx">
+					<div class="input_fields_wrap advTX_wrap" id="port%%currPortNum%%tx" data-port-num="%%currPortNum%%" data-real-count="0" data-ceiling-count="0" data-section-type="tx">
 						<div class="innerWrap"></div>
 						<button class="btn btn-success btn-xs add_field_button"><i class="fa fa-plus-circle"></i> <?=_('Add Field')?></button>
 					</div>
@@ -800,8 +780,8 @@ $device_out_count = $SoundDevices->get_device_out_count();
 
 <script id="advFieldsTemplate" type = "text/template">
 	<div>
-		<select id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_name" name="%%ARRAY_NAME%%[][%%ROW%%][name]" class="form-control advOptionKey">%%OPTIONS%%</select>
-		<input class="form-control advOptionValue" type="text" id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_value" name="%%ARRAY_NAME%%[][%%ROW%%][value]" placeholder="<?=_('Value')?>">
+		<select id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_name" class="form-control advOptionKey">%%OPTIONS%%</select>
+		<input class="form-control advOptionValue" type="text" id="adv_%%TYPE%%_%%PORT%%_%%ROW%%_value" placeholder="<?=_('Value')?>">
 		<button class="form-control remove_field">
 			<i class="fa fa-minus-circle" data-toggle="tooltip" data-placement="top" title="Delete Row"></i>
 		</button>
@@ -820,7 +800,8 @@ $device_out_count = $SoundDevices->get_device_out_count();
 	var txOptions = <?=$SVXLink->get_adv_svxlink_options('tx')?>;
 
 	var modal_AddPortTitle = '<?=_('Add Port')?>';
-	var modal_AddPortBody = '<p><?=_('What type of port do you wish to add?')?></p><select id="addPortType" name="addPortType" class="form-control"><option value="local" selected><?=_('Local Analog Port')?></option><option value="voip"><?=_('Test VOIP')?></option></select>';
+	var modal_AddPortBody = '<p><?=_('What type of port do you wish to add?')?></p><select id="addPortType" name="addPortType" class="form-control"><option value="local" selected><?=_('Local Analog Port')?></option></select>';
+// 	<option value="voip"><?=_('Test VOIP')?></option>
 
 	var modal_DeletePortTitle = '<?= _('Delete Port') ?>';
 	var modal_DeletePortBody = '<?= _('Are you sure you want to delete this port?') ?>';
@@ -828,8 +809,14 @@ $device_out_count = $SoundDevices->get_device_out_count();
 	var modal_DeletePortProgressTitle = '<?= _('Deleting Port') ?>';
 	var modal_DeletePortNotifyTitle = '<?= _('Port Deleted') ?>';
 	var modal_DeletePortNotifyDesc = '<?= _('The port has been successfully deleted.') ?>';
-</script>
+	var modal_DeletePortErrorTitle = '<?= _('Error Deleting') ?>';
+	var modal_DeletePortErrorDesc = '<?= _('There was an error deleting the requested port. Please try again later.') ?>';
 
+	var modal_AudioScanWarningTitle = '<?= strtoupper( _('Warning') ) ?>';
+	var modal_AudioScanWarningBody = '<?= _('By proceeding, SVXLink will need to be briefly stopped in order to query the system for available sound devices. This will interrupt any active communications. Please ensure that there is no activity before proceeding.') ?>';
+	var modal_AudioScanWarningBtnOK = '<?= _('Proceed') ?>';
+	var modal_AudioScanWarningBtnCancel = '<?= _('Get Me Out of Here!') ?>';
+</script>
 
 <?php include('includes/footer.php'); ?>
 

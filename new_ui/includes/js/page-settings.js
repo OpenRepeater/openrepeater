@@ -52,20 +52,7 @@ $(document).ready(function() {
 				$('#locLatitude').val('41.714762');
 				$('#locLongitude').val('-72.727193');
 
-				new PNotify({
-					title: modal_gpsSuccessMsgTitle,
-					text: 1 + modal_gpsSuccessMsg,
-					type: 'success',
-					styling: 'bootstrap3'
-				});
-				/*
-				new PNotify({
-					title: modal_gpsFailMsgTitle,
-					text: modal_gpsFailMsg,
-					type: 'error',
-					styling: 'bootstrap3'
-				});
-				*/
+				orpNotify('success', modal_gpsSuccessMsgTitle, modal_gpsSuccessMsg);
 
 			}, 2000);
 		});
@@ -102,7 +89,8 @@ $(document).ready(function() {
 			success: function(jsonResponse){
 				var response = JSON.parse(jsonResponse);
 				if (response.login == 'timeout') {
-					console.log('Login Timed Out');
+					sectionStatus(formID, 'x_panel', 'error');
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
 				} else if (response.status == 'success') {
 					sectionStatus(formID, 'x_panel', 'saved');
 					rebuildActive();
@@ -135,7 +123,8 @@ $(document).ready(function() {
 			success: function(jsonResponse){
 				var response = JSON.parse(jsonResponse);
 				if (response.login == 'timeout') {
-					console.log('Login Timed Out');
+					sectionStatus(formID, 'x_panel', 'error');
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
 				} else if (response.status == 'success') {
 					sectionStatus(formID, 'x_panel', 'saved');
 					rebuildActive();

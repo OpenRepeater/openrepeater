@@ -18,16 +18,46 @@ $(function() {
 
 	// Loop through JSON array of ports and build display
 	fullPortObj = JSON.parse(portList);
-console.log(portList);
-console.log(fullPortObj);
+	console.log(portList);
+	console.log(fullPortObj);
 	$.each(fullPortObj, function(index, curPort) {
 		displayPort(curPort);
 	});
 
+	audioScanWarning();
+
+	// Warning Modal for Audio Port Scan
+	// Wrapped as function to allow for future reloading of audio with expansion of function
+	function audioScanWarning() {
+		var modalDetails = {
+			modalSize: 'large',
+			title: '<i class="fa fa-warning"></i> ' + modal_AudioScanWarningTitle,
+			body: '<h4>' + modal_AudioScanWarningBody + '</h4>',
+			btnOK: modal_AudioScanWarningBtnOK,
+			btnCancel: modal_AudioScanWarningBtnCancel,
+		};
+
+		orpModalDisplay(modalDetails);
+
+		$('#orp_modal_close_x').hide();
+
+		$('#orp_modal_ok').off('click'); // Remove other click events
+		$('#orp_modal_ok').click(function() {
+			getSoundDevices();
+			$('#orp_modal').modal('hide');
+		});
+
+		$('#orp_modal_cancel').removeAttr('data-dismiss'); // Prevent Normal Dismiss on Cancel
+		$('#orp_modal_cancel').click(function() {
+			window.open('dashboard.php','_self'); // Redirect to somewhere safe.
+		});
+
+	}
+
 
 	// Dynamically Build Port
 	function displayPort(port) {
-		var $template = $('#rowTemplate').html();
+		var $template = $('#rowTemplateAnalog').html();
 		$template = $template.replace(/%%currPortNum%%/g, port.portNum)
 			.replace(/%%currPortLabel%%/g, port.portLabel);
 
@@ -107,8 +137,8 @@ console.log(fullPortObj);
 
 		/* AUDIO TAB SETTINGS */
 
-		$('#rxAudioDev' + port.portNum).val(port.rxAudioDev);
-		$('#txAudioDev' + port.portNum).val(port.txAudioDev);
+		$('#rxAudioDev' + port.portNum).attr('data-default-selected',port.rxAudioDev);
+		$('#txAudioDev' + port.portNum).attr('data-default-selected',port.txAudioDev);
 
 
 		/* GPIO TAB SETTINGS */
@@ -224,16 +254,50 @@ console.log(fullPortObj);
 
 			$('#orp_modal').modal('hide');
 
+			// Get next port ID
+			var usedPortNums = [];
+			var portCount = 0;
+			$('#portList .portSection').each(function (index) {
+				usedPortNums.push($(this).attr('data-port-number'));
+				portCount++;
+			});
+
+			for(i = 1; i<100; i++) {
+				if( $.inArray( i.toString(), usedPortNums ) == -1 ) {
+					var newPortNum = i.toString(); break;
+				}
+			}
+
+			console.log(newPortNum);
+			console.log(portCount);
+
+
 			switch(addPortType) {
 				case 'local':
-					templatePortObj = JSON.parse('{"portNum":10,"portLabel":"New Port","rxAudioDev":"alsa:plughw:0|1","txAudioDev":"alsa:plughw:1|1","portType":"GPIO","portEnabled":1,"rxMode":"cos","rxGPIO":"26","txGPIO":"498","rxGPIO_active":"low","txGPIO_active":"high","linkGroup":"1"}');
+					templatePortObj = JSON.parse('{"portNum":'+newPortNum+',"portLabel":"New Port","rxAudioDev":"","txAudioDev":"","portType":"GPIO","portDuplex":"half","portEnabled":1,"rxMode":"cos","rxGPIO":"","txGPIO":"","rxGPIO_active":"low","txGPIO_active":"high","linkGroup":[1]}');
 					displayPort(templatePortObj);
+
+					// Copy audio options from first port if they exist to save stopping svxlink, otherwise reload.
+					if ($('#rxAudioDev1')[0] && $('#txAudioDev1')[0]){
+						$('#rxAudioDev'+newPortNum).append( $("#rxAudioDev1 > option").clone() ); // Copy RX Options
+						$('#txAudioDev'+newPortNum).append( $("#txAudioDev1 > option").clone() ); // Copy TX Options
+					} else {
+// 						audioScanWarning(); // Reinvoke sound device scan. Needs Work. 
+					}
+					
 					break;
+
 				case 'voip':
-					templatePortObj = JSON.parse('{"portNum":20,"portLabel":"New VOIP Port","rxAudioDev":"alsa:plughw:0|1","txAudioDev":"alsa:plughw:1|1","portType":"VOIP","portEnabled":1,"rxMode":"cos","rxGPIO":"26","txGPIO":"498","rxGPIO_active":"low","txGPIO_active":"high","linkGroup":"1"}');
+					templatePortObj = JSON.parse('{"portNum":20,"portLabel":"New VOIP Port","rxAudioDev":"alsa:plughw:0|1","txAudioDev":"alsa:plughw:1|1","portType":"VOIP","portEnabled":1,"rxMode":"cos","rxGPIO":"26","txGPIO":"498","rxGPIO_active":"low","txGPIO_active":"high","linkGroup":[1]}');
 					displayPort(templatePortObj);
 					break;
 			}
+
+			// Collapse all ports, expand new port and scroll too it. 
+			$('.panel-collapse.collapse').removeClass('in').attr('aria-expanded','false');
+			$('#accordionCollapse'+newPortNum).addClass('in').attr('aria-expanded','true');
+			$('html, body').animate({ scrollTop: $('#portNum'+newPortNum).offset().top }, 1500);
+
 		});
 
 	});
@@ -285,19 +349,24 @@ console.log(fullPortObj);
 
 			orpModalWaitBar(modal_DeletePortProgressTitle);
 
-			setTimeout(function() {
-				$('#orp_modal').modal('hide');
-
-				$('#portNum' + portNum).slideUp(500);
-
-				//Display Message
-				new PNotify({
-					title: modal_DeletePortNotifyTitle,
-					text: modal_DeletePortNotifyDesc,
-					type: 'success',
-					styling: 'bootstrap3'
-				});
-			}, 2000);
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_db_update.php',
+				data: deleteString,
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					if (response.login == 'timeout') {
+						orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+					} else if (response.status == 'success') {
+						$('#portNum' + portNum).slideUp(500);
+						orpNotify('success', modal_DeletePortNotifyTitle, modal_DeletePortNotifyDesc);
+						rebuildActive();
+					} else {
+						orpNotify('error', modal_DeletePortErrorTitle, modal_DeletePortErrorDesc);
+					}
+					$('#orp_modal').modal('hide');
+				}
+			});
 		});
 	});
 
@@ -396,7 +465,6 @@ console.log(fullPortObj);
 		var realCount = $('#'+wrapper).attr('data-real-count');
 		var sectionType = $('#'+wrapper).attr('data-section-type');
 		if(realCount < max_fields) {
-			$('#'+wrapper+'DELETE').remove(); // Remove delete field if it exists
 			buildAdvFields(curPort, sectionType, null, null);
 		}
 	});
@@ -422,11 +490,10 @@ console.log(fullPortObj);
 				case 'tx':
 					var deleteFieldName = 'SVXLINK_ADVANCED_TX['+curPort+'][delete]'; break;
 					break;
-			} 
-
-			var deleteField = '<input type="hidden" id="'+wrapper+'DELETE" name="'+deleteFieldName+'" value="DELETE">';
-			$('#'+wrapper).append(deleteField); //add row
+			}
 		}
+		
+		$("#port"+curPort+"form").trigger("change"); // Trigger port form to resubmit
 	})
 
 
@@ -526,6 +593,9 @@ console.log(fullPortObj);
 	// Pass Link Group Settings to Database
 	$('.linkGroupForm').change(function() {
 
+		// Set Processing Status
+		sectionStatus('linkGroupForm', 'x_panel', 'processing');
+
 		// Primitive approach but it works. 
 		if ( $('#LG1_defaultActive').prop('checked') == true ) { var lg1_active = 1; } else { var lg1_active = 0; }
 		if ( $('#LG1_timeout').val() != '' ) { var lg1_timeout = $('#LG1_timeout').val(); } else { var lg1_timeout = 0; }
@@ -539,12 +609,27 @@ console.log(fullPortObj);
 		if ( $('#LG4_defaultActive').prop('checked') == true ) { var lg4_active = 1; } else { var lg4_active = 0; }
 		if ( $('#LG4_timeout').val() != '' ) { var lg4_timeout = $('#LG4_timeout').val(); } else { var lg4_timeout = 0; }
 		
-		var returnString = '{"1":{"defaultActive":"'+lg1_active+'","timeout":"'+lg1_timeout+'"},"2":{"defaultActive":"'+lg2_active+'","timeout":"'+lg2_timeout+'"},"3":{"defaultActive":"'+lg3_active+'","timeout":"'+lg3_timeout+'"},"4":{"defaultActive":"'+lg4_active+'","timeout":"'+lg4_timeout+'"}}';
+		var linkGroupString = '{"1":{"defaultActive":"'+lg1_active+'","timeout":"'+lg1_timeout+'"},"2":{"defaultActive":"'+lg2_active+'","timeout":"'+lg2_timeout+'"},"3":{"defaultActive":"'+lg3_active+'","timeout":"'+lg3_timeout+'"},"4":{"defaultActive":"'+lg4_active+'","timeout":"'+lg4_timeout+'"}}';
 				
-		console.log(returnString);
-		// Replace with AJAX Call
-		
-		$('#orp_restart_btn').show();
+		// Write to DB in backgruond
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: {'linkGroups': linkGroupString},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					sectionStatus(formID, 'portSection', 'error');
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+				} else if (response.status == 'success') {
+					sectionStatus('linkGroupForm', 'x_panel', 'saved');
+					rebuildActive();
+				} else {
+					sectionStatus('linkGroupForm', 'x_panel', 'error');
+				}
+			}
+		});
+
 
 	});
 
@@ -589,7 +674,7 @@ console.log(fullPortObj);
 		}
 		$('#linkGroup_Port'+portNum).val(linkGroupArray);
 
-        console.log(linkGroupArray);
+//         console.log(linkGroupArray);
 	}
 
 
@@ -637,6 +722,55 @@ console.log(fullPortObj);
 
 	}
 
+	/*
+	**********************************************************************
+	 GET LIST OF SOUND DEVICES FROM SYSTEM
+	**********************************************************************
+	*/
+
+	function getSoundDevices() {
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_ports.php',
+			data: {'getSoundDevices':''},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					console.log('Login Timed Out');
+				} else if (response.status == 'error') {
+					console.log('Error!!!');
+				} else { // Success: Results Returned
+					// Clear previous options and set defaults
+					$('.rxAudioDev').empty();
+					$('.rxAudioDev').append($('<option></option>').text('---'));
+					$('.txAudioDev').empty();
+					$('.txAudioDev').append($('<option></option>').text('---'));
+
+					// Populate with available device options
+					$.each(response, function(index, curDev) {
+						var curDevValue = 'alsa:plughw:'+curDev.card+'|'+curDev.channel;
+						var curDevText = curDev.label+' ('+curDev.channel_label+')';
+						if(curDev.direction == 'IN') {
+							$('.rxAudioDev').append($('<option></option>').val(curDevValue).text(curDevText));
+						} else if(curDev.direction == 'OUT') {
+							$('.txAudioDev').append($('<option></option>').val(curDevValue).text(curDevText));
+						}
+					});
+
+					// Loop through dropdowns and select defaults save in database
+					$('.rxAudioDev').each(function(){
+						var currDefault = $(this).attr('data-default-selected');
+						$(this).val( $(this).attr('data-default-selected') );
+					});
+					$('.txAudioDev').each(function(){
+						var currDefault = $(this).attr('data-default-selected');
+						$(this).val( $(this).attr('data-default-selected') );
+					});
+
+				}
+			}
+		});
+	}
 
 
 	/*
@@ -645,9 +779,11 @@ console.log(fullPortObj);
 	**********************************************************************
 	*/
 
-	$('.portForm').change(function() {
+	$('#portList').on('change', '.portForm' ,function() {
 		var formID = $(this).attr('id');
 		var portNum = $(this).attr('data-port-form');;
+
+		sectionStatus(formID, 'portSection', 'processing');
 
 		updateLinkGroupField(portNum); // HACK: Refire this function since execution is not in order. Updates hidden linkGroup field.
 		
@@ -668,6 +804,84 @@ console.log(fullPortObj);
 			portFieldsObj.portEnabled = '0';
 		}
 
+		// Clean Up Unused fields based on Triggering Type
+		if (portFieldsObj.portType != 'GPIO') {
+			delete portFieldsObj.rxMode;
+			delete portFieldsObj.rxGPIO;
+			delete portFieldsObj.rxGPIO_active;
+			delete portFieldsObj.txGPIO;
+			delete portFieldsObj.txGPIO_active;
+		}
+		if (portFieldsObj.portType != 'HiDraw') {
+			delete portFieldsObj.hidrawDev;
+			delete portFieldsObj.hidrawRX_cos;
+			delete portFieldsObj.hidrawRX_cos_invert;
+			delete portFieldsObj.hidrawTX_ptt;
+			delete portFieldsObj.hidrawTX_ptt_invert;
+		}
+		if (portFieldsObj.portType != 'Serial') {
+			delete portFieldsObj.serialDev;
+			delete portFieldsObj.serialRX_cos;
+			delete portFieldsObj.serialRX_cos_invert;
+			delete portFieldsObj.serialTX_ptt;
+			delete portFieldsObj.serialTX_ptt_invert;
+		}
+
+		// Store Audio Settings Client Side in case of reload of devices
+		if (portFieldsObj.rxAudioDev) {
+			$('#rxAudioDev' + portFieldsObj.portNum).attr('data-default-selected',portFieldsObj.rxAudioDev);
+		}
+		if (portFieldsObj.txAudioDev) {
+			$('#txAudioDev' + portFieldsObj.portNum).attr('data-default-selected',portFieldsObj.txAudioDev);
+		}
+
+
+		// RETRIEVE AND REFORMAT SVXLINK OVERRIDES FOR DB INSERTION
+		// Note that name values for advanced fields are removed, so while they will trigger the change event on this
+		// parent function, the won't submit data normally. The functions below iterate over those values and format them.
+
+
+		// Advanced Logic
+		var svxlinkAdvLogic = {};
+		$('#'+formID+' .advLocal_wrap select').each(function (index) {
+			var currOptKey = $(this).val();
+			var currOptValue = $(this).parent('div').find('.advOptionValue').val();
+			if (currOptKey && currOptValue) {
+				svxlinkAdvLogic[currOptKey] = currOptValue;		
+			}
+		});
+		if ($.isEmptyObject(svxlinkAdvLogic) === false) {
+			portFieldsObj.SVXLINK_ADVANCED_LOGIC = svxlinkAdvLogic;
+		}
+		
+		// Advanced RX
+		var svxlinkAdvRX = {};
+		$('#'+formID+' .advRX_wrap select').each(function (index) {
+			var currOptKey = $(this).val();
+			var currOptValue = $(this).parent('div').find('.advOptionValue').val();
+			if (currOptKey && currOptValue) {
+				svxlinkAdvRX[currOptKey] = currOptValue;		
+			}
+		});
+		if ($.isEmptyObject(svxlinkAdvRX) === false) {
+			portFieldsObj.SVXLINK_ADVANCED_RX = svxlinkAdvRX;
+		}
+		
+		// Advanced TX
+		var svxlinkAdvTX = {};
+		$('#'+formID+' .advTX_wrap select').each(function (index) {
+			var currOptKey = $(this).val();
+			var currOptValue = $(this).parent('div').find('.advOptionValue').val();
+			if (currOptKey && currOptValue) {
+				svxlinkAdvTX[currOptKey] = currOptValue;		
+			}
+		});
+		if ($.isEmptyObject(svxlinkAdvTX) === false) {
+			portFieldsObj.SVXLINK_ADVANCED_TX = svxlinkAdvTX;
+		}
+
+
+
 		// Update linkGroup values to be an integer sub array for storage
 		if (portFieldsObj.linkGroup != '') {
 			portFieldsObj.linkGroup = $.map(portFieldsObj.linkGroup.split(','), function(value){ return parseInt(value, 10); });
@@ -676,10 +890,26 @@ console.log(fullPortObj);
 		// Nest object under port number to match input array format and return as JSON string for port.
 		var portJSON = '{"' + portFieldsObj.portNum + '":' + JSON.stringify(portFieldsObj) + '}';
 
-		console.log(portJSON);
-		// Replace with AJAX Call
+// DEV TESTING ONLY
+console.log(portJSON);
 
-		$('#orp_restart_btn').show();
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: {'updatePort': portJSON},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					sectionStatus(formID, 'portSection', 'error');
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+				} else if (response.status == 'success') {
+					sectionStatus(formID, 'portSection', 'saved');
+					rebuildActive();
+				} else {
+					sectionStatus(formID, 'portSection', 'error');
+				}
+			}
+		});
 
 	});
 

@@ -17,7 +17,7 @@
           <div class="modal-content">
 
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+              <button type="button" id="orp_modal_close_x" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
               <h4 class="modal-title">Modal title</h4>
             </div>
             <div class="modal-body">
@@ -30,6 +30,11 @@
           </div>
         </div>
       </div>
+
+      <script>
+        var modal_DefaultOK = '<?=_('OK')?>';
+        var modal_DefaultCanel = '<?=_('Cancel')?>';
+      </script>
 	  <!-- END Modal -->
 
     <!-- jQuery -->
@@ -140,12 +145,7 @@
 								rebuildDeactive();
 								
 								//Display Message
-								new PNotify({
-									title: '<?=_('Rebuild Complete')?>',
-									text: '<?=_('New configurations files have been created and the controller has restarted.')?>',
-									type: 'success',
-									styling: 'bootstrap3'
-								});
+								orpNotify('success', '<?=_('Rebuild Complete')?>', '<?=_('New configurations files have been created and the controller has restarted.')?>');
 							}
 
 							if (response.status == 'success' && response.svxlink == 'inactive') {
@@ -153,12 +153,7 @@
 								rebuildDeactive();
 								
 								//Display Message
-								new PNotify({
-									title: '<?=_('SVXLink Not Running')?>',
-									text: '<?=_('New configurations files have been created, but SVXLink could not be restarted.')?>',
-									type: 'info',
-									styling: 'bootstrap3'
-								});
+								orpNotify('info', '<?=_('SVXLink Not Running')?>', '<?=_('New configurations files have been created, but SVXLink could not be restarted.')?>');
 							}
 
 							if (response.status == 'not_logged_in') {
@@ -166,12 +161,7 @@
 								rebuildActive();
 								
 								//Display Message
-								new PNotify({
-									title: '<?=_('Not Logged In')?>',
-									text: '<?=_('Could not build your configuration because your login timed out. Please login and try again.')?>',
-									type: 'error',
-									styling: 'bootstrap3'
-								});
+								orpNotify('error', '<?=_('Not Logged In')?>', '<?=_('Could not build your configuration because your login timed out. Please login and try again.')?>');
 							}
 
 						},
@@ -180,12 +170,8 @@
 							rebuildActive();
 
 							//Display Message
-							new PNotify({
-								title: '<?=_('Error')?>',
-								text: '<?=_('There was an error communicating with the controller. Please try again.')?>',
-								type: 'error',
-								styling: 'bootstrap3'
-							});
+							orpNotify('error', '<?=_('Error')?>', '<?=_('There was an error communicating with the controller. Please try again.')?>');
+
 							console.log(textStatus + ": " + jqXHR.status + " " + errorThrown);
 						}
 					});
@@ -226,13 +212,7 @@
 					setTimeout(function() {
 						$('#orp_modal').modal('hide');
 						rebuildDeactive();
-						new PNotify({
-							title: '<?=_('Success')?>',
-							text: '<?=_('Your Password has been changed.')?>',
-							type: 'success',
-							styling: 'bootstrap3'
-						});
-
+						orpNotify('success', '<?=_('Success')?>', '<?=_('Your Password has been changed.')?>');
 					}, 2000);
 				});
 			});
@@ -342,6 +322,10 @@
 	}
 	?>
 
+    <script>
+      var notify_LoggedOutTitle = '<?=_('Logged Out')?>';
+      var notify_LoggedOutText = '<?=_('There was an error saving your settings because you have been logged out. Please log back in and try again.')?>';
+    </script>
 
   </body>
 </html>
