@@ -469,7 +469,8 @@ class SVXLink {
 				$id_array['LONG_IDENT_INTERVAL'] = $this->settingsArray['ID_Long_IntervalMin'];
 				$id_array['LONG_VOICE_ID_ENABLE'] = '1';
 				if ($this->settingsArray['ID_Long_AppendTime'] == 'True') {
-					$proc_content .= $this->buildTime();
+					//$proc_content .= $this->buildTime();
+					$id_array['ORP_ANNC_TIME'] = '1';
 				}
 				if ($this->settingsArray['ID_Long_AppendTone'] == 'True') {
 					// FUTURE - Option to announce CTCSS / PL Tone;
