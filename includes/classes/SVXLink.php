@@ -17,8 +17,8 @@ class SVXLink {
 	public $logicFullPrefix = 'ORP_FullDuplexLogic_Port';
 	public $logicHalfPrefix = 'ORP_HalfDuplexLogic_Port';
 	public $configFileArray = []; // Array of written config files
-    private $idPath = "/var/lib/openrepeater/sounds/identification/";
-    private $courtesyPath = "/var/lib/openrepeater/sounds/courtesy_tones/";
+	private $idPath = "/var/lib/openrepeater/sounds/identification/";
+	private $courtesyPath = "/var/lib/openrepeater/sounds/courtesy_tones/";
 
 
 	public function __construct($settingsArray, $portsArray, $modulesArray) {
@@ -469,7 +469,7 @@ class SVXLink {
 				$id_array['LONG_IDENT_INTERVAL'] = $this->settingsArray['ID_Long_IntervalMin'];
 				$id_array['LONG_VOICE_ID_ENABLE'] = '1';
 				if ($this->settingsArray['ID_Long_AppendTime'] == 'True') {
-					$proc_content .= $this->buildTime();
+					$id_array['ORP_ANNC_TIME'] = '1';
 				}
 				if ($this->settingsArray['ID_Long_AppendTone'] == 'True') {
 					// FUTURE - Option to announce CTCSS / PL Tone;
@@ -657,7 +657,6 @@ class SVXLink {
 	###############################################
 
 	public function build_link($linkGroupNum, $logicsArray) {
-// 		$linkGroupSettingsArray = @unserialize( $this->settingsArray['LinkGroup_Settings'] );
 		$linkGroupSettingsArray = json_decode( $this->settingsArray['LinkGroup_Settings'], true );
 		// only build this section if a JSON settings array is retrived.
 		if ($this->settingsArray['LinkGroup_Settings'] === 'b:0;' || $linkGroupSettingsArray !== false) {
@@ -752,7 +751,6 @@ class SVXLink {
 	###############################################
 
 	public function build_location() {
-// 		$locationSettings = @unserialize( $this->settingsArray['Location_Info'] );
 		$locationSettings = json_decode( $this->settingsArray['Location_Info'], true );
 
 		// only build this section if a serialized settings array is retrived.
