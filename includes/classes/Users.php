@@ -8,6 +8,8 @@ class Users {
 	public $loginURL = 'index.php';
 	public $startPageURL = 'settings.php';
 	private $Database;
+	private $currentUserID;
+	private $currentUser;
 
 
 	public function __construct() {
@@ -106,18 +108,38 @@ class Users {
 	# Change Password
 	###############################################
 
-	public function change_password($user_id, $old_password, $new_password, $confirm_password) {
-		echo 'nothing';
+	public function validateCurrentPW($rawPassword) {
+		session_start();
+		$this->currentUser = $_SESSION['username'];
+		$userInfo = $this->getUser($this->currentUser);
+		if($userInfo['username']) {
+			$this->currentUserID = $userInfo['userID'];
+			$hashPassword = $userInfo['password'];
+			$pwSalt = $userInfo['salt'];
+			$matchStatus = $this->verifyPassword($rawPassword, $hashPassword, $pwSalt);
+			if($matchStatus) { return true; } else { return false; }
+		} else {
+			return false;
+		}
+	}
+
+
+	public function change_password($old_password, $new_password, $confirm_password) {
+		$verifyOLD = $this->validateCurrentPW($old_password);
+		if($verifyOLD == true && $new_password === $confirm_password) {
+			$result = $this->setPassword($this->currentUserID, $new_password);
+			if($result) { return true; } else { return false; }
+		} else {
+			return false;
+		}
 	}
 
 
 	public function setPassword($userID, $rawPassword) {
 		$salt = substr( md5(uniqid(rand(), true)), 0, 8);
 		$hashPassword = hash( 'sha256', $salt . hash('sha256', $rawPassword) );
-	
 		$updateSQL = "UPDATE users SET password='$hashPassword', salt='$salt' WHERE userID='$userID'";
-		$this->Database->update($updateSQL);
-	
+		$result = $this->Database->update($updateSQL);
 		return ['userID'=>$userID,'rawPassword'=>$rawPassword,'hash'=>$hashPassword,'salt'=>$salt];
 	}
 
