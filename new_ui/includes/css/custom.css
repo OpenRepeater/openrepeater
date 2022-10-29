@@ -5158,3 +5158,44 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
   100% { opacity: 0; }
 }
 
+
+
+
+
+/* Change password styles */
+#pswd_info .invalid {
+/*     background:url(../images/invalid.png) no-repeat 0 50%; */
+    padding-left:22px;
+    line-height:24px;
+    color:#ec3f41;
+}
+
+#pswd_info .valid {
+/*     background:url(../images/valid.png) no-repeat 0 50%; */
+    padding-left:22px;
+    line-height:24px;
+    color:#3a7d34;
+}
+
+.invalidPW {
+	background-color: pink;
+}
+
+.validPW {
+	background-color: lime;
+}
+
+#pswd_info {
+    display:none;
+}
+
+.icon::before {
+	display: inline-block;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+}
+
+.valid::before {
+	font: var(--fa-font-regular);
+	content: "\f071";
+}

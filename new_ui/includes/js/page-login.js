@@ -80,11 +80,7 @@ $(function() {
 			$.ajax({
 				url:'../functions/ajax_user_requests.php',
 				type:'post',
-				data:{
-					type: 'login',
-					username: username,
-					password: password
-				},
+				data: {'login': JSON.stringify( { username: username, password: password } )},
 				success: function(response){ // success here means successful communication, not successful login.
 					var login = $.parseJSON(response);
 					

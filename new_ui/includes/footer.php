@@ -107,7 +107,6 @@
 		$("#password").password('toggle');
 		$("#proxy_password").password('toggle');
 		$("#password2").password('toggle');
-
 	</script>
 
     
@@ -183,16 +182,95 @@
 			/* *********************************************** */
 			<?php
 				$change_pw_form = '';
-				$change_pw_form .= '<div class="form-group"><label>' . _('Old Password') . '</label>';
-				$change_pw_form .= '<div><input type="password" id="password" name="password" value="old_password" class="form-control" data-toggle="password"></div></div>';
-				
-				$change_pw_form .= '<hr><div class="form-group"><label>' . _('New Password') . '</label>';
-				$change_pw_form .= '<div><input type="password" id="password1" name="password1" value="new_password" class="form-control" data-toggle="password"></div></div>';
-				
-				$change_pw_form .= '<div class="form-group"><label>' . _('Confirm Password') . '</label>';
-				$change_pw_form .= '<div><input type="password" id="password2" name="password2" value="new_password" class="form-control" data-toggle="password"></div></div>';
-// <input type="password" id="password" name="password" class="form-control" value="1234" data-toggle="password">
+				$change_pw_form .= '<div id="passwordMsg"class="alert alert-info" role="alert"></div>';
+				$change_pw_form .= '<div><input type="password" id="oldPassword" name="oldPassword" class="form-control" data-toggle="password" placeholder="' . _('Old Password') . '"></div>';
+				$change_pw_form .= '<hr><div><input type="password" id="password1" name="password1" class="form-control" data-toggle="password" placeholder="' . _('New Password') . '"></div>';
+				$change_pw_form .= '<div><input type="password" id="password2" name="password2" class="form-control" data-toggle="password" placeholder="' . _('Confirm Password') . '"></div>';
+
+				$change_pw_form .= '<div id="pswd_info"><h4>Password must meet the following requirements:</h4><ul>';
+				$change_pw_form .= '<li id="letter" class="invalid"><strong>'._('At least one letter').'</strong></li>';
+				$change_pw_form .= '<li id="capital" class="invalid"><strong>'._('At least one capital letter').'</strong></li>';
+				$change_pw_form .= '<li id="number" class="invalid"><strong>'._('At least one number').'</strong></li>';
+				$change_pw_form .= '<li id="length" class="invalid"><strong>'._('Be at least 8 characters').'</strong></li>';
+				$change_pw_form .= '</ul></div>';
 			?>
+
+			
+			function validatePW () {
+				var pswd1 = $('#password1').val();
+				var pswdOld = $('#oldPassword').val();
+				var errorLevel = 0;
+				$('#passwordMsg').slideUp(500).html('');
+				// Validate the length
+				if ( pswd1.length < 8 ) {
+				    $('#length').removeClass('valid').addClass('invalid');
+					errorLevel++;
+				} else {
+				    $('#length').removeClass('invalid').addClass('valid');
+				}
+				// Validate letter
+				if ( pswd1.match(/[A-z]/) ) {
+				    $('#letter').removeClass('invalid').addClass('valid');
+				} else {
+				    $('#letter').removeClass('valid').addClass('invalid');
+					errorLevel++;
+				}
+				// Validate capital letter
+				if ( pswd1.match(/[A-Z]/) ) {
+				    $('#capital').removeClass('invalid').addClass('valid');
+				} else {
+				    $('#capital').removeClass('valid').addClass('invalid');
+					errorLevel++;
+				}				
+				// Validate number
+				if ( pswd1.match(/\d/) ) {
+				    $('#number').removeClass('invalid').addClass('valid');
+				} else {
+				    $('#number').removeClass('valid').addClass('invalid');
+					errorLevel++;
+				}
+				if (errorLevel == 0) {
+					// Lastly validate New Password doesnt matched Old Password, case insensitive
+					if ( pswd1.toUpperCase() === pswdOld.toUpperCase() ) {
+						$('#passwordMsg').html('<?=_('New Password cannot be like Old Password.')?>').slideDown(500);
+						$('#password1').val('');
+						return false;
+					} else {
+						$('#password2').slideDown(500); // Show Confirm PW Field
+						$('#pswd_info').slideUp(500); // Hide PW Hints
+	
+						$('#password1').removeClass('invalidPW').addClass('validPW');
+						setTimeout(function() {
+							$('#password1').removeClass('validPW');
+						}, 5000);
+						return true;		
+					}
+				} else {
+					$('#password2').slideUp(500); // Hide Confirm PW Field
+					$('#password1').addClass('invalidPW').removeClass('validPW');
+					$('#orp_modal_ok').prop('disabled', true); // Disable OK Button
+					return false;
+				}
+			}
+
+
+			function passwordsMatch () {
+				var pswd1 = $('#password1').val();
+				var pswd2 = $('#password2').val();
+				if (pswd1 === pswd2) {
+					$('#password2').removeClass('invalidPW').addClass('validPW');
+					setTimeout(function() {
+						$('#password2').removeClass('validPW');
+					}, 5000);
+					return true; 
+				} else { 
+					$('#password2').addClass('invalidPW').removeClass('validPW');
+					$('#orp_modal_ok').prop('disabled', true); // Disable OK Button
+					return false;
+				}
+			}
+
+
 			
 			$('.change_password').click(function(e) {
 				e.preventDefault();
@@ -202,20 +280,79 @@
 					body: '<?=$change_pw_form?>',
 					btnOK: '<?=_('Change')?>',
 				};
-				orpModalDisplay(modalDetails);
+				orpModalDisplay(modalDetails);		
+// 				$("#password1").password('toggle');
+				$('#passwordMsg').hide(); // Hide Error Section
+				$('#password2').hide(); // Hide Confirm PW Field
+				$('#orp_modal_ok').prop('disabled', true); // Disable OK Button
+
+				$('#oldPassword').blur(function() {
+					$('#passwordMsg').slideUp(500).html('');
+					$.ajax({
+						url:'/functions/ajax_user_requests.php',
+						type:'post',
+						data: {'validatePassword': JSON.stringify( { existingPassword: $('#oldPassword').val() } )},
+						success: function(response){ // success here means successful communication, not successful results.
+							var validate = $.parseJSON(response);
+							if(validate.result == 'error') {
+								$('#passwordMsg').html(validate.message).slideDown(500);
+								$('#oldPassword').val('').focus();
+							}
+						}
+					});
+				});
+
+
+				$('#password1').keyup(function() {
+					validatePW();
+				}).focus(function() {
+					validatePW();
+					$('#pswd_info').slideDown(500);
+				}).blur(function() {
+					$('#pswd_info').slideUp(500);
+				});
+
+
+				$('#password2').keyup(function() {
+					if ( passwordsMatch() ) {
+						if ( validatePW() ) {
+							$('#orp_modal_ok').prop('disabled', false); // Re-enable OK Button
+						}
+					}
+				}).focus(function() {
+					if ( passwordsMatch() ) {
+						if ( validatePW() ) {
+							$('#orp_modal_ok').prop('disabled', false); // Re-enable OK Button
+						}
+					}
+				}).blur(function() {
+// 					console.log('hide');
+				});
+
 		
 				$('#orp_modal_ok').off('click'); // Remove other click events
 				$('#orp_modal_ok').click(function() {
+					dataObj = { existingPassword: $('#oldPassword').val(), newPassword: $('#password1').val(), confirmPassword: $('#password2').val() };
 					orpModalWaitBar();
-
-					// TEMP SIMULATION OF REBUILD TIME
-					setTimeout(function() {
-						$('#orp_modal').modal('hide');
-						rebuildDeactive();
-						orpNotify('success', '<?=_('Success')?>', '<?=_('Your Password has been changed.')?>');
-					}, 2000);
+					$.ajax({
+						url:'/functions/ajax_user_requests.php',
+						type:'post',
+						data: {'changePassword': JSON.stringify(dataObj)},
+						success: function(response){ // success here means successful communication, not successful results.
+							var pwchange = $.parseJSON(response);
+							if(pwchange.result == 'success') {
+								$('#orp_modal').modal('hide');
+								orpNotify('success', '<?=_('Success')?>', pwchange.message);
+							}
+							if(pwchange.result == 'error') {
+								$('#orp_modal').modal('hide');
+								orpNotify('error', '<?=_('Error')?>', pwchange.message);
+							}
+						}
+					});
 				});
 			});
+
 
 
 			/* *********************************************** */
@@ -227,7 +364,7 @@
 				$.ajax({
 					url:'../functions/ajax_user_requests.php',
 					type:'post',
-					data:{ type: 'logout' },
+					data: { 'logout': '' },
 					success: function(response){ // success here means successful communication, not successful login.
 						var logout = $.parseJSON(response);
 						if(logout.result == 'success') {

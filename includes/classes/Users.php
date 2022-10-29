@@ -128,9 +128,9 @@ class Users {
 		$verifyOLD = $this->validateCurrentPW($old_password);
 		if($verifyOLD == true && $new_password === $confirm_password) {
 			$result = $this->setPassword($this->currentUserID, $new_password);
-			if($result) { return true; } else { return false; }
+			if($result == true) { return 'passwdChanged'; } else { return 'errorDB'; }
 		} else {
-			return false;
+			return 'errorPassMismatch';
 		}
 	}
 
@@ -140,7 +140,7 @@ class Users {
 		$hashPassword = hash( 'sha256', $salt . hash('sha256', $rawPassword) );
 		$updateSQL = "UPDATE users SET password='$hashPassword', salt='$salt' WHERE userID='$userID'";
 		$result = $this->Database->update($updateSQL);
-		return ['userID'=>$userID,'rawPassword'=>$rawPassword,'hash'=>$hashPassword,'salt'=>$salt];
+		return $result;
 	}
 
 
