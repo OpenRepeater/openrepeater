@@ -889,10 +889,10 @@ console.log(linkGroupString);
 			portFieldsObj.SVXLINK_ADVANCED_TX = svxlinkAdvTX;
 		}
 
-
-
 		// Update linkGroup values to be an integer sub array for storage
-		if (portFieldsObj.linkGroup != '') {
+		if (portFieldsObj.linkGroup == null) {
+			portFieldsObj.linkGroup = [];
+		} else {
 			portFieldsObj.linkGroup = $.map(portFieldsObj.linkGroup.split(','), function(value){ return parseInt(value, 10); });
 		}
 
