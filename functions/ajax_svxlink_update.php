@@ -163,7 +163,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	/* ---------------------------------------------------------- */
 	/* FINISH UP */
 
-/*
  	$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
 
 	######################################
@@ -196,10 +195,12 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	}
 
 	echo json_encode($response);
-*/
 
+/*
+### Fake Response for Docker Testing
 $fakeResponse = '{"status":"success","svxlink":"inactive"}';
 echo $fakeResponse;
+*/
 
 
 ?>
