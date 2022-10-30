@@ -145,8 +145,10 @@ $settings = $Database->get_settings();
 						<span class="caret"></span>
 					</a>
 					<ul class="dropdown-menu">
+<!--
 						<li><a href="../login.php?action=setPassword">Change Password</a></li>
 						<li class="divider"></li>
+-->
 						<li><a href="../backup.php">Backup & Restore</a></li>
 						<li class="divider"></li>
 						<li><a href="../login.php?action=logout">Logout</a></li>
@@ -181,7 +183,7 @@ $settings = $Database->get_settings();
 						    default:
 						    	?>
 									<li><a class="ajax-link" href="../dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
-									<li><a class="ajax-link" href="../settings.php"><i class="icon-wrench"></i><span class="hidden-tablet"> General Settings</span></a></li>
+<!-- 									<li><a class="ajax-link" href="../settings.php"><i class="icon-wrench"></i><span class="hidden-tablet"> General Settings</span></a></li> -->
 									<li><a class="ajax-link" href="../identification.php"><i class="icon-bullhorn"></i><span class="hidden-tablet"> Identification</span></a></li>
 									<li><a class="ajax-link" href="../courtesy_tone.php"><i class="icon-music"></i><span class="hidden-tablet"> Courtesy Tones</span></a></li>
 									<?php
