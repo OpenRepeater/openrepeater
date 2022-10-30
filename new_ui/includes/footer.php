@@ -183,11 +183,11 @@
 			<?php
 				$change_pw_form = '';
 				$change_pw_form .= '<div id="passwordMsg"class="alert alert-info" role="alert"></div>';
-				$change_pw_form .= '<div><input type="password" id="oldPassword" name="oldPassword" class="form-control" data-toggle="password" placeholder="' . _('Old Password') . '"></div>';
-				$change_pw_form .= '<hr><div><input type="password" id="password1" name="password1" class="form-control" data-toggle="password" placeholder="' . _('New Password') . '"></div>';
-				$change_pw_form .= '<div><input type="password" id="password2" name="password2" class="form-control" data-toggle="password" placeholder="' . _('Confirm Password') . '"></div>';
+				$change_pw_form .= '<div class="form-group has-feedback"><input type="password" id="oldPassword" name="oldPassword" class="form-control" data-toggle="password" placeholder="' . _('Old Password') . '"><span id="oldPasswordStatus" class="fa fa-check form-control-feedback right hidden" aria-hidden="true"></span></div>';
+				$change_pw_form .= '<hr><div class="form-group has-feedback"><input type="password" id="password1" name="password1" class="form-control" data-toggle="password" placeholder="' . _('New Password') . '"><span id="password1Status" class="fa fa-check form-control-feedback right hidden" aria-hidden="true"></span></div>';
+				$change_pw_form .= '<div class="form-group has-feedback"><input type="password" id="password2" name="password2" class="form-control" data-toggle="password" placeholder="' . _('Confirm Password') . '"><span id="password2Status" class="fa fa-check form-control-feedback right hidden" aria-hidden="true"></span></div>';
 
-				$change_pw_form .= '<div id="pswd_info"><h4>Password must meet the following requirements:</h4><ul>';
+				$change_pw_form .= '<div id="pw_hint"><h5>'._('Password must meet the following requirements').':</h5><ul>';
 				$change_pw_form .= '<li id="letter" class="invalid"><strong>'._('At least one letter').'</strong></li>';
 				$change_pw_form .= '<li id="capital" class="invalid"><strong>'._('At least one capital letter').'</strong></li>';
 				$change_pw_form .= '<li id="number" class="invalid"><strong>'._('At least one number').'</strong></li>';
@@ -237,9 +237,9 @@
 						return false;
 					} else {
 						$('#password2').slideDown(500); // Show Confirm PW Field
-						$('#pswd_info').slideUp(500); // Hide PW Hints
+						$('#pw_hint').slideUp(500); // Hide PW Hints
 	
-						$('#password1').removeClass('invalidPW').addClass('validPW');
+						$('#password1Status').removeClass('hidden');
 						setTimeout(function() {
 							$('#password1').removeClass('validPW');
 						}, 5000);
@@ -247,7 +247,7 @@
 					}
 				} else {
 					$('#password2').slideUp(500); // Hide Confirm PW Field
-					$('#password1').addClass('invalidPW').removeClass('validPW');
+					$('#password1Status').addClass('hidden');
 					$('#orp_modal_ok').prop('disabled', true); // Disable OK Button
 					return false;
 				}
@@ -258,13 +258,10 @@
 				var pswd1 = $('#password1').val();
 				var pswd2 = $('#password2').val();
 				if (pswd1 === pswd2) {
-					$('#password2').removeClass('invalidPW').addClass('validPW');
-					setTimeout(function() {
-						$('#password2').removeClass('validPW');
-					}, 5000);
+					$('#password2Status').removeClass('hidden');
 					return true; 
 				} else { 
-					$('#password2').addClass('invalidPW').removeClass('validPW');
+					$('#password2Status').addClass('hidden');
 					$('#orp_modal_ok').prop('disabled', true); // Disable OK Button
 					return false;
 				}
@@ -294,9 +291,13 @@
 						data: {'validatePassword': JSON.stringify( { existingPassword: $('#oldPassword').val() } )},
 						success: function(response){ // success here means successful communication, not successful results.
 							var validate = $.parseJSON(response);
+							if(validate.result == 'success') {
+								$('#oldPasswordStatus').removeClass('hidden');
+							}
 							if(validate.result == 'error') {
 								$('#passwordMsg').html(validate.message).slideDown(500);
 								$('#oldPassword').val('').focus();
+								$('#oldPasswordStatus').addClass('hidden');
 							}
 						}
 					});
@@ -307,9 +308,9 @@
 					validatePW();
 				}).focus(function() {
 					validatePW();
-					$('#pswd_info').slideDown(500);
+					$('#pw_hint').slideDown(500);
 				}).blur(function() {
-					$('#pswd_info').slideUp(500);
+					$('#pw_hint').slideUp(500);
 				});
 
 

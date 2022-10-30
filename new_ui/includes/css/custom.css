@@ -5162,40 +5162,44 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
 
 
 
-/* Change password styles */
-#pswd_info .invalid {
-/*     background:url(../images/invalid.png) no-repeat 0 50%; */
-    padding-left:22px;
+/* Change Password Dialog Styles */
+#pw_hint {
+    display:none;
+}
+
+#pw_hint ul {
+	list-style-type: none; /* Remove bullets */
+	padding: 0; /* Remove padding */
+	margin: 0; /* Remove margins */
+}
+
+#pw_hint .invalid {
     line-height:24px;
     color:#ec3f41;
 }
 
-#pswd_info .valid {
-/*     background:url(../images/valid.png) no-repeat 0 50%; */
-    padding-left:22px;
+#pw_hint .valid {
     line-height:24px;
     color:#3a7d34;
 }
 
-.invalidPW {
-	background-color: pink;
+#pw_hint .valid::before {
+	font-family: "FontAwesome"; 
+	content: "\f00c";
+	margin-right: 7px;
 }
 
-.validPW {
-	background-color: lime;
-}
-
-#pswd_info {
-    display:none;
-}
-
-.icon::before {
-	display: inline-block;
-	text-rendering: auto;
-	-webkit-font-smoothing: antialiased;
-}
-
-.valid::before {
-	font: var(--fa-font-regular);
+#pw_hint .invalid::before {
+	font-family: "FontAwesome"; 
 	content: "\f071";
+	margin-right: 7px;
 }
+
+#oldPasswordStatus, #password1Status, #password2Status {
+	border-left: none;
+	top: -3px;
+	right: 0;
+	color: green;
+}
+
+#oldPasswordStatus.hidden, #password1Status.hidden, #password2Status.hidden { visibility:hidden; }
