@@ -792,7 +792,7 @@ $SVXLink = new SVXLink(null, null, null);
 
 <script>
 	var portList = '<?= json_encode($ports) ?>';
-	var linkGroupSettings = '<?= $settings['LinkGroup_Settings'] ?>';
+	var linkGroupSettings = '<?= json_encode($settings['LinkGroup_Settings']) ?>';
 	var max_fields = 10; //maximum input boxes allowed per section
 
 	var logicOptions = <?=$SVXLink->get_adv_svxlink_options('logic')?>;
