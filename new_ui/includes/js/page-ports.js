@@ -18,8 +18,8 @@ $(function() {
 
 	// Loop through JSON array of ports and build display
 	fullPortObj = JSON.parse(portList);
-	console.log(portList);
-	console.log(fullPortObj);
+// DEV TESTING ONLY
+console.log(portList);
 	$.each(fullPortObj, function(index, curPort) {
 		displayPort(curPort);
 	});
@@ -268,8 +268,9 @@ $(function() {
 				}
 			}
 
-			console.log(newPortNum);
-			console.log(portCount);
+// DEV TESTING ONLY
+console.log(newPortNum);
+console.log(portCount);
 
 
 			switch(addPortType) {
@@ -318,7 +319,8 @@ $(function() {
 		$('#orp_modal_ok').click(function() {
 			var loadBoardPreset = $('#loadBoardPreset').val();
 
-			console.log(loadBoardPreset);
+// DEV TESTING ONLY
+console.log(loadBoardPreset);
 			$('#orp_modal').modal('hide');
 		});
 	});
@@ -329,7 +331,8 @@ $(function() {
 		var portNum = $(this).parents('.portSection').attr('data-port-number');
 		var portDesc = $('#portNum' + portNum + ' .panel-title').text();
 
-		console.log(portDesc);
+// DEV TESTING ONLY
+console.log(portDesc);
 
 		var modalDetails = {
 			modalSize: 'small',
@@ -345,7 +348,6 @@ $(function() {
 		$('#orp_modal_ok').off('click'); // Remove other click events
 		$('#orp_modal_ok').click(function() {
 			deleteString = { deletePort: portNum };
-			console.log( JSON.stringify(deleteString) );
 
 			orpModalWaitBar(modal_DeletePortProgressTitle);
 
@@ -577,6 +579,8 @@ $(function() {
 
 	// Loop through JSON array of Link Groups and update display
 	linkGroupObj = JSON.parse(linkGroupSettings);
+// DEV TESTING ONLY
+console.log(linkGroupSettings);
 	$.each(linkGroupObj, function(index, curLinkGroup) {
 
 		if(curLinkGroup.defaultActive == '1') {
@@ -611,6 +615,8 @@ $(function() {
 		
 		var linkGroupString = '{"1":{"defaultActive":"'+lg1_active+'","timeout":"'+lg1_timeout+'"},"2":{"defaultActive":"'+lg2_active+'","timeout":"'+lg2_timeout+'"},"3":{"defaultActive":"'+lg3_active+'","timeout":"'+lg3_timeout+'"},"4":{"defaultActive":"'+lg4_active+'","timeout":"'+lg4_timeout+'"}}';
 				
+// DEV TESTING ONLY
+console.log(linkGroupString);
 		// Write to DB in backgruond
 		$.ajax({
 			type: 'POST',
@@ -674,7 +680,8 @@ $(function() {
 		}
 		$('#linkGroup_Port'+portNum).val(linkGroupArray);
 
-//         console.log(linkGroupArray);
+// DEV TESTING ONLY
+// console.log(linkGroupArray);
 	}
 
 

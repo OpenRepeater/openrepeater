@@ -788,11 +788,16 @@ $SVXLink = new SVXLink(null, null, null);
 	</div>
 </script>
 
-
+<?php
+$lg_raw = $settings['LinkGroup_Settings'];
+$lg_array = json_decode($lg_raw);
+$lg_count = 0;
+foreach ($lg_array as $value) { $lg_count++; }
+?>
 
 <script>
 	var portList = '<?= json_encode($ports) ?>';
-	var linkGroupSettings = '<?= json_encode($settings['LinkGroup_Settings']) ?>';
+	if (<?=$lg_count ?> > 0) { var linkGroupSettings = '<?= $settings['LinkGroup_Settings'] ?>'; } else { var linkGroupSettings = '{}'; }
 	var max_fields = 10; //maximum input boxes allowed per section
 
 	var logicOptions = <?=$SVXLink->get_adv_svxlink_options('logic')?>;
