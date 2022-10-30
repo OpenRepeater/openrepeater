@@ -43,8 +43,8 @@ $(function() {
 
 		$('#orp_modal_ok').off('click'); // Remove other click events
 		$('#orp_modal_ok').click(function() {
+			orpModalWaitBar(modal_LoadAudioTitle);
 			getSoundDevices();
-			$('#orp_modal').modal('hide');
 		});
 
 		$('#orp_modal_cancel').removeAttr('data-dismiss'); // Prevent Normal Dismiss on Cancel
@@ -766,6 +766,8 @@ $(function() {
 						var currDefault = $(this).attr('data-default-selected');
 						$(this).val( $(this).attr('data-default-selected') );
 					});
+
+					$('#orp_modal').modal('hide'); // Hide modeal with progress bar. 
 
 				}
 			}

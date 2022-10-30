@@ -816,6 +816,8 @@ $SVXLink = new SVXLink(null, null, null);
 	var modal_AudioScanWarningBody = '<?= _('By proceeding, SVXLink will need to be briefly stopped in order to query the system for available sound devices. This will interrupt any active communications. Please ensure that there is no activity before proceeding.') ?>';
 	var modal_AudioScanWarningBtnOK = '<?= _('Proceed') ?>';
 	var modal_AudioScanWarningBtnCancel = '<?= _('Get Me Out of Here!') ?>';
+	var modal_LoadAudioTitle = '<?= _('Reading Sound Devices') ?>';
+
 </script>
 
 <?php include('includes/footer.php'); ?>
