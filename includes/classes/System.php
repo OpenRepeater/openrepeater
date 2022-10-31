@@ -134,6 +134,12 @@ class System {
 		return trim($status);
  	}
 
+	// stop, start, restart
+	public function svxlink_state($state) {
+		$result = $this->orp_helper_call('svxlink', $state);
+		return trim($result);
+ 	}
+
 
 
 	###############################################

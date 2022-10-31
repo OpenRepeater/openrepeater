@@ -31,6 +31,8 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 
 	// Access database for Settings, Modules, Ports, GPIOs, etc.
 	$classDB = new Database();
+	$classSystem = new System();
+
 	$settings = $classDB->get_settings();
 	$module = $classDB->get_modules();
 	$ports = $classDB->get_ports();
@@ -163,7 +165,7 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 	/* ---------------------------------------------------------- */
 	/* FINISH UP */
 
- 	$shellout = shell_exec('sudo /usr/sbin/orp_helper svxlink restart');
+ 	$shellout = $classSystem->svxlink_state('restart');
 
 	######################################
 	# Return AJAX Response

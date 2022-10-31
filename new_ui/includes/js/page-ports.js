@@ -738,7 +738,7 @@ console.log(linkGroupString);
 	function getSoundDevices() {
 		$.ajax({
 			type: 'POST',
-			url: '/functions/ajax_ports.php',
+			url: '/functions/ajax_db_update.php',
 			data: {'getSoundDevices':''},
 			success: function(jsonResponse){
 				var response = JSON.parse(jsonResponse);

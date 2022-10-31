@@ -21,29 +21,23 @@ class SoundDevices {
 	###############################################
 
 	public function get_device_list($output = 'array') {		
+		$System = new System();
+		$svxlinkBeginningStatus = $System->svxlink_status();
+
 		// Kill svxlink so cards will be available to interrogate
-		ob_start();
-		passthru("sudo orp_helper svxlink status");
-		$svxlinkStatusEntering = ob_get_clean();
-		
-		if ($svxlinkStatusEntering == 'active') {
-			ob_start();
-			passthru("sudo orp_helper svxlink stop");
-			ob_get_clean();
+		if ($svxlinkBeginningStatus == 'active') {
+			$System->svxlink_state('stop');
 		}
-				
+
 		// Get ALSA Version from System
-		exec("sudo orp_helper audio version", $version);
-		
+		$version = $System->orp_helper_call('audio', 'version');
+
 		// Capture Input Devices from System
-		ob_start();
-		passthru("sudo orp_helper audio inputs");
-		$arecord_results = ob_get_clean();
+		$arecord_results = $System->orp_helper_call('audio', 'inputs');
 		
 		// Capture Output Devices from System 
-		ob_start();
-		passthru("sudo orp_helper audio outputs");
-		$aplay_results = ob_get_clean();
+		$aplay_results = $System->orp_helper_call('audio', 'outputs');
+
 				
 		// Sanitize arecored & aplay results, make a single string with no line feeds
 		$arecord_results_clean = trim(preg_replace('/\s+/', ' ', $arecord_results));
@@ -67,9 +61,7 @@ class SoundDevices {
 			preg_match('/card\s.*?\[.*?\].*?\[(.*?)\]/', $in_val, $in_type);
 			
 			// Get card(s) inputs
-			ob_start();
-			passthru ("sudo orp_helper audio channels_in $card");
-			$channel_in_results = ob_get_clean();
+			$channel_in_results = $System->orp_helper_call('audio', 'channels_in ' . $card);
 					
 			// Write Card Channels to Array
 			for ($currChan = 0; $currChan < $channel_in_results; $currChan++) {
@@ -108,9 +100,7 @@ class SoundDevices {
 			preg_match('/card\s.*?\[.*?\].*?\[(.*?)\]/', $out_val, $out_type);
 		
 			// Get card(s) outputs
-			ob_start();
-			passthru ("sudo orp_helper audio channels_out $card");
-			$channel_out_results = ob_get_clean();
+			$channel_out_results = $System->orp_helper_call('audio', 'channels_out ' . $card);
 			
 			// Write Card Channels to Array
 			for ($currChan =0; $currChan < $channel_out_results; $currChan++) {
@@ -140,10 +130,8 @@ class SoundDevices {
 
 		
 		// Restart SVXLink if previously running
-		if ($svxlinkStatusEntering == 'active') {
-			ob_start();
-			passthru("sudo orp_helper svxlink start");
-			ob_get_clean();
+		if ($svxlinkBeginningStatus == 'active') {
+			$System->svxlink_state('start');
 		}
 
 
@@ -155,13 +143,14 @@ class SoundDevices {
 				$audio_details .= '<pre>'.$arecord_results.'</pre>';
 				$audio_details .= '<h4>Audio Output Devices</h4>';
 				$audio_details .= '<pre>'.$aplay_results.'</pre>';
-				$audio_details .= '<p>'.$version[0].'</p>';
-				
+				$audio_details .= '<p>'.$version[0].'</p>';				
 				return $audio_details;
 				break;
+
 			case 'JSON':
 				return json_encode($this->device_list);
 				break;
+
 			default:
 				return $this->device_list;
 		}
