@@ -12,7 +12,7 @@ class Database {
 
 	// Temporary override for Docker Development
 	public function __construct() {
-		if (gethostname() == '8737d956b8d1') { $this->memcachedHost = 'Memcached'; } // If running on Docker Container Change host for Memcached container host.
+		if (gethostname() == 'docker_orp_php') { $this->memcachedHost = 'docker_orp_memcached'; } // If running on Docker Container Change host for Memcached container host.
 	}
 
 	###############################################
