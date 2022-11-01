@@ -53,8 +53,8 @@ class SVXLink_TCL {
 		$proc_header = '
 			namespace eval Logic {
 			';			
-
-		$proc_content = $this->proc_short_id();
+		$proc_content = $this->proc_startup_msg();
+		$proc_content .= $this->proc_short_id();
 		$proc_content .= $this->proc_long_id();
 		$proc_content .= $this->proc_orp_courtesy_tone();
 
@@ -134,8 +134,26 @@ class SVXLink_TCL {
 
 		return $this->indent($proc_header, 1) . $this->indent($proc_content, 2) . $this->indent($proc_footer, 1);
 	}
+	
+	###############################################
+	# Proc Online message
+	###############################################
+	private function proc_startup_msg() {
+		$proc_header = '
+		# ORP CUSTOM PROCEDURE
+		# Executed when repeater starts to fix issue 
+		# https://github.com/OpenRepeater/openrepeater/issues/67
+		proc startup {} {
+		';
+		
+		$proc_content = '
+		    playMsg "Core" "online"
+		';
 
-
+		$proc_footer = "\n\t}\n";
+		
+		return $this->indent($proc_header, 1) . $this->indent($proc_content, 2) . $this->indent($proc_footer, 1);
+	}
 
 	###############################################
 	# Proc Long ID
