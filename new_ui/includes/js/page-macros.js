@@ -224,7 +224,9 @@ console.log(selectedMacros);
 			}
 		);
 
-		console.log(macroFieldsObj);
+		var macroRowJSON = JSON.stringify(macroFieldsObj);
+
+		console.log(macroRowJSON);
 	});
 
 })
