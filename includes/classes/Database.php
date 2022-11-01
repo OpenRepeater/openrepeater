@@ -7,6 +7,13 @@ class Database {
 
     private $db_loc = '/var/lib/openrepeater/db/openrepeater.db';
 
+	private $memcachedHost = 'localhost';
+	private $memcachedPort = 11211;
+
+	// Temporary override for Docker Development
+	public function __construct() {
+		if (gethostname() == '8737d956b8d1') { $this->memcachedHost = 'Memcached'; } // If running on Docker Container Change host for Memcached container host.
+	}
 
 	###############################################
 	# Run SQL Statements
@@ -716,10 +723,11 @@ class Database {
 	# Memcache Flag
 	###############################################
 
+
 	public function set_update_flag($flag) {
 		/* SET FLAG TO LET REPEATER PROGRAM KNOW TO RELOAD SETTINGS */
 		$memcached_obj = new Memcached;
-		$memcached_obj->addServer('localhost', 11211);
+		$memcached_obj->addServer($this->memcachedHost, $this->memcachedPort);
 		if($flag == true) {
 			$memcached_obj->set('update_settings_flag', 1); // Set Flag
 		} else {
@@ -729,7 +737,7 @@ class Database {
 
 	public function get_update_flag() {
 		$memcached_obj = new Memcached;
-		$memcached_obj->addServer('localhost', 11211);
+		$memcached_obj->addServer($this->memcachedHost, $this->memcachedPort);
 		$state = $memcached_obj->get('update_settings_flag');
 		if ($state == 1) {
 			return true;
