@@ -120,7 +120,8 @@ $macroList = $Database->get_macros();
       </td>
 
       <td>
-	  	  <a href="#" id="deleteMacro%%MACRO%%" class="deleteMacro"><i class="fa fa-trash-o"></i></a>
+	  	  <div><a href="#" id="deleteMacro%%MACRO%%" class="deleteMacro"><i class="fa fa-trash-o"></i></a></div>
+		  <div class="sectionStatus"><i class="fa"></i></div>
       </td>
     </tr>
 </script>

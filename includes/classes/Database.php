@@ -467,6 +467,13 @@ class Database {
 	}
 
 
+	public function delete_macro( $input_value ) {
+		$sql = 'DELETE FROM macros WHERE macroKey="'.$input_value.'";';
+		$delete_result = $this->delete_row($sql);
+		return $delete_result;
+	}
+
+
 	public function clear_macros_table() {
 		$sql = 'DELETE FROM macros;';
 		$delete_result = $this->delete_row($sql);

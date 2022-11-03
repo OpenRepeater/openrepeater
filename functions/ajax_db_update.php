@@ -71,6 +71,25 @@ if ( isset($_POST['getSoundDevices']) ) {
 
 
 
+# Macro Operations
+if ( isset($_POST['updateMacro']) ) {
+	$classDB = new Database();
+	$updateArray = json_decode($_POST['updateMacro'], true);
+	$result = $classDB->update_macro_table($updateArray);
+	if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
+	exit;
+}
+
+if ( isset($_POST['deleteMacro']) ) {
+	$classDB = new Database();
+	$updateData = json_decode($_POST['deleteMacro']);
+	$result = $classDB->delete_macro($updateData);
+	if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
+	exit;
+}
+
+
+
 
 // DEPRECIATED: Old UI update
 $result = $classDB->update_settings($_POST);
