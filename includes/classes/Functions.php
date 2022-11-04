@@ -99,6 +99,7 @@ class Functions {
 
 	// Write Active Config Files & Modules to DB for later reference. 
 	public function save_config_list($inputArray) {
+		$inputArray = array_unique($inputArray, SORT_REGULAR); // Removed duplicates
 		$configFileArray = json_encode($inputArray);
 		$Database = new Database();
 		$sql = "UPDATE system_flags SET value='$configFileArray' WHERE keyID='config_files'";
