@@ -21,7 +21,7 @@ class AudioFiles {
 		
 		// Read Files into 1 dimensional array
 		if ($handle = opendir($this->path . $type)) {
-				while (false !== ($file = readdir($handle))) {
+			while (false !== ($file = readdir($handle))) {
 				if ('.' === $file) continue;
 				if ('..' === $file) continue;
 				$fileList[] = $file;
@@ -53,13 +53,16 @@ class AudioFiles {
 		
 		// Read Files into 1 dimensional array
 		if ($handle = opendir($this->path . $type)) {
-				while (false !== ($file = readdir($handle))) {
+			while (false !== ($file = readdir($handle))) {
 				if ('.' === $file) continue;
 				if ('..' === $file) continue;
 				$fileList[] = $file;
 			}
 			closedir($handle);	
 		}
+
+		// Remove hidden files
+		$fileList = array_filter($fileList, create_function('$a','return ($a[0]!=".");'));
 	
 		// Sort and reindex array
 		natsort($fileList);
