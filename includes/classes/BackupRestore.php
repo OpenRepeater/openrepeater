@@ -446,6 +446,9 @@ class BackupRestore {
 			closedir($handle);
 		}
 
+		// Remove hidden files
+		$fileList = array_filter($fileList, create_function('$a','return ($a[0]!=".");'));
+
 		// Sort and reindex array
 		natsort($fileList);
 		$fileList = array_values($fileList);
@@ -455,7 +458,6 @@ class BackupRestore {
 			$fileLabel = str_replace("_"," ",$fileName); //replace underscores with spaces for file labels
 			$fileLabel = preg_replace('/\\.[^.\\s]{2,5}$/', '', $fileLabel); //remove extention
 			$downloadURL = $baseURL . $fileName;
-// 			$downloadURL = '#';
 			$filePath = $this->backupPath . $fileName;
 			$fileSize = filesize($filePath);
 			$fileDate = filemtime($filePath);
@@ -541,7 +543,7 @@ class BackupRestore {
 					$total_dir_size = $total_dir_size + $fileArray['fileSize'];
 
 					$returnFileArray[$curFileNum]['fileName'] = $fileArray['fileName'];
-					$returnFileArray[$curFileNum]['fileDate'] = date("YmdHis",$fileArray['fileDate']);
+					$returnFileArray[$curFileNum]['fileDate'] = date("Y-m-d\TH:i:s T",$fileArray['fileDate']);
 					$returnFileArray[$curFileNum]['fileSize'] = $fileArray['fileSize'];
 					$returnFileArray[$curFileNum]['downloadURL'] = $this->baseDownloadPath . $fileArray['fileName'];
 				}

@@ -49,9 +49,19 @@
     <script src="/new_ui/includes/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
     <!-- iCheck -->
     <script src="/new_ui/includes/vendors/iCheck/icheck.min.js"></script>
+    <!-- Luxon DateTime Library, and variables -->
+	<script src="/new_ui/includes/vendors/luxon/luxon.min.js"></script>
+	<script>
+	var DateTime = luxon.DateTime;
+	var phpTimezone = '<?= date_default_timezone_get() ?>';
+	var phpLocal = 'en-US';
+	</script>
     <!-- bootstrap-daterangepicker -->
+	<!-- DEPRECIATED -->
+	<!--
     <script src="/new_ui/includes/vendors/moment/min/moment.min.js"></script>
     <script src="/new_ui/includes/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+	-->
     <!-- bootstrap-wysiwyg -->
     <script src="/new_ui/includes/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
     <script src="/new_ui/includes/vendors/jquery.hotkeys/jquery.hotkeys.js"></script>

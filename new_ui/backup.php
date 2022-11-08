@@ -76,7 +76,7 @@ $BackupRestore = new BackupRestore();
 <script id="backupRowTemplate" type = "text/template">
     <tr id="backupRow%%INDEX%%" class="backupRow" data-backup-number="%%INDEX%%" data-backup-file="%%FILENAME%%" data-file-size="%%RAWSIZE%%">
       <td><strong>%%FILENAME%%</strong></td>
-      <td data-sort="%%ISODATE%%"><span title="%%FULLDATE%%"><i class="fa fa-calendar"></i> %%DATE%%</span></td>
+      <td data-sort="%%ISODATE%%"><span class="dateCol" title="%%FULLDATE%%"><i class="fa fa-calendar"></i> %%DATE%%</span></td>
       <td data-sort="%%RAWSIZE%%"><i class="fa fa-hdd-o"></i> %%SIZE%%</td>
       <td>
           <ul class="nav nav-pills" role="tablist">

@@ -30,3 +30,8 @@ table.dataTable thead .sorting_desc:after {
 table.dataTable tbody>tr.selected {
 	background-color: rgba(141, 198, 63, .25);
 }
+
+
+.backupRow .dateCol{
+	text-transform: capitalize;
+}

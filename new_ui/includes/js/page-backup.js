@@ -232,12 +232,14 @@ function formatFileSize(size) {
 };
 
 
-// Format Date/Time function
+// Format Date/Time function using Luxon library
+// Input time should be in UTC, server sets time zone and local
 function formatDateTime(input, type='auto') {
+	var inputUTC = DateTime.fromFormat(input, "yyyy-MM-dd'T'HH:mm:ss z", { setZone: true });
 	switch(type) {
 		case 'longDateTime':
-			return moment(input, "YYYY-MM-DD[T]HH:mm:ss").format('LLL');
+			return inputUTC.setLocale(phpLocal).setZone(phpTimezone).toLocaleString(DateTime.DATETIME_MED)
 		default:
-			return moment(input, "YYYYMMDD").fromNow();
+			return inputUTC.setLocale(phpLocal).setZone('UTC').toRelativeCalendar();
 	}
 };
