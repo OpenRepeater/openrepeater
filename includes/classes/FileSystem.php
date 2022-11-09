@@ -79,7 +79,7 @@ class FileSystem {
 				move_uploaded_file($returnArray[$curKey]['tmp_name'], $returnArray[$curKey]['full_path']);
 				
 				// Convert audio foormat if audio upload type
-				if ($convertAudio) { $this->convert_audio($returnArray[$curKey]['full_path']); }
+// 				if ($convertAudio) { $this->convert_audio($returnArray[$curKey]['full_path']); }
 
 
 // {"fileName":"n3mbh_2019-01-26_21-14-16.orp","fileDate":"2020-01-07T13:28:56 EST","fileSize":2105765,"downloadURL":"http://localhost/backup/n3mbh_2019-01-26_21-14-16.orp"}

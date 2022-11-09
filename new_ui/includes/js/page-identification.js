@@ -1,9 +1,6 @@
 var fileCount = 0;
 
 $(function() {
-	
-
-console.log(identificationAudio);
 
 	var settingsObj = JSON.parse(settingsJSON);
 
@@ -11,45 +8,27 @@ console.log(identificationAudio);
 	Long_ID_Update(settingsObj.ID_Long_Mode);
 
 
-
-	$('#testBtn').on('click', function(){
-		console.log('clicked');
-		buildIDRow({
-			fileIndex: "22",
-			fileLabel: "Test",
-			fileName: "test.wav",
-			downloadURL: "https://google.com",
-		})
-	});
-
-
 	fullIDObj = JSON.parse(identificationAudio);
 	$.each(fullIDObj, function(index, curFile) {
 		curFile['fileIndex'] = index;
 		buildIDRow(curFile);
-console.log(curFile);		
 		fileCount++;
 	});
-    $('#id_library').DataTable( {
-        "ordering": false,
-        "searching":     false,
-        "info":   false,
-        "paging":   true,
-    } );
 
-
-
-	function buildIDRow(input) {
-		var $template = $('#idRowTemplate').html();
-		$template = $template.replace(/%%INDEX%%/g, input.fileIndex)
-			.replace(/%%FILE_LABEL%%/g, input.fileLabel)
-			.replace(/%%FILE_NAME%%/g, input.fileName)
-			.replace(/%%FILE_URL%%/g, input.fileURL);
-
-	    $('#id_library tbody').append($template);		
-	}
-
-
+	$('#id_library').DataTable({
+		responsive: true,
+		bFilter: false,
+        bSort: true,
+        aaSorting: [],
+        info: false,
+        paging: true,
+        searching: false,
+		"order": [0, 'asc'],
+		"columns": [
+			null,
+			{ "orderable": false },
+		]
+    });
 
 
 	/* ------------------------------------------------------------------------- */
@@ -143,7 +122,6 @@ function sortSelectOptions(id) {
 	}); 
 	options.appendTo('#'+id);
 }
-
 
 
 	/* ------------------------------------------------------------------------- */
@@ -331,5 +309,57 @@ $('#'+curRowID+' audio').load(); // Reload the new filename into player
 
 	});
 
-
 })
+
+
+
+
+
+/* ------------------------------------------------------------------------- */
+// UPLOAD CALLBACK FUNCTION
+
+function uploadCallback (jsonResponse) {
+	var response = JSON.parse(jsonResponse);
+	if (response.status == 'success') {
+		$.each(response.data, function(index, curFile) {
+			console.log(curFile);
+			addIDRow({
+				addRow: true,
+				fileLabel: curFile.fileLabel,
+				fileName: curFile.fileName,
+				fileURL: curFile.downloadURL,
+			})
+		});
+	} else if (response.status == 'error') {
+		// orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+		console.log('Upload Error');
+	}
+}
+
+
+function addIDRow(input) {
+	var rowIndex = fileCount;
+	fileCount++;
+
+	var $template = $('#idRowTemplate').html();
+	$template = $template.replace(/%%INDEX%%/g, rowIndex)
+		.replace(/%%FILE_LABEL%%/g, input.fileLabel)
+		.replace(/%%FILE_NAME%%/g, input.fileName)
+		.replace(/%%FILE_URL%%/g, input.fileURL);
+
+	t = $('#id_library').DataTable();
+	var row = t.row.add($($template)).select().draw();
+    setTimeout(function(){t.row(row).deselect();}, 5000);
+}
+
+
+function buildIDRow(input) {
+	var $template = $('#idRowTemplate').html();
+	$template = $template.replace(/%%INDEX%%/g, input.fileIndex)
+		.replace(/%%FILE_LABEL%%/g, input.fileLabel)
+		.replace(/%%FILE_NAME%%/g, input.fileName)
+		.replace(/%%FILE_URL%%/g, input.fileURL);
+
+    $('#id_library tbody').append($template);		
+}
+

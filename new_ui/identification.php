@@ -271,8 +271,6 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
                   <div class="x_title">
                     <h4 class="navbar-left"><?=_('Identification Clip Library')?></h4>
                     <div class="nav navbar-right">
-<button type="button" id="testBtn" class="btn btn-success">TEST</button>
-
                       <button type="button" class="btn btn-success upload_file" data-upload-type="identification"><i class="fa fa-upload"></i> <?=_('Upload ID Clip')?></button>
                     </div>
                     <div class="clearfix"></div>
@@ -317,7 +315,7 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 			<span class="audio_name">%%FILE_LABEL%%</span>
 		</td>
 
-		<td>			
+		<td class="options">			
           <ul class="nav nav-pills" role="tablist">
             <li role="presentation" class="dropdown">
               <a id="drop6" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false"><i class="fa fa-cog"></i> <span class="caret"></span></a>
