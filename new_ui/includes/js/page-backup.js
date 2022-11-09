@@ -195,6 +195,26 @@ $('.testBtn').on('click', function(e) {
 
 
 
+/* ------------------------------------------------------------------------- */
+// UPLOAD CALLBACK FUNCTION
+
+function uploadCallback (jsonResponse) {
+	var response = JSON.parse(jsonResponse);
+	if (response.status == 'success') {
+		$.each(response.data, function(index, curFile) {
+			addRow([{
+				'fileName': curFile.fileName,
+				'fileDate': curFile.fileDate,
+				'fileSize': curFile.fileSize,
+				'downloadURL': curFile.downloadURL
+			}]);
+		});
+	} else if (response.status == 'error') {
+		// orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+		console.log('Upload Error');
+	}
+}
+
 function addRow(response) {
 	$.each(response, function(index, curFile) {
 		fileCount++;
@@ -202,23 +222,24 @@ function addRow(response) {
 	
 		var $template = $('#backupRowTemplate').html();
 		$template = $template.replace(/%%INDEX%%/g, fileCount)
-			.replace(/%%FILENAME%%/g, curFile.filename)
-			.replace(/%%FULLDATE%%/g, formatDateTime(curFile.datetime, 'longDateTime'))
-			.replace(/%%DATE%%/g, formatDateTime(curFile.datetime))
-			.replace(/%%ISODATE%%/g, curFile.datetime)
-			.replace(/%%SIZE%%/g, formatFileSize(curFile.size))
-			.replace(/%%RAWSIZE%%/g, curFile.size)
-			.replace(/%%URL%%/g, '#');
+			.replace(/%%FILENAME%%/g, curFile.fileName)
+			.replace(/%%FULLDATE%%/g, formatDateTime(curFile.fileDate, 'longDateTime'))
+			.replace(/%%DATE%%/g, formatDateTime(curFile.fileDate))
+			.replace(/%%ISODATE%%/g, curFile.fileDate)
+			.replace(/%%SIZE%%/g, formatFileSize(curFile.fileSize))
+			.replace(/%%RAWSIZE%%/g, curFile.fileSize)
+			.replace(/%%URL%%/g, curFile.downloadURL);
 
 		t = $('#backup-table-responsive').DataTable();
 		var row = t.row.add($($template)).select().draw();
 	    setTimeout(function(){t.row(row).deselect();}, 5000);
 	
-		totalDirSize = totalDirSize + curFile.size;
+		totalDirSize = totalDirSize + curFile.fileSize;
 	});
 
 	$('.dataTables_info span').html(formatFileSize(totalDirSize));
 }
+
 
 
 // Format File Size
