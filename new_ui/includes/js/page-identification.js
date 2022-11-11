@@ -8,27 +8,41 @@ $(function() {
 	Long_ID_Update(settingsObj.ID_Long_Mode);
 
 
-	fullIDObj = JSON.parse(identificationAudio);
-	$.each(fullIDObj, function(index, curFile) {
-		curFile['fileIndex'] = index;
-		buildIDRow(curFile);
-		fileCount++;
-	});
-
 	$('#id_library').DataTable({
 		responsive: true,
 		bFilter: false,
         bSort: true,
         aaSorting: [],
-        info: false,
+        info: true,
         paging: true,
+        pageLength: 10,
+        lengthMenu: [10, 25],
         searching: false,
-		"order": [0, 'asc'],
-		"columns": [
+		order: [0, 'asc'],
+		columns: [
 			null,
-			{ "orderable": false },
-		]
+			{ orderable: false },
+		],
+		language: {
+			emptyTable: "No custom identification sounds in library. Please upload your first.",
+			lengthMenu: "Show _MENU_ Sounds",
+			info: "Showing _START_ to _END_ of _TOTAL_ Sounds",
+			infoEmpty: "",
+			paginate: {
+				previous: "Previous",
+				next: "Next"
+			},
+		}
+
     });
+
+	fullIDObj = JSON.parse(identificationAudio);
+	$.each(fullIDObj, function(index, curFile) {
+		curFile['fileIndex'] = index;
+		addIDRow(curFile);
+		fileCount++;
+	});
+
 
 
 	/* ------------------------------------------------------------------------- */
@@ -325,10 +339,12 @@ function uploadCallback (jsonResponse) {
 			console.log(curFile);
 			addIDRow({
 				addRow: true,
+				fileIndex: fileCount,
 				fileLabel: curFile.fileLabel,
 				fileName: curFile.fileName,
 				fileURL: curFile.downloadURL,
 			})
+			fileCount++;
 		});
 	} else if (response.status == 'error') {
 		// orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
@@ -338,28 +354,20 @@ function uploadCallback (jsonResponse) {
 
 
 function addIDRow(input) {
-	var rowIndex = fileCount;
-	fileCount++;
-
-	var $template = $('#idRowTemplate').html();
-	$template = $template.replace(/%%INDEX%%/g, rowIndex)
-		.replace(/%%FILE_LABEL%%/g, input.fileLabel)
-		.replace(/%%FILE_NAME%%/g, input.fileName)
-		.replace(/%%FILE_URL%%/g, input.fileURL);
-
-	t = $('#id_library').DataTable();
-	var row = t.row.add($($template)).select().draw();
-    setTimeout(function(){t.row(row).deselect();}, 5000);
-}
-
-
-function buildIDRow(input) {
 	var $template = $('#idRowTemplate').html();
 	$template = $template.replace(/%%INDEX%%/g, input.fileIndex)
 		.replace(/%%FILE_LABEL%%/g, input.fileLabel)
 		.replace(/%%FILE_NAME%%/g, input.fileName)
 		.replace(/%%FILE_URL%%/g, input.fileURL);
 
-    $('#id_library tbody').append($template);		
-}
+	t = $('#id_library').DataTable();
 
+	// Render row, highlight if a new/uploaded row
+	if (input.addRow == true) {
+		var row = t.row.add($($template)).select().draw();
+	    setTimeout(function(){t.row(row).deselect();}, 10000);
+	} else {
+		var row = t.row.add($($template)).draw();
+		
+	}
+}

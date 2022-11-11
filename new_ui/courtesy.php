@@ -16,7 +16,7 @@ $customCSS = 'page-courtesy.css, orp-audio-player.css, upload-file.css'; // 'fil
 include('includes/header.php');
 
 $AudioFiles = new AudioFiles();
-$identificationAudio = $AudioFiles->get_audio_files('courtesy_tones');
+$courtesyToneAudio = $AudioFiles->get_audio_filesJSON('courtesy_tones');
 ?>
 
         <!-- page content -->
@@ -47,42 +47,12 @@ $identificationAudio = $AudioFiles->get_audio_files('courtesy_tones');
 					  <thead>
 						  <tr>
 							  <th><?=_('Name')?></th>
-							  <th class="button_grp"><?=_('Actions')?></th>
+							  <th class="button_grp" style="text-align: right;"><?=_('Actions')?></th>
 						  </tr>
 					  </thead>   
 
                       <tbody>
-						<?php
-							foreach($identificationAudio as $curKey => $curFile) { 
-						?>
-
-							<tr id="clip<?=$curKey?>" data-row-name="<?=$curFile['fileLabel']?>" data-row-file="<?=$curFile['fileName']?>">
-								<td>
-									<div id="player<?=$curKey?>" class="orp_player">
-									    <audio preload="true">
-									        <source src="<?=$curFile['fileURL']?>">
-									    </audio>
-									    <button class="play"><span></span></button>
-									</div>
-
-									<span class="audio_name"><?=$curFile['fileLabel']?></span>
-								</td>
-
-								<td>			
-									<div class="btn-group btn-group-sm audio-actions" role="group">
-										<button class="select_file btn btn-success" type="button"><i class="fa fa-repeat"></i> <?=_('Select')?></button>
-										<button class="rename_file btn btn-secondary" type="button"><i class="fa fa-repeat"></i> <?=_('Rename')?></button>
-										<button class="delete_file btn btn-danger" type="button"><i class="fa fa-remove"></i> <?=_('Delete')?></button>
-									</div>
-								</td>
-							</tr>
-
-						<?php } ?>
-
                       </tbody>
-
-
-
                     </table>
 					
 					
@@ -96,19 +66,41 @@ $identificationAudio = $AudioFiles->get_audio_files('courtesy_tones');
         </div>
         <!-- /page content -->
 
+<? ######################################################################### ?>
+
+<script id="courtesyRowTemplate" type = "text/template">
+	<tr id="clip%%INDEX%%" data-row-name="%%FILE_LABEL%%" data-row-file="%%FILE_NAME%%">
+		<td>
+			<div id="player%%INDEX%%" class="orp_player">
+			    <audio preload="true">
+			        <source src="%%FILE_URL%%">
+			    </audio>
+			    <button class="play"><span></span></button>
+			</div>
+
+			<span class="audio_name">%%FILE_LABEL%%</span>
+		</td>
+
+		<td>			
+			<div class="btn-group btn-group-sm audio-actions" role="group">
+				<button class="select_file btn btn-success" type="button"><i class="fa fa-repeat"></i> <?=_('Select')?></button>
+				<button class="rename_file btn btn-secondary" type="button"><i class="fa fa-repeat"></i> <?=_('Rename')?></button>
+				<button class="delete_file btn btn-danger" type="button"><i class="fa fa-remove"></i> <?=_('Delete')?></button>
+			</div>
+		</td>
+	</tr>
+</script>
+
 
 <script>
+	var courtesyToneAudio = '<?= $courtesyToneAudio ?>';
+
 	var modal_RenameTitle = '<?=_('Rename Tone')?>';
 	var modal_RenameBody = '<p><?=_('What type of port do you wish to add?')?></p><select id="addPortType" name="addPortType" class="form-control"><option value="local" selected><?=_('Local Analog Port')?></option></select>';
 
 	var modal_DeleteTitle = '<?=_('Delete Tone')?>';
 	var modal_DeleteBody = '<p><?=_('What type of port do you wish to add?')?></p><select id="addPortType" name="addPortType" class="form-control"><option value="local" selected><?=_('Local Analog Port')?></option></select>';
 
-</script>
-
-
-<!-- Upload Dialog Modal -->
-<script>
 	var modal_UploadTitle = '<?=_('Upload Tone')?>';
 	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';
 	var modal_dzCustomDesc = '<?=_('Upload your own custom courtesy tone files. The file should be in MP3 or WAV format and should resemble a short beep.')?>';

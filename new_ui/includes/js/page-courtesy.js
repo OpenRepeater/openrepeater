@@ -1,16 +1,42 @@
+var fileCount = 0;
+
 $(function() {
 	
-	$('#courtesy-table-responsive').DataTable({
+	$('#courtesy-datatable-responsive').DataTable({
 		responsive: true,
-		bFilter: true,
+		bFilter: false,
         bSort: true,
         aaSorting: [],
+        info: true,
         paging: true,
-		"columns": [
+        pageLength: 25,
+        lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+        searching: true,
+		order: [0, 'asc'],
+		columns: [
 			null,
-			{ "orderable": false },
-		]
+			{ orderable: false },
+		],
+		language: {
+			emptyTable: "No courtesy tones in library. Please upload your first.",
+			lengthMenu: "Show _MENU_ Sounds",
+			search: "Search:",
+			info: "Showing _START_ to _END_ of _TOTAL_ Sounds",
+			infoEmpty: "",
+			paginate: {
+				previous: "Previous",
+				next: "Next"
+			},
+		}
     });
+
+	fullCourtesyObj = JSON.parse(courtesyToneAudio);
+	$.each(fullCourtesyObj, function(index, curFile) {
+		curFile['fileIndex'] = index;
+		addCourtesyRow(curFile);
+		fileCount++;
+	});
+
 
 	// RENAME FILE FUNCTION AND MODAL
 	$('.rename_file').click(function(e) {
@@ -66,3 +92,50 @@ $(function() {
 	});
 
 })
+
+
+
+
+
+/* ------------------------------------------------------------------------- */
+// UPLOAD CALLBACK FUNCTION
+
+function uploadCallback (jsonResponse) {
+	var response = JSON.parse(jsonResponse);
+	if (response.status == 'success') {
+		$.each(response.data, function(index, curFile) {
+			console.log(curFile);
+			addCourtesyRow({
+				addRow: true,
+				fileIndex: fileCount,
+				fileLabel: curFile.fileLabel,
+				fileName: curFile.fileName,
+				fileURL: curFile.downloadURL,
+			})
+			fileCount++;
+		});
+	} else if (response.status == 'error') {
+		// orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+		console.log('Upload Error');
+	}
+}
+
+
+function addCourtesyRow(input) {
+	var $template = $('#courtesyRowTemplate').html();
+	$template = $template.replace(/%%INDEX%%/g, input.fileIndex)
+		.replace(/%%FILE_LABEL%%/g, input.fileLabel)
+		.replace(/%%FILE_NAME%%/g, input.fileName)
+		.replace(/%%FILE_URL%%/g, input.fileURL);
+
+	t = $('#courtesy-datatable-responsive').DataTable();
+
+	// Render row, highlight if a new/uploaded row
+	if (input.addRow == true) {
+		var row = t.row.add($($template)).select().draw();
+	    setTimeout(function(){t.row(row).deselect();}, 10000);
+	} else {
+		var row = t.row.add($($template)).draw();
+		
+	}
+}

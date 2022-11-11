@@ -9,13 +9,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-
-
-/*
-$customJS = 'dropzone.js, upload-file.js'; // 'file1.js, file2.js, ... '
-$customCSS = 'upload-file.css'; // 'file1.css, file2.css, ... '
-*/
-
 $customJS = 'page-identification.js, orp-audio-player.js, dropzone.js, upload-file.js, morse-resampler.js, morse-XAudioServer.js, morse.js, morse-main.js'; // 'file1.js, file2.js, ... '
 $customCSS = 'page-identification.css, orp-audio-player.css, upload-file.css'; // 'file1.css, file2.css, ... '
 
@@ -286,7 +279,6 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 					  </thead>   
 
                       <tbody>
-
                       </tbody>
 
                     </table>
