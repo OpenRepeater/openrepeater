@@ -9,7 +9,7 @@ class FileSystem {
 
 	private $courtesyTonePath = 'sounds/courtesy_tones/';
 	private $identificationPath = 'sounds/identification/';
-	private $modulePath = 'new_ui/dz/upload/';
+	private $modulePath = 'modules/';
 	private $backupPath = 'backup/';
 
 
@@ -81,9 +81,6 @@ class FileSystem {
 				// Convert audio foormat if audio upload type
 // 				if ($convertAudio) { $this->convert_audio($returnArray[$curKey]['full_path']); }
 
-
-// {"fileName":"n3mbh_2019-01-26_21-14-16.orp","fileDate":"2020-01-07T13:28:56 EST","fileSize":2105765,"downloadURL":"http://localhost/backup/n3mbh_2019-01-26_21-14-16.orp"}
-// {"status":"success","data":[{"filename":"fake1.orp","full_path":"\/var\/www\/openrepeater\/backup\/fake1.orp","tmp_name":"\/tmp\/phpPofKiI","size":0,"datetime":"20221108130405"}]}
 			}
 			return json_encode($returnArray);
 			
