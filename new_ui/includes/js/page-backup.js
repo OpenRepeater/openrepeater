@@ -88,12 +88,6 @@ $(function() {
 						//Display Message
 						orpNotify('success', modal_DeleteBackupNotifyTitle, modal_DeleteBackupNotifyDesc);
 					}
-	
-					// If no rows remain, then hide table and show message
-					if ( $('.backupRow').length == 0 ) {
-						$('#backup-table-responsive').hide();
-						$('#no_backups').fadeIn(500);
-					}
 				}
 			});
 

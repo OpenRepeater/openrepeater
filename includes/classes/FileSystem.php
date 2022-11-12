@@ -124,29 +124,33 @@ class FileSystem {
 			$uploadType = $inputArray['fileType'];
 			switch($uploadType) {
 				case 'courtesy_tone':
-					$folder_path = $this->courtesyTonePath;
+					$folder_path = $this->basePath . $this->courtesyTonePath;
 					break;
 				case 'identification':
-					$folder_path = $this->identificationPath;
-					break;
-				case 'module':
-					$folder_path = $this->modulePath;
+					$folder_path = $this->basePath . $this->identificationPath;
 					break;
 				case 'backup':
-					$folder_path = $this->backupPath;
+					$folder_path = $this->basePath . $this->backupPath;
 					break;
+				// Note: Modules not included as they must be uninstalled. See Module class.
 			}
 
 			$returnArray = [];
 			foreach($inputArray['deleteFiles'] as $curFile) {
-				unlink($folder_path . $curFile);
-				if (!file_exists($folder_path . $curFile)) {
-					$returnArray[$curFile] = 'success';
+				if (file_exists($folder_path . $curFile)) {
+					unlink($folder_path . $curFile);
+					if (!file_exists($folder_path . $curFile)) {
+						$returnArray[$curFile] = 'success';
+					} else {
+						$returnArray[$curFile] = 'error';
+					}
 				} else {
 					$returnArray[$curFile] = 'error';
 				}
 			}
 			return json_encode($returnArray);
+		} else {
+			return json_encode(['status'=>'empty']);
 		}
 	}
 
