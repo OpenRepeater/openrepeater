@@ -66,16 +66,17 @@ $(function() {
 	});
 	
 
-	// Delete Backup Function and Modal Display
+	// Delete Courtesy Tone Function and Modal Display
 	$('#courtesy-datatable-responsive').on('click', '.delete_file', function(e) {
 		e.preventDefault();
 		var fileName = $(this).parents('tr').attr('data-row-file');
+		var fileLabel = $(this).parents('tr').attr('data-row-name');
 		var rowID = $(this).parents('tr').attr('id');
 
 		var modalDetails = {
 			modalSize: 'small',
 			title: '<i class="fa fa-trash"></i> ' + modal_DeleteCourtesyTitle,
-			body: '<p>'+modal_DeleteCourtesyBody+':<br><strong>'+fileName+'</strong></p>',
+			body: '<p>'+modal_DeleteCourtesyBody+':<br><strong>'+fileLabel+'</strong></p>',
 			btnOK: modal_DeleteCourtesyBtnOK,
 			btnOKclass: 'btn-danger',
 			progressWait: false,
