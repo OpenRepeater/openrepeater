@@ -66,32 +66,60 @@ $(function() {
 	});
 	
 
-	// DELETE FILE FUNCTION AND MODAL
-	$('.delete_file').click(function(e) {
+	// Delete Backup Function and Modal Display
+	$('#courtesy-datatable-responsive').on('click', '.delete_file', function(e) {
 		e.preventDefault();
+		var fileName = $(this).parents('tr').attr('data-row-file');
+		var rowID = $(this).parents('tr').attr('id');
+
 		var modalDetails = {
 			modalSize: 'small',
-			title: '<i class="fa fa-remove"></i> ' + modal_DeleteTitle,
-			body: modal_DeleteBody,
+			title: '<i class="fa fa-trash"></i> ' + modal_DeleteCourtesyTitle,
+			body: '<p>'+modal_DeleteCourtesyBody+':<br><strong>'+fileName+'</strong></p>',
+			btnOK: modal_DeleteCourtesyBtnOK,
+			btnOKclass: 'btn-danger',
+			progressWait: false,
 		};
 
 		orpModalDisplay(modalDetails);
 
 		$('#orp_modal_ok').off('click'); // Remove other click events
 		$('#orp_modal_ok').click(function() {
-			var addPortType = $('#addPortType').val();
 
-			$('#orp_modal').modal('hide');
+			orpModalWaitBar(modal_DeleteCourtesyProgressTitle);
 
-			switch(addPortType) {
-				case 'local':
-					$("#accordion").append(portLocalTemplate);
-					break;
-			}
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_file_system.php',
+				data: {'action': 'delete', 'fileType': 'courtesy_tone', 'deleteFiles':[fileName]}, // future support for multifile delete
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					var deleteCount = 0;
+					var errorCount = 0;
+					$.each(response, function(curFile, status) {
+						if (status == 'success') {
+							deleteCount++;
+						} else {
+							errorCount++;
+						}
+					});
+
+					$('#orp_modal').modal('hide');
+
+					if (deleteCount > 0) {						
+						$('#' + rowID).slideUp(500);
+						$('#courtesy-datatable-responsive').DataTable().row('#' + rowID).remove().draw();
+		
+						//Display Message
+						orpNotify('success', modal_DeleteCourtesyNotifyTitle, modal_DeleteCourtesyNotifyDesc);
+					}
+				}
+			});
+
 		});
 	});
 
-})
+});
 
 
 

@@ -98,8 +98,12 @@ $courtesyToneAudio = $AudioFiles->get_audio_filesJSON('courtesy_tones');
 	var modal_RenameTitle = '<?=_('Rename Tone')?>';
 	var modal_RenameBody = '<p><?=_('What type of port do you wish to add?')?></p><select id="addPortType" name="addPortType" class="form-control"><option value="local" selected><?=_('Local Analog Port')?></option></select>';
 
-	var modal_DeleteTitle = '<?=_('Delete Tone')?>';
-	var modal_DeleteBody = '<p><?=_('What type of port do you wish to add?')?></p><select id="addPortType" name="addPortType" class="form-control"><option value="local" selected><?=_('Local Analog Port')?></option></select>';
+	var modal_DeleteCourtesyTitle = '<?= _('Delete Tone') ?>';
+	var modal_DeleteCourtesyBody = '<?= _('Are you sure you want to delete this courtesy tone?') ?>';
+	var modal_DeleteCourtesyBtnOK = '<?= _('Delete Forever') ?>';
+	var modal_DeleteCourtesyProgressTitle = '<?= _('Deleting Courtesy Tone') ?>';
+	var modal_DeleteCourtesyNotifyTitle = '<?= _('Courtesy Tone Deleted') ?>';
+	var modal_DeleteCourtesyNotifyDesc = '<?= _('The courtesy tone has been successfully deleted.') ?>';
 
 	var modal_UploadTitle = '<?=_('Upload Tone')?>';
 	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';
