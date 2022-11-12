@@ -203,7 +203,8 @@ $('#'+curRowID+' audio').load(); // Reload the new filename into player
 
 	/* ------------------------------------------------------------------------- */
 	// DELETE FILE FUNCTION AND MODAL
-	$('.delete_file').click(function(e) {
+/*
+	$('.deleteIdentification').click(function(e) {
 		e.preventDefault();
 
 		var curRowName = $(this).parents('tr').attr('data-row-name');
@@ -265,6 +266,64 @@ $('#'+curRowID+' audio').load(); // Reload the new filename into player
 			
 		}
 
+	});
+*/
+
+// PULL CODE FROM ABOVE TO CHECK IF IDENTIFICAITON IS IN USE BEFORE REMOVING, ADD TO FUNCTION BELOW.
+
+
+	// Delete Identification Function and Modal Display
+	$('#id_library').on('click', '.deleteIdentification', function(e) {
+		e.preventDefault();
+		var fileName = $(this).parents('tr').attr('data-row-file');
+		var fileLabel = $(this).parents('tr').attr('data-row-name');
+		var rowID = $(this).parents('tr').attr('id');
+
+		var modalDetails = {
+			modalSize: 'small',
+			title: '<i class="fa fa-trash"></i> ' + modal_DeleteIdentTitle,
+			body: '<p>'+modal_DeleteIdentBody+':<br><strong>'+fileLabel+'</strong></p>',
+			btnOK: modal_DeleteIdentBtnOK,
+			btnOKclass: 'btn-danger',
+			progressWait: false,
+		};
+
+		orpModalDisplay(modalDetails);
+
+		$('#orp_modal_ok').off('click'); // Remove other click events
+		$('#orp_modal_ok').click(function() {
+
+			orpModalWaitBar(modal_DeleteIdentProgressTitle);
+
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_file_system.php',
+				data: {'action': 'delete', 'fileType': 'identification', 'deleteFiles':[fileName]}, // future support for multifile delete
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					var deleteCount = 0;
+					var errorCount = 0;
+					$.each(response, function(curFile, status) {
+						if (status == 'success') {
+							deleteCount++;
+						} else {
+							errorCount++;
+						}
+					});
+
+					$('#orp_modal').modal('hide');
+
+					if (deleteCount > 0) {						
+						$('#' + rowID).slideUp(500);
+						$('#id_library').DataTable().row('#' + rowID).remove().draw();
+		
+						//Display Message
+						orpNotify('success', modal_DeleteIdentNotifyTitle, modal_DeleteIdentNotifyDesc);
+					}
+				}
+			});
+
+		});
 	});
 
 
