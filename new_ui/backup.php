@@ -44,16 +44,12 @@ $BackupRestore = new BackupRestore();
                   
                   <div class="x_content">
 
-					<div id="no_backups" style="display: none;">
-						<h4><?=_('There are no snapshots made yet. Click the Create Backup button above to create one.')?></h4>
-					</div>
-
                     <table id="backup-table-responsive" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
                       <thead>
                         <tr>
                           <th><?=_('Name')?></th>
-                          <th><?=_('Date')?></th>
-                          <th><?=_('Size')?></th>
+                          <th data-type="@data-sort"><?=_('Date')?></th>
+                          <th data-type="@data-sort"><?=_('Size')?></th>
                           <th><?=_('Action')?></th>
                         </tr>
                       </thead>
