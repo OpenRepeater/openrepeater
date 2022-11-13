@@ -71,6 +71,41 @@ if ( isset($_POST['getSoundDevices']) ) {
 
 
 
+# Module Operations
+if ( isset($_POST['moduleState']) ) {
+	$classModules = new Modules();
+	$moduleStateArray = json_decode($_POST['moduleState'], true);
+	$moduleID = $moduleStateArray['moduleKey'];
+	$moduleEnabled = $moduleStateArray['moduleEnabled'];
+	if ($moduleEnabled == 1) {
+		$result = $classModules->activateMod($moduleID);
+		if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
+	} else {
+		$result = $classModules->deactivateMod($moduleID);
+		if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
+	}
+	exit;
+}
+
+if ( isset($_POST['deleteModule']) ) {
+	$classModules = new Modules();
+	$deleteKey = json_decode($_POST['deleteModule'], true);
+	$svxlinkName = $classModules->get_module_svxlink_name($deleteKey);
+	$result = $classModules->remove_module($svxlinkName);
+	if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
+	exit;
+}
+
+if ( isset($_POST['moduleWrite']) ) {
+	$classModules = new Modules();
+	$updateArray = json_decode($_POST['moduleWrite'], true);
+	$result = $classModules->write_modules($updateArray);
+	if ($result) { echo '{"status":"success"}'; } else { echo '{"status":"error"}'; }
+	exit;
+}
+
+
+
 # Macro Operations
 if ( isset($_POST['updateMacro']) ) {
 	$classDB = new Database();
@@ -89,6 +124,8 @@ if ( isset($_POST['deleteMacro']) ) {
 }
 
 
+echo '{"status":"invalid"}';
+exit;
 
 
 // DEPRECIATED: Old UI update
