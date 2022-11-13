@@ -20,6 +20,9 @@ if ( isset($_POST['action']) ) {
 		case 'delete':		
 			echo $FileSystem->deleteFiles($_POST);
 			break;
+		case 'rename':		
+			echo $FileSystem->renameFile($_POST);
+			break;
 	}
 }
 

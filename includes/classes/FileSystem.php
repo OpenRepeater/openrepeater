@@ -57,14 +57,16 @@ class FileSystem {
 
 			$returnArray = [];
 			foreach($filesArray['file']['name'] as $curKey => $curFile) {
-				$returnArray[$curKey]['fileName'] = $curFile;
-				$returnArray[$curKey]['fileLabel'] = $curFile; // Needs Fixed
+				$newFile = str_replace(' ','_',$curFile);
+
+				$returnArray[$curKey]['fileName'] = $newFile;
+				$returnArray[$curKey]['fileLabel'] = pathinfo($newFile, PATHINFO_FILENAME);
 				$returnArray[$curKey]['fileDate'] = date("Y-m-d\TH:i:s T");
 				$returnArray[$curKey]['fileSize'] = $filesArray['file']['size'][$curKey];
 				if ($uploadType != 'module') {
-					$returnArray[$curKey]['downloadURL'] = $baseURL . $curFile;
+					$returnArray[$curKey]['downloadURL'] = $baseURL . $newFile;
 				}
-				$returnArray[$curKey]['full_path'] = $folder_path . $curFile;		
+				$returnArray[$curKey]['full_path'] = $folder_path . $newFile;		
 				$returnArray[$curKey]['tmp_name'] = $filesArray['file']['tmp_name'][$curKey];
 		
 		/*
@@ -121,8 +123,8 @@ class FileSystem {
 	public function deleteFiles($inputArray) {
 		$error_count = 0;
 		if(!empty($inputArray['deleteFiles'])) {
-			$uploadType = $inputArray['fileType'];
-			switch($uploadType) {
+			$fileType = $inputArray['fileType'];
+			switch($fileType) {
 				case 'courtesy_tone':
 					$folder_path = $this->basePath . $this->courtesyTonePath;
 					break;
@@ -154,6 +156,51 @@ class FileSystem {
 		}
 	}
 
+
+
+	###############################################
+	# Rename Files
+	###############################################
+
+	public function renameFile($inputArray) {
+		$oldFile = $inputArray['renameFile'];
+		$newFile = $inputArray['newName'];
+		$fileType = $inputArray['fileType'];
+
+		// Build base downloaod URL
+		$protocol = empty($_SERVER['HTTPS']) ? 'http' : 'https';
+		$baseURL = $protocol .'://' . $_SERVER['HTTP_HOST'] . '/';
+
+		switch($fileType) {
+			case 'courtesy_tone':
+				$folder_path = $this->basePath . $this->courtesyTonePath;
+				$baseURL = $baseURL . $this->courtesyTonePath;
+				break;
+			case 'identification':
+				$folder_path = $this->basePath . $this->identificationPath;
+				$baseURL = $baseURL . $this->identificationPath;
+				break;
+			case 'backup':
+				$folder_path = $this->basePath . $this->backupPath;
+				$baseURL = $baseURL . $this->backupPath;
+				break;
+		}
+
+		if ( file_exists($folder_path . $oldFile) && $oldFile != $newFile ) {
+			$ext = strtolower( pathinfo($oldFile, PATHINFO_EXTENSION) );
+			$newFile = pathinfo($newFile, PATHINFO_FILENAME); // remove extension if passed
+			$newFile = str_replace(' ','_',$newFile) . '.' . $ext; // remove spaces and add extension of original file
+			rename($folder_path . $oldFile, $folder_path . $newFile);
+			if (file_exists($folder_path . $newFile)) {
+				$newURL = $baseURL . $newFile;
+				return json_encode(['status'=>'success','newURL'=>$newURL]);
+			} else {
+				return json_encode(['status'=>'error']);
+			}
+		} else {
+			return json_encode(['status'=>'error']);
+		}
+	}
 
 
 }

@@ -314,7 +314,7 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
               <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6">
                 <li role="presentation"><a role="menuitem" class="renameIdentification" tabindex="-1" href="#"><i class="fa fa-repeat"></i> <?=_('Rename')?></a>
                 </li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="%%FILE_URL%%"><i class="fa fa-download"></i> <?=_('Download')?></a>
+                <li role="presentation"><a role="menuitem" class="identificationURL" tabindex="-1" href="%%FILE_URL%%"><i class="fa fa-download"></i> <?=_('Download')?></a>
                 </li>
                 <li role="presentation"><a role="menuitem" class="deleteIdentification" tabindex="-1"><i class="fa fa-remove"></i> <?=_('Delete')?></a>
                 </li>
@@ -340,7 +340,11 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 
 	var modal_RenameTitle = '<?=_('Rename Clip')?>';
 	var modal_RenameBody = '<p><?=_('Please enter the new file name')?></p>';
+	var modal_RenamePlaceholder = '<?=_('New File Name')?>';
 	var modal_RenameBtnOK = '<?=_('Rename')?>';
+	var modal_RenameProgressTitle = '<?= _('Renaming Clip') ?>';
+	var modal_RenameNotifyTitle = '<?= _('Clip Renamed') ?>';
+	var modal_RenameNotifyDesc = '<?= _('The identification clip has been successfully renamed.') ?>';
 
 
 
@@ -348,10 +352,11 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 	var modal_DeleteIdentBody = '<?= _('Are you sure you want to delete this identification clip?') ?>';
 	var modal_DeleteIdentBtnOK = '<?= _('Delete Forever') ?>';
 	var modal_DeleteIdentProgressTitle = '<?= _('Deleting Identification Clip') ?>';
-	var modal_DeleteIdentNotifyTitle = '<?= _('Identification Clip Deleted') ?>';
+	var modal_DeleteIdentNotifyTitle = '<?= _('Clip Deleted') ?>';
 	var modal_DeleteIdentNotifyDesc = '<?= _('The identification clip has been successfully deleted.') ?>';
 
 
+/*
 	var modal_DeleteTitle = '<?=_('Delete Clip')?>';
 	var modal_DeleteBody = '<p><?=_('Are you sure that you wish to delete the following clip?')?></p>';
 	var modal_DeleteBtnOK = '<?=_('Delete')?>';
@@ -360,6 +365,7 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 	var modal_DeleteErrorTitle = '<?=_('Delete Error')?>';
 	var modal_DeleteErrorBody = '<p><?=_('You cannot delete the following clip as it is in use.')?></p>';
 	var modal_DeleteErrorBtnOK = '<?=_('Dismiss')?>';
+*/
 
 	var modal_UploadTitle = '<?=_('Upload Identification')?>';
 	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';
