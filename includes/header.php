@@ -183,8 +183,8 @@ $settings = $Database->get_settings();
 						    	?>
 									<li><a class="ajax-link" href="../dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
 <!-- 									<li><a class="ajax-link" href="../settings.php"><i class="icon-wrench"></i><span class="hidden-tablet"> General Settings</span></a></li> -->
-									<li><a class="ajax-link" href="../identification.php"><i class="icon-bullhorn"></i><span class="hidden-tablet"> Identification</span></a></li>
-									<li><a class="ajax-link" href="../courtesy_tone.php"><i class="icon-music"></i><span class="hidden-tablet"> Courtesy Tones</span></a></li>
+<!-- 									<li><a class="ajax-link" href="../identification.php"><i class="icon-bullhorn"></i><span class="hidden-tablet"> Identification</span></a></li> -->
+<!-- 									<li><a class="ajax-link" href="../courtesy_tone.php"><i class="icon-music"></i><span class="hidden-tablet"> Courtesy Tones</span></a></li> -->
 									<?php
 										$ModulesClass = new Modules();
 										echo $ModulesClass->nav_setting_links();
