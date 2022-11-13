@@ -94,6 +94,7 @@ $courtesyToneAudio = $AudioFiles->get_audio_filesJSON('courtesy_tones');
 
 <script>
 	var courtesyToneAudio = '<?= $courtesyToneAudio ?>';
+	var currentCourtesyTone = '<?= $settings['courtesy'] ?>';
 
 	var modal_RenameTitle = '<?=_('Rename Tone')?>';
 	var modal_RenameBody = '<p><?=_('Please enter the new file name')?></p>';

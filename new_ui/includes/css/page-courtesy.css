@@ -35,3 +35,12 @@ table.dataTable th.button_grp {
 table.dataTable tbody>tr.selected {
 	background-color: rgba(141, 198, 63, .25);
 }
+
+.primary_selection {
+	color: #3b3b3b;
+	background-color: #afafaf!important
+}
+
+.primary_selection .btn-group {
+	display: none;
+}

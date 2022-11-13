@@ -37,6 +37,34 @@ $(function() {
 		fileCount++;
 	});
 
+
+	/* ------------------------------------------------------------------------- */
+	// SELECT COURTESY TONE FUNCTION
+
+	$('#courtesy-datatable-responsive').on('click', '.select_file', function(e) {
+		e.preventDefault();
+		var fileName = $(this).parents('tr').attr('data-row-file');
+		var rowID = $(this).parents('tr').attr('id');
+
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: {'settings': '{"courtesy":"'+fileName+'"}'},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+				} else if (response.status == 'success') {
+					$('tbody tr').removeClass('primary_selection');
+					$('#' + rowID).addClass('primary_selection');
+					rebuildActive();
+				} else {
+
+				}
+			}
+		});
+	});
+
 	
 
 	/* ------------------------------------------------------------------------- */
@@ -215,6 +243,9 @@ function addCourtesyRow(input) {
 	    setTimeout(function(){t.row(row).deselect();}, 10000);
 	} else {
 		var row = t.row.add($($template)).draw();
+		if (currentCourtesyTone == input.fileName) {
+			$('#clip' + input.fileIndex).addClass('primary_selection');
+		}
 		
 	}
 }
