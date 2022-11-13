@@ -43,6 +43,12 @@ $(function() {
 		fileCount++;
 	});
 
+	// Set Custom IDs to defaults
+	$('#ID_Short_CustomFile').val(settingsObj.ID_Short_CustomFile);
+	$('#ID_Long_CustomFile').val(settingsObj.ID_Long_CustomFile);
+	sortSelectOptions('#ID_Short_CustomFile');
+	sortSelectOptions('#ID_Long_CustomFile');
+
 
 
 	/* ------------------------------------------------------------------------- */
@@ -122,20 +128,7 @@ $(function() {
 		}
 		
 	}
-	
-	
-	/* ------------------------------------------------------------------------- */
 
-
-function sortSelectOptions(id) {
-	var options = $('#'+id+' option'); 
-	options.detach().sort(function(a, b) { 
-		var at = $(a).text(); 
-		var bt = $(b).text(); 
-		return (at > bt) ? 1 : ((at < bt) ? -1 : 0); 
-	}); 
-	options.appendTo('#'+id);
-}
 
 
 	/* ------------------------------------------------------------------------- */
@@ -199,12 +192,13 @@ function sortSelectOptions(id) {
 						$('#'+rowID+' .orp_player source').attr('src', response.newURL);
 						$('#'+rowID+' audio').load(); // Reload the new filename into player
 						$('#'+rowID+' a.identificationURL').attr('href', response.newURL);
+						
+						// Update name in dropdown select boxes
+						$('#ID_Short_CustomFile option[value="'+fileName+'"]').val(newClipFile).text(newClipName);
+						$('#ID_Long_CustomFile option[value="'+fileName+'"]').val(newClipFile).text(newClipName);
 
-						// $('#ID_Short_Custom_Audio option[value="'+oldClipFile+'"]').val(newClipFile).text(newClipName);
-						// sortSelectOptions('ID_Short_Custom_Audio');
-			
-						// $('#ID_Long_Custom_Audio option[value="'+oldClipFile+'"]').val(newClipFile).text(newClipName);
-						// sortSelectOptions('ID_Long_Custom_Audio');
+						sortSelectOptions('#ID_Short_CustomFile');
+						sortSelectOptions('#ID_Long_CustomFile');
 
 						//Display Message
 						orpNotify('success', modal_RenameNotifyTitle, modal_RenameNotifyDesc);
@@ -336,7 +330,11 @@ function sortSelectOptions(id) {
 					if (deleteCount > 0) {						
 						$('#' + rowID).slideUp(500);
 						$('#id_library').DataTable().row('#' + rowID).remove().draw();
-		
+
+						// Remove OLD NAME from dropdown select boxes
+						$('#ID_Short_CustomFile option[value="'+fileName+'"]').remove();
+						$('#ID_Long_CustomFile option[value="'+fileName+'"]').remove();
+
 						//Display Message
 						orpNotify('success', modal_DeleteIdentNotifyTitle, modal_DeleteIdentNotifyDesc);
 					}
@@ -450,4 +448,45 @@ function addIDRow(input) {
 		var row = t.row.add($($template)).draw();
 		
 	}
+
+	// Add to dropdown select boxes
+	$('#ID_Short_CustomFile').append($('<option>', {
+		value: input.fileName,
+		text: fileLabel
+	}));
+
+	$('#ID_Long_CustomFile').append($('<option>', {
+		value: input.fileName,
+		text: fileLabel
+	}));
+}
+
+
+function sortSelectOptions(selector) {
+	var origOptions = $(selector + ' option');
+    var selected = $(selector).val(); // cache selected value, before reordering
+
+	var optionsArray = [];
+	$.each(origOptions, function(index, curOption) {
+		optionsArray.push({value: curOption.value, text: curOption.text});
+	});	
+
+	optionsArray.sort(function(a, b){
+		let x = a.value.toLowerCase();
+		let y = b.value.toLowerCase();
+		if (x < y) {return -1;}
+		if (x > y) {return 1;}
+		return 0;
+	});
+
+	$(selector).empty();
+	
+	$.each(optionsArray, function(index, curOpt) {
+		$(selector).append($('<option>', {
+			value: curOpt.value,
+			text: curOpt.text
+		}));
+	});
+
+	$(selector).val(selected);
 }

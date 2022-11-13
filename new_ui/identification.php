@@ -68,15 +68,6 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
 						  <select id="ID_Short_CustomFile" name="ID_Short_CustomFile" class="form-control">
-							<?php
-								$activeShortFile = $settings['ID_Short_CustomFile'];
-								foreach($identificationAudio as $curFile) { 
-									$curOption = '<option value="'.$curFile['fileName'].'"';
-									$curOption .= $activeShortFile == $curFile['fileName'] ? ' selected': '';
-									$curOption .= '>'.$curFile['fileLabel'].'</option>';
-									echo $curOption;
-								}
-							?>
 						  </select>
                         </div>
                       </div>
@@ -146,15 +137,6 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
 						  <select id="ID_Long_CustomFile" name="ID_Long_CustomFile" class="form-control">
-							<?php
-								$activeShortFile = $settings['ID_Long_CustomFile'];
-								foreach($identificationAudio as $curFile) { 
-									$curOption = '<option value="'.$curFile['fileName'].'"';
-									$curOption .= $activeShortFile == $curFile['fileName'] ? ' selected': '';
-									$curOption .= '>'.$curFile['fileLabel'].'</option>';
-									echo $curOption;
-								}
-							?>
 						  </select>
                         </div>
                       </div>
@@ -331,6 +313,8 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 	$shortSettings = [
 		'ID_Short_Mode' => $settings['ID_Short_Mode'],
 		'ID_Long_Mode' => $settings['ID_Long_Mode'],
+		'ID_Short_CustomFile' => $settings['ID_Short_CustomFile'],
+		'ID_Long_CustomFile' => $settings['ID_Long_CustomFile'],
 	];
 ?>
 
