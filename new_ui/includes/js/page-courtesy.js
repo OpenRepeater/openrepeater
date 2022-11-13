@@ -37,36 +37,87 @@ $(function() {
 		fileCount++;
 	});
 
+	
 
+	/* ------------------------------------------------------------------------- */
 	// RENAME FILE FUNCTION AND MODAL
-	$('.rename_file').click(function(e) {
+
+	// FILTER INPUT: Only allow characters A-Z, a-z, 0-9, space and hyphen. ORP uses underscores in the background to replace spaces for actual file names.
+	$('#orp_modal').on('keypress', '#newFileName', function(e) {
+        var txt = String.fromCharCode(e.which);
+        if(!txt.match(/[A-Za-z0-9 -]/)) { return false; }
+	});
+
+	// Disable OK button if new matches old
+	$('#orp_modal').on('keyup', '#newFileName', function(e) {
+        if ( $('#newFileName').val() == $('#newFileName').attr('data-row-label') || $('#newFileName').val() == '' )  {
+			$('#orp_modal_ok').prop('disabled', true); // Disable OK Button	        
+        } else {
+			$('#orp_modal_ok').prop('disabled', false); // Enable OK Button	        
+        }
+	});
+
+	$('#courtesy-datatable-responsive').on('click', '.rename_file', function(e) {
 		e.preventDefault();
-		var rowCleanName = $(this).parents('tr').attr('data-row-name');
-		var rowFileName = $(this).parents('tr').attr('data-row-file');
+		var fileName = $(this).parents('tr').attr('data-row-file');
+		var fileLabel = $(this).parents('tr').attr('data-row-name');
+		var rowID = $(this).parents('tr').attr('id');
+
 		var modalDetails = {
 			modalSize: 'small',
 			title: '<i class="fa fa-repeat"></i> ' + modal_RenameTitle,
-			body: rowCleanName + modal_RenameBody,
+			body:  modal_RenameBody + '<input type="text" id="newFileName" name="newFileName" class="form-control" data-row-file="' + fileName + '" data-row-label="' + fileLabel + '" value="' + fileLabel + '" placeholder="' + modal_RenamePlaceholder + '">',
+			btnOK: modal_RenameBtnOK,
 		};
 
 		orpModalDisplay(modalDetails);
+		$('#orp_modal_ok').prop('disabled', true); // Disable OK Button	        
+
+		// Wait for modal and select input
+		var waitForModal = setInterval(function() {
+			$('#newFileName').focus().select();
+			clearInterval(waitForModal);
+		}, 500); 
 
 		$('#orp_modal_ok').off('click'); // Remove other click events
 		$('#orp_modal_ok').click(function() {
-			var addPortType = $('#addPortType').val();
+			var newClipName = $("#newFileName").val()
+			var newClipFile = newClipName.replace(/ /g, '_') + '.wav';
 
-			$('#orp_modal').modal('hide');
+			orpModalWaitBar(modal_RenameProgressTitle);
 
-			switch(addPortType) {
-				case 'local':
-					$("#accordion").append(portLocalTemplate);
-					break;
-			}
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_file_system.php',
+				data: {'action': 'rename', 'fileType': 'courtesy_tone', 'renameFile': fileName, 'newName': newClipFile},
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					if (response.status == 'success') {
+						$('#'+rowID).attr('data-row-name',newClipName);
+						$('#'+rowID).attr('data-row-file',newClipFile);
+						$('#'+rowID+' span.audio_name').text(newClipName);
+
+						$('#'+rowID+' .orp_player source').attr('src', response.newURL);
+						$('#'+rowID+' audio').load(); // Reload the new filename into player
+
+						//Display Message
+						orpNotify('success', modal_RenameNotifyTitle, modal_RenameNotifyDesc);
+					}
+
+					$('#orp_modal').modal('hide');
+		
+				}
+			});
+
 		});
+
 	});
+
 	
 
-	// Delete Courtesy Tone Function and Modal Display
+	/* ------------------------------------------------------------------------- */
+	// DELETE FILE FUNCTION AND MODAL
+
 	$('#courtesy-datatable-responsive').on('click', '.delete_file', function(e) {
 		e.preventDefault();
 		var fileName = $(this).parents('tr').attr('data-row-file');
@@ -133,7 +184,6 @@ function uploadCallback (jsonResponse) {
 	var response = JSON.parse(jsonResponse);
 	if (response.status == 'success') {
 		$.each(response.data, function(index, curFile) {
-			console.log(curFile);
 			addCourtesyRow({
 				addRow: true,
 				fileIndex: fileCount,
