@@ -26,26 +26,19 @@ class FileSystem {
 	public function uploadFiles($filesArray, $postArray) {
 		$error_count = 0;
 		
-		// Build base downloaod URL
-		$protocol = empty($_SERVER['HTTPS']) ? 'http' : 'https';
-		$baseURL = $protocol .'://' . $_SERVER['HTTP_HOST'] . '/';
-
 		if(!empty($filesArray)) {
 			$uploadType = $postArray['uploadType'];
 			switch($uploadType) {
 				case 'courtesy_tone':
 					$folder_path = $this->basePath . $this->courtesyTonePath;
-					$baseURL = $baseURL . $this->courtesyTonePath;
 					$convertAudio = true;
 					break;
 				case 'identification':
 					$folder_path = $this->basePath . $this->identificationPath;
-					$baseURL = $baseURL . $this->identificationPath;
 					$convertAudio = true;
 					break;
 				case 'restore':
 					$folder_path = $this->basePath . $this->backupPath;
-					$baseURL = $baseURL . $this->backupPath;
 					$convertAudio = false;
 					break;
 
@@ -64,7 +57,7 @@ class FileSystem {
 				$returnArray[$curKey]['fileDate'] = date("Y-m-d\TH:i:s T");
 				$returnArray[$curKey]['fileSize'] = $filesArray['file']['size'][$curKey];
 				if ($uploadType != 'module') {
-					$returnArray[$curKey]['downloadURL'] = $baseURL . $newFile;
+					$returnArray[$curKey]['downloadURL'] = $this->buildURL($newFile, $uploadType);
 				}
 				$returnArray[$curKey]['full_path'] = $folder_path . $newFile;		
 				$returnArray[$curKey]['tmp_name'] = $filesArray['file']['tmp_name'][$curKey];
@@ -93,7 +86,7 @@ class FileSystem {
 						$returnArray[$curKey]['fileName'] = pathinfo($outputFile, PATHINFO_BASENAME);
 						$returnArray[$curKey]['fileLabel'] = str_replace( '_', ' ' , pathinfo($outputFile, PATHINFO_FILENAME) );
 						$returnArray[$curKey]['fileSize'] = filesize($outputFile);
-						$returnArray[$curKey]['downloadURL'] = $baseURL . pathinfo($outputFile, PATHINFO_BASENAME);
+						$returnArray[$curKey]['downloadURL'] = $this->buildURL( pathinfo($outputFile, PATHINFO_BASENAME), $uploadType );
 					}
 				}
 
@@ -178,22 +171,15 @@ class FileSystem {
 		$newFile = $inputArray['newName'];
 		$fileType = $inputArray['fileType'];
 
-		// Build base downloaod URL
-		$protocol = empty($_SERVER['HTTPS']) ? 'http' : 'https';
-		$baseURL = $protocol .'://' . $_SERVER['HTTP_HOST'] . '/';
-
 		switch($fileType) {
 			case 'courtesy_tone':
 				$folder_path = $this->basePath . $this->courtesyTonePath;
-				$baseURL = $baseURL . $this->courtesyTonePath;
 				break;
 			case 'identification':
 				$folder_path = $this->basePath . $this->identificationPath;
-				$baseURL = $baseURL . $this->identificationPath;
 				break;
 			case 'backup':
 				$folder_path = $this->basePath . $this->backupPath;
-				$baseURL = $baseURL . $this->backupPath;
 				break;
 		}
 
@@ -203,7 +189,7 @@ class FileSystem {
 			$newFile = str_replace(' ','_',$newFile) . '.' . $ext; // remove spaces and add extension of original file
 			rename($folder_path . $oldFile, $folder_path . $newFile);
 			if (file_exists($folder_path . $newFile)) {
-				$newURL = $baseURL . $newFile;
+				$newURL = $this->buildURL($newFile, $fileType);
 				return json_encode(['status'=>'success','newURL'=>$newURL]);
 			} else {
 				return json_encode(['status'=>'error']);
@@ -212,6 +198,36 @@ class FileSystem {
 			return json_encode(['status'=>'error']);
 		}
 	}
+
+
+
+	###############################################
+	# Return URL path
+	###############################################
+
+	public function buildURL($fileName, $fileType) {
+		// Build base downloaod URL
+		$protocol = empty($_SERVER['HTTPS']) ? 'http' : 'https';
+		$baseURL = $protocol .'://' . $_SERVER['HTTP_HOST'] . '/';
+
+		switch($fileType) {
+			case 'courtesy_tone':
+				$baseURL = $baseURL . $this->courtesyTonePath;
+				break;
+			case 'identification':
+				$baseURL = $baseURL . $this->identificationPath;
+				break;
+			case 'restore':
+				$baseURL = $baseURL . $this->backupPath;
+				break;
+			case 'module':
+				$baseURL = $baseURL . $this->modulePath;
+				break;
+		}
+		
+		return $baseURL . $fileName;
+	}
+
 
 
 }
