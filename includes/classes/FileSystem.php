@@ -60,7 +60,7 @@ class FileSystem {
 				$newFile = str_replace(' ','_',$curFile);
 
 				$returnArray[$curKey]['fileName'] = $newFile;
-				$returnArray[$curKey]['fileLabel'] = pathinfo($newFile, PATHINFO_FILENAME);
+				$returnArray[$curKey]['fileLabel'] = str_replace( '_', ' ' , pathinfo($newFile, PATHINFO_FILENAME) );
 				$returnArray[$curKey]['fileDate'] = date("Y-m-d\TH:i:s T");
 				$returnArray[$curKey]['fileSize'] = $filesArray['file']['size'][$curKey];
 				if ($uploadType != 'module') {
@@ -81,7 +81,21 @@ class FileSystem {
 				move_uploaded_file($returnArray[$curKey]['tmp_name'], $returnArray[$curKey]['full_path']);
 				
 				// Convert audio foormat if audio upload type
-// 				if ($convertAudio) { $this->convert_audio($returnArray[$curKey]['full_path']); }
+				if ($convertAudio) { 
+					$inputFile = $folder_path . $newFile;
+					$outputFile = $folder_path . pathinfo($newFile, PATHINFO_FILENAME) . '.wav';
+
+					$result = $this->convert_audio($inputFile, $outputFile);
+					
+					// Update return array with new info.
+					if ($convertAudio) {
+						$returnArray[$curKey]['full_path'] = $outputFile;
+						$returnArray[$curKey]['fileName'] = pathinfo($outputFile, PATHINFO_BASENAME);
+						$returnArray[$curKey]['fileLabel'] = str_replace( '_', ' ' , pathinfo($outputFile, PATHINFO_FILENAME) );
+						$returnArray[$curKey]['fileSize'] = filesize($outputFile);
+						$returnArray[$curKey]['downloadURL'] = $baseURL . pathinfo($outputFile, PATHINFO_BASENAME);
+					}
+				}
 
 			}
 			return json_encode($returnArray);
@@ -91,8 +105,6 @@ class FileSystem {
 			return 'no files sent';
 		}
 
-
-// 		return $this->endUserSession();
 	}
 
 
@@ -102,11 +114,10 @@ class FileSystem {
 	###############################################
 
 	private function convert_audio($source, $destination) {
-		$destination = '/var/lib/openrepeater/sounds/identification/123.wav';
-
-		$soxCommand = 'sox "' . $source . '" -r16000 -b16 -esigned-integer -c1 "' . $destination . '"';
+		$tmpSource = '/tmp/' . pathinfo($source, PATHINFO_BASENAME);
+		rename($source, $tmpSource); // move source file to tmp
+		$soxCommand = 'sox "' . $tmpSource . '" -r16000 -b16 -esigned-integer -c1 "' . $destination . '"';
 		exec($soxCommand);
-
 		if (file_exists($destination)) {
 			return true;
 		} else {
