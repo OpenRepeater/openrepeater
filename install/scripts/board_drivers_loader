@@ -1,41 +1,36 @@
 #!/bin/bash
 FILE_PATH_PRECONFIG=/usr/sbin/svxlink_rpi_preconfig
-FILE_PATH_GPIO_UP=/usr/sbin/svxlink_gpio_up
 FILE_PATH_SERVICE=/lib/systemd/system/svxlink_gpio_setup.service
 Pattern="Type=oneshot"
-Var="ExecStart=$FILE_PATH_PRECONFIG"
+GREP_PATTERN="ExecStartPre="
+Var="ExecStartPre=$FILE_PATH_PRECONFIG"
 
 function load_drivers_pi_repeater_1x_v1 {
-	# empty the file
-	echo "" > "$FILE_PATH_PRECONFIG"
-	# put in the desired contents
-	cat >> "$FILE_PATH_PRECONFIG" <<- DELIM
-		#! /bin/bash
+	cat > "$FILE_PATH_PRECONFIG" <<- DELIM
+		#!/bin/bash
 		#Configuration for Pi-Repeater-1X Version 1
 		dtoverlay fe-pi-audio
 		dtoverlay mcp23017 addr=0x20 gpiopin=12
 		dtoverlay mcp3008 spi0-0-present spi0-0-speed=1000000
 	DELIM
+	chmod +x $FILE_PATH_PRECONFIG
 }
 
 function load_drivers_pi_repeater_2x_v3 {
-	# empty the file
-	echo "" > "$FILE_PATH_PRECONFIG"
 	# put in the desired contents
-	cat >> "$FILE_PATH_PRECONFIG" <<- DELIM
-		#! /bin/bash
+	cat > "$FILE_PATH_PRECONFIG" <<- DELIM
+		#!/bin/bash
 		#Configuration for Pi-Repeater-2X Version 3
 		dtoverlay fe-pi-audio
 		dtoverlay mcp23017 addr=0x20 gpiopin=12
 		dtoverlay mcp3008 spi0-0-present spi0-0-speed=1000000
 	DELIM
+	chmod +x $FILE_PATH_PRECONFIG
 }
 
 function load_drivers_pi_repeater_4x_v2 {
-	# empty the file
-	echo "" > "$FILE_PATH_PRECONFIG"
 	# put in the desired contents
-	cat >> "$FILE_PATH_PRECONFIG" <<- DELIM
+	cat > "$FILE_PATH_PRECONFIG" <<- DELIM
 		#! /bin/bash
 		#Configuration for Pi-Repeater-4X Version 2
 		dtoverlay mcp23017 addr=0x27 gpiopin=23
@@ -81,11 +76,16 @@ function load_drivers_pi_repeater_4x_v2 {
 		dtparam=cha_gain=2
 
 	DELIM
+	chmod +x $FILE_PATH_PRECONFIG
 }
 
 function prepare_svxlink_gpio_up {
-	# edit /lib/systemd/system/svxlink_gpio_setup.service to insert the new dependency
-	# for the hardware preconfig script
-	sed -i "/${Pattern}/a${Var}" $FILE_PATH_SERVICE
+	if ! grep -q $GREP_PATTERN $FILE_PATH_SERVICE 
+	then
+		# edit /lib/systemd/system/svxlink_gpio_setup.service to insert the new dependency
+		# for the hardware preconfig script
+		sed -i "/$Pattern/a$Var" $FILE_PATH_SERVICE
+	fi
+	
 }
-load_drivers_pi_repeater_4x_v2
+
