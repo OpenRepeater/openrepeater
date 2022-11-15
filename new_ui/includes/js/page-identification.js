@@ -1,9 +1,6 @@
 var fileCount = 0;
 
 $(function() {
-	
-
-console.log(identificationAudio);
 
 	var settingsObj = JSON.parse(settingsJSON);
 
@@ -11,44 +8,46 @@ console.log(identificationAudio);
 	Long_ID_Update(settingsObj.ID_Long_Mode);
 
 
+	$('#id_library').DataTable({
+		responsive: true,
+		bFilter: false,
+        bSort: true,
+        aaSorting: [],
+        info: true,
+        paging: true,
+        pageLength: 10,
+        lengthMenu: [10, 25],
+        searching: false,
+		order: [0, 'asc'],
+		columns: [
+			null,
+			{ orderable: false },
+		],
+		language: {
+			emptyTable: "No custom identification sounds in library. Please upload your first.",
+			lengthMenu: "Show _MENU_ Sounds",
+			info: "Showing _START_ to _END_ of _TOTAL_ Sounds",
+			infoEmpty: "",
+			paginate: {
+				previous: "Previous",
+				next: "Next"
+			},
+		}
 
-	$('#testBtn').on('click', function(){
-		console.log('clicked');
-		buildIDRow({
-			fileIndex: "22",
-			fileLabel: "Test",
-			fileName: "test.wav",
-			downloadURL: "https://google.com",
-		})
-	});
-
+    });
 
 	fullIDObj = JSON.parse(identificationAudio);
 	$.each(fullIDObj, function(index, curFile) {
 		curFile['fileIndex'] = index;
-		buildIDRow(curFile);
-console.log(curFile);		
+		addIDRow(curFile);
 		fileCount++;
 	});
-    $('#id_library').DataTable( {
-        "ordering": false,
-        "searching":     false,
-        "info":   false,
-        "paging":   true,
-    } );
 
-
-
-	function buildIDRow(input) {
-		var $template = $('#idRowTemplate').html();
-		$template = $template.replace(/%%INDEX%%/g, input.fileIndex)
-			.replace(/%%FILE_LABEL%%/g, input.fileLabel)
-			.replace(/%%FILE_NAME%%/g, input.fileName)
-			.replace(/%%FILE_URL%%/g, input.fileURL);
-
-	    $('#id_library tbody').append($template);		
-	}
-
+	// Set Custom IDs to defaults
+	$('#ID_Short_CustomFile').val(settingsObj.ID_Short_CustomFile);
+	$('#ID_Long_CustomFile').val(settingsObj.ID_Long_CustomFile);
+	sortSelectOptions('#ID_Short_CustomFile');
+	sortSelectOptions('#ID_Long_CustomFile');
 
 
 
@@ -129,89 +128,97 @@ console.log(curFile);
 		}
 		
 	}
-	
-	
-	/* ------------------------------------------------------------------------- */
-
-
-function sortSelectOptions(id) {
-	var options = $('#'+id+' option'); 
-	options.detach().sort(function(a, b) { 
-		var at = $(a).text(); 
-		var bt = $(b).text(); 
-		return (at > bt) ? 1 : ((at < bt) ? -1 : 0); 
-	}); 
-	options.appendTo('#'+id);
-}
 
 
 
 	/* ------------------------------------------------------------------------- */
 	// RENAME FILE FUNCTION AND MODAL
-	$('.rename_file').click(function(e) {
+
+	// FILTER INPUT: Only allow characters A-Z, a-z, 0-9, space and hyphen. ORP uses underscores in the background to replace spaces for actual file names.
+	$('#orp_modal').on('keypress', '#newFileName', function(e) {
+        var txt = String.fromCharCode(e.which);
+        if(!txt.match(/[A-Za-z0-9 -]/)) { return false; }
+	});
+
+	// Disable OK button if new matches old
+	$('#orp_modal').on('keyup', '#newFileName', function(e) {
+        if ( $('#newFileName').val() == $('#newFileName').attr('data-row-label') || $('#newFileName').val() == '' )  {
+			$('#orp_modal_ok').prop('disabled', true); // Disable OK Button	        
+        } else {
+			$('#orp_modal_ok').prop('disabled', false); // Enable OK Button	        
+        }
+	});
+
+	$('#id_library').on('click', '.renameIdentification', function(e) {
 		e.preventDefault();
-		var oldClipName = $(this).parents('tr').attr('data-row-name');
-		var oldClipFile = $(this).parents('tr').attr('data-row-file');
-		var curRowID = $(this).parents('tr').prop('id');
-		
+		var fileName = $(this).parents('tr').attr('data-row-file');
+		var fileLabel = $(this).parents('tr').attr('data-row-name');
+		var rowID = $(this).parents('tr').attr('id');
+
 		var modalDetails = {
 			modalSize: 'small',
 			title: '<i class="fa fa-repeat"></i> ' + modal_RenameTitle,
-			body:  modal_RenameBody + '<input type="text" id="newFileName" name="newFileName" class="form-control" value="' + oldClipName + '" placeholder="New File Name">',
+			body:  modal_RenameBody + '<input type="text" id="newFileName" name="newFileName" class="form-control" data-row-file="' + fileName + '" data-row-label="' + fileLabel + '" value="' + fileLabel + '" placeholder="' + modal_RenamePlaceholder + '">',
 			btnOK: modal_RenameBtnOK,
 		};
 
 		orpModalDisplay(modalDetails);
-		
+		$('#orp_modal_ok').prop('disabled', true); // Disable OK Button	        
+
 		// Wait for modal and select input
 		var waitForModal = setInterval(function() {
 			$('#newFileName').focus().select();
 			clearInterval(waitForModal);
 		}, 500); 
 
-
 		$('#orp_modal_ok').off('click'); // Remove other click events
 		$('#orp_modal_ok').click(function() {
 			var newClipName = $("#newFileName").val()
 			var newClipFile = newClipName.replace(/ /g, '_') + '.wav';
-	
-	
-			console.log( newClipName );
 
-			console.log(curRowID);
+			orpModalWaitBar(modal_RenameProgressTitle);
 
-			$('#'+curRowID).attr('data-row-name',newClipName);
-			$('#'+curRowID).attr('data-row-file',newClipFile);
-			$('#'+curRowID+' span.audio_name').text(newClipName);
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_file_system.php',
+				data: {'action': 'rename', 'fileType': 'identification', 'renameFile': fileName, 'newName': newClipFile},
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					if (response.status == 'success') {
+						$('#'+rowID).attr('data-row-name',newClipName);
+						$('#'+rowID).attr('data-row-file',newClipFile);
+						$('#'+rowID+' span.audio_name').text(newClipName);
 
-$('#'+curRowID+' source').attr('src', 'DUMMY');
-$('#'+curRowID+' audio').load(); // Reload the new filename into player
+						$('#'+rowID+' .orp_player source').attr('src', response.newURL);
+						$('#'+rowID+' audio').load(); // Reload the new filename into player
+						$('#'+rowID+' a.identificationURL').attr('href', response.newURL);
+						
+						// Update name in dropdown select boxes
+						$('#ID_Short_CustomFile option[value="'+fileName+'"]').val(newClipFile).text(newClipName);
+						$('#ID_Long_CustomFile option[value="'+fileName+'"]').val(newClipFile).text(newClipName);
 
+						sortSelectOptions('#ID_Short_CustomFile');
+						sortSelectOptions('#ID_Long_CustomFile');
 
-			$('#ID_Short_Custom_Audio option[value="'+oldClipFile+'"]').val(newClipFile).text(newClipName);
-			sortSelectOptions('ID_Short_Custom_Audio');
+						//Display Message
+						orpNotify('success', modal_RenameNotifyTitle, modal_RenameNotifyDesc);
+					}
 
-			$('#ID_Long_Custom_Audio option[value="'+oldClipFile+'"]').val(newClipFile).text(newClipName);
-			sortSelectOptions('ID_Long_Custom_Audio');
+					$('#orp_modal').modal('hide');
+		
+				}
+			});
 
-
-
-			$('#orp_modal').modal('hide');
-
-/*
-			switch(addPortType) {
-				case 'local':
-					$("#accordion").append(portLocalTemplate);
-					break;
-			}
-*/
 		});
+
 	});
+
 	
 
 	/* ------------------------------------------------------------------------- */
 	// DELETE FILE FUNCTION AND MODAL
-	$('.delete_file').click(function(e) {
+/*
+	$('.deleteIdentification').click(function(e) {
 		e.preventDefault();
 
 		var curRowName = $(this).parents('tr').attr('data-row-name');
@@ -274,6 +281,68 @@ $('#'+curRowID+' audio').load(); // Reload the new filename into player
 		}
 
 	});
+*/
+
+// PULL CODE FROM ABOVE TO CHECK IF IDENTIFICAITON IS IN USE BEFORE REMOVING, ADD TO FUNCTION BELOW.
+
+
+	// Delete Identification Function and Modal Display
+	$('#id_library').on('click', '.deleteIdentification', function(e) {
+		e.preventDefault();
+		var fileName = $(this).parents('tr').attr('data-row-file');
+		var fileLabel = $(this).parents('tr').attr('data-row-name');
+		var rowID = $(this).parents('tr').attr('id');
+
+		var modalDetails = {
+			modalSize: 'small',
+			title: '<i class="fa fa-trash"></i> ' + modal_DeleteIdentTitle,
+			body: '<p>'+modal_DeleteIdentBody+':<br><strong>'+fileLabel+'</strong></p>',
+			btnOK: modal_DeleteIdentBtnOK,
+			btnOKclass: 'btn-danger',
+			progressWait: false,
+		};
+
+		orpModalDisplay(modalDetails);
+
+		$('#orp_modal_ok').off('click'); // Remove other click events
+		$('#orp_modal_ok').click(function() {
+
+			orpModalWaitBar(modal_DeleteIdentProgressTitle);
+
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_file_system.php',
+				data: {'action': 'delete', 'fileType': 'identification', 'deleteFiles':[fileName]}, // future support for multifile delete
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					var deleteCount = 0;
+					var errorCount = 0;
+					$.each(response, function(curFile, status) {
+						if (status == 'success') {
+							deleteCount++;
+						} else {
+							errorCount++;
+						}
+					});
+
+					$('#orp_modal').modal('hide');
+
+					if (deleteCount > 0) {						
+						$('#' + rowID).slideUp(500);
+						$('#id_library').DataTable().row('#' + rowID).remove().draw();
+
+						// Remove OLD NAME from dropdown select boxes
+						$('#ID_Short_CustomFile option[value="'+fileName+'"]').remove();
+						$('#ID_Long_CustomFile option[value="'+fileName+'"]').remove();
+
+						//Display Message
+						orpNotify('success', modal_DeleteIdentNotifyTitle, modal_DeleteIdentNotifyDesc);
+					}
+				}
+			});
+
+		});
+	});
 
 
 
@@ -331,5 +400,93 @@ $('#'+curRowID+' audio').load(); // Reload the new filename into player
 
 	});
 
-
 })
+
+
+
+
+
+/* ------------------------------------------------------------------------- */
+// UPLOAD CALLBACK FUNCTION
+
+function uploadCallback (jsonResponse) {
+	var response = JSON.parse(jsonResponse);
+	if (response.status == 'success') {
+		$.each(response.data, function(index, curFile) {
+			addIDRow({
+				addRow: true,
+				fileIndex: fileCount,
+				fileLabel: curFile.fileLabel,
+				fileName: curFile.fileName,
+				fileURL: curFile.downloadURL,
+			})
+			fileCount++;
+		});
+	} else if (response.status == 'error') {
+		// orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+		console.log('Upload Error');
+	}
+}
+
+
+function addIDRow(input) {
+	var fileLabel = input.fileName.replace(/\.[^/.]+$/, '').replace(new RegExp('_', 'g'), ' ');
+	
+	var $template = $('#idRowTemplate').html();
+	$template = $template.replace(/%%INDEX%%/g, input.fileIndex)
+		.replace(/%%FILE_LABEL%%/g, fileLabel)
+		.replace(/%%FILE_NAME%%/g, input.fileName)
+		.replace(/%%FILE_URL%%/g, input.fileURL);
+
+	t = $('#id_library').DataTable();
+
+	// Render row, highlight if a new/uploaded row
+	if (input.addRow == true) {
+		var row = t.row.add($($template)).select().draw();
+	    setTimeout(function(){t.row(row).deselect();}, 10000);
+	} else {
+		var row = t.row.add($($template)).draw();
+		
+	}
+
+	// Add to dropdown select boxes
+	$('#ID_Short_CustomFile').append($('<option>', {
+		value: input.fileName,
+		text: fileLabel
+	}));
+
+	$('#ID_Long_CustomFile').append($('<option>', {
+		value: input.fileName,
+		text: fileLabel
+	}));
+}
+
+
+function sortSelectOptions(selector) {
+	var origOptions = $(selector + ' option');
+    var selected = $(selector).val(); // cache selected value, before reordering
+
+	var optionsArray = [];
+	$.each(origOptions, function(index, curOption) {
+		optionsArray.push({value: curOption.value, text: curOption.text});
+	});	
+
+	optionsArray.sort(function(a, b){
+		let x = a.value.toLowerCase();
+		let y = b.value.toLowerCase();
+		if (x < y) {return -1;}
+		if (x > y) {return 1;}
+		return 0;
+	});
+
+	$(selector).empty();
+	
+	$.each(optionsArray, function(index, curOpt) {
+		$(selector).append($('<option>', {
+			value: curOpt.value,
+			text: curOpt.text
+		}));
+	});
+
+	$(selector).val(selected);
+}

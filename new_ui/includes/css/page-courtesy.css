@@ -1,3 +1,46 @@
 .audio-actions {
 	float: right;
 }
+
+
+/* DataTables style overrides */
+table.dataTable thead > tr > th {
+    padding-left: 30px;
+    padding-right: 8px!important;
+}
+
+table.dataTable thead > tr > .sorting_disabled {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after {
+    left: 8px;
+    right: auto;
+}
+
+table.dataTable thead > tr > th {
+    padding-left: 30px;
+    padding-right: 8px!important;
+}
+
+table.dataTable th.button_grp {
+    text-align: right;
+}
+
+
+
+table.dataTable tbody>tr.selected {
+	background-color: rgba(141, 198, 63, .25);
+}
+
+.primary_selection {
+	color: #3b3b3b;
+	background-color: #afafaf!important
+}
+
+.primary_selection .btn-group {
+	display: none;
+}

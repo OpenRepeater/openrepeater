@@ -8,11 +8,11 @@ $(function() {
 		var uploadType = $(this).attr('data-upload-type');
 		switch(uploadType) {
 			case 'courtesy_tone':
-				var acceptedFilesTypes = '.wav,.mp3';
+				var acceptedFilesTypes = '.wav,.mp3,.aif,.aiff,.gsm,.ogg,.flac';
 				var maxFileSizeMB =  10;
 				break;
 			case 'identification':
-				var acceptedFilesTypes = '.wav,.mp3';
+				var acceptedFilesTypes = '.wav,.mp3,.aif,.aiff,.gsm,.ogg,.flac';
 				var maxFileSizeMB =  10;
 				break;
 			case 'module':
@@ -53,14 +53,15 @@ $(function() {
 				});
 				
 				this.on('successmultiple', function (file, response) {
-					addRow( JSON.parse(response) );
+					var returnData = '{"status":"success","data":'+response+'}';
 					resetModal();
+					uploadCallback(returnData);
 				});
 				
 				this.on('errormultiple', function (file, error, xhr) {
-					console.log('error: '+error);
-					orpNotify('error', 'Error', error);
+					var returnData = '{"status":"error"}';
 					resetModal();
+					uploadCallback(returnData);
 				});
 			}
 		});

@@ -48,3 +48,38 @@
 	width: 100%;
 	text-align: center;
 }
+
+/* DataTables style overrides */
+table.dataTable thead > tr > th {
+    padding-left: 30px;
+    padding-right: 8px!important;
+}
+
+table.dataTable thead > tr > .sorting_disabled {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after {
+    left: 8px;
+    right: auto;
+}
+
+table.dataTable thead > tr > th {
+    padding-left: 30px;
+    padding-right: 8px!important;
+}
+
+table.dataTable td.options .nav-pills {
+    float: right;
+}
+
+table.dataTable td.options .dropdown-menu {
+    left: -100px;
+}
+
+table.dataTable tbody>tr.selected {
+	background-color: rgba(141, 198, 63, .25);
+}

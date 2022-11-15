@@ -3,67 +3,38 @@ var totalDirSize = 0;
 
 $(function() {
 
-	// Loop through JSON array of backups and build display
 	fullBackupObj = JSON.parse(backupList);
 	totalDirSize = fullBackupObj.totalDirSize;
-	if ( totalDirSize == '0 B' ) {
-		// No results so hide table and show message
-		$('#backup-table-responsive').hide();
-		$('#no_backups').fadeIn(500);
-	} else {
-		// Backup object contains results so display them. 
-		delete fullBackupObj['totalDirSize'];
-		$.each(fullBackupObj, function(index, curFile) {
-			curFile['fileIndex'] = index;
-			buildBackupRow(curFile);
-			fileCount++;
-		});
 
-		$('#backup-table-responsive').DataTable({
-			responsive: true,
-			bFilter: false,
-	        bSort: true,
-	        aaSorting: [],
-	        paging: false,
-			"order": [1, 'desc'],
-			"columns": [
-				null,
-				null,
-				null,
-				{ "orderable": false },
-			],
-			"language": {
-				"info": fileCountLabel + ": _TOTAL_ | " + allBackupsSizeLabel + ': <span>' + formatFileSize(totalDirSize) + '</span>'
-			}
-	    });
-	}
+	$('#backup-table-responsive').DataTable({
+		responsive: true,
+		bFilter: true,
+        bSort: true,
+        aaSorting: [],
+        info: true,
+        paging: false,
+        searching: false,
+		order: [1, 'desc'],
+		columns: [
+			null,
+			null,
+			null,
+			{ orderable: false },
+		],
+		language: {
+			emptyTable: "There are no snapshots made yet. Click the Create Backup button above to create one.",
+			lengthMenu: "Show _MENU_ Snapshots",
+			info: fileCountLabel + ": _TOTAL_ | " + allBackupsSizeLabel + ': <span>' + formatFileSize(totalDirSize) + '</span>',
+			infoEmpty: "",
+		}
+    });
 
-
-	function buildBackupRow(input) {
-		var $template = $('#backupRowTemplate').html();
-		$template = $template.replace(/%%INDEX%%/g, input.fileIndex)
-			.replace(/%%FILENAME%%/g, input.fileName)
-			.replace(/%%FULLDATE%%/g, formatDateTime(input.fileDate, 'longDateTime'))
-			.replace(/%%DATE%%/g, formatDateTime(input.fileDate))
-			.replace(/%%ISODATE%%/g, input.fileDate)
-			.replace(/%%SIZE%%/g, formatFileSize(input.fileSize))
-			.replace(/%%RAWSIZE%%/g, input.fileSize)
-			.replace(/%%URL%%/g, input.downloadURL);
-
-	    $('#backup-table-responsive tbody').append($template);		
-	}
-
-
-/*
-$('.testBtn').on('click', function(e) {
-	console.log('add');
-	addRow([{
-		'filename': 'testfile.orp',
-		'datetime': '20210421191210',
-		'size': '757884'
-	}]);
-});
-*/
+	delete fullBackupObj['totalDirSize'];
+	$.each(fullBackupObj, function(index, curFile) {
+		curFile['fileIndex'] = index;
+		addRow(curFile);
+		fileCount++;
+	});
 
 
 
@@ -117,21 +88,12 @@ $('.testBtn').on('click', function(e) {
 						//Display Message
 						orpNotify('success', modal_DeleteBackupNotifyTitle, modal_DeleteBackupNotifyDesc);
 					}
-	
-					// If no rows remain, then hide table and show message
-					if ( $('.backupRow').length == 0 ) {
-						$('#backup-table-responsive').hide();
-						$('#no_backups').fadeIn(500);
-					}
 				}
 			});
 
 		});
 	});
 
-
-
-// 	$(".dropzone").dropzone({ url: "/file/post" });
 
 	// CREATE BACKUP FUNCTION AND MODAL
 	$('.createBackup').click(function(e) {
@@ -171,54 +133,58 @@ $('.testBtn').on('click', function(e) {
 		});		
 	});
 
-
-/*
-	// UPLOAD BACKUP FUNCTION AND MODAL
-	$('.uploadBackup').click(function(e) {
-		e.preventDefault();
-		var modalDetails = {
-			modalSize: 'large',
-			title: '<i class="fa fa-upload"></i> ' + modal_UploadBackupTitle,
-			body: modal_UploadBackupBody,
-			btnOK: modal_UploadBackupBtnOKText,
-		};
-
-		orpModalDisplay(modalDetails);
-
-		// FUNCTION GOES HERE
-		
-	});
-*/
-
-
 });
 
 
 
-function addRow(response) {
-	$.each(response, function(index, curFile) {
-		fileCount++;
-		newID = 'backupRow'+fileCount;
-	
-		var $template = $('#backupRowTemplate').html();
-		$template = $template.replace(/%%INDEX%%/g, fileCount)
-			.replace(/%%FILENAME%%/g, curFile.filename)
-			.replace(/%%FULLDATE%%/g, formatDateTime(curFile.datetime, 'longDateTime'))
-			.replace(/%%DATE%%/g, formatDateTime(curFile.datetime))
-			.replace(/%%ISODATE%%/g, curFile.datetime)
-			.replace(/%%SIZE%%/g, formatFileSize(curFile.size))
-			.replace(/%%RAWSIZE%%/g, curFile.size)
-			.replace(/%%URL%%/g, '#');
+/* ------------------------------------------------------------------------- */
+// UPLOAD CALLBACK FUNCTION
 
-		t = $('#backup-table-responsive').DataTable();
-		var row = t.row.add($($template)).select().draw();
-	    setTimeout(function(){t.row(row).deselect();}, 5000);
-	
-		totalDirSize = totalDirSize + curFile.size;
-	});
-
-	$('.dataTables_info span').html(formatFileSize(totalDirSize));
+function uploadCallback (jsonResponse) {
+	var response = JSON.parse(jsonResponse);
+	if (response.status == 'success') {
+		$.each(response.data, function(index, curFile) {
+			addRow({
+				addRow: true,
+				fileIndex: fileCount,
+				fileLabel: curFile.fileLabel,
+				fileName: curFile.fileName,
+				fileURL: curFile.downloadURL,
+				fileDate: curFile.fileDate,
+				fileSize: curFile.fileSize,
+			});
+			fileCount++;
+		});
+	} else if (response.status == 'error') {
+		// orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+		console.log('Upload Error');
+	}
 }
+
+function addRow(input) {
+	var $template = $('#backupRowTemplate').html();
+	$template = $template.replace(/%%INDEX%%/g, input.fileIndex)
+		.replace(/%%FILENAME%%/g, input.fileName)
+		.replace(/%%FULLDATE%%/g, formatDateTime(input.fileDate, 'longDateTime'))
+		.replace(/%%DATE%%/g, formatDateTime(input.fileDate, 'relativeDateTime'))
+		.replace(/%%ISODATE%%/g, formatDateTime(input.fileDate, 'isoDateTime'))
+		.replace(/%%SIZE%%/g, formatFileSize(input.fileSize))
+		.replace(/%%RAWSIZE%%/g, input.fileSize)
+		.replace(/%%URL%%/g, input.downloadURL);
+
+	t = $('#backup-table-responsive').DataTable();
+
+	// Render row, highlight if a new/uploaded row
+	if (input.addRow == true) {
+		var row = t.row.add($($template)).select().draw();
+	    setTimeout(function(){t.row(row).deselect();}, 10000);
+		totalDirSize = totalDirSize + input.fileSize;
+		$('.dataTables_info span').html(formatFileSize(totalDirSize));
+	} else {
+		var row = t.row.add($($template)).draw();		
+	}
+}
+
 
 
 // Format File Size
@@ -232,12 +198,21 @@ function formatFileSize(size) {
 };
 
 
-// Format Date/Time function
-function formatDateTime(input, type='auto') {
+// Format Date/Time function using Luxon library
+// Input time should be in UTC, server sets time zone and local
+function formatDateTime(input, type='none') {
+	var inputUTC = DateTime.fromFormat(input, "yyyy-MM-dd'T'HH:mm:ss z", { setZone: true });
 	switch(type) {
 		case 'longDateTime':
-			return moment(input, "YYYY-MM-DD[T]HH:mm:ss").format('LLL');
+			return inputUTC.setLocale(phpLocal).setZone(phpTimezone).toLocaleString(DateTime.DATETIME_MED);
+			break;
+		case 'isoDateTime':
+			return inputUTC.toUnixInteger();
+			break;
+		case 'relativeDateTime':
+			return inputUTC.setLocale(phpLocal).setZone(phpTimezone).toRelativeCalendar();
+			break;
 		default:
-			return moment(input, "YYYYMMDD").fromNow();
+			return input;
 	}
 };

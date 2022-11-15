@@ -23,11 +23,13 @@ class BackupRestore {
 
 	private $Database;
 	private $Modules;
+	private $FileSystem;
 
 
 	public function __construct() {
 		$this->Database = new Database();
 		$this->Modules = new Modules();
+		$this->FileSystem = new FileSystem();
 
 		$this->dateString = date('Y/m/d H:i:s');
 
@@ -76,16 +78,33 @@ class BackupRestore {
 
 		// Verify Backup File was Created and return results.
 		if (file_exists($this->backupPath . $this->backup_file_name)) {
-			return array(
+			$returnArray = ['status' => 'success'];
+
+			$returnArray['fileName'] = $this->backup_file_name;
+			$returnArray['fileLabel'] = str_replace( '_', ' ' , pathinfo($this->backup_file_name, PATHINFO_FILENAME) );
+			$returnArray['fileDate'] = date( 'Y-m-d\TH:i:s T', filemtime( $this->backupPath . $this->backup_file_name ) );
+			$returnArray['fileSize'] = filesize( $this->backupPath . $this->backup_file_name );
+			$returnArray['downloadURL'] = $this->FileSystem->buildURL($this->backup_file_name, 'restore');;
+			$returnArray['full_path'] = $this->backupPath . $this->backup_file_name;		
+
+
+/*
+			$returnArray = array(
 				'msgType' => 'success',
 				'msgText' => 'Successfully created backup: <strong>' . $this->backup_file_name . '</strong>'
 			);
+*/
 		} else {
-			return array(
+			$returnArray = ['status' => 'error'];
+/*
+			$returnArray = array(
 				'msgType' => 'error',
 				'msgText' => 'There was a problem creating the backup. Please try again. If the problem persists, it may be due to a permissions issue.'
 			);
+*/
 		}
+
+		return json_encode($returnArray);
 
 	}
 
@@ -446,6 +465,9 @@ class BackupRestore {
 			closedir($handle);
 		}
 
+		// Remove hidden files
+		$fileList = array_filter($fileList, create_function('$a','return ($a[0]!=".");'));
+
 		// Sort and reindex array
 		natsort($fileList);
 		$fileList = array_values($fileList);
@@ -455,7 +477,6 @@ class BackupRestore {
 			$fileLabel = str_replace("_"," ",$fileName); //replace underscores with spaces for file labels
 			$fileLabel = preg_replace('/\\.[^.\\s]{2,5}$/', '', $fileLabel); //remove extention
 			$downloadURL = $baseURL . $fileName;
-// 			$downloadURL = '#';
 			$filePath = $this->backupPath . $fileName;
 			$fileSize = filesize($filePath);
 			$fileDate = filemtime($filePath);
@@ -541,7 +562,7 @@ class BackupRestore {
 					$total_dir_size = $total_dir_size + $fileArray['fileSize'];
 
 					$returnFileArray[$curFileNum]['fileName'] = $fileArray['fileName'];
-					$returnFileArray[$curFileNum]['fileDate'] = date("YmdHis",$fileArray['fileDate']);
+					$returnFileArray[$curFileNum]['fileDate'] = date("Y-m-d\TH:i:s T",$fileArray['fileDate']);
 					$returnFileArray[$curFileNum]['fileSize'] = $fileArray['fileSize'];
 					$returnFileArray[$curFileNum]['downloadURL'] = $this->baseDownloadPath . $fileArray['fileName'];
 				}

@@ -9,13 +9,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-
-
-/*
-$customJS = 'dropzone.js, upload-file.js'; // 'file1.js, file2.js, ... '
-$customCSS = 'upload-file.css'; // 'file1.css, file2.css, ... '
-*/
-
 $customJS = 'page-identification.js, orp-audio-player.js, dropzone.js, upload-file.js, morse-resampler.js, morse-XAudioServer.js, morse.js, morse-main.js'; // 'file1.js, file2.js, ... '
 $customCSS = 'page-identification.css, orp-audio-player.css, upload-file.css'; // 'file1.css, file2.css, ... '
 
@@ -75,15 +68,6 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
 						  <select id="ID_Short_CustomFile" name="ID_Short_CustomFile" class="form-control">
-							<?php
-								$activeShortFile = $settings['ID_Short_CustomFile'];
-								foreach($identificationAudio as $curFile) { 
-									$curOption = '<option value="'.$curFile['fileName'].'"';
-									$curOption .= $activeShortFile == $curFile['fileName'] ? ' selected': '';
-									$curOption .= '>'.$curFile['fileLabel'].'</option>';
-									echo $curOption;
-								}
-							?>
 						  </select>
                         </div>
                       </div>
@@ -153,15 +137,6 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
 						  <select id="ID_Long_CustomFile" name="ID_Long_CustomFile" class="form-control">
-							<?php
-								$activeShortFile = $settings['ID_Long_CustomFile'];
-								foreach($identificationAudio as $curFile) { 
-									$curOption = '<option value="'.$curFile['fileName'].'"';
-									$curOption .= $activeShortFile == $curFile['fileName'] ? ' selected': '';
-									$curOption .= '>'.$curFile['fileLabel'].'</option>';
-									echo $curOption;
-								}
-							?>
 						  </select>
                         </div>
                       </div>
@@ -271,8 +246,6 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
                   <div class="x_title">
                     <h4 class="navbar-left"><?=_('Identification Clip Library')?></h4>
                     <div class="nav navbar-right">
-<button type="button" id="testBtn" class="btn btn-success">TEST</button>
-
                       <button type="button" class="btn btn-success upload_file" data-upload-type="identification"><i class="fa fa-upload"></i> <?=_('Upload ID Clip')?></button>
                     </div>
                     <div class="clearfix"></div>
@@ -288,7 +261,6 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 					  </thead>   
 
                       <tbody>
-
                       </tbody>
 
                     </table>
@@ -317,16 +289,16 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 			<span class="audio_name">%%FILE_LABEL%%</span>
 		</td>
 
-		<td>			
+		<td class="options">			
           <ul class="nav nav-pills" role="tablist">
             <li role="presentation" class="dropdown">
               <a id="drop6" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false"><i class="fa fa-cog"></i> <span class="caret"></span></a>
               <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6">
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><i class="fa fa-repeat"></i> <?=_('Rename')?></a>
+                <li role="presentation"><a role="menuitem" class="renameIdentification" tabindex="-1" href="#"><i class="fa fa-repeat"></i> <?=_('Rename')?></a>
                 </li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="%%FILE_URL%%"><i class="fa fa-download"></i> <?=_('Download')?></a>
+                <li role="presentation"><a role="menuitem" class="identificationURL" tabindex="-1" href="%%FILE_URL%%"><i class="fa fa-download"></i> <?=_('Download')?></a>
                 </li>
-                <li role="presentation"><a role="menuitem" class="deleteBackup" tabindex="-1"><i class="fa fa-remove"></i> <?=_('Delete')?></a>
+                <li role="presentation"><a role="menuitem" class="deleteIdentification" tabindex="-1"><i class="fa fa-remove"></i> <?=_('Delete')?></a>
                 </li>
               </ul>
             </li>
@@ -341,6 +313,8 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 	$shortSettings = [
 		'ID_Short_Mode' => $settings['ID_Short_Mode'],
 		'ID_Long_Mode' => $settings['ID_Long_Mode'],
+		'ID_Short_CustomFile' => $settings['ID_Short_CustomFile'],
+		'ID_Long_CustomFile' => $settings['ID_Long_CustomFile'],
 	];
 ?>
 
@@ -350,8 +324,23 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 
 	var modal_RenameTitle = '<?=_('Rename Clip')?>';
 	var modal_RenameBody = '<p><?=_('Please enter the new file name')?></p>';
+	var modal_RenamePlaceholder = '<?=_('New File Name')?>';
 	var modal_RenameBtnOK = '<?=_('Rename')?>';
+	var modal_RenameProgressTitle = '<?= _('Renaming Clip') ?>';
+	var modal_RenameNotifyTitle = '<?= _('Clip Renamed') ?>';
+	var modal_RenameNotifyDesc = '<?= _('The identification clip has been successfully renamed.') ?>';
 
+
+
+	var modal_DeleteIdentTitle = '<?= _('Delete Clip') ?>';
+	var modal_DeleteIdentBody = '<?= _('Are you sure you want to delete this identification clip?') ?>';
+	var modal_DeleteIdentBtnOK = '<?= _('Delete Forever') ?>';
+	var modal_DeleteIdentProgressTitle = '<?= _('Deleting Identification Clip') ?>';
+	var modal_DeleteIdentNotifyTitle = '<?= _('Clip Deleted') ?>';
+	var modal_DeleteIdentNotifyDesc = '<?= _('The identification clip has been successfully deleted.') ?>';
+
+
+/*
 	var modal_DeleteTitle = '<?=_('Delete Clip')?>';
 	var modal_DeleteBody = '<p><?=_('Are you sure that you wish to delete the following clip?')?></p>';
 	var modal_DeleteBtnOK = '<?=_('Delete')?>';
@@ -360,6 +349,7 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 	var modal_DeleteErrorTitle = '<?=_('Delete Error')?>';
 	var modal_DeleteErrorBody = '<p><?=_('You cannot delete the following clip as it is in use.')?></p>';
 	var modal_DeleteErrorBtnOK = '<?=_('Dismiss')?>';
+*/
 
 	var modal_UploadTitle = '<?=_('Upload Identification')?>';
 	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';

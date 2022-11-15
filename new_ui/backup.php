@@ -44,16 +44,12 @@ $BackupRestore = new BackupRestore();
                   
                   <div class="x_content">
 
-					<div id="no_backups" style="display: none;">
-						<h4><?=_('There are no snapshots made yet. Click the Create Backup button above to create one.')?></h4>
-					</div>
-
                     <table id="backup-table-responsive" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
                       <thead>
                         <tr>
                           <th><?=_('Name')?></th>
-                          <th><?=_('Date')?></th>
-                          <th><?=_('Size')?></th>
+                          <th data-type="@data-sort"><?=_('Date')?></th>
+                          <th data-type="@data-sort"><?=_('Size')?></th>
                           <th><?=_('Action')?></th>
                         </tr>
                       </thead>
@@ -76,7 +72,7 @@ $BackupRestore = new BackupRestore();
 <script id="backupRowTemplate" type = "text/template">
     <tr id="backupRow%%INDEX%%" class="backupRow" data-backup-number="%%INDEX%%" data-backup-file="%%FILENAME%%" data-file-size="%%RAWSIZE%%">
       <td><strong>%%FILENAME%%</strong></td>
-      <td data-sort="%%ISODATE%%"><span title="%%FULLDATE%%"><i class="fa fa-calendar"></i> %%DATE%%</span></td>
+      <td data-sort="%%ISODATE%%"><span class="dateCol" title="%%FULLDATE%%"><i class="fa fa-calendar"></i> %%DATE%%</span></td>
       <td data-sort="%%RAWSIZE%%"><i class="fa fa-hdd-o"></i> %%SIZE%%</td>
       <td>
           <ul class="nav nav-pills" role="tablist">

@@ -20,7 +20,6 @@ $(function() {
 		});
 	}
 
-	console.log(fullMacroObj);
 
 	function buildMacroRow(input) {
 		var $template = $('#macroRowTemplate').html();
@@ -48,8 +47,6 @@ $(function() {
 
 		macroArray.push(input.macroKey);
 		selectedMacros.push(input.macroNum);
-
-console.log(selectedMacros);
 	}
 
 
@@ -128,27 +125,39 @@ console.log(selectedMacros);
 
 		$('#orp_modal_ok').off('click'); // Remove other click events
 		$('#orp_modal_ok').click(function() {
-			deleteString = { deleteMacro: macroNum };
-			console.log( JSON.stringify(deleteString) );
+			deleteString = JSON.stringify({ deleteMacro: macroNum });
 
 			orpModalWaitBar(modal_DeleteMacroProgressTitle);
 
-			setTimeout(function() {
-				$('#orp_modal').modal('hide');
-
-				$('#macroRow' + macroNum).slideUp(500);
-				$('#macroRow' + macroNum).remove();
-
-				//Display Message
-				orpNotify('success', modal_DeleteMacroNotifyTitle, modal_DeleteMacroNotifyDesc);
-
-				// If no rows remain, then hide table and show message
-				if ( $('.macroRow').length == 0 ) {
-					$('#macro-table-responsive').hide();
-					$('#no_macros').fadeIn(500);
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_db_update.php',
+				data: {'deleteMacro': macroNum},
+				success: function(jsonResponse){
+					$('#orp_modal').modal('hide');
+					var response = JSON.parse(jsonResponse);
+					if (response.login == 'timeout') {
+						sectionStatus('macroRow' + macroNum, 'macroRow', 'error');
+						orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+					} else if (response.status == 'success') {
+						$('#macroRow' + macroNum).slideUp(500);
+						$('#macroRow' + macroNum).remove();
+	
+						//Display Message
+						orpNotify('success', modal_DeleteMacroNotifyTitle, modal_DeleteMacroNotifyDesc);
+	
+						// If no rows remain, then hide table and show message
+						if ( $('.macroRow').length == 0 ) {
+							$('#macro-table-responsive').hide();
+							$('#no_macros').fadeIn(500);
+						}
+						rebuildActive();
+					} else {
+						sectionStatus('macroRow' + macroNum, 'macroRow', 'error');
+					}
 				}
+			});
 
-			}, 2000);
 		});
 	});
 
@@ -193,7 +202,6 @@ console.log(selectedMacros);
 
 	$('#macro-table-responsive').on('change', '.macroNum', function() {
 		var curMacroNumID = $(this).attr('id');
-		console.log(curMacroNumID);
 
 		oldValue = $('#'+curMacroNumID).attr('data-last-value');
 		console.log(oldValue);
@@ -201,7 +209,6 @@ console.log(selectedMacros);
 		selectedMacros.push(newValue);
 		$('#'+curMacroNumID).attr('data-last-value', newValue);
 		
-		console.log(selectedMacros);
 	});
 
 	/*
@@ -212,19 +219,68 @@ console.log(selectedMacros);
 
 	$('#macro-table-responsive').on('change', '.macroRow', function() {
 		var formID = $(this).attr('id');
+		var emptyFields = 0;
 
-		var macroFieldsObj = {};
-		$.each($('#' + formID + " :input")
-		    .filter(function(index, element) {
-		        return $(element).val() != '';
-		    })
-			.serializeArray(), 
-			function(_, kv) {
-				macroFieldsObj[kv.name] = kv.value;
-			}
-		);
+		// Validate Macro Label
+		if ( $('#' + formID + ' .macroLabel').val() == '' ) {
+			$('#' + formID + ' .macroLabel').focus();
+			emptyFields++;			
+		}
 
-		console.log(macroFieldsObj);
+		// Validate Selected Moodule
+		if ( $('#' + formID + ' .macroModuleKey').find(":selected").val() == '' ) {
+			$('#' + formID + ' .macroModuleKey').focus();
+			emptyFields++;			
+		}
+
+		// Validate Selected Port
+		if ( $('#' + formID + ' .macroPorts').find(":selected").val() == '' ) {
+			$('#' + formID + ' .macroPorts').focus();
+			emptyFields++;			
+		}
+
+		// Validate Macro String
+		if ( $('#' + formID + ' .macroString').val() == '' ) {
+			$('#' + formID + ' .macroString').focus();
+			emptyFields++;			
+		}
+
+		if (emptyFields == 0) {
+			sectionStatus(formID, 'macroRow', 'processing');	
+			var macroFieldsObj = {};
+			$.each($('#' + formID + " :input")
+			    .filter(function(index, element) {
+			        return $(element).val() != '';
+			    })
+				.serializeArray(), 
+				function(_, kv) {
+					macroFieldsObj[kv.name] = kv.value;
+				}
+			);
+	
+			// Nest object under macro key number to match input array format and return as JSON string for macro.
+			var macroJSON = '{"' + macroFieldsObj.macroKey + '":' + JSON.stringify(macroFieldsObj) + '}';
+
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_db_update.php',
+				data: {'updateMacro': macroJSON},
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					if (response.login == 'timeout') {
+						sectionStatus(formID, 'macroRow', 'error');
+						orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+					} else if (response.status == 'success') {
+						sectionStatus(formID, 'macroRow', 'saved');
+						sectionStatus(formID, 'portSection', 'saved');
+						rebuildActive();
+					} else {
+						sectionStatus(formID, 'macroRow', 'error');
+					}
+				}
+			});
+			
+		}
 	});
 
 })

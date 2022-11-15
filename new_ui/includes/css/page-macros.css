@@ -38,6 +38,12 @@
 }
 
 
+.macroRow .sectionStatus {
+	color: #5a5a5a;
+    float: left;
+}
+
+
 /*
 @media (min-width: 768px) {
 	.macroRow td {

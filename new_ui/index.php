@@ -5,10 +5,18 @@ session_start();
 # AUTOLOAD CLASSES
 require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
 ################################################################################
+
+// --------------------------------------------------------
+// IF USER IS LOGGED IN, REDIRECT TO START PAGE
+if ((isset($_SESSION['username'])) && (isset($_SESSION['userID']))){
+	$Users = new Users();
+	header('location: ' . $Users->startPageURL); // If they aren't logged in, send them to login page.
+}
+// --------------------------------------------------------
+
 $Database = new Database();
 
 $versionNum = $Database->get_version();
-
 
 
 // DUMMY FUNCTION TO LATER BE REPLACE BY GETTEXT FOR TRANSLATIONS
