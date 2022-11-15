@@ -62,15 +62,6 @@ class FileSystem {
 				$returnArray[$curKey]['full_path'] = $folder_path . $newFile;		
 				$returnArray[$curKey]['tmp_name'] = $filesArray['file']['tmp_name'][$curKey];
 		
-		/*
-				file_exists( $returnArray[$curKey]['full_path'] ) {
-					$returnArray[$curKey]['status'] = 'exists';
-					$error_count++;
-				} else {
-					//Move the upload file into place
-					$returnArray[$curKey]['status'] = 'success';
-				}
-		*/
 				move_uploaded_file($returnArray[$curKey]['tmp_name'], $returnArray[$curKey]['full_path']);
 				
 				// Convert audio foormat if audio upload type

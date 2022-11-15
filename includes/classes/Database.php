@@ -70,6 +70,13 @@ class Database {
 		return $results;		
 	}
 
+	// SIMPLE SQL - Pass through sql statement 
+	public function simple_sql($sql) {
+		$db = new SQLite3($this->db_loc) or die('Unable to open database');
+		$results = $db->query($sql) or die('Query failed');
+		return $results;		
+	}
+
 	// VALUE EXISTS - Return True/False
 	public function exists($table, $column, $value) {
 		$db = new SQLite3($this->db_loc) or die('Unable to open database');
@@ -97,10 +104,10 @@ class Database {
 	// Can take an SQL input OR an Array input with table name, column names and values to insert
 	public function insert($input, $flag = true) {
 		if ( is_array($input) ) {
-			foreach($input as $tableName => $columnValues) {
-				$columns = implode(",",array_keys($columnValues));
-				$escaped_values = array_values($columnValues);
-				$values  = "'" . implode("','", $columnValues) . "'";
+			foreach($input as $tableName => $columnsArray) {
+				$columns = implode(",",array_keys($columnsArray));
+				$escaped_values = array_values($columnsArray);
+				$values  = "'" . implode("','", $columnsArray) . "'";
 				$sql = "INSERT INTO $tableName (".$columns.") VALUES(".$values.");";
 			}
 
@@ -410,7 +417,7 @@ class Database {
 	###############################################
 
 	public function get_modules() {
-		$sql = 'SELECT * FROM "modules" ORDER BY "svxlinkID" ASC';
+		$sql = 'SELECT * FROM modules ORDER BY svxlinkID ASC';
 		$modules = $this->select_all('modules', $sql);
 		return $modules;	
 	}
