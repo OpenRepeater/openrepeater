@@ -78,7 +78,56 @@ function load_drivers_pi_repeater_4x_v2 {
 	DELIM
 	chmod +x $FILE_PATH_PRECONFIG
 }
+function load_drivers_pi_repeater_8x_v2 {
+	# put in the desired contents
+	cat > "$FILE_PATH_PRECONFIG" <<- DELIM
+		#! /bin/bash
+		#Configuration for Pi-Repeater-8X Version 2
+		dtoverlay mcp23017 addr=0x27 gpiopin=23
+		dtoverlay mcp23017 addr=0x26 gpiopin=25
+		dtoverlay sc16is752-i2c int_pin=24 addr=0x4D xtal=3686400
+		
+		dtoverlay=ads1015,
+		dtparam=cha_enable=true
+		dtparam=chb_enable=true
+		dtparam=chc_enable=true
+		dtparam=chd_enable=true
+		dtparam=addr=0x48
+		dtparam=cha_cfg=4
+		dtparam=chb_cfg=4
+		dtparam=chc_cfg=4
+		dtparam=chd_cfg=4
+		dtparam=cha_datarate=4
+		dtparam=chb_datarate=4
+		dtparam=chc_datarate=4
+		dtparam=chd_datarate=4
+		dtparam=cha_gain=2
+		dtparam=cha_gain=2
+		dtparam=cha_gain=2
+		dtparam=cha_gain=2
 
+		dtoverlay=ads1015,
+		dtparam=cha_enable=true
+		dtparam=chb_enable=true
+		dtparam=chc_enable=true
+		dtparam=chd_enable=true
+		dtparam=addr=0x49
+		dtparam=cha_cfg=4
+		dtparam=chb_cfg=4
+		dtparam=chc_cfg=4
+		dtparam=chd_cfg=4
+		dtparam=cha_datarate=4
+		dtparam=chb_datarate=4
+		dtparam=chc_datarate=4
+		dtparam=chd_datarate=4
+		dtparam=cha_gain=2
+		dtparam=cha_gain=2
+		dtparam=cha_gain=2
+		dtparam=cha_gain=2
+
+	DELIM
+	chmod +x $FILE_PATH_PRECONFIG
+}
 function prepare_svxlink_gpio_up {
 	if ! grep -q $GREP_PATTERN $FILE_PATH_SERVICE 
 	then

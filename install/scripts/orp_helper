@@ -13,7 +13,8 @@
 
 # NOTE: NO NEED TO PREFIX COMMANDS WITH SUDO AS THIS SCRIPT IS INTENDED TO BE RUN AS ROOT USING SUDO COMMAND
 
-
+#outside support scripts
+source board_drivers_loader
 ###############################################################################
 # DEFINE FUNCTIONS
 ###############################################################################
@@ -28,8 +29,8 @@ function display_help {
 	echo ""
 	echo "USAGE: orp_helper [service] [option]"
 	echo "[service] options:"
-	echo "svxlink|system|info|www|audio|set_mixer|alsa|network|pty|gps"
-	echo ""
+	echo "svxlink|system|info|www|audio|set_mixer|alsa|network|pty|gps|"
+	echo "drivers"
 }
 
 function svxlink_disable {
@@ -245,6 +246,30 @@ function gps_read {
 
 
 
+### Hardware specific drivers ###
+function drivers_prepare_services {
+	# edit /lib/systemd/system/svxlink_gpio_setup.service to insert the new dependency
+	# for the hardware preconfig script 
+	prepare_svxlink_gpio_up
+}
+
+function drivers_ics_1x_v1 {
+	# put in the desired contents
+	load_drivers_pi_repeater_1x_v1
+}
+
+function drivers_ics_2x_v3 {
+	load_drivers_pi_repeater_2x_v3
+}
+
+function drivers_ics_4x_v2 {
+	load_drivers_pi_repeater_4x_v2
+}
+
+function drivers_ics_8x_v2 {
+	load_drivers_pi_repeater_4x_v2
+}
+
 # TODO LIST
 # Setting Timezone
 
@@ -339,7 +364,15 @@ while :; do
 			else echo "INVALID OPTION"; echo "USAGE: orp_helper gps (read)"
 			fi
 			exit;;
-
+			
+		drivers)
+			if [ "$2" == "1x_v1" ]; then drivers_ics_1x_v1
+			elif [ "$2" == "2x_v3" ]; then drivers_ics_2x_v3
+			elif [ "$2" == "4x_v2" ]; then drivers_ics_4x_v2
+			elif [ "$2" == "8x_v2" ]; then drivers_ics_8x_v2
+			else echo "INVALID OPTION"; echo "USAGE: orp_helper drivers <HW_TYPE (see script for options)>"
+			exit;;
+			
         -h|-\?|--help|*)   # Display general help/info.
 			display_help
 			exit;;
