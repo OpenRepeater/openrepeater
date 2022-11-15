@@ -21,7 +21,8 @@ class System {
 			'datetime' => date( 'Y/m/d H:i:s', time() ),
 			'date' => date( 'd M Y', time() ),
 			'time' => date( 'H:i:s', time() ),
-			'tz_long' => $systemTimeZone,
+// 			'tz_long' => $systemTimeZone,
+			'tz_long' => date_default_timezone_get(),
 			'tz_short' => date( 'T', time() ),
 		];
 	}
@@ -168,6 +169,7 @@ class System {
 
 		$used_mem = $total_mem - $free_mem;
 
+/*
 		return [
 			'percent_used' => round(($used_mem / $total_mem) * 100),
 			'percent_free' => round(($free_mem / $total_mem) * 100),
@@ -179,6 +181,7 @@ class System {
 			'cache_mem' => $this->capacity($cache_mem / 1000),
 			'total_mem' => $this->capacity($total_mem / 1000),
 		];
+*/
 	}
 	
 

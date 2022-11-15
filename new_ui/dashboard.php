@@ -11,8 +11,8 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 ?>
 
 <?php
-$customJS = 'dropzone.js, upload-file.js'; // 'file1.js, file2.js, ... '
-$customCSS = 'upload-file.css'; // 'file1.css, file2.css, ... '
+$customJS = 'page-dashboard.js'; // 'file1.js, file2.js, ... '
+// $customCSS = 'upload-file.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
 ?>
@@ -46,18 +46,35 @@ include('includes/header.php');
 
               </div>
            </div>
+
+
+            <div class="row">
+              <div class="col-md-12 col-xs-12">
+
+                <div class="x_panel">
+                  <div class="x_title"><h4><?=_('Data Testing Strings')?></h4></div>
+                  
+                  <div class="x_content">
+
+				  	<div id="sysStatic" style="color: red;"></div>
+				  	<div id="sysDynamic" style="color: blue;"></div>
+				  	<div id="svxlinkInfo" style="color: gray;"></div>
+				  	<div id="memoryInfo" style="color: orange;"></div>
+				  	<div id="diskInfo" style="color: green;"></div>
+
+				  	<p><em>Note: there should be five colored sections. If not that indicates missing data. The browsers console can also be monitored.</em></p>
+
+                  </div>
+                </div>
+
+              </div>
+           </div>
+
+
+
           </div>
         </div>
         <!-- /page content -->
-
-<!-- Upload Dialog Modal -->
-<script>
-	var modal_UploadTitle = '<?=_('Upload Identification')?>';
-	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';
-	var modal_dzCustomDesc = '<?=_('Upload your own custom recorded audio files for identification. The file should be in MP3 or WAV format and any excess dead air should be trimmed off of the clip and audio levels normalized. DO NOT UPLOAD FILES THAT CONTAIN MUSIC, CLIPS OF MUSIC, OR OTHER COPYRIGHTED MATERIAL...IT IS ILLEGAL.')?>';
-	var uploadSuccessTitle = '<?=_('Upload Complete')?>';
-	var uploadSuccessText = '<?=_('New custom identification was successfully uploaded to library.')?>';
-</script>
 
 <?php include('includes/footer.php'); ?>
 
