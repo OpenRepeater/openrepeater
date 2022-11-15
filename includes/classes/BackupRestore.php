@@ -87,21 +87,8 @@ class BackupRestore {
 			$returnArray['downloadURL'] = $this->FileSystem->buildURL($this->backup_file_name, 'restore');;
 			$returnArray['full_path'] = $this->backupPath . $this->backup_file_name;		
 
-
-/*
-			$returnArray = array(
-				'msgType' => 'success',
-				'msgText' => 'Successfully created backup: <strong>' . $this->backup_file_name . '</strong>'
-			);
-*/
 		} else {
 			$returnArray = ['status' => 'error'];
-/*
-			$returnArray = array(
-				'msgType' => 'error',
-				'msgText' => 'There was a problem creating the backup. Please try again. If the problem persists, it may be due to a permissions issue.'
-			);
-*/
 		}
 
 		return json_encode($returnArray);
@@ -121,7 +108,8 @@ class BackupRestore {
 
 		// Check full file path exists before continuing
 		if (!file_exists($this->backupPath . $selected_restore_file)) {
-			exit('Unable to locate file for restoration');
+			$returnArray = ['status' => 'error_noFile'];
+			return json_encode($returnArray);
 		}
 
 		// Create Restore directory if it doesn't exist
@@ -154,16 +142,14 @@ class BackupRestore {
 			$data['curr_orp_verion'] = $curr_orp_verion;
 			$data['backup_orp_verion'] = $ini_array['ORP_Backup']['orp_version'];
 			$data['backup_callsign'] = $ini_array['ORP_Backup']['orp_callsign'];
-			$data['backup_date'] = date( "F j, Y, g:i a", strtotime( $ini_array['ORP_Backup']['backup_date'] ) );
+			$data['backup_date'] = date( 'Y-m-d\TH:i:s T', strtotime($ini_array['ORP_Backup']['backup_date']) );
+			echo json_encode($data);
 
 		} else {
-			$data['status'] = 'error';
+			$returnArray = ['status' => 'error_incomplete'];
+			return json_encode($returnArray);
 		}
 
-		$data['errorLevel'] = $errorLevel;
-
-		//returns data as JSON format
-		echo json_encode($data);
 	}
 
 
@@ -233,10 +219,8 @@ class BackupRestore {
 		// Set Rebuild Flag
 		$this->Database->set_update_flag(true);
 
-		return array(
-			'msgType' => 'success',
-			'msgText' => 'Backup was successfully restored.'
-		);	
+		$returnArray = ['status' => 'restore_success'];
+		return json_encode($returnArray);
 
 	}
 
@@ -354,100 +338,6 @@ class BackupRestore {
 
 
 	###############################################
-	# Upload Backup Files
-	###############################################
-
-	// Depreciated. See FileSystem Class
-	public function upload_backup_files($fileNameArray) {
-
-		$maxFileSize = 500000000; // size in bytes
-		$allowedExts = array('orp');
-	
-		//Loop through each file
-		for($i=0; $i<count($fileNameArray['name']); $i++) {
-			//Get the temp file path
-			$tmpFile1 = $fileNameArray['tmp_name'][$i];
-
-			$temp_ext = explode(".", $fileNameArray['name'][$i]);
-			$extension = end($temp_ext);
-
-			$currFile = $this->backupPath . str_replace(" ","_",$fileNameArray['name'][$i]);
-
-
-			# Check File Size isn't too large
-			if($fileNameArray['size'][$i] > $maxFileSize){
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'Sorry, but the file you tried to upload is <strong>too large</strong>.'
-				);
-			}
-
-			# Check to see if file is allowed type
-			if(!in_array($extension, $allowedExts)) {
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'Sorry, but the file you tried to upload is not in a supported format. Files must end with an .orp extension.'
-				);
-			}
-
-			# Check to see if system temp folder is writable
-			if (!is_writable( sys_get_temp_dir() )) {
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'Sorry, it looks like there is a configuration issue. The system\'s temp folder is not writable'
-				);
-			}
-
-			# Check for error reported by file array
-			if ($fileNameArray['error'][$i] > 0) {
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'There was a problem uploading the file'
-				);
-			}
-
-			# Check to see if file already exists
-			if (file_exists($currFile)) {
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'Sorry but the file already exists.'
-				);
-			}
-
-
-			if ($tmpFile1 != ""){
-				move_uploaded_file($tmpFile1, $currFile);
-
-				if (file_exists($currFile)) {
-					// SUCCESSFUL
-					return array(
-						'msgType' => 'success',
-						'msgText' => 'Successfully uploaded the backup file to library.'
-					);	
-
-				} else {
-					// Failure
-					return array(
-						'msgType' => 'error',
-						'msgText' => 'There was a problem uploading the file.'
-					);
-				}
-				
-			}
-
-		}
-
-		# Some how it got thru validation, but nothing was done.
-		return array(
-			'msgType' => 'error',
-			'msgText' => 'Don\'t know what happened, but nothing appears to have been done.'
-		);
-
-	}
-
-
-
-	###############################################
 	# Get Local Backed Up Files
 	###############################################
 
@@ -488,64 +378,6 @@ class BackupRestore {
 
 
 
-	###############################################
-	# Display Backup Files
-	###############################################
-
-	### OLD 2.2.X AND PRIOR UI ####
-	public function display_backup_files() {
-
-		$backupLib = $this->get_backup_files();
-		$hidden_array = ['build','restore','.gitignore'];
-		$total_dir_size = 0;		
-		if ($backupLib) {			
-			$displayHTML = '<table class="table table-striped table-condensed bootstrap-datatable">';
-			$displayHTML .= '<table class="table table-striped table-condensed bootstrap-datatable">';
-			$displayHTML .= '<thead><tr class="audio_row"><th>Name</th><th>Date</th><th>Size</th><th class="button_grp">Actions</th></tr></thead><tbody>';
-
-			foreach($backupLib as $fileArray) {
-				if (!in_array($fileArray['fileName'], $hidden_array, true)) {
-					$total_dir_size = $total_dir_size + $fileArray['fileSize'];
-
-					$displayHTML .= '
-					<tr id="shortIDsoundRow1" class="audio_row">
-						<td><h3>' . $fileArray['fileName'] . '</h3></td>
-
-						<td class="center">' . date("F d Y H:i:s",$fileArray['fileDate']) . '</td>
-
-						<td class="center">' . $this->formatSize($fileArray['fileSize']) . '</td>
-
-						<td class="button_grp">
-
-							<button type="button" class="btn btn-success" data-toggle="modal" data-target="#restoreFile" onclick="restoreFile(\'' . $fileArray['fileName'] . '\'); return false;"><i class="icon-refresh icon-white"></i> Restore</button>
-
-							<!-- Button triggered modal -->
-							<button class="btn" onclick="location.href=\'' . $this->baseDownloadPath . $fileArray['fileName'] . '\'"><i class="icon-download-alt"></i></button>
-
-							<!-- Button triggered modal -->
-							<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteFile" onclick="deleteFile(\'' . $fileArray['fileName'] . '\'); return false;"><i class="icon-trash icon-white"></i></button>
-						</td>
-					</tr>
-					';
-				}
-			}
-
-			$displayHTML .= '</tbody></table>';
-
-			$displayHTML .= 'TOTAL FILE SIZE: ' . $this->formatSize($total_dir_size);
-
-			echo $displayHTML;
-
-		} else {
-			echo "no files";
-		}
-
-	}
-
-
-
-
-
 	public function getBackupFilesJSON() {
 		$backupLib = $this->get_backup_files();
 		$hidden_array = ['build','restore','.gitignore'];
@@ -578,80 +410,13 @@ class BackupRestore {
 
 
 	###############################################
-	# Delete Backup
-	###############################################
-
-	// Depreciated. See FileSystem Class
-	public function deleteBackup($file) {
-		unlink($this->backupPath . $file);
-
-		if (!file_exists($this->backupPath . $file)) {
-			return array(
-				'msgType' => 'success',
-				'msgText' => 'File successfully Deleted.'
-			);	
-		} else {
-			return array(
-				'msgType' => 'error',
-				'msgText' => 'There was a problem deleting the file. Please try again. If the problem persists, it may be due to a permissions issue.'
-			);
-		}
-	}
-
-
-
-	###############################################
 	# Recursively Remove Directory
 	###############################################
 
-	// Only removes 2 directories deep
 	public function removeDirectory($path) {
-/*
-		$files = glob($path . '*');
-		foreach ($files as $file) {
-			if (is_dir($file)) { 
-				$subfiles = glob($file . '/*');
-				foreach ($subfiles as $subfile) {
-					unlink($subfile);
-				}
-				rmdir($file);
-			} else {
-				unlink($file);
-			}
-		}
-		rmdir($path);
-*/
 		exec('rm ' . $path . ' -R');
 		return;
 	}
 
-
-
-	###############################################
-	# Delete Backup
-	###############################################
-
-	public function is_dir_empty($dir) {
-		if (!file_exists($dir)) { return NULL; }
-		if (!is_readable($dir)) { return NULL; }
-		return (count(scandir($dir)) == 2);
-	}
-
-
-
-	###############################################
-	# Format File Size
-	###############################################
-
-	public function formatSize($bytes, $precision = 2) { 
-		$units = array('B', 'KB', 'MB', 'GB', 'TB'); 
-
-		$bytes = max($bytes, 0); 
-		$pow = floor(($bytes ? log($bytes) : 0) / log(1024)); 
-		$pow = min($pow, count($units) - 1); 
-		$bytes /= pow(1024, $pow);
-
-		return round($bytes, $precision) . ' ' . $units[$pow]; 
-	}
 
 }

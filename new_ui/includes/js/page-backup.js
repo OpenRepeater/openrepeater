@@ -38,6 +38,7 @@ $(function() {
 
 
 
+	/* ------------------------------------------------------------------------- */
 	// Delete Backup Function and Modal Display
 	$('#backup-table-responsive').on('click', '.deleteBackup', function(e) {
 		e.preventDefault();
@@ -95,6 +96,7 @@ $(function() {
 	});
 
 
+	/* ------------------------------------------------------------------------- */
 	// CREATE BACKUP FUNCTION AND MODAL
 	$('.createBackup').click(function(e) {
 		e.preventDefault();
@@ -109,30 +111,121 @@ $(function() {
 
 		$('#orp_modal_ok').off('click'); // Remove other click events
 		$('#orp_modal_ok').click(function() {
-			createString = { createBackup: 'New File' };
-			console.log( JSON.stringify(createString) );
 
 			orpModalWaitBar(modal_CreateBackupProgressTitle);
 
-			setTimeout(function() {
-				$('#orp_modal').modal('hide');
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_db_update.php',
+				data: {'createBackup': ''},
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					if (response.login == 'timeout') {
+						orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+					} else if (response.status == 'success') {
+						addRow({
+							addRow: true,
+							fileIndex: fileCount,
+							fileLabel: response.fileLabel,
+							fileName: response.fileName,
+							downloadURL: response.downloadURL,
+							fileDate: response.fileDate,
+							fileSize: response.fileSize,
+						});
+						fileCount++;
+						$('#orp_modal').modal('hide');
+					} else {
 
-				//$('#backupRow' + fileIndex).slideUp(500);
-				//$('#backupRow' + fileIndex).remove();
-
-				//Display Message
-				orpNotify('success', modal_CreateBackupNotifyTitle, modal_CreateBackupNotifyDesc);
-
-				// Set visibility for first created row.
-				if(!$('#backup-table-responsive').is(":visible")){
-					$('#no_backups').hide();
-					$('#backup-table-responsive').fadeIn(500);
+					}
 				}
-
-			}, 2000);
+			});
 		});		
 	});
 
+
+	/* ------------------------------------------------------------------------- */
+	// RESTORE BACKUP FUNCTION AND MODAL
+
+	$('#backup-table-responsive').on('click', '.restoreBackup', function(e) {
+		e.preventDefault();
+		var fileName = $(this).parents('tr').attr('data-backup-file');
+		var rowID = $(this).parents('tr').attr('id');
+
+		orpModalDisplay({modalSize: 'medium'});
+		orpModalWaitBar('<i class="fa fa-database"></i> ' + modal_RestoreProgressTitle);
+
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: { 'restoreValidation': fileName },
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+
+				} else if (response.status == 'ok') {
+					var backupDetails = '<h4>' + modal_RestoreDetailsHeading + '</h4>';
+					    backupDetails += '<p>' + modal_RestoreDetailsVersion + ': <strong>' + response.backup_orp_verion + '</strong><br>';
+					    backupDetails += modal_RestoreDetailsDate + ': <strong>' + formatDateTime(response.backup_date, 'longDateTime') + '</strong><br>';
+					    backupDetails += modal_RestoreDetailsCallsign + ': <strong>' + response.backup_callsign + '</strong></p>';
+					if (response.versionMatch == true) {
+						// Backup Validation Successful
+						var modalDetails = {
+							modalSize: 'medium',
+							title: '<i class="fa fa-database"></i> ' + modal_RestoreValidationTitle,
+							body: modal_RestoreValidationBody + backupDetails,
+							btnOK: modal_RestoreBtnOKText,
+						};
+					} else {
+						// Version Mismatch
+						var modalDetails = {
+							modalSize: 'medium',
+							title: '<i class="fa fa-database"></i> ' + modal_RestoreValidationMismatchTitle,
+							body: modal_RestoreValidationMismatchBody + backupDetails,
+							btnOK: modal_RestoreBtnOKText,
+						};						
+					}
+					orpModalDisplay(modalDetails);
+					$('#orp_modal_ok').off('click'); // Remove other click events
+					$('#orp_modal_ok').click(function() {
+						// Initiate Actual Restore...no turning back.
+						orpModalWaitBar('<i class="fa fa-database"></i> ' + modal_RestoreProgressTitle);
+						$.ajax({
+							type: 'POST',
+							url: '/functions/ajax_db_update.php',
+							data: {'restoreBackup': ''},
+							success: function(jsonResponse){
+								var response = JSON.parse(jsonResponse);
+								if (response.status == 'restore_success') {
+									$('#orp_modal').modal('hide');
+									orpNotify('success', modal_RestoreNotifyTitle, modal_RestoreNotifyDesc);
+									rebuildActive();
+								} else {
+			
+								}
+							}
+						});
+					});		
+
+				} else if (response.status == 'error_noFile' || response.status == 'error_incomplete') {
+					// Validation Failure
+					var modalDetails = {
+						modalSize: 'medium',
+						title: '<i class="fa fa-database"></i> ' + modal_RestoreValidationFailedTitle,
+						body: modal_RestoreValidationFailedBody,
+					};
+					orpModalDisplay(modalDetails);
+					$('#orp_modal_ok').off('click'); // Remove other click events
+					$('#orp_modal_ok').click(function() {
+						$('#orp_modal').modal('hide');
+					});		
+
+				} else {
+
+				}
+			}
+		});
+	});
 });
 
 
@@ -149,7 +242,7 @@ function uploadCallback (jsonResponse) {
 				fileIndex: fileCount,
 				fileLabel: curFile.fileLabel,
 				fileName: curFile.fileName,
-				fileURL: curFile.downloadURL,
+				downloadURL: curFile.downloadURL,
 				fileDate: curFile.fileDate,
 				fileSize: curFile.fileSize,
 			});

@@ -79,7 +79,7 @@ $BackupRestore = new BackupRestore();
             <li role="presentation" class="dropdown">
               <a id="drop6" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false"><i class="fa fa-cog"></i> <span class="caret"></span></a>
               <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6">
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><i class="fa fa-refresh"></i> <?=_('Restore')?></a>
+                <li role="presentation"><a role="menuitem" class="restoreBackup" tabindex="-1" href="#"><i class="fa fa-refresh"></i> <?=_('Restore')?></a>
                 </li>
                 <li role="presentation"><a role="menuitem" tabindex="-1" href="%%URL%%"><i class="fa fa-download"></i> <?=_('Download')?></a>
                 </li>
@@ -111,6 +111,21 @@ $BackupRestore = new BackupRestore();
 	var modal_CreateBackupProgressTitle = '<?= _('Creating Backup') ?>';
 	var modal_CreateBackupNotifyTitle = '<?= _('Backup Created') ?>';
 	var modal_CreateBackupNotifyDesc = '<?= _('The backup was created successfully.') ?>';
+
+	var modal_RestoreValidationTitle = '<?=_('Backup Validation Successful')?>';
+	var modal_RestoreValidationBody = '<?=_('The backup has been validated and matches the current version of OpenRepeater. You can proceed with the restore process. This will overwrite all your settings with those in the backup.')?>';
+	var modal_RestoreDetailsHeading = '<?=_('Backup Details')?>';
+	var modal_RestoreDetailsVersion = '<?=_('Version')?>';
+	var modal_RestoreDetailsDate = '<?=_('Date')?>';
+	var modal_RestoreDetailsCallsign = '<?=_('Callsign')?>';
+	var modal_RestoreBtnOKText = '<?=_('Restore')?>';
+	var modal_RestoreProgressTitle = '<?=_('Restore in Progress')?>';
+	var modal_RestoreValidationMismatchTitle = '<?=_('Version Mismatch')?>';
+	var modal_RestoreValidationMismatchBody = '<?=_('The version of OpenRepeater used to make this backup does not match the current version of OpenRepeater that you are trying to restore to. You may continue with the restore, but unexpected results may occur. This could be as simple as some missing data used by newer functionality added between versions. You may wish to make a backup of your current configuration before proceeding...just to be safe.')?>';
+	var modal_RestoreValidationFailedTitle = '<?=_('Validation Failure')?>';
+	var modal_RestoreValidationFailedBody = '<?=_('OpenRepeater was unable to validate this file so restoring from this backup is not possible. This could be due to a corruption of the data, or the original backup was not successfully created.')?>';
+	var modal_RestoreNotifyTitle = '<?=_('Restore Successful')?>';
+	var modal_RestoreNotifyDesc = '<?=_('Backup was successfully restored. Remember to rebuild configuration.')?>';
 
 	var modal_UploadTitle = '<?=_('Upload a Restore File')?>';
 	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';
