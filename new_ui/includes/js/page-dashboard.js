@@ -143,8 +143,8 @@ function updateMemory(){
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 		    var memoryInfo = JSON.parse(this.responseText);
-console.log('MEMORY: ' + memoryInfo);
-$( '#memoryInfo' ).html(this.memoryInfo);
+console.log('MEMORY: ' + this.responseText);
+$( '#memoryInfo' ).html(this.responseText);
 /*
 			if ( $( '#total_mem' ).length ) {
 				// Memory section loaded...update values
@@ -181,8 +181,8 @@ function updateDisk(){
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 		    var diskInfo = JSON.parse(this.responseText);
-console.log('DISK INFO: ' + diskInfo);
-$( '#diskInfo' ).html(diskInfo);
+console.log('DISK INFO: ' + this.responseText);
+$( '#diskInfo' ).html(this.responseText);
 //  	 		$('#disk_info').html( disk_structure(diskInfo) );
 		}
 	};

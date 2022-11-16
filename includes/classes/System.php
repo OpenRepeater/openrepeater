@@ -132,7 +132,11 @@ class System {
 
 	public function svxlink_status() {
 		$status = $this->orp_helper_call('svxlink', 'status');
-		return trim($status);
+		if ($status) {
+			return trim($status);
+		} else {
+			return 'not_available';
+		}
  	}
 
 	// stop, start, restart
@@ -169,7 +173,6 @@ class System {
 
 		$used_mem = $total_mem - $free_mem;
 
-/*
 		return [
 			'percent_used' => round(($used_mem / $total_mem) * 100),
 			'percent_free' => round(($free_mem / $total_mem) * 100),
@@ -181,7 +184,6 @@ class System {
 			'cache_mem' => $this->capacity($cache_mem / 1000),
 			'total_mem' => $this->capacity($total_mem / 1000),
 		];
-*/
 	}
 	
 
@@ -219,7 +221,12 @@ class System {
 			$count++;
 		}
 		
-		return $diskArray;
+		if ($diskArray) {
+			return $diskArray;
+		} else {
+			return ['status' => 'not_available'];
+		}
+
 	}
 
 
