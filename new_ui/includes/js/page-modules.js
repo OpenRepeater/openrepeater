@@ -19,7 +19,23 @@ $(function() {
 				newSortOrder [pid]['svxlinkID'] = svxid;
 			});
 			newOrderResults = JSON.stringify(newSortOrder);
-			console.log( newOrderResults );
+
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_db_update.php',
+				data: {'moduleWrite': newOrderResults},
+				success: function(jsonResponse){
+					var response = JSON.parse(jsonResponse);
+					if (response.login == 'timeout') {
+						orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+					} else if (response.status == 'success') {
+						rebuildActive();
+					} else {
+						// no error response at this time.
+					}
+				}
+			});
+
 		},
 	});
 
@@ -113,8 +129,18 @@ $(function() {
 
 
 	// Loop through JSON array of modules build display
+// DEVELOPMENT
+console.log('IN: ' + moduleList);
 	fullModuleObj = JSON.parse(moduleList);
+
+	// Middle Object to remove soritng by module ID. DB query sorts by svxlinkID
+	var svxlinkSortObj = {};
 	$.each(fullModuleObj, function(index, curMod) {
+		svxlinkSortObj[curMod.svxlinkID]=curMod;
+	});
+
+	// Actual Display Loop
+	$.each(svxlinkSortObj, function(index, curMod) {
 		displayModule(curMod);
 	});
 
@@ -122,14 +148,34 @@ $(function() {
 	// Module Enable/Disable Function
 	$('#moduleWrap').on('change', '.modActive', function() {
 		var moduleID = $(this).parents('.moduleRow').attr('data-module-id');
+
 		if(this.checked) {
-			var moduleState = { moduleKey: moduleID, moduleEnabled: '1' }
+			var moduleStateObj = { moduleKey: moduleID, moduleEnabled: '1' };
+			var modulePrevState = false;
 			$(this).parents('.moduleRow').removeClass('deactive');
 		} else {
-			var moduleState = { moduleKey: moduleID, moduleEnabled: '0' }
+			var moduleStateObj = { moduleKey: moduleID, moduleEnabled: '0' };
+			var modulePrevState = true;
 			$(this).parents('.moduleRow').addClass('deactive');
 		}
-		console.log(moduleState);
+		var moduleJSON = JSON.stringify(moduleStateObj);
+
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_db_update.php',
+			data: {'moduleState': moduleJSON},
+			success: function(jsonResponse){
+				var response = JSON.parse(jsonResponse);
+				if (response.login == 'timeout') {
+					orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+				} else if (response.status == 'success') {
+					rebuildActive();
+				} else {
+					// Future: Reset swtich/row state to previous. See modulePrevState variable
+				}
+			}
+		});
+
 	});
 
 
@@ -137,6 +183,8 @@ $(function() {
 	$('#moduleWrap').on('click', 'button.delete', function() {
 		var moduleID = $(this).parents('.moduleRow').attr('data-module-id');
 		var moduleDisplayName = $( '#Row' + moduleID + ' .modName' ).html();
+
+		var deleteString = {'deleteModule': moduleID};
 
 		var modalDetails = {
 			modalSize: 'small',
@@ -151,17 +199,28 @@ $(function() {
 		$('#orp_modal_ok').click(function() {
 			orpModalWaitBar();
 
-			// TEMP SIMULATION OF REBUILD TIME
-			setTimeout(function() {
-				$('#orp_modal').modal('hide');
+// DEVELOPMENT
+console.log('DELETE: ' + JSON.stringify(deleteString));
 
-				$( '#Row' + moduleID ).fadeOut('1000');
+			$.ajax({
+				type: 'POST',
+				url: '/functions/ajax_db_update.php',
+				data: {'deleteModule': moduleID},
+				success: function(jsonResponse){
+					$('#orp_modal').modal('hide');
+					var response = JSON.parse(jsonResponse);
+					if (response.login == 'timeout') {
+						orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+					} else if (response.status == 'success') {
+						$( '#Row' + moduleID ).fadeOut('1000');
+						orpNotify('success', modDelSuccessTitle, modDelSuccessBody);
+						rebuildActive();
+					} else {
+						orpNotify('success', modDelErrorTitle, modDelErrorBody);
+					}
+				}
+			});
 
-				rebuildActive();
-				
-				orpNotify('success', modDelSuccessTitle, modDelSuccessBody);
-
-			}, 2000);
 		});
 
 	});
@@ -209,3 +268,22 @@ $(function() {
 	});
 
 });
+
+
+
+/* ------------------------------------------------------------------------- */
+// UPLOAD CALLBACK FUNCTION
+
+function uploadCallback (jsonResponse) {
+	var response = JSON.parse(jsonResponse);
+	if (response.status == 'success') {
+		console.log(response.data);
+/*
+		$.each(response.data, function(index, curFile) {
+		});
+*/
+	} else if (response.status == 'error') {
+		// orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
+		console.log('Upload Error');
+	}
+}

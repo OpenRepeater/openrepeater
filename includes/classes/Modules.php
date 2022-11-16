@@ -52,6 +52,43 @@ class Modules {
 
 
 	###############################################
+	# Write Module Record
+	###############################################
+
+	// Accepts multiple rows and/or columns
+	public function write_modules($moduleArray = []) {
+
+		// Remove moduleKey child element if sent. No need to rewrite that to DB.
+		foreach(array_keys($moduleArray) as $key) { unset($moduleArray[$key]['moduleKey']); }
+
+		// Build SQL Update Strings
+		foreach($moduleArray as $currModuleKey => $currModuleValue) {
+			$colKeyValArray = [];
+			foreach($currModuleValue as $colKey => $colValue) { $colKeyValArray[] = $colKey . " = '" . $colValue . "'"; }
+			$colKeyValPairs  = implode(", ", $colKeyValArray);
+			$sql = "UPDATE modules SET $colKeyValPairs WHERE moduleKey = $currModuleKey;";
+			$update_result = $this->Database->update($sql);
+			if ($update_result == false) { return false; } // Break if failure with individual row update
+		}
+		return true; // true on last row update.
+	}
+
+
+
+	###############################################
+	# Get Module SVXLink Name by ID
+	###############################################
+
+	public function get_module_svxlink_name($id) {
+		$sql = 'SELECT * FROM "modules" WHERE "moduleKey" = "'.$id.'";';
+		$select_result = $this->Database->select_key_value($sql, 'moduleKey', 'svxlinkName');
+		$svxlink_name = $select_result[$id];
+		return $svxlink_name;	
+	}
+
+
+
+	###############################################
 	# Submit Settings for Selected Module
 	###############################################
 
@@ -102,10 +139,7 @@ class Modules {
 	###############################################
 
 	public function activateMod($id) {
-		$sql = 'SELECT * FROM "modules" WHERE "moduleKey" = "'.$id.'";';
-		$select_result = $this->Database->select_key_value($sql, 'moduleKey', 'svxlinkName');
-		$svxlink_name = $select_result[$id];
-
+		$svxlink_name = $this->get_module_svxlink_name($id);
 		# REWRITE PENDING
 		# Currently Redirects to Database Class
 		# Plan to pull logic form those classes once everything points here
@@ -114,10 +148,8 @@ class Modules {
 		$this->initialize_module($svxlink_name);		
 		$this->Database->set_update_flag(true);
 
-		return array(
-			'msgType' => 'success',
-			'msgText' => 'The module has been successfully <strong>activated</strong>.'
-		);
+		// FUTURE: More error checking
+		return true;
 	}
 
 
@@ -133,10 +165,8 @@ class Modules {
 		$this->Database->deactive_module($id);
 		$this->Database->set_update_flag(true);
 
-		return array(
-			'msgType' => 'success',
-			'msgText' => 'The module has been successfully <strong>deactivated</strong>.'
-		);
+		// FUTURE: More error checking
+		return true;
 	}
 
 
@@ -508,21 +538,12 @@ class Modules {
 		$delete_result = $this->Database->delete_row($sql);
 			if ($delete_result) { 
 				$this->Database->set_update_flag(true);
-				return array(
-					'msgType' => 'success',
-					'msgText' => 'Successfully deleted the module.'
-				);
+				return true;
 			} else {
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'There was a problem fully deleting the module.'
-				);
+				return false;
 			}
 		} else {
-			return array(
-				'msgType' => 'error',
-				'msgText' => 'There was a problem deleting the module.'
-			);
+			return false;
 		}
 		
 	}

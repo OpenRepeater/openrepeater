@@ -112,6 +112,8 @@ print_r($moduleList);
 	var modDelConfirmBtn = '<?=_('Delete')?>';
 	var modDelSuccessTitle = '<?=_('Success')?>';
 	var modDelSuccessBody = '<?=_('The module has been successfully deleted.')?>';
+	var modDelErrorTitle = '<?=_('Error')?>';
+	var modDelErrorBody = '<?=_('There was a problem deleting the module.')?>';
 </script>
 
 <?php include('includes/footer.php'); ?>
