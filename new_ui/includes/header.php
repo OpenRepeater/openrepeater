@@ -178,7 +178,8 @@ function _($input) {
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <?=_('Admin')?> <span class=" fa fa-angle-down"></span>
+                    <img src="/new_ui/includes/images/user.png" alt="<?= $_SESSION['username'] ?>">
+                    <?= $_SESSION['username'] ?> <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
                     <li><a class="change_password"><i class="fa fa-lock pull-right"></i><?=_('Change Password')?></a></li>

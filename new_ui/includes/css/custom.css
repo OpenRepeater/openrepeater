@@ -2047,6 +2047,7 @@ a.user-profile {
 	height:29px;
 	border-radius:50%;
 	margin-right:10px;
+    outline: #a5a9ac 1px solid;
 }
 
 ul.top_profiles {
@@ -5049,7 +5050,7 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
 	color: #fff5f5;
 	background-color: #bd0600;
 	margin: 0;
-	margin-top: 11px;
+	margin-top: 13px;
 	margin-right: 10px;
 /* 	display: none; */
 }
