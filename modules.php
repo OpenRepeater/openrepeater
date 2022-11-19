@@ -85,19 +85,6 @@ $moduleList = $ModulesClass->getModulesJSON();
               </div>
             </div>
 
-
-<?php
-/*
-# Fake Module List Override
-include('includes/fakeDB.php');
-$fakeModuleList = json_encode($fakeModules);
-// $moduleList = $fakeModuleList;
-print_r($fakeModuleList);
-echo '<hr>';
-print_r($moduleList);
-*/
-?>
-
           </div>
         </div>
         <!-- /page content -->

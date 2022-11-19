@@ -9,8 +9,6 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-include('includes/fakeDB.php');
-
 $customJS = 'page-macros.js'; // 'file1.js, file2.js, ... '
 $customCSS = 'page-macros.css'; // 'file1.css, file2.css, ... '
 

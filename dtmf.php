@@ -1,4 +1,3 @@
-<?php include('includes/fakeDB.php'); ?>
 
 <?php
 function dtmf($inputString) {
