@@ -6,6 +6,8 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 
 $Database = new Database();
 $settings = $Database->get_settings();
+
+$Modules = new Modules();
 ?>
 
 
@@ -122,6 +124,10 @@ function _($input) {
                   <li><a><i class="fa fa-plug"></i> <?=_('Modules')?> <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a class="navLink" href="/new_ui/modules.php"><?=_('All Modules')?></a></li>
+
+                      <?= $Modules->nav_setting_links() ?>
+
+                      <li><a>---</a></li>
                       <li><a class="navLink" href="/new_ui/modules/EchoLink/settings.php">EchoLink</a></li>
                       <li><a class="navLink" href="/new_ui/modules/RemoteRelay/settings.php">Remote Relay</a></li>
                       <li><a class="navLink" href="/new_ui/modules/SiteStatus/settings.php">Site Status</a></li>
@@ -131,6 +137,8 @@ function _($input) {
                       <li><a class="navLink" href="/new_ui/modules/Frn/settings.php">FRN Gateway <span class="badge badge-info">Dev</span></a></li>
                       <li><a class="navLink" href="/new_ui/modules/RigCtl/settings.php">Rig Control <span class="badge badge-info">Dev</span></a></li>
                       <li><a class="navLink" href="/new_ui/modules/calendar.php">Announcements <span class="badge badge-info">Dev</span></a></li>
+                      
+                      
                     </ul>
                   </li>
 

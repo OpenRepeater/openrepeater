@@ -9,7 +9,7 @@ class FileSystem {
 
 	private $courtesyTonePath = 'sounds/courtesy_tones/';
 	private $identificationPath = 'sounds/identification/';
-	private $modulePath = 'modules/';
+	private $modulePath = 'new_ui/modules/';
 	private $backupPath = 'backup/';
 
 
@@ -31,20 +31,16 @@ class FileSystem {
 			switch($uploadType) {
 				case 'courtesy_tone':
 					$folder_path = $this->basePath . $this->courtesyTonePath;
-					$convertAudio = true;
 					break;
 				case 'identification':
 					$folder_path = $this->basePath . $this->identificationPath;
-					$convertAudio = true;
 					break;
 				case 'restore':
 					$folder_path = $this->basePath . $this->backupPath;
-					$convertAudio = false;
 					break;
 
 				case 'module':
 					$folder_path = $this->basePath . $this->modulePath;
-					$convertAudio = false;
 					break;
 			}
 
@@ -56,37 +52,50 @@ class FileSystem {
 				$returnArray[$curKey]['fileLabel'] = str_replace( '_', ' ' , pathinfo($newFile, PATHINFO_FILENAME) );
 				$returnArray[$curKey]['fileDate'] = date("Y-m-d\TH:i:s T");
 				$returnArray[$curKey]['fileSize'] = $filesArray['file']['size'][$curKey];
-				if ($uploadType != 'module') {
-					$returnArray[$curKey]['downloadURL'] = $this->buildURL($newFile, $uploadType);
-				}
 				$returnArray[$curKey]['full_path'] = $folder_path . $newFile;		
 				$returnArray[$curKey]['tmp_name'] = $filesArray['file']['tmp_name'][$curKey];
 		
-				move_uploaded_file($returnArray[$curKey]['tmp_name'], $returnArray[$curKey]['full_path']);
-				
-				// Convert audio foormat if audio upload type
-				if ($convertAudio) { 
-					$inputFile = $folder_path . $newFile;
-					$outputFile = $folder_path . pathinfo($newFile, PATHINFO_FILENAME) . '.wav';
+				// Handle Uploaded File According to Type
+				switch($uploadType) {
+					case 'courtesy_tone':
+					case 'identification':
+						move_uploaded_file($returnArray[$curKey]['tmp_name'], $returnArray[$curKey]['full_path']);
+	
+						// Convert audio format if audio upload type
+						$inputFile = $folder_path . $newFile;
+						$outputFile = $folder_path . pathinfo($newFile, PATHINFO_FILENAME) . '.wav';
+	
+						$result = $this->convert_audio($inputFile, $outputFile);
+						
+						// Update return array with new info.
+						if ($result) {
+							$returnArray[$curKey]['full_path'] = $outputFile;
+							$returnArray[$curKey]['fileName'] = pathinfo($outputFile, PATHINFO_BASENAME);
+							$returnArray[$curKey]['fileLabel'] = str_replace( '_', ' ' , pathinfo($outputFile, PATHINFO_FILENAME) );
+							$returnArray[$curKey]['fileSize'] = filesize($outputFile);
+							$returnArray[$curKey]['downloadURL'] = $this->buildURL( pathinfo($outputFile, PATHINFO_BASENAME), $uploadType );
+						}
+						return json_encode($returnArray);
+						break;
+	
+					case 'restore':
+						$returnArray[$curKey]['downloadURL'] = $this->buildURL($newFile, $uploadType);
+						move_uploaded_file($returnArray[$curKey]['tmp_name'], $returnArray[$curKey]['full_path']);
+						return json_encode($returnArray);
+						break;
+	
+					case 'module':
+// 						move_uploaded_file($returnArray[$curKey]['tmp_name'], $returnArray[$curKey]['full_path']);
+$Modules = new Modules();
 
-					$result = $this->convert_audio($inputFile, $outputFile);
-					
-					// Update return array with new info.
-					if ($convertAudio) {
-						$returnArray[$curKey]['full_path'] = $outputFile;
-						$returnArray[$curKey]['fileName'] = pathinfo($outputFile, PATHINFO_BASENAME);
-						$returnArray[$curKey]['fileLabel'] = str_replace( '_', ' ' , pathinfo($outputFile, PATHINFO_FILENAME) );
-						$returnArray[$curKey]['fileSize'] = filesize($outputFile);
-						$returnArray[$curKey]['downloadURL'] = $this->buildURL( pathinfo($outputFile, PATHINFO_BASENAME), $uploadType );
-					}
+						$result = $Modules->process_upload_module($returnArray[$curKey]['tmp_name']);
+						return json_encode($result);
+						break;
 				}
-
 			}
-			return json_encode($returnArray);
-			
 
 		} else {
-			return 'no files sent';
+			return '{"status":"error";"msgText":"no files sent"}';
 		}
 
 	}

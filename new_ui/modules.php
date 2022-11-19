@@ -9,7 +9,15 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-	
+
+if ( isset($_GET['settings']) ) {
+	// If modules settings page is request, display that if it exist
+	# AUTOLOAD CLASSES
+	require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+	$ModulesClass = new Modules();
+	echo $ModulesClass->display_settings($_GET['settings']);
+							
+} else {	
 $customJS = 'page-modules.js, jquery-ui.min.js, jquery.ui.touch-punch.min.js, dropzone.js, upload-file.js'; // 'file1.js, file2.js, ... '
 $customCSS = 'page-modules.css, upload-file.css'; // 'file1.css, file2.css, ... '
 
@@ -119,6 +127,9 @@ print_r($moduleList);
 <?php include('includes/footer.php'); ?>
 
 <?php
+} // end else
+
+
 // --------------------------------------------------------
 // SESSION CHECK TO SEE IF USER IS LOGGED IN.
  } // close ELSE to end login check from top of page

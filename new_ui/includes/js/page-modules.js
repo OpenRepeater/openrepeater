@@ -40,92 +40,6 @@ $(function() {
 	});
 
 
-	function displayModule(module) {
-		var rowID = 'Row' + module.moduleKey;
-
-		var template = $('#rowTemplate')
-		  .clone()  // CLONE THE TEMPLATE
-		  .attr('id', rowID);  // MAKE THE ID UNIQUE
-
-		rowID = '#' + rowID; 
-
-		switch(module.type) {
-			case 'core':
-				if(module.svxlinkID==0) { // Only core module Help with ID 0 is to remain unsortabled.
-					template.appendTo($('#moduleList'))  // APPEND TO THE TABLE
-					  .hide();                        // Hide while updating
-				} else {
-					template.appendTo($('#moduleListSort'))  // APPEND TO THE TABLE
-					  .hide();                        // Hide while updating
-				}
-				$(rowID + ' .largeDigit').html(module.svxlinkID); // Set SVXLink Number
-				$(rowID + ' .modType').html(modTypeCore); // Set Module Type
-				$(rowID + ' .modType').addClass('bg-orange'); // Set Type Class
-				$(rowID + ' .delete').remove(); // Remove delete button since core module
-				break;
-
-			case 'daemon':
-				template.appendTo($('#moduleList'))  // APPEND TO THE TABLE
-				  .hide();                        // Hide while updating
-				$(rowID + ' .largeDigit').html(''); // Set SVXLink Number
-				$(rowID + ' .modType').html(modTypeDaemon); // Set Module Type
-				$(rowID + ' .modType').addClass('bg-red'); // Set Type Class
-				break;
-
-			default:
-				template.appendTo($('#moduleListSort'))  // APPEND TO THE TABLE
-				  .hide();                        // Hide while updating
-				$(rowID + ' .largeDigit').html(module.svxlinkID); // Set SVXLink Number
-				$(rowID + ' .modType').html(modTypeAddOn); // Set Module Type
-				$(rowID + ' .modType').addClass('bg-green'); // Set Type Class
-
-		}
-
-		$(rowID).attr('data-module-id', module.moduleKey);
-		$(rowID).attr('data-svxlink-id', module.svxlinkID);
-
-		$(rowID + ' .modName').html(module.displayName); // Set Module Name
-
-		$(rowID + ' .modDesc').html(module.desc); // Set Description
-		
-		// Add Version & Authors
-		if(module.version != '') {
-			$(rowID + ' .modInfo').append('<span class="modVersion">'+module.version+'</span>'); 
-		}
-
-		// Setup Module Enable/Disable Switch
-		if(module.moduleEnabled == '1') {
-			$(rowID + ' .js-switch').prop( 'checked', true );
-		} else {
-			$(rowID + ' .js-switch').prop( 'checked', false );
-			$(rowID).addClass('deactive'); // Setup Module Row as Disabled
-		}
-		resetSwitchery(rowID + ' .js-switch');
-
-		// Settings Page Link
-		if(module.settings == true) {
-			$(rowID + ' .settings').attr( 'href', '/modules/'+module.svxlinkName+'/settings.php' );
-		} else {
-			$(rowID + ' .settings').remove();
-		}
-		
-		// DTMF Help Link
-		if(module.dtmf == true) {
-			$(rowID + ' .dtmf').attr( 'href', dtmfPage+'#'+module.svxlinkName );
-		} else {
-			$(rowID + ' .dtmf').remove();
-		}
-
-		$(rowID).fadeIn(1000); // Fade In to Display
-	}
-
-
-	function resetSwitchery(checkboxID) {
- 		 $(checkboxID).next().remove('span'); // remove inital switcher span
- 		 var elems = $(document).find(checkboxID);
- 		 var switchery = new Switchery( elems[0], { color: '#8dc63f' } );
- 		 switchery.handleOnchange();
-	}
 
 
 	// Loop through JSON array of modules build display
@@ -277,13 +191,123 @@ console.log('DELETE: ' + JSON.stringify(deleteString));
 function uploadCallback (jsonResponse) {
 	var response = JSON.parse(jsonResponse);
 	if (response.status == 'success') {
-		console.log(response.data);
-/*
-		$.each(response.data, function(index, curFile) {
-		});
-*/
+		var newModule = response.data;
+
+		console.log(newModule);
+
+		var moduleState = {
+			moduleKey: newModule.moduleKey,
+			moduleEnabled: 0,
+			svxlinkName: newModule.mod_name,
+			displayName: newModule.display_name,
+			svxlinkID: newModule.svxlinkID,
+			desc: newModule.mod_desc,
+			version: 'Version: ' + newModule.version + ' | Authors: ' + newModule.authors,			
+// 			type: 'daemon',
+			settings: true,
+			dtmf: false
+		}
+
+		displayModule(moduleState);
+
+		orpNotify(newModule.status, newModule.display_name , newModule.msgText);
+
 	} else if (response.status == 'error') {
 		// orpNotify('error',notify_LoggedOutTitle , notify_LoggedOutText);
 		console.log('Upload Error');
 	}
+}
+
+
+
+
+
+
+
+function displayModule(module) {
+	var rowID = 'Row' + module.moduleKey;
+
+	var template = $('#rowTemplate')
+	  .clone()  // CLONE THE TEMPLATE
+	  .attr('id', rowID);  // MAKE THE ID UNIQUE
+
+	rowID = '#' + rowID; 
+
+	switch(module.type) {
+		case 'core':
+			if(module.svxlinkID==0) { // Only core module Help with ID 0 is to remain unsortabled.
+				template.appendTo($('#moduleList'))  // APPEND TO THE TABLE
+				  .hide();                        // Hide while updating
+			} else {
+				template.appendTo($('#moduleListSort'))  // APPEND TO THE TABLE
+				  .hide();                        // Hide while updating
+			}
+			$(rowID + ' .largeDigit').html(module.svxlinkID); // Set SVXLink Number
+			$(rowID + ' .modType').html(modTypeCore); // Set Module Type
+			$(rowID + ' .modType').addClass('bg-orange'); // Set Type Class
+			$(rowID + ' .delete').remove(); // Remove delete button since core module
+			break;
+
+		case 'daemon':
+			template.appendTo($('#moduleList'))  // APPEND TO THE TABLE
+			  .hide();                        // Hide while updating
+			$(rowID + ' .largeDigit').html(''); // Set SVXLink Number
+			$(rowID + ' .modType').html(modTypeDaemon); // Set Module Type
+			$(rowID + ' .modType').addClass('bg-red'); // Set Type Class
+			break;
+
+		default:
+			template.appendTo($('#moduleListSort'))  // APPEND TO THE TABLE
+			  .hide();                        // Hide while updating
+			$(rowID + ' .largeDigit').html(module.svxlinkID); // Set SVXLink Number
+			$(rowID + ' .modType').html(modTypeAddOn); // Set Module Type
+			$(rowID + ' .modType').addClass('bg-green'); // Set Type Class
+
+	}
+
+	$(rowID).attr('data-module-id', module.moduleKey);
+	$(rowID).attr('data-svxlink-id', module.svxlinkID);
+
+	$(rowID + ' .modName').html(module.displayName); // Set Module Name
+
+	$(rowID + ' .modDesc').html(module.desc); // Set Description
+	
+	// Add Version & Authors
+	if(module.version != '') {
+		$(rowID + ' .modInfo').append('<span class="modVersion">'+module.version+'</span>'); 
+	}
+
+	// Setup Module Enable/Disable Switch
+	if(module.moduleEnabled == '1') {
+		$(rowID + ' .js-switch').prop( 'checked', true );
+	} else {
+		$(rowID + ' .js-switch').prop( 'checked', false );
+		$(rowID).addClass('deactive'); // Setup Module Row as Disabled
+	}
+	resetSwitchery(rowID + ' .js-switch');
+
+	// Settings Page Link
+	if(module.settings == true) {
+		$(rowID + ' .settings').attr( 'href', 'modules.php?settings='+module.moduleKey );
+// 			?settings=3
+	} else {
+		$(rowID + ' .settings').remove();
+	}
+	
+	// DTMF Help Link
+	if(module.dtmf == true) {
+// 		$(rowID + ' .dtmf').attr( 'href', dtmfPage+'#'+module.svxlinkName );
+	} else {
+		$(rowID + ' .dtmf').remove();
+	}
+
+	$(rowID).fadeIn(1000); // Fade In to Display
+}
+
+
+function resetSwitchery(checkboxID) {
+		 $(checkboxID).next().remove('span'); // remove inital switcher span
+		 var elems = $(document).find(checkboxID);
+		 var switchery = new Switchery( elems[0], { color: '#8dc63f' } );
+		 switchery.handleOnchange();
 }
