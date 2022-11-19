@@ -19,8 +19,8 @@ class Modules {
 
 	public function __construct() {
 		$this->Database = new Database();
-		$this->modules_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/new_ui/modules/';
-		$this->includes_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/new_ui/includes/';
+		$this->modules_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/modules/';
+		$this->includes_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/';
 		$this->modulesUploadTempDir = $this->modules_path . 'tempModuleDir/';
 	}
 

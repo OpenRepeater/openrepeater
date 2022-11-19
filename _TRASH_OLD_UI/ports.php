@@ -77,7 +77,7 @@ var jsAudioOutputOptions='<?php echo $phpAudioOutputOptions; ?>';
 </script>
 
 
-			<div class="alert alert-success"><strong>DEPRECIATED: </strong>Most of the items on this page have been depreciated. Please view <a href="new_ui/ports.php">interfaces page</a> on new UI for more options. This page should only be used to select board presets which is the only feature not added in new UI yet.</div>
+			<div class="alert alert-success"><strong>DEPRECIATED: </strong>Most of the items on this page have been depreciated. Please view <a href="/ports.php">interfaces page</a> on new UI for more options. This page should only be used to select board presets which is the only feature not added in new UI yet.</div>
 
 			<div id="alertWrap"><?php if(isset($alert)) { echo $alert; } ?></div>
 

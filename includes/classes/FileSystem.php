@@ -9,7 +9,7 @@ class FileSystem {
 
 	private $courtesyTonePath = 'sounds/courtesy_tones/';
 	private $identificationPath = 'sounds/identification/';
-	private $modulePath = 'new_ui/modules/';
+	private $modulePath = 'modules/';
 	private $backupPath = 'backup/';
 
 

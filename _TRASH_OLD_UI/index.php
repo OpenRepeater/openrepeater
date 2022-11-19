@@ -11,7 +11,7 @@
 	<div class="splash_content">
 
 		<a href="dashboard.php" class="btn">Old UI (2.2.x and earlier)</a>
-		<a href="new_ui/" class="btn">New UI (3.0 dev)</a>
+		<a href="/" class="btn">New UI (3.0 dev)</a>
 		<br>
 		<br>
 		<br>
