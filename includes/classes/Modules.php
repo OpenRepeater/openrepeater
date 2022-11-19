@@ -765,11 +765,11 @@ class Modules {
 			// ***************************************************************** //
 			// Construct Page Content
 			ob_start();
-			include($this->modules_path . 'module_header.php');
+			include($this->includes_path . 'module_header.php');
 // 			echo $form_top;
 			include($mod_settings_file);
 // 			echo $form_bottom;
-			include($this->modules_path . 'module_footer.php');
+			include($this->includes_path . 'module_footer.php');
 			$moduleHTML = ob_get_clean();
 			// ***************************************************************** //
 

@@ -2,7 +2,7 @@
 // $customJS = 'dropzone.js, upload-file.js'; // 'file1.js, file2.js, ... '
 // $customCSS = 'upload-file.css'; // 'file1.css, file2.css, ... '
 
-include('../../includes/header.php');
+include('header.php');
 ?>
 
         <!-- page content -->
