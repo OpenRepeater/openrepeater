@@ -198,7 +198,7 @@ class Modules {
 
 
 	###############################################
-	# Upload Module
+	# Process Upload Module
 	###############################################
 
 	public function process_upload_module($tmpFilePath) {
@@ -541,95 +541,6 @@ class Modules {
 	###############################################
 	# Display All Modules
 	###############################################
-
-	### OLD 2.2.X AND PRIOR UI ####
-	public function display_all() {
-		$modules = $this->get_modules();
-
-		$return_html = '
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th><div style="width:200px">Module</div></th>
-					<th>Description</th>
-				</tr>
-			</thead>
-			
-			<tbody>
-			';
-
-		foreach($modules as $cur_mod) { 
-			$mod_ini_file = $this->modules_path.$cur_mod['svxlinkName'].'/info.ini';
-			$mod_settings_file = $this->modules_path.$cur_mod['svxlinkName'].'/settings.php';
-			$dtmf_help_file = $this->modules_path.$cur_mod['svxlinkName'].'/dtmf.php';
-
-			$curr_mod_ini = $this->read_ini($cur_mod['svxlinkName']);
-
-			if (isset($curr_mod_ini['Module_Info']['display_name'])) {
-				$currDisplayName = $curr_mod_ini['Module_Info']['display_name'];
-			} else {
-				$currDisplayName = $cur_mod['svxlinkName'];
-			}
-
-			$return_html .= '
-			<tr>
-				<td>
-					<div><h3>' . $currDisplayName . ' (' . $cur_mod['svxlinkID'] .'#)</h3></div>
- 					<div>';
- 			
- 			if ($cur_mod['moduleEnabled']==1) { 
-	 			$return_html .= '<span class="label-success label label-default">Active</span>';
-	 		} else {
-		 		$return_html .= '<span class="label-default label">Inactive</span>';
-		 	}
-			
-			$return_html .= '</div><div>';
-			
-			// Activate / Deactiveate Link
-			if ($cur_mod['moduleEnabled']==1) {
-				$return_html .= '<a href="?deactivate='.$cur_mod['moduleKey'].'">Deactivate</a>';
-			} else {
-				$return_html .= '<a href="?activate='.$cur_mod['moduleKey'].'">Activate</a>';													
-			}
-
-			// Settings Link...if Applicable
-			if ($cur_mod['moduleEnabled']==1 && file_exists($mod_settings_file)) {
-				$return_html .= ' | <a href="modules.php?settings='.$cur_mod['moduleKey'].'">Settings</a>';
-			}
-
-			// Delete Link...if not core module			
-			if ( $cur_mod['moduleEnabled']==0 && !in_array($cur_mod['svxlinkName'], $this->core_modules) ) {
-				$return_html .= ' | <a href="#" data-toggle="modal" data-target="#deleteModule" onclick="deleteModule(\'' . $cur_mod['svxlinkName'] . '\',\'' . $currDisplayName . '\'); return false;">Delete</a>';
-			}
-
-			// DTMF Link...if Applicable
-			if ($cur_mod['moduleEnabled']==1 && file_exists($dtmf_help_file)) {
-				$return_html .= ' | <a href="dtmf.php#'.$cur_mod['svxlinkName'].'">DTMF</a>';
-			}
-
-			$return_html .= '</div></td><td>';
-			
-			if (isset($curr_mod_ini['Module_Info']['mod_desc'])) {
-				$return_html .= $curr_mod_ini['Module_Info']['mod_desc'];
-			} else {
-				$return_html .= "<em>(No Description)</em>";
-			}
-
-			// Version / Author Info
-			if ( isset($curr_mod_ini['Module_Info']['version']) || isset($curr_mod_ini['Module_Info']['authors']) ) { $return_html .= '<br><br>'; }
-			if (isset($curr_mod_ini['Module_Info']['version'])) { $return_html .= 'Version: ' . $curr_mod_ini['Module_Info']['version'] . '&nbsp;&nbsp;&nbsp;'; }
-			if (isset($curr_mod_ini['Module_Info']['version'])) { $return_html .= 'Authors: ' . $curr_mod_ini['Module_Info']['authors']; }
-
-
-			$return_html .= '</td></tr>';
-
-		} /* End Current Module */
-
-		$return_html .= '</tbody></table>';
-		
-		return $return_html;	
-	}
-
 
 	public function getModulesJSON($listType = 'full') {
 		$modules = $this->get_modules();
