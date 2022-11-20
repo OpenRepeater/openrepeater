@@ -155,9 +155,7 @@ function _($input) {
                 <ul class="nav side-menu">
                   <li><a href="/dev/edit.php" target="_blank"><i class="fa fa-database"></i> Edit Database </a></li>
                   <li><a href="/dev_ui/" target="_blank"><i class="fa fa-wrench"></i> Dev UI </a></li>
-
                   <li><a href="/wizard.php"><i class="fa fa-magic"></i> Wizard </a></li>
-                  <li><a href="/404.php"><i class="fa fa-exclamation-triangle"></i> 404 </a></li>
                 </ul>
               </div>
 
