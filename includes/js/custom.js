@@ -252,14 +252,16 @@ $(document).ready(function() {
 	});
 });
 // NProgress
+/*
 if (typeof NProgress != 'undefined') {
 	$(document).ready(function() {
 		NProgress.start();
 	});
-	$(window).load(function() {
+	$(window).on('load', function() {
 		NProgress.done();
 	});
 }
+*/
 //hover and retain popover when on popover content
 var originalLeave = $.fn.popover.Constructor.prototype.leave;
 $.fn.popover.Constructor.prototype.leave = function(obj) {

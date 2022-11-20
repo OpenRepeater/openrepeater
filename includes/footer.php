@@ -38,7 +38,8 @@
 	  <!-- END Modal -->
 
     <!-- jQuery -->
-    <script src="/includes/vendors/jquery/dist/jquery.min.js"></script>
+<!--     <script src="/includes/vendors/jquery/dist/jquery.min.js"></script> -->
+    <script src="/includes/js/libraries/jquery/jquery-3.6.1.min.js"></script>
     <!-- Bootstrap -->
     <script src="/includes/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- FastClick -->
@@ -50,7 +51,7 @@
     <!-- iCheck -->
     <script src="/includes/vendors/iCheck/icheck.min.js"></script>
     <!-- Luxon DateTime Library, and variables -->
-	<script src="/includes/vendors/luxon/luxon.min.js"></script>
+	<script src="/includes/js/libraries/luxon/luxon.min.js"></script>
 	<script>
 	var DateTime = luxon.DateTime;
 	var phpTimezone = '<?= date_default_timezone_get() ?>';
