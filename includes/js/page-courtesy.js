@@ -126,7 +126,7 @@ $(function() {
 						$('#'+rowID+' span.audio_name').text(newClipName);
 
 						$('#'+rowID+' .orp_player source').attr('src', response.newURL);
-						$('#'+rowID+' audio').load(); // Reload the new filename into player
+						$('#'+rowID+' audio').on('load'); // Reload the new filename into player
 
 						//Display Message
 						orpNotify('success', modal_RenameNotifyTitle, modal_RenameNotifyDesc);

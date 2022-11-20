@@ -190,7 +190,7 @@ $(function() {
 						$('#'+rowID+' span.audio_name').text(newClipName);
 
 						$('#'+rowID+' .orp_player source').attr('src', response.newURL);
-						$('#'+rowID+' audio').load(); // Reload the new filename into player
+						$('#'+rowID+' audio').on('load'); // Reload the new filename into player
 						$('#'+rowID+' a.identificationURL').attr('href', response.newURL);
 						
 						// Update name in dropdown select boxes
