@@ -648,38 +648,42 @@ class Modules {
 
 			// Built Top of Form
 			$form_top = '
-			<form class="form-inline" role="form" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" id="moduleSettingsUpdate">
-
-			<div class="row-fluid sortable">
-				<div class="box span12">
-					<div class="box-header well" data-original-title>
-						<h2>' . $displayName . ' Module Settings</h2>
-					</div>
-					<div class="box-content">
+			<form class="form-horizontal form-label-left input_mask" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" id="moduleSettingsUpdate">
+			
+			<div class="page-title">
+				<div class="title_full">
+					<h3><i class="fa fa-plug"></i> ' . $displayName . ' Module Settings</h3>
+				</div>
+			</div>
+			
+			<div class="clearfix"></div>
 			';
+
 
 			// Built Bottom of Form
 			$form_bottom = '
-						<div class="form-actions">
-						  <!-- PASS MODULE KEY FOR UPDATE DATABASE AND REDIRECT BACK TO SETTINGS PAGE -->
-						  <input type="hidden" name="moduleKey" value="' . $id . '">
-						  <input type="hidden" name="updateModuleSettings">		
-						  <input type="submit">
-						</div>
-				
-					</div>
-				</div><!--/span-->
-			</div><!--/row-->
+			<div class="clearfix"></div>
+			
+			<div class="form-actions">
+				<!-- PASS MODULE KEY FOR UPDATE DATABASE AND REDIRECT BACK TO SETTINGS PAGE -->
+				<input type="hidden" name="moduleKey" value="' . $id . '">
+				<input type="hidden" name="updateModuleSettings">		
+				<input type="submit">
+			</div>
+			
 			</form>			
 			';
+
 
 			// ***************************************************************** //
 			// Construct Page Content
 			ob_start();
+			$customJS = 'page-moduleSettings.js'; // Inserted in footer
+			echo "<script>var newPageTitle = '" . $pageTitle . "';</script>";
 			include($this->includes_path . 'module_header.php');
-// 			echo $form_top;
+			echo $form_top;
 			include($mod_settings_file);
-// 			echo $form_bottom;
+			echo $form_bottom;
 			include($this->includes_path . 'module_footer.php');
 			$moduleHTML = ob_get_clean();
 			// ***************************************************************** //

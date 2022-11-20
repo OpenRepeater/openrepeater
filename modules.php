@@ -10,6 +10,15 @@ if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
 // --------------------------------------------------------
 
 
+if ( isset($_POST['updateModuleSettings']) ) {
+	// Update Module Settings, return to main module page
+	# AUTOLOAD CLASSES
+	require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
+	$ModulesClass = new Modules();
+	$results = $ModulesClass->save_module_settings($_POST);
+	$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
+}
+
 if ( isset($_GET['settings']) ) {
 	// If modules settings page is request, display that if it exist
 	# AUTOLOAD CLASSES
