@@ -42,6 +42,7 @@ include('includes/header.php');
                   <div class="x_title">
                     <h4 class="navbar-left"><?=_('Commands')?></h4>
                     <div class="nav navbar-right">
+                      <button type="button" id="dialPadBtn" class="btn btn-success"><i class="fa fa-th"></i> <?=_('Dial Pad')?></button>
                       <button type="button" class="btn btn-success" onclick="window.print();return false;"><i class="fa fa-print"></i> <?=_('Print')?></button>
                                           </div>
                     <div class="clearfix"></div>
@@ -199,6 +200,7 @@ include('includes/header.php');
 
 
 					  <?php
+/*
 					  foreach($fakeModules as $cur_mod) { 
 						if($cur_mod['moduleEnabled'] == '1' && $cur_mod['svxlinkID'] > 0) {
 							$cur_mod_html = '	
@@ -256,6 +258,7 @@ include('includes/header.php');
 						}
 					
 					  }
+*/
 					  ?>
 
 

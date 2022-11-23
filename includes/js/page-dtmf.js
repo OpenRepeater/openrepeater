@@ -1,5 +1,6 @@
 $( document ).ready(function() {
     // If anchor link passed in url, open accordion and scroll to location
+/*
 	if(window.location.hash) {
 	    var urlHash = window.location.hash;
 	    var anchorID = urlHash.substring(urlHash.indexOf("#")+1);
@@ -7,6 +8,37 @@ $( document ).ready(function() {
 		$(collapseID).collapse('show'); // Open Accordion
  		$("body,html").animate( { scrollTop: $('#'+anchorID).offset().top }, 800 ); // Scroll to section anchor ID		
 	}
+*/
+
+	$('#dialPadBtn').click(function(e) {
+		console.log('Display DTMF');
+
+		var modal_DialPadTitle = 'Dial Pad';
+		var modal_DialPadBody = 'Place Holder for DTMF Dial Pad';
+		var modal_DialPadBtnCancel = 'Close';
+
+
+		var modalDetails = {
+			modalSize: 'small',
+			title: '<i class="fa fa-th"></i> ' + modal_DialPadTitle,
+			body: '<h4>' + modal_DialPadBody + '</h4>',
+// 			btnOK: modal_AudioScanWarningBtnOK,
+			btnOKshow: false,
+			btnCancel: modal_DialPadBtnCancel,
+		};
+
+		orpModalDisplay(modalDetails);
+
+/*
+
+		$('#orp_modal_ok').off('click'); // Remove other click events
+*/
+
+
+
+	});
+
+
 });
 
 
