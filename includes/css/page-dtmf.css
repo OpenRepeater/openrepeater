@@ -91,6 +91,15 @@
 		display: none;
 	}
 	
+	.main_container .left_col, footer {
+		display: none!important;
+	}
+
+	.main_container .right_col {
+		margin-left: 0!important
+	}
+
+	
 	.col-print-1 {width:8%;  float:left;}
 	.col-print-2 {width:16%; float:left;}
 	.col-print-3 {width:25%; float:left;}
