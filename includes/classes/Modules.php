@@ -10,6 +10,8 @@ class Modules {
 	public $modulesUploadTempDir;
 	private $includes_path;
 	private $core_modules = ['Help','Parrot','EchoLink'];
+	private $orpMinVerReq = "3.0.0"; // This may be less than current ORP version. It is the milestone version that modules must meet to be installed and compatable.
+
 	
 	// SVXLink Locations
 	private $svxlink_events_d_path = '/usr/share/svxlink/events.d/';
@@ -226,19 +228,33 @@ class Modules {
 					### SUCCESSFUL UNZIP ###
 					$install_results = $this->install_module($this->modulesUploadTempDir);
 					if ( is_array($install_results) ) {
-						if (isset($install_results['Module_Info']['display_name'])) {
-							$moduleID = $this->get_module_id($install_results['Module_Info']['mod_name']);
-							$moduleSVXLinkID = $this->get_module_svxlink_id($moduleID);
-							$currDisplayName = trim($install_results['Module_Info']['display_name']);
-							$statusArray = ['status' => 'success', 'msgText' => $currDisplayName . ': ' . _('Module has been successfully installed. To use it, you must first activate it.')];
-							$statusArray = array_merge($statusArray, $install_results['Module_Info']);
-							$statusArray['moduleKey'] = $moduleID;
-							$statusArray['svxlinkID'] = $moduleSVXLinkID;
-							return $statusArray;	
+
+						// Check if modules version meets requirement for installatiton
+						if ( version_compare($this->orpMinVerReq, $install_results['Module_Info']['min_orp_ver'], 'eq') ) {
+							if (isset($install_results['Module_Info']['display_name'])) {
+								$moduleID = $this->get_module_id($install_results['Module_Info']['mod_name']);
+								$moduleSVXLinkID = $this->get_module_svxlink_id($moduleID);
+								$currDisplayName = trim($install_results['Module_Info']['display_name']);
+								$statusArray = ['status' => 'success', 'msgText' => $currDisplayName . ': ' . _('Module has been successfully installed. To use it, you must first activate it.')];
+								$statusArray = array_merge($statusArray, $install_results['Module_Info']);
+								$statusArray['moduleKey'] = $moduleID;
+								$statusArray['svxlinkID'] = $moduleSVXLinkID;
+								return $statusArray;	
+							} else {
+								$statusArray = ['status' => 'success', 'msgText' => _('Module has been successfully installed. To use it, you must first activate it.')];
+								return $statusArray;
+							}
+
+						// Module doesn't meet version requirements
 						} else {
-							$statusArray = ['status' => 'success', 'msgText' => _('Module has been successfully installed. To use it, you must first activate it.')];
+							$this->remove_module($install_results['Module_Info']['mod_name']);
+							$statusArray = ['status' => 'error', 'msgText' => _('This module cannot be installed because it does not meet the minimum version requirements of this version of OpenRepeater.')];
 							return $statusArray;
 						}
+
+
+
+
 
 					} else {
 						$statusArray = ['status' => 'error', 'msgText' => _('There was a problem installing the module. Either this is not an OpenRepeater module, or the zip file was improperly constructed, or the module already exists.')];
