@@ -667,8 +667,8 @@ class Modules {
 			<div class="form-actions">
 				<!-- PASS MODULE KEY FOR UPDATE DATABASE AND REDIRECT BACK TO SETTINGS PAGE -->
 				<input type="hidden" name="moduleKey" value="' . $id . '">
-				<input type="hidden" name="updateModuleSettings">		
-				<input type="submit">
+				<input type="hidden" name="updateModuleSettings">
+				<button type="submit" id="saveModuleSettingsBtn" class="btn btn-primary">Save & Exit</button>
 			</div>
 			
 			</form>			
@@ -678,6 +678,7 @@ class Modules {
 			// ***************************************************************** //
 			// Construct Page Content
 			ob_start();
+			$customCSS = 'page-moduleSettings.css'; // Inserted in header
 			$customJS = 'page-moduleSettings.js'; // Inserted in footer
 			echo "<script>var newPageTitle = '" . $pageTitle . "';</script>";
 			include($this->includes_path . 'module_header.php');
