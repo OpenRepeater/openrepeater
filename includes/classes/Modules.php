@@ -668,7 +668,7 @@ class Modules {
 				<!-- PASS MODULE KEY FOR UPDATE DATABASE AND REDIRECT BACK TO SETTINGS PAGE -->
 				<input type="hidden" name="moduleKey" value="' . $id . '">
 				<input type="hidden" name="updateModuleSettings">
-				<button type="submit" id="saveModuleSettingsBtn" class="btn btn-primary">Save & Exit</button>
+				<button type="submit" id="saveModuleSettingsBtn" class="btn btn-primary"><i class="fa fa-save"></i> Save & Exit</button>
 			</div>
 			
 			</form>			
