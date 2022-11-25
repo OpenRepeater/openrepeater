@@ -170,27 +170,6 @@ console.log('DELETE: ' + JSON.stringify(deleteString));
 		}
 	}
 
-	// Add Dummy Module
-	$('#tempBtn').on('click', function() {
-		var nextID = nextSVXLinkID();
-		var nextRowID = parseInt( nextSVXLinkID() ) + 1;
-
-		var moduleState = {
-			moduleKey: nextRowID.toString(),
-			moduleEnabled: '1',
-			svxlinkName: 'fakeModule',
-			displayName: 'Fake Module',
-			svxlinkID: nextID,
-			desc: 'desc',
-			version: 'Version: 0.1 | Authors: Fake Person (F0AKE)',			
-// 			type: 'daemon',
-			settings: true,
-			dtmf: false
-		}
-
-		displayModule(moduleState);
-	});
-
 });
 
 

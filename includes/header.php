@@ -127,18 +127,6 @@ function _($input) {
 
                       <?= $Modules->nav_setting_links() ?>
 
-                      <li><a>---</a></li>
-                      <li><a class="navLink" href="/modules/EchoLink/settings.php">EchoLink</a></li>
-                      <li><a class="navLink" href="/modules/RemoteRelay/settings.php">Remote Relay</a></li>
-                      <li><a class="navLink" href="/modules/SiteStatus/settings.php">Site Status</a></li>
-                      <li><a class="navLink" href="/modules/TxFan/settings.php">TX Cooling Fan</a></li>
-                      <li><a class="navLink" href="/modules/MetarInfo/settings.php">METAR</a></li>
-                      <li><a class="navLink" href="/modules/VoiceMail/settings.php">Voice Mail <span class="badge badge-info">Dev</span></a></li>
-                      <li><a class="navLink" href="/modules/Frn/settings.php">FRN Gateway <span class="badge badge-info">Dev</span></a></li>
-                      <li><a class="navLink" href="/modules/RigCtl/settings.php">Rig Control <span class="badge badge-info">Dev</span></a></li>
-                      <li><a class="navLink" href="/modules/calendar.php">Announcements <span class="badge badge-info">Dev</span></a></li>
-                      
-                      
                     </ul>
                   </li>
 

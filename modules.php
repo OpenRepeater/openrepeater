@@ -52,7 +52,6 @@ $moduleList = $ModulesClass->getModulesJSON();
                   <div class="x_title">
                     <h4 class="navbar-left"><?=_('Installed Modules')?></h4>
                     <div class="nav navbar-right">
-<button type="button" id="tempBtn" class="btn btn-success">TEST</button>
                       <button type="button" class="btn btn-success upload_file" data-upload-type="module"><i class="fa fa-upload"></i> <?=_('Upload Module')?></button>
                       <a class="btn btn-success" href="https://openrepeater.com/downloads/modules" target="_blank"><i class="fa fa-search"></i> <?=_('Find Modules on OpenRepeater.com')?></a>
                     </div>
