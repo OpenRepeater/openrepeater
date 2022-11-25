@@ -752,7 +752,9 @@ class Modules {
 			// Render Setting Menus for Active Modules
 			foreach ($modulesActive as $mod_id => $mod_name) {
 				$curSettingsURL = 'modules.php?settings=' . $mod_id;
-				$return_html .= '<li><a class="navLink" href="'.$curSettingsURL.'">'.$mod_name.'</a></li>';
+				$curNavID = 'nav_' . $modules[$mod_id]['svxlinkName'];
+				$curSvxlinkID = $modules[$mod_id]['svxlinkID'];
+				$return_html .= '<li><a id="'.$curNavID.'" data-svxlinkid="'.$curSvxlinkID.'" class="navLink" href="'.$curSettingsURL.'">'.$mod_name.'</a></li>';
 			}
 		}
 		

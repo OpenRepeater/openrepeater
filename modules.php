@@ -64,7 +64,7 @@ $moduleList = $ModulesClass->getModulesJSON();
 					<div id="moduleListSort"></div>
 
 					<? ### ROW TEMPLATE ######################################################## ?>
-					<div id="rowTemplate" class="moduleRow" data-module-id="" data-svxlink-id="" style="display:none;">
+					<div id="rowTemplate" class="moduleRow" data-module-id="" data-svxlink-id="" data-svxlink-name="" style="display:none;">
 						<span class="largeDigit">++</span>
 					
 						<div class="col-md-4 col-sm-4 col-xs-12">

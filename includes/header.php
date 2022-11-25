@@ -122,7 +122,7 @@ function _($input) {
                   <li><a class="navLink" href="/courtesy.php"><i class="fa fa-bell"></i> <?=_('Courtesy Tones')?> </a></li>
 
                   <li><a><i class="fa fa-plug"></i> <?=_('Modules')?> <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
+                    <ul id="navModules" class="nav child_menu">
                       <li><a class="navLink" href="/modules.php"><?=_('All Modules')?></a></li>
 
                       <?= $Modules->nav_setting_links() ?>

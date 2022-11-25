@@ -61,16 +61,26 @@ console.log('IN: ' + moduleList);
 
 	// Module Enable/Disable Function
 	$('#moduleWrap').on('change', '.modActive', function() {
-		var moduleID = $(this).parents('.moduleRow').attr('data-module-id');
-
+		var rowID = $(this).parents('.moduleRow').attr('id');
+		var moduleID = $('#'+rowID).attr('data-module-id');
+		var svxlinkName = $('#'+rowID).attr('data-svxlink-name');
 		if(this.checked) {
 			var moduleStateObj = { moduleKey: moduleID, moduleEnabled: '1' };
 			var modulePrevState = false;
 			$(this).parents('.moduleRow').removeClass('deactive');
+			if ( $('#nav_'+svxlinkName).length ) {
+				$('#nav_'+svxlinkName).show();			
+			} else if ( $('#'+rowID+' .settings').length ){
+				var modDisplayName = $('#'+rowID+' .modName').text();
+				var svxlinkID = $('#'+rowID).attr('data-svxlink-id');
+				var settingsURL = 'modules.php?settings='+moduleID;
+				$('#navModules').append('<li><a id="nav_'+svxlinkName+'" data-svxlinkid="'+svxlinkID+'" class="navLink" href="'+settingsURL+'">'+modDisplayName+'</a></li>');
+			}
 		} else {
 			var moduleStateObj = { moduleKey: moduleID, moduleEnabled: '0' };
 			var modulePrevState = true;
 			$(this).parents('.moduleRow').addClass('deactive');
+			$('#nav_'+svxlinkName).hide(); // hide nav menu.
 		}
 		var moduleJSON = JSON.stringify(moduleStateObj);
 
@@ -267,6 +277,7 @@ function displayModule(module) {
 
 	$(rowID).attr('data-module-id', module.moduleKey);
 	$(rowID).attr('data-svxlink-id', module.svxlinkID);
+	$(rowID).attr('data-svxlink-name', module.svxlinkName);
 
 	$(rowID + ' .modName').html(module.displayName); // Set Module Name
 
