@@ -310,7 +310,7 @@ console.log(portCount);
 		var modalDetails = {
 			modalSize: 'small',
 			title: '<i class="fa fa-download"></i> Load Preset',
-			body: '<p>What type of port do you wish to add?</p><select id="loadBoardPreset" name="loadBoardPreset" class="form-control"><option value="ICS_2X_ID_Num" selected>ICS 2X</option></select>',
+			body: '<div class="alert alert-warning">This feature is not available yet.</div><p>What type of port do you wish to add?</p><select id="loadBoardPreset" name="loadBoardPreset" class="form-control"><option value="ICS_2X_ID_Num" selected>ICS 2X</option></select>',
 		};
 
 		orpModalDisplay(modalDetails);

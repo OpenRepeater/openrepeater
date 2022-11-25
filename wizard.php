@@ -14,7 +14,12 @@ include('includes/header.php');
               </div>
             </div>
 
+
             <div class="clearfix"></div>
+
+			<div class="alert alert-warning">
+			<h4><i class="fa fa-warning"></i> Warning!</h4> The wizard is still in early development. The best way to work around the wizard in the meantime for new setups is to edit the database and add a callsign to the database's settings table, logout and then login again. Then you should be able to manually edit the settings as normal. 
+			</div>
 
             <div class="row">
 
