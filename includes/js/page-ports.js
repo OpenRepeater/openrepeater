@@ -325,6 +325,7 @@ console.log(loadBoardPreset);
 		});
 	});
 
+
 	// Delete Port Function and Modal Display
 	$('.deletePort').click(function(e) {
 		e.preventDefault();
@@ -430,10 +431,17 @@ console.log(portDesc);
         if(this.checked) {
 			$('#portNum'+portNum+' a.deletePort').hide();
 			$('#portNum'+portNum).removeClass('portDisabled');
+			$('#portNum'+portNum+' .nav-tabs').off('click'); // Re-enable tabs
         } else {
 			$('#portNum'+portNum+' a.deletePort').show();
 			$('#portNum'+portNum).addClass('portDisabled');
         }
+	});
+
+
+	// Disable Tab Nav When Port Disabled
+	$('#portList').on('click', '.portSection.portDisabled .nav-tabs' ,function(e) {
+		return false;
 	});
 
 
