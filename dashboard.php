@@ -28,6 +28,10 @@ include('includes/header.php');
 
             <div class="clearfix"></div>
 
+			<div class="alert alert-warning">
+			<h4><i class="fa fa-warning"></i> Warning!</h4> This page is still in early development. So, there may be things that don't function as one might expect. 
+			</div>
+
             <div class="row">
               <div class="col-md-12 col-xs-12">
 
