@@ -1,5 +1,15 @@
-
 <?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+session_start();
+if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
+	header('location: index.php'); // If they aren't logged in, send them to login page.
+} elseif (!isset($_SESSION['callsign'])) {
+	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
+} else { // If they are logged in and have set a callsign, show the page.
+// --------------------------------------------------------
+
+
 function dtmf($inputString) {
 	$characters = str_split($inputString);
 	$html_code = '<ul class="dtmf-interface js-dtmf-interface">';
@@ -23,6 +33,10 @@ $customJS = 'page-dtmf.js'; // 'file1.js, file2.js, ... '
 $customCSS = 'page-dtmf.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
+$portList = $Database->get_ports('ALL', 'Short');
+$macroList = $Database->get_macros();
+$ModulesClass = new Modules();
+$moduleList = $ModulesClass->getModulesJSON();
 ?>
 
         <!-- page content -->
@@ -35,6 +49,10 @@ include('includes/header.php');
             </div>
 
             <div class="clearfix"></div>
+
+			<div class="alert alert-warning">
+			<h4><i class="fa fa-warning"></i> Warning!</h4> This page is still in early development. So, there may be things that don't function as one might expect. 
+			</div>
 
             <div class="row">
               <div class="col-md-12 col-sm-12 col-xs-12">
@@ -54,6 +72,9 @@ include('includes/header.php');
                     <div class="accordion" id="accordion" role="tablist" aria-multiselectable="false">
 
 
+<? ################################################################################ ?>
+<? # FORCE ID SECTION ?>
+
                       <div class="panel">
                         <a class="panel-heading" role="tab" data-parent="#accordion" href="#collapse1" aria-expanded="false" aria-controls="collapse1">
 						  <div class="col-md-12 col-sm-12 col-xs-12">
@@ -62,6 +83,9 @@ include('includes/header.php');
 						  <div class="clearfix"></div>
                         </a>
                       </div>
+
+<? ################################################################################ ?>
+<? # REMOTE DTMF DISABLE SECTION ?>
 
 					  <?php $tempDisableCode = '1234'; ?>
 					  <?php if(isset($tempDisableCode)) { ?>
@@ -101,8 +125,10 @@ include('includes/header.php');
                       </div>
 					  <?php } ?>
 
+<? ################################################################################ ?>
+<? # MACROS SECTION ?>
 
-					  <?php if(isset($fakeMacroArray)) { ?>
+					  <?php if(isset($macroList)) { ?>
                       <div class="panel">
                         <a class="panel-heading collapsed" role="tab" id="heading2" data-toggle="collapse" data-parent="#accordion" href="#dtmf_macros" aria-expanded="false" aria-controls="dtmf_macros">
 						  <div class="col-md-10 col-sm-10 col-xs-10">
@@ -118,7 +144,7 @@ include('includes/header.php');
                           <div class="panel-body">
 							<?php
 								$cur_mod_html = '';
-								foreach($fakeMacroArray as $cur_macro) {
+								foreach($macroList as $cur_macro) {
 									if ($cur_macro['macroEnabled'] == '1') {
 										$cur_mod_html .= '<div class="col-lg-4 col-md-5 col-sm-6 col-xs-12 col-print-5">' . dtmf( 'D' . $cur_macro['macroNum'] . '#' ) . '</div>';
 										$cur_mod_html .= '<div class="col-lg-8 col-md-7 col-sm-6 col-xs-12 col-print-7"><p>' . $cur_macro['macroLabel'] . '</p></div>';
@@ -135,6 +161,22 @@ include('includes/header.php');
 					  <?php } ?>
 
 
+<?php 
+echo '<pre>';
+print_r($macroList);
+echo '</pre>';
+?>
+
+<?php 
+echo '<pre>';
+print_r($portList);
+echo '</pre>';
+?>
+
+
+
+<? ################################################################################ ?>
+<? # HELP MODULE SECTION ?>
 
 					  <?php
 					  # HELP MODULE
@@ -193,16 +235,16 @@ include('includes/header.php');
 						
 							echo $help_mod_html;
 						}
-##############
 					  ?>
 
-
-
+<? ################################################################################ ?>
+<? # LOOP THROUGH MODULE SECTIONS ?>
 
 					  <?php
-/*
-					  foreach($fakeModules as $cur_mod) { 
-						if($cur_mod['moduleEnabled'] == '1' && $cur_mod['svxlinkID'] > 0) {
+					  $moduleList = json_decode($moduleList, true);
+
+					  foreach($moduleList as $cur_mod) { 
+						if($cur_mod['moduleEnabled'] == '1' && $cur_mod['svxlinkID'] > 0 && $cur_mod['dtmf'] == true) {
 							$cur_mod_html = '	
 							  <div class="panel">
 							    <a class="panel-heading collapsed" role="tab" id="' . $cur_mod['svxlinkName'] . '" data-toggle="collapse" data-parent="#accordion" href="#collapse-' . $cur_mod['svxlinkName'] . '" aria-expanded="false" aria-controls="collapse-' . $cur_mod['svxlinkName'] . '">
@@ -258,9 +300,19 @@ include('includes/header.php');
 						}
 					
 					  }
-*/
 					  ?>
 
+
+<?php 
+/*
+echo '<pre>';
+print_r($moduleList);
+echo '</pre>';
+*/
+?>
+
+
+<? ################################################################################ ?>
 
 
                     </div>
@@ -277,3 +329,11 @@ include('includes/header.php');
 
 
 <?php include('includes/footer.php'); ?>
+
+
+<?php
+// --------------------------------------------------------
+// SESSION CHECK TO SEE IF USER IS LOGGED IN.
+ } // close ELSE to end login check from top of page
+// --------------------------------------------------------
+?>
