@@ -33,10 +33,31 @@ $customJS = 'page-dtmf.js'; // 'file1.js, file2.js, ... '
 $customCSS = 'page-dtmf.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
-$portList = $Database->get_ports('ALL', 'Short');
+$portList = $Database->get_ports();
 $macroList = $Database->get_macros();
 $ModulesClass = new Modules();
 $moduleList = $ModulesClass->getModulesJSON();
+?>
+
+
+
+<?php
+	$portOpitonList = '';
+	$base_path = '/usr/share/svxlink/orp_pty/';
+	foreach ($portList as $key => $val) {
+		if ($val['portEnabled'] == 1) {
+			switch ($val['portDuplex']) {
+				case 'full':
+					$curOptionVal = $base_path . 'ORP_FullDuplexLogic_Port' . $val['portNum'] . '/dtmf_ctrl';
+					break;
+				case 'half':
+					$curOptionVal = $base_path . 'ORP_HalfDuplexLogic_Port' . $val['portNum'] . '/dtmf_ctrl';
+					break;
+			}
+			$curOptionName = 'PORT ' . $val['portNum'] . ': ' . $val['portLabel'];
+			$portOpitonList .= '<option value="' . $curOptionVal . '">' . $curOptionName . '</option>';
+		}
+	}	
 ?>
 
         <!-- page content -->
@@ -53,6 +74,8 @@ $moduleList = $ModulesClass->getModulesJSON();
 			<div class="alert alert-warning">
 			<h4><i class="fa fa-warning"></i> Warning!</h4> This page is still in early development. So, there may be things that don't function as one might expect. 
 			</div>
+
+<?= '<pre>' . $portOpitonList . '</pre>'?>
 
             <div class="row">
               <div class="col-md-12 col-sm-12 col-xs-12">
@@ -328,8 +351,13 @@ echo '</pre>';
         <!-- /page content -->
 
 
-<?php include('includes/footer.php'); ?>
 
+<script>
+	var portOpitonList = '<?= $portOpitonList ?>';
+	console.log(portOpitonList);
+</script>
+
+<?php include('includes/footer.php'); ?>
 
 <?php
 // --------------------------------------------------------
