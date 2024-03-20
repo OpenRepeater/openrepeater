@@ -67,15 +67,20 @@ function formatTime(unixTimestamp){
 /* UPDATE SECTION FUNCTIONS */
 
 function refreshData() {
+		updateSystemDynamic();
+		updateMemory();
+
 	// Wait for intial data to load before allowing updates. 
+/*
 	if ( $( '#cur_time' ).length ) {
 		updateSystemDynamic();
 		updateMemory();
 	}
+*/
 }
 
 
-var ajax_handler_path = "../../functions/ajax_system.php";
+var ajax_handler_path = "/functions/ajax_system.php";
 
 function updateSystemStatic(){
 	var xmlhttp = new XMLHttpRequest();
@@ -83,7 +88,9 @@ function updateSystemStatic(){
 		if (this.readyState == 4 && this.status == 200) {
 		    var sysStatic = JSON.parse(this.responseText);
  	 		startTime = new Date(sysStatic.datetime);
- 	 		$('#system_static').html( sysStatic_structure(sysStatic) ); 	 		
+console.log('SYSTEM STATTIC: ' + this.responseText);
+$( '#sysStatic' ).html(this.responseText);
+//  	 		$('#system_static').html( sysStatic_structure(sysStatic) ); 	 		
 		}
 	};
 	xmlhttp.open("GET", ajax_handler_path + "?update=systemStatic", true);
@@ -95,6 +102,9 @@ function updateSystemDynamic(){
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 		    var sysDynamic = JSON.parse(this.responseText);
+console.log('SYSTEM INFO: ' + this.responseText);
+$( '#sysDynamic' ).html(this.responseText);
+/*
 			if ( $( '#cpu_speed' ).length ) {
 				// Dynamic system section loaded...update values
 	 	 		$('#cpu_speed').html(sysDynamic.cpu_speed);
@@ -107,6 +117,7 @@ function updateSystemDynamic(){
 				// Dynamic system section not loaded yet...load it
 	 	 		$('#system_dynamic').html( sysDynamic_structure(sysDynamic) );
  	 		}
+*/
 		}
 	};
 	xmlhttp.open("GET", ajax_handler_path + "?update=systemDynamic", true);
@@ -118,7 +129,9 @@ function updateSVXLink(){
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 		    var status = JSON.parse(this.responseText);
- 	 		$('#svxlink_info').html( svxlink_structure(status) );
+console.log('SVXLINK INFO: ' + status);
+$( '#svxlinkInfo' ).html(status);
+//  	 		$('#svxlink_info').html( svxlink_structure(status) );
 		}
 	};
 	xmlhttp.open("GET", ajax_handler_path + "?update=svxlink", true);
@@ -130,6 +143,9 @@ function updateMemory(){
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 		    var memoryInfo = JSON.parse(this.responseText);
+console.log('MEMORY: ' + this.responseText);
+$( '#memoryInfo' ).html(this.responseText);
+/*
 			if ( $( '#total_mem' ).length ) {
 				// Memory section loaded...update values
 		 		$('#used_mem').html(memoryInfo.used_mem);
@@ -152,6 +168,7 @@ function updateMemory(){
 				// Memory section not loaded yet...load it
 	 	 		$('#memory_info').html( memory_structure(memoryInfo) );				
 			}
+*/
 
 		}
 	};
@@ -164,7 +181,9 @@ function updateDisk(){
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 		    var diskInfo = JSON.parse(this.responseText);
- 	 		$('#disk_info').html( disk_structure(diskInfo) );
+console.log('DISK INFO: ' + this.responseText);
+$( '#diskInfo' ).html(this.responseText);
+//  	 		$('#disk_info').html( disk_structure(diskInfo) );
 		}
 	};
 	xmlhttp.open("GET", ajax_handler_path + "?update=disk", true);
@@ -287,6 +306,7 @@ function svxlink_toggle_state(service, option) {
 /*****************************************************************************/
 /* BUILD INTIAL DISPLAY FUNCTIONS */
 
+/*
 function sysStatic_structure(systemInfo){
 	var sysinfo_html = '<div class="info_label">Hostname:</div><div class="info_value" id="host">' + systemInfo.host + '</div><div class="info_clear"></div>';
 	sysinfo_html += '<div class="info_label">System Time:</div><div class="info_value"><span id="cur_date">' + systemInfo.date + '</span><br>';
@@ -296,8 +316,10 @@ function sysStatic_structure(systemInfo){
 
 	return sysinfo_html;
 }
+*/
 
 
+/*
 function sysDynamic_structure(systemInfo){
 	var sysinfo_html = '<div class="info_label">CPU Frequency:</div><div class="info_value" id="cpu_speed">' + systemInfo.cpu_speed + '</div><div class="info_clear"></div>';
 	sysinfo_html += '<div class="mem_group"><div>';
@@ -317,8 +339,10 @@ function sysDynamic_structure(systemInfo){
 	
 	return sysinfo_html;
 }
+*/
 
 
+/*
 function svxlink_structure(svxlink_status){
 	if (svxlink_status == 'active') {
 		var status_string = '<span class="label label-success">Active</span>';
@@ -338,8 +362,10 @@ function svxlink_structure(svxlink_status){
 
 	return svxlink_html;
 }
+*/
 
 
+/*
 function memory_structure(memArray){
 	var memory_html = '<div class="mem_group"><div>';
 	memory_html += '<span class="bar_left"><strong>Used: <span id="percent_used">' + memArray.percent_used + '</span>%</strong></span>';
@@ -370,8 +396,10 @@ function memory_structure(memArray){
 	
 	return memory_html;
 }
+*/
 
 
+/*
 function disk_structure(disks){
 	var disk_html = '';
 
@@ -392,3 +420,4 @@ function disk_structure(disks){
 
 	return disk_html;
 }
+*/

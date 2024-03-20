@@ -124,6 +124,31 @@ if ( isset($_POST['deleteMacro']) ) {
 }
 
 
+# Backup/Restore Operations
+if ( isset($_POST['createBackup']) ) {
+	$classBackupRestore = new BackupRestore();
+	$result = $classBackupRestore->create_backup();
+	echo $result;
+	exit;
+}
+
+if ( isset($_POST['restoreValidation']) ) {
+	$classBackupRestore = new BackupRestore();
+	$restoreFile = $_POST['restoreValidation'];
+	$result = $classBackupRestore->pre_restore_validation($restoreFile);
+	echo $result;
+	exit;
+}
+
+if ( isset($_POST['restoreBackup']) ) {
+	$classBackupRestore = new BackupRestore();
+	$result = $classBackupRestore->restore_backup();
+	echo $result;
+	exit;
+}
+
+
+
 echo '{"status":"invalid"}';
 exit;
 

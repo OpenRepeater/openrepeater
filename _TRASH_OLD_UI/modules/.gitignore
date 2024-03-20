@@ -1,0 +1,17 @@
+# Ignore Everything
+*
+
+# But...gitignore file
+!.gitignore
+
+# But...Help Module
+!Help/
+!Help/**
+
+# But...Parrot Module
+!Parrot/
+!Parrot/**
+
+# But...EchoLink Module
+!EchoLink/
+!EchoLink/**

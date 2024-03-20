@@ -1,0 +1,61 @@
+.portSection.remove_field {
+	color: red;
+}
+
+
+.lg_toggle_table td {
+	min-width: 40px;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+.lgCount {
+	margin-top: 10px;
+}
+
+.lgCount p {
+	text-align: center;
+}
+
+#no_lg_msg h4 {
+	text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+
+.sectionStatus.portStatus {
+    color: gray;
+    top: 3px;
+    right: 10px;
+}
+
+.sectionStatus.linkGroupStatus {
+}
+
+
+
+
+/* Disabled Port */
+.portSection.portDisabled .panel-heading,
+.portSection.portDisabled .nav-tabs,
+.portSection.portDisabled .control-label,
+.portSection.portDisabled .form-control,
+.portSection.portDisabled .btn-group,
+.portSection.portDisabled .lg_toggle_table
+{
+	opacity: .5;
+}
+
+.portSection.portDisabled .panel-body {
+	background-color: #ededed;
+}
+
+.portSection.portDisabled .portEnabledWrap .switchery {
+	background-color: red!important;	
+}
+
+.deletePort {
+	color: red;
+}

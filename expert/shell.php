@@ -19,13 +19,19 @@ include('/' . trim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/header.php');
 $root = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
 ?>
 
-			<?php if (isset($alert)) { echo $alert; } ?>
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_full">
+                <h3><i class="fa fa-desktop"></i> <?=_('SSH Shell Access')?></h3>
+              </div>
+            </div>
 
-			<div class="row-fluid sortable">
-				<div class="box span12">
-					<div class="box-header well" data-original-title>
-						<h2><i class="icon-th"></i> SSH Shell Access</h2>
-					</div>
+            <div class="clearfix"></div>
+
+
+
 					<div class="box-content">
 
 						<div style="display:none;">
@@ -144,8 +150,13 @@ $root = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_
 						</script>
 
 					</div>
-				</div><!--/span-->			
-			</div><!--/row-->
+
+
+
+          </div>
+        </div>
+        <!-- /page content -->
+
 
     
 <?php include('/' . trim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/footer.php'); ?>
