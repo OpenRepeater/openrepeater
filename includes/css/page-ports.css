@@ -1,7 +1,3 @@
-.portSection.portDisabled {
-	opacity: .5;
-}
-
 .portSection.remove_field {
 	color: red;
 }
@@ -36,4 +32,30 @@
 }
 
 .sectionStatus.linkGroupStatus {
+}
+
+
+
+
+/* Disabled Port */
+.portSection.portDisabled .panel-heading,
+.portSection.portDisabled .nav-tabs,
+.portSection.portDisabled .control-label,
+.portSection.portDisabled .form-control,
+.portSection.portDisabled .btn-group,
+.portSection.portDisabled .lg_toggle_table
+{
+	opacity: .5;
+}
+
+.portSection.portDisabled .panel-body {
+	background-color: #ededed;
+}
+
+.portSection.portDisabled .portEnabledWrap .switchery {
+	background-color: red!important;	
+}
+
+.deletePort {
+	color: red;
 }

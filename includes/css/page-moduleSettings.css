@@ -1,0 +1,12 @@
+.modulePulse {
+	animation: mod-shadow-pulse 2s infinite;
+}
+
+@keyframes mod-shadow-pulse {
+	0% {
+		box-shadow: 0 0 0 0px rgba(141, 198, 63, 0.4);
+	}
+	100% {
+		box-shadow: 0 0 0 30px rgba(141, 198, 63, 0);
+	}
+}

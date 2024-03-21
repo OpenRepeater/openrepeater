@@ -1,5 +1,6 @@
-$( document ).ready(function() {
+$(function() {
     // If anchor link passed in url, open accordion and scroll to location
+/*
 	if(window.location.hash) {
 	    var urlHash = window.location.hash;
 	    var anchorID = urlHash.substring(urlHash.indexOf("#")+1);
@@ -7,6 +8,102 @@ $( document ).ready(function() {
 		$(collapseID).collapse('show'); // Open Accordion
  		$("body,html").animate( { scrollTop: $('#'+anchorID).offset().top }, 800 ); // Scroll to section anchor ID		
 	}
+*/
+
+	$('#dialPadBtn').click(function(e) {
+		var modal_DialPadTitle = 'Dial Pad';
+
+		var modal_DialPadBody = '<label for="logic_section">Logic Section</label>';
+		modal_DialPadBody += '<select id="logic_section" name="logic_section" class="form-control">'+portOpitonList+'</select>';
+		modal_DialPadBody += '<div>';
+		modal_DialPadBody += '<label for="dtmf_input">DTMF Codes</label>';
+		modal_DialPadBody += '<textarea id="dtmf_input" name="dtmf_input" class="form-control" style="text-transform:uppercase;" placeholder="Enter DTMF codes" required></textarea>';
+		modal_DialPadBody += '</div>';
+		modal_DialPadBody += '';
+
+		var modal_DialPadBtnCancel = 'Close';
+
+
+		var modalDetails = {
+			modalSize: 'small',
+			title: '<i class="fa fa-th"></i> ' + modal_DialPadTitle,
+			body: '<h4>' + modal_DialPadBody + '</h4>',
+ 			btnOK: 'Send',
+			btnOKshow: true,
+			btnCancel: modal_DialPadBtnCancel,
+		};
+
+		orpModalDisplay(modalDetails);
+
+		$('#dtmf_input').focus();
+		// $('#orp_modal_ok').off('click'); // Remove other click events
+	});
+
+
+
+
+	$("#dtmf_input").keyup(function(e){
+		var keyCode = e.which;
+
+		if (keyCode == 13) { // Enter
+			e.preventDefault();
+			$('#send_dtmf').click()
+		} else if (keyCode == 27) { // Esc
+			e.preventDefault();
+			$('#dtmf_input').val('');
+			$('#dtmf_input').focus();
+		}
+	});
+
+
+	$("#dtmf_input").keypress(function(e){
+		var keyCode = e.which;
+
+		/*  35 - #, 42 - *, 48-57 - 0-9, 65-68 - A-D, 97-100 - a-z, 8 - (backspace) */
+	
+		if ( 
+			!( (
+				keyCode >= 48 && keyCode <= 57) 
+				||(keyCode >= 65 && keyCode <= 68) 
+				|| (keyCode >= 97 && keyCode <= 100)
+			) 
+			&& keyCode != 35 
+			&& keyCode != 42 
+			&& keyCode != 8 
+		) {
+			e.preventDefault();
+    	}
+	});
+
+
+
+	$('#send_dtmf').live('click', function(e) {
+		var logic_path = $('#logic_section').val();
+		var dtmf = $('#dtmf_input').val().toUpperCase();
+
+/*
+		$.ajax({
+			type: 'POST',
+			url: '/functions/ajax_orp_helper.php',
+			data: { type: 'send_dtmf', logicPath: logic_path, dtmfString: dtmf },
+			dataType: 'JSON',
+			success: function(response) {
+				var status = response.status;
+				if(status == 'true') {
+					console.log ('Command Sent to SVXLink');
+				} else {
+					console.log ('Command Failed to Send');
+				}
+			}
+		});
+*/
+
+		$('#dtmf_input').val('');
+		$('#dtmf_input').focus();
+	});
+
+
+
 });
 
 

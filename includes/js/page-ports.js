@@ -310,7 +310,7 @@ console.log(portCount);
 		var modalDetails = {
 			modalSize: 'small',
 			title: '<i class="fa fa-download"></i> Load Preset',
-			body: '<p>What type of port do you wish to add?</p><select id="loadBoardPreset" name="loadBoardPreset" class="form-control"><option value="ICS_2X_ID_Num" selected>ICS 2X</option></select>',
+			body: '<div class="alert alert-warning">This feature is not available yet.</div><p>What type of port do you wish to add?</p><select id="loadBoardPreset" name="loadBoardPreset" class="form-control"><option value="ICS_2X_ID_Num" selected>ICS 2X</option></select>',
 		};
 
 		orpModalDisplay(modalDetails);
@@ -324,6 +324,7 @@ console.log(loadBoardPreset);
 			$('#orp_modal').modal('hide');
 		});
 	});
+
 
 	// Delete Port Function and Modal Display
 	$('.deletePort').click(function(e) {
@@ -430,10 +431,17 @@ console.log(portDesc);
         if(this.checked) {
 			$('#portNum'+portNum+' a.deletePort').hide();
 			$('#portNum'+portNum).removeClass('portDisabled');
+			$('#portNum'+portNum+' .nav-tabs').off('click'); // Re-enable tabs
         } else {
 			$('#portNum'+portNum+' a.deletePort').show();
 			$('#portNum'+portNum).addClass('portDisabled');
         }
+	});
+
+
+	// Disable Tab Nav When Port Disabled
+	$('#portList').on('click', '.portSection.portDisabled .nav-tabs' ,function(e) {
+		return false;
 	});
 
 

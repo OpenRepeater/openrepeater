@@ -1171,7 +1171,7 @@ h2 {
 }
 
 .accordion .panel-heading {
-	background:#F2F5F7;
+	background:#e0e0e0;
 	padding:13px;
 	width:100%;
 	display:block;
@@ -2047,7 +2047,7 @@ a.user-profile {
 	height:29px;
 	border-radius:50%;
 	margin-right:10px;
-    outline: #a5a9ac 1px solid;
+	border: 1px solid #a5a9ac;
 }
 
 ul.top_profiles {

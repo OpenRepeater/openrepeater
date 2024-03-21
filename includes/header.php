@@ -122,23 +122,11 @@ function _($input) {
                   <li><a class="navLink" href="/courtesy.php"><i class="fa fa-bell"></i> <?=_('Courtesy Tones')?> </a></li>
 
                   <li><a><i class="fa fa-plug"></i> <?=_('Modules')?> <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
+                    <ul id="navModules" class="nav child_menu">
                       <li><a class="navLink" href="/modules.php"><?=_('All Modules')?></a></li>
 
                       <?= $Modules->nav_setting_links() ?>
 
-                      <li><a>---</a></li>
-                      <li><a class="navLink" href="/modules/EchoLink/settings.php">EchoLink</a></li>
-                      <li><a class="navLink" href="/modules/RemoteRelay/settings.php">Remote Relay</a></li>
-                      <li><a class="navLink" href="/modules/SiteStatus/settings.php">Site Status</a></li>
-                      <li><a class="navLink" href="/modules/TxFan/settings.php">TX Cooling Fan</a></li>
-                      <li><a class="navLink" href="/modules/MetarInfo/settings.php">METAR</a></li>
-                      <li><a class="navLink" href="/modules/VoiceMail/settings.php">Voice Mail <span class="badge badge-info">Dev</span></a></li>
-                      <li><a class="navLink" href="/modules/Frn/settings.php">FRN Gateway <span class="badge badge-info">Dev</span></a></li>
-                      <li><a class="navLink" href="/modules/RigCtl/settings.php">Rig Control <span class="badge badge-info">Dev</span></a></li>
-                      <li><a class="navLink" href="/modules/calendar.php">Announcements <span class="badge badge-info">Dev</span></a></li>
-                      
-                      
                     </ul>
                   </li>
 
@@ -155,7 +143,7 @@ function _($input) {
                 <ul class="nav side-menu">
                   <li><a href="/dev/edit.php" target="_blank"><i class="fa fa-database"></i> Edit Database </a></li>
                   <li><a href="/dev_ui/" target="_blank"><i class="fa fa-wrench"></i> Dev UI </a></li>
-                  <li><a href="/wizard.php"><i class="fa fa-magic"></i> Wizard </a></li>
+                  <li><a href="/wizard/index.php"><i class="fa fa-magic"></i> Wizard </a></li>
                 </ul>
               </div>
 

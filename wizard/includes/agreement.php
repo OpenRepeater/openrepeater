@@ -1,0 +1,17 @@
+<p><?= _('There are a couple things you will need to do before you are able to setup your OpenRepeater controller') ?>:</p>
+
+<h4><?= _('Required Hardware') ?></h4>
+<p><?= _('First you will need interface hardware. If you are not using interface hardware that is already supported by OpenRepeater, then you will need to know the following before you can proceed') ?>:</p>
+
+<ul>
+	<li><strong><?= _('SOUND (required)') ?>:</strong> <?= _('You will need to have a connected sound device to handle the incoming and outgoing audio for the “port”. The wizard will use some magic to try to detect this device. The line input or mic channel will be used to process audio from the receiver (RX). The line out or headphone jack will be used to send audio from the OpenRepeater controller to the transmitter (TX).') ?></li>
+	<li><strong><?= _('PTT GPIO (required)') ?>:</strong> <?= _('You will need to know the GPIO pin number that you will be using with your single-board computer (SBC) to control the PTT (Push-To-Talk) of the transmitter. The controller will set this pin high (+3.3 Volts DC) to control external switching circuitry to key the transmitter. Note that the GPIO pin number is more than likely different than the pin number on the GPIO header. Please refer to a pinout diagram for your SBC.') ?></li>
+	<li><strong><?= _('COS GPIO (recommended)') ?>:</strong> <?= _('While this option is not required it is highly recommended that you use COS control over software VOX as it will be much more reliable and stable. In order to do so, you will need to know the GPIO pin number that you will be using with your single-board computer (SBC) to receive the COS control signal from the receiver. This pin will be pulled to ground (0 VDC) to be active and should have a pull up resister to pull the pin back up to (+3.3 Volts DC) when inactive. You will need an external interface or circuitry to interface to and isolate this pin to prevent damage to the SBC. An optocoupler circuit is recommended. Note that the GPIO pin number is more than likely different than the pin number on the GPIO header. Please refer to a pinout diagram for your SBC.') ?></li>
+</ul>
+
+<hr>
+
+<h4><?= _('Caution About Setting Up Uncoordinated Repeaters') ?></h4>
+<p><?= _('Having two repeaters operate on the same radio frequencies is problematic as they can interfere with each other, even with selective calling methods enabled. To help minimize this issue, regional repeater coordination organizations have been created. In some jurisdictions, coordination may be required by law or regulation. In the USA, coordination is optional and done on a voluntary basis, but Part 97 rule 205(c) prefers a coordinated repeater over an uncoordinated repeater in disputes over interference. Coordination in the USA is overseen by the National Frequency Coordinators\' Council (NFCC), a non-profit organization that certifies regional coordinators.') ?></p>
+
+<p><?= _('When setting up a temporary uncoordinated repeater, it is best to research and check the frequencies first before putting the repeater on the air. This can be done by both listening to the frequencies for repeater activity and checking current repeater directory resources for repeaters in the area you plan to operate. If you do happen to encounter interference, please be respectful and move to another frequency. If you plan to setup a permanent/fixed repeater installation, coordination is highly advised.') ?></p>

@@ -408,7 +408,7 @@ $SVXLink = new SVXLink(null, null, null);
 
 				  <div class="clearfix spacer height20"></div>
 				  
-                  <div class="form-group">
+                  <div class="form-group portEnabledWrap">
                     <label class="control-label col-md-4 col-sm-4 col-xs-12">
                     	<?=_('Enable Port')?> 
                     	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('This allows the port to be disabled, but retain the current settings.')?>"></i>
@@ -590,7 +590,7 @@ $SVXLink = new SVXLink(null, null, null);
                     <div class="col-md-3 col-sm-3 col-xs-12">
 					  <?php $hidrawRX_cos_invert = (isset($currPortSettings['hidrawRX_cos_invert'])) ? $currPortSettings['hidrawRX_cos_invert'] : 'false'; ?>
 					  <input id="hidrawRX_cos_invert%%currPortNum%%" name="hidrawRX_cos_invert" type="checkbox" class="js-switch" value="true">
-                      <label><?=_('Invert Pin')?></label>
+                      <label class="invertPinLabel"><?=_('Invert Pin')?></label>
                     </div>
                   </div>
                   
@@ -611,7 +611,7 @@ $SVXLink = new SVXLink(null, null, null);
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12">
 					  <input id="hidrawTX_ptt_invert%%currPortNum%%" name="hidrawTX_ptt_invert" type="checkbox" class="js-switch" value="true">
-                      <label><?=_('Invert Pin')?></label>
+                      <label class="invertPinLabel"><?=_('Invert Pin')?></label>
                     </div>
                   </div>
 
@@ -668,7 +668,7 @@ $SVXLink = new SVXLink(null, null, null);
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12">
 					  <input id="serialRX_cos_invert%%currPortNum%%" name="serialRX_cos_invert" type="checkbox" class="js-switch" value="true">
-                      <label><?=_('Invert Pin')?></label>
+                      <label class="invertPinLabel"><?=_('Invert Pin')?></label>
                     </div>
                   </div>
                   
@@ -687,7 +687,7 @@ $SVXLink = new SVXLink(null, null, null);
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12">
 					  <input id="serialTX_ptt_invert%%currPortNum%%" name="serialTX_ptt_invert" type="checkbox" class="js-switch" value="true">
-                      <label><?=_('Invert Pin')?></label>
+                      <label class="invertPinLabel"><?=_('Invert Pin')?></label>
                     </div>
                   </div>
 

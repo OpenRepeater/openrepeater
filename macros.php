@@ -127,7 +127,7 @@ $macroList = $Database->get_macros();
 
 <script>
 	var macroList = '<?= json_encode($macroList) ?>';
-
+console.log(macroList);
 	var modulesAvailable = '{"1":{"moduleKey":1,"moduleEnabled":1,"svxlinkName":"Help","svxlinkID":0,"displayName":"Help"},"2":{"moduleKey":2,"moduleEnabled":1,"svxlinkName":"Parrot","svxlinkID":1,"displayName":"Parrot"},"3":{"moduleKey":3,"moduleEnabled":0,"svxlinkName":"EchoLink","svxlinkID":2,"displayName":"EchoLink"}}';
 	var portsAvailable = '<?= json_encode($portList) ?>';
 	var portName = '<?= _('Port') ?>';
