@@ -1,0 +1,115 @@
+.panel-title.dtmf-title {
+	font-size:20px;
+	line-height:30px;
+}
+
+.dtmf-interface {
+	margin:0;
+	padding:0;
+	overflow:hidden;
+	display:inline;
+	margin-right:15px;
+}
+
+.dtmf-interface li {
+	color:#333;
+	float:left;
+	margin:2px;
+	list-style:none;
+	width:25px;
+	height:25px;
+	text-align:center;
+	line-height:23px;
+	font-size:20px;
+	font-family:Tahoma,Geneva,sans-serif;
+	font-weight:500;
+	background-color:#fff;
+	border:solid 1px #333;
+	border-radius:3px;
+	padding:0;
+	transition:all .5s;
+	box-shadow:1px 2px rgba(0,0,0,.5);
+}
+
+.dtmf-interface li.star {
+	line-height:33px;
+	font-size:32px;
+	font-weight:300;
+}
+
+.dtmf-interface li.non-btn {
+	border: none;
+	box-shadow: none;
+}
+
+.dtmf-interface li:hover {
+	color:#8dc63f;
+	border-color:#8dc63f;
+	transition-duration:0;
+	cursor:pointer;
+	box-shadow:1px 2px rgba(0,0,0,1);
+}
+
+.dtmf-interface li:active {
+	color:#006838;
+	border-color:#006838;
+	transition-duration:0;
+}
+
+.dtmf-interface li.non-btn:hover {
+	color:#333;
+	box-shadow: none;
+}
+
+@media print {
+	/* 	Expand all for printing */
+    .collapse {
+        display: block;
+    }
+    
+    body { -webkit-print-color-adjust: exact; }
+    
+    .accordion .panel-heading {
+	    background: silver!important;
+
+    }
+
+	.panel-heading .dtmf-interface li {
+		background: white!important;
+	}
+	
+	.x_panel {
+		padding: 0!important;
+		margin: 0!important;
+		border: none!important;
+	}
+	.x_panel .navbar-right {
+		display: none;
+	}
+	
+	#orp_restart_btn, .nav_menu {
+		display: none;
+	}
+	
+	.main_container .left_col, footer {
+		display: none!important;
+	}
+
+	.main_container .right_col {
+		margin-left: 0!important
+	}
+
+	
+	.col-print-1 {width:8%;  float:left;}
+	.col-print-2 {width:16%; float:left;}
+	.col-print-3 {width:25%; float:left;}
+	.col-print-4 {width:33%; float:left;}
+	.col-print-5 {width:42%; float:left;}
+	.col-print-6 {width:50%; float:left;}
+	.col-print-7 {width:58%; float:left;}
+	.col-print-8 {width:66%; float:left;}
+	.col-print-9 {width:75%; float:left;}
+	.col-print-10{width:83%; float:left;}
+	.col-print-11{width:92%; float:left;}
+	.col-print-12{width:100%; float:left;}
+}

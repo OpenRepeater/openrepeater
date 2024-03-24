@@ -6,208 +6,203 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 
 $Database = new Database();
 $settings = $Database->get_settings();
+
+$Modules = new Modules();
 ?>
 
 
+<?php
+// DUMMY FUNCTION TO LATER BE REPLACE BY GETTEXT FOR TRANSLATIONS
+/*
+function _($input) {
+	return $input;
+}
+*/
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="utf-8">
-	<title>OpenRepeater<?php if (isset($pageTitle)) { echo " | ".$pageTitle; } ?></title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+	<link rel="shortcut icon" href="favicon.ico">
+	  
+    <title>OpenRepeater</title>
 
-	<!-- The styles -->
-	<link id="bs-css" href="../theme/css/bootstrap-classic.css" rel="stylesheet">
-	<style type="text/css">
-	  body {
-		padding-bottom: 40px;
-	  }
-	  .sidebar-nav {
-		padding: 9px 0;
-	  }
-	</style>
+    <!-- Bootstrap -->
+    <link href="/includes/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/includes/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="/includes/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="/includes/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- bootstrap-wysiwyg -->
+    <link href="/includes/vendors/google-code-prettify/bin/prettify.min.css" rel="stylesheet">
+    <!-- Select2 -->
+    <link href="/includes/vendors/select2/dist/css/select2.min.css" rel="stylesheet">
+    <!-- Switchery -->
+    <link href="/includes/vendors/switchery/dist/switchery.min.css" rel="stylesheet">
+    <!-- starrr -->
+    <link href="/includes/vendors/starrr/dist/starrr.css" rel="stylesheet">
+    <!-- bootstrap-daterangepicker -->
+    <link href="/includes/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 
-	<link href='../theme/css/bootstrap-responsive.css' rel='stylesheet'>
-	<link href='../theme/css/openrepeater.css' rel='stylesheet'>
-	<link href='../theme/css/jquery-ui-1.8.21.custom.css' rel='stylesheet'>
-	<link href='../theme/css/fullcalendar.css' rel='stylesheet'>
-	<link href='../theme/css/fullcalendar.print.css' rel='stylesheet'  media='print'>
-	<link href='../theme/css/chosen.css' rel='stylesheet'>
-	<link href='../theme/css/uniform.default.css' rel='stylesheet'>
-	<link href='../theme/css/colorbox.css' rel='stylesheet'>
-	<link href='../theme/css/jquery.cleditor.css' rel='stylesheet'>
-	<link href='../theme/css/jquery.noty.css' rel='stylesheet'>
-	<link href='../theme/css/noty_theme_default.css' rel='stylesheet'>
-	<link href='../theme/css/elfinder.min.css' rel='stylesheet'>
-	<link href='../theme/css/elfinder.theme.css' rel='stylesheet'>
-	<link href='../theme/css/jquery.iphone.toggle.css' rel='stylesheet'>
-	<link href='../theme/css/opa-icons.css' rel='stylesheet'>
-	<link href='../theme/css/uploadify.css' rel='stylesheet'>
-	
-	<?php 
+    <!-- PNotify -->
+    <link href="/includes/vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="/includes/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="/includes/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+
+    <!-- Datatables -->
+    <link href="/includes/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="/includes/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="/includes/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="/includes/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="/includes/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <link href="/includes/vendors/datatables.net-select/css/select.dataTables.min.css" rel="stylesheet">
+
+	<?php
 	// Display custom CSS if defined by page
 	if (isset($customCSS)) {
 		echo "<!-- custom CSS for current page -->\n";
 		$customCSS = preg_replace('/\s+/', '', $customCSS);
 		$cssArray = explode(',',$customCSS);
 		foreach ($cssArray as $cssfile) {
-		  echo "\t<link href='../theme/css/".$cssfile."' rel='stylesheet'>\n";
+		  echo "\t<link href='/includes/css/".$cssfile."' rel='stylesheet'>\n";
 		}
 	}
+	?>
 
-	// Display module admin CSS if defined
+	<?php
+	// Display custom Module CSS if defined
 	if (isset($moduleCSS)) {
-		echo "<!-- custom CSS for module admin page -->\n";
-		echo "\t<link href='".$moduleCSS."' rel='stylesheet'>\n";
+		echo "<!-- custom CSS for module -->\n";
+		$moduleCSS = preg_replace('/\s+/', '', $moduleCSS);
+		$module_cssArray = explode(',',$moduleCSS);
+		foreach ($module_cssArray as $module_cssfile) {
+		  echo "\t<link href='".$module_cssfile."' rel='stylesheet'>\n";
+		}
 	}
 	?>
 
 
-	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
-	<!--[if lt IE 9]>
-	  <script src="http://html5shim.googlecode.com/svn/trunk/html5"></script>
-	<![endif]-->
 
-	<!-- The fav icon -->
-	<link rel="shortcut icon" href="../theme/img/favicon.ico">
 
-	<?php if (isset($header_scripts)) { echo $header_scripts; } ?>
+    <!-- Custom Theme Style -->
+    <link href="/includes/css/custom.css" rel="stylesheet">
+  </head>
 
-</head>
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="dashboard.php" class="site_title"><span></span></a>
+            </div>
 
-<body<?php if (isset($body_onload)) { echo ' ' . $body_onload; } ?>>
-	<?php if(!isset($no_visible_elements) || !$no_visible_elements)	{ ?>
+            <div class="clearfix"></div>
 
-	<!-- Server Notifications -->
+            <br />
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+
+              <div class="menu_section">
+
+                <ul class="nav side-menu">
+	                	
+                  <li><a class="navLink" href="/dashboard.php"><i class="fa fa-tachometer"></i> <?=_('Dashboard')?> </a></li>
+                  <li><a class="navLink" href="/settings.php"><i class="fa fa-cog"></i> <?=_('General Settings')?> </a></li>
+                  <li><a class="navLink" href="/identification.php"><i class="fa fa-volume-up"></i> <?=_('Identification')?> </a></li>
+                  <li><a class="navLink" href="/courtesy.php"><i class="fa fa-bell"></i> <?=_('Courtesy Tones')?> </a></li>
+
+                  <li><a><i class="fa fa-plug"></i> <?=_('Modules')?> <span class="fa fa-chevron-down"></span></a>
+                    <ul id="navModules" class="nav child_menu">
+                      <li><a class="navLink" href="/modules.php"><?=_('All Modules')?></a></li>
+
+                      <?= $Modules->nav_setting_links() ?>
+
+                    </ul>
+                  </li>
+
+                  <li><a class="navLink" href="/ports.php"><i class="fa fa-sitemap"></i> <?=_('Interface')?> </a></li>
+                  <li><a class="navLink" href="/log.php"><i class="fa fa-edit"></i> <?=_('Log & Files')?> </a></li>
+                  <li><a class="navLink" href="/macros.php"><i class="fa fa-play-circle"></i> <?=_('Macros')?> </a></li>
+                  <li><a class="navLink" href="/dtmf.php"><i class="fa fa-tty"></i> <?=_('DTMF Reference')?> </a></li>
+
+                </ul>
+              </div>
+
+              <div class="menu_section">
+			  	<h3>Developement</h3>
+                <ul class="nav side-menu">
+                  <li><a href="/dev/edit.php" target="_blank"><i class="fa fa-database"></i> Edit Database </a></li>
+                  <li><a href="/dev_ui/" target="_blank"><i class="fa fa-wrench"></i> Dev UI </a></li>
+                  <li><a href="/wizard/index.php"><i class="fa fa-magic"></i> Wizard </a></li>
+                </ul>
+              </div>
+
+            </div>
+            <!-- /sidebar menu -->
+
+            <!-- /menu footer buttons -->
+            <div class="sidebar-footer hidden-small">
+              <a class="change_password" data-toggle="tooltip" data-placement="top" title="<?=_('Change Password')?>">
+                <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="<?=_('Backup & Restore')?>" href="/backup.php">
+                <span class="fa fa-database" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="<?=_('Support OpenRepeater')?>" href="https://openrepeater.com/donate" target="_blank">
+                <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+              </a>
+              <a class="logoutORP" data-toggle="tooltip" data-placement="top" title="<?=_('Log Out')?>">
+                <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+              </a>
+            </div>
+            <!-- /menu footer buttons -->
+          </div>
+        </div>
+
+        <!-- top navigation -->
+        <div class="top_nav">
+          <div class="nav_menu">
+            <nav>
+              <div class="nav toggle">
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+              </div>
+
+              <ul class="nav navbar-nav navbar-right">
+                <li class="">
+                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <img src="/includes/images/user.png" alt="<?= $_SESSION['username'] ?>">
+                    <?= $_SESSION['username'] ?> <span class=" fa fa-angle-down"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    <li><a class="change_password"><i class="fa fa-lock pull-right"></i><?=_('Change Password')?></a></li>
+                    <li><a href="/backup.php"><i class="fa fa-database pull-right"></i><?=_('Backup & Restore')?></a></li>
+                    <li><a class="logoutORP"><i class="fa fa-sign-out pull-right"></i><?=_('Log Out')?></a></li>
+                  </ul>
+                </li>
+
+	<!--  -->
 
 <?php
-	$current_page_url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-
-	/* CHECK FOR UPDATE FLAG AND NOTIFY USER IF SERVER NEEDS RESTARTED */
+	# Server Notifications
+// 	$current_page_url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 	$updateFlage = $Database->get_update_flag();
 ?>
 
-	<div class="server_bar_wrap"<?php if ($updateFlage == false) { echo ' style="display: none;"'; } ?>>
-	<div class="server_bar">
-		<span>Repeater Configuration Files Rebuild & Restart Required: </span>
-
-		<!-- Button triggered modal -->
-		<button class="rebuild_button" data-toggle="modal" data-target="#restartServer"><i class="icon-refresh icon-white"></i> Rebuild & Restart Repeater</button>
-	</div>
-	<div class="server_bar_spacer"></div>
-	</div>
-
-
-	<!-- Modal - RESTART SERVER -->
-	<div class="modal fade" id="restartServer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-		<h3 class="modal-title" id="myModalLabel">Rebuild & Restart Repeater</h3>
-	      </div>
-	      <div class="modal-body">
-			<h4>Are You Sure You Want to Do This?</h4>
-			<p>This will generate new configuration files based on the setting you have updated here. After the files have been created the repeater software will have to be restarted. You should check to make sure that the repeater is currently at idle and that there are no active conversations taking place. Any active Echolink connections will be disconnected. Do you still wish to proceed?</p>
-	      </div>
-	      <div class="modal-footer">
-			<form action="functions/svxlink_update.php" method="post" style="margin:0;">
-				<input type="hidden" name="return_url" value="<?php echo $current_page_url; ?>">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-				<button type="submit" class="btn btn-success"><i class="icon-refresh icon-white"></i> Restart</button>
-			</form>
-	      </div>
-	    </div><!-- /.modal-content -->
-	  </div><!-- /.modal-dialog -->
-	</div>
-	<!-- /.modal -->
-
-
-
-
-	<!-- topbar starts -->
-	<div class="navbar">
-		<div class="navbar-inner">
-			<div class="container-fluid">
-				<a class="btn btn-navbar" data-toggle="collapse" data-target=".top-nav.nav-collapse,.sidebar-nav.nav-collapse">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</a>
-
-				<div class="header-logo">
-					<a href="../dashboard.php"><img src="../theme/img/OpenRepeaterLogo-Header.png"></a>
-				</div>
-
-				<!-- user dropdown starts -->
-				<div class="btn-group pull-right" >
-					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-						<i class="icon-user"></i><span class="hidden-phone"> <?php echo $_SESSION['username'];?></span>
-						<span class="caret"></span>
-					</a>
-					<ul class="dropdown-menu">
-<!--
-						<li><a href="../login.php?action=setPassword">Change Password</a></li>
-						<li class="divider"></li>
--->
-<!--
-						<li><a href="../backup.php">Backup & Restore</a></li>
-						<li class="divider"></li>
--->
-						<li><a href="../login.php?action=logout">Logout</a></li>
-					</ul>
-				</div>
-				<!-- user dropdown ends -->
-			</div>
-		</div>
-	</div>
-	<!-- topbar ends -->
-	<?php } ?>
-	<div class="container-fluid">
-		<div class="row-fluid">
-		<?php if(!isset($no_visible_elements) || !$no_visible_elements) { ?>
-
-			<!-- left menu starts -->
-			<div class="span2 main-menu-span">
-				<div class="well nav-collapse sidebar-nav">
-					<ul class="nav nav-tabs nav-stacked main-menu">
-						<li class="nav-header hidden-tablet">Main</li>
-						<?php
-						switch ($settings['orp_Mode']) {
-						    case "advanced":
-						    	?>
-									<li><a class="ajax-link" href="../dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
-									<li><a class="ajax-link" href="../advanced.php"><i class="icon-wrench"></i><span class="hidden-tablet"> Advanced</span></a></li>
-								<?php
-						        break;
-
-
-						    default:
-						    	?>
-									<li><a class="ajax-link" href="../dashboard.php"><i class="icon-home"></i><span class="hidden-tablet"> Dashboard</span></a></li>
-<!-- 									<li><a class="ajax-link" href="../settings.php"><i class="icon-wrench"></i><span class="hidden-tablet"> General Settings</span></a></li> -->
-<!-- 									<li><a class="ajax-link" href="../identification.php"><i class="icon-bullhorn"></i><span class="hidden-tablet"> Identification</span></a></li> -->
-<!-- 									<li><a class="ajax-link" href="../courtesy_tone.php"><i class="icon-music"></i><span class="hidden-tablet"> Courtesy Tones</span></a></li> -->
-									<?php
-										$ModulesClass = new Modules();
-										echo $ModulesClass->nav_setting_links();
-									?>	
-									<li><a class="ajax-link" href="../ports.php"><i class="icon-cog"></i><span class="hidden-tablet"> Interface</span></a></li>
-									<li><a class="ajax-link" href="../dtmf.php"><i class="icon-th"></i><span class="hidden-tablet"> DTMF Reference</span></a></li>
-								<?php
-						}
-						?>
-					</ul>
-				</div><!--/.well -->
-			</div><!--/span-->
-			<!-- left menu ends -->
-
-			<noscript>
-				<div class="alert alert-block span10">
-					<h4 class="alert-heading">Warning!</h4>
-					<p>You need to have <a href="http://en.wikipedia.org/wiki/JavaScript" target="_blank">JavaScript</a> enabled to use this site.</p>
-				</div>
-			</noscript>
-
-			<div id="content" class="span10">
-			<!-- content starts -->
-			<?php } ?>
+                <li role="presentation" class="dropdown">
+<button type="button" id="orp_restart_btn" class="btn btn-round btn-restart pulse"<?= ($updateFlage == false) ? ' style="display: none;"':''; ?>><i class="fa fa-refresh"></i> <?=_('Rebuild')?></button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- /top navigation -->

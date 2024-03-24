@@ -1,0 +1,91 @@
+{
+	"termsAgree": "no",
+	"wizardType": "standard",
+	"configMethod": "preset",
+	"settings": {
+		"orp_Mode": "repeater",
+		"callSign": "TESTCALL",
+		"courtesy": "4_Up.wav",
+		"repeaterTimeoutSec": "230",
+		"rxTone": "0",
+		"txTailValueSec": "1",
+		"txTone": "0",
+		"courtesyMode": "beep",
+		"ID_Short_Mode": "morse",
+		"ID_Long_Mode": "voice",
+		"ID_Morse_Suffix": "/R",
+		"ID_Morse_WPM": "25",
+		"ID_Morse_Pitch": "600",
+		"ID_Long_IntervalMin": "60",
+		"ID_Long_AppendTime": "False",
+		"ID_Long_AppendTone": "False",
+		"ID_Long_AppendMorse": "True",
+		"ID_Long_CustomFile": "Sample_Long_ID_Clip.wav",
+		"ID_Short_IntervalMin": "10",
+		"ID_Short_AppendMorse": "False",
+		"ID_Short_CustomFile": "Sample_Short_ID_Clip.wav",
+		"ID_Morse_Amplitude": "-13.98",
+		"repeaterDTMF_disable": "False",
+		"repeaterDTMF_disable_pin": "1234",
+		"ID_Only_When_Active": "True",
+		"Location_Info": "",
+		"LinkGroup_Settings":{"1": {"defaultActive": "1","timeout": "0"}}
+	},
+
+	"portPreset": "",
+	"ports": {
+		"port1": {
+			"portNum": 1,
+			"portLabel": "ICS 2x - Port 1",
+			"rxAudioDev": "alsa:plughw:2|1",
+			"txAudioDev": "alsa:plughw:2|1",
+			"portType": "Serial",
+			"portEnabled": 1,
+			"portDuplex": "full",
+			"linkGroup": [1],
+			"rxMode": "cos",
+			"rxGPIO": "26",
+			"rxGPIO_active": "low",
+			"txGPIO": "498",
+			"txGPIO_active": "high",
+			
+			"hidrawDev": "/dev/hidraw1",
+			"hidrawRX_cos": "MUTE_PLAY",
+			"hidrawRX_cos_invert": "true",
+			"hidrawTX_ptt": "GPIO3",
+			"hidrawTX_ptt_invert": "true",
+
+			"serialDev": "/dev/ttyUSB2",
+			"serialRX_cos": "CTS",
+			"serialRX_cos_invert": "true",
+			"serialTX_ptt": "RTS",
+			"serialTX_ptt_invert": "true",
+			
+			"SVXLINK_ADVANCED_LOGIC": {
+				"CALLSIGN": "WRFV871"
+			}
+		}
+	},
+
+	"macros": {
+		"1": {
+			"macroKey": 1,
+			"macroEnabled": 1,
+			"macroNum": 1,
+			"macroLabel": "Sample EchoLink Macro",
+			"macroModuleKey": 3,
+			"macroString": "9999#",
+			"macroPorts": "1"
+		},
+		"2": {
+			"macroKey": 2,
+			"macroEnabled": 0,
+			"macroNum": 2,
+			"macroLabel": "Sample Parrot Macro",
+			"macroModuleKey": 2,
+			"macroString": "0123456789##",
+			"macroPorts": "ALL"
+		}
+	}
+
+}

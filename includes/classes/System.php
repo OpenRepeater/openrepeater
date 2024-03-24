@@ -21,7 +21,8 @@ class System {
 			'datetime' => date( 'Y/m/d H:i:s', time() ),
 			'date' => date( 'd M Y', time() ),
 			'time' => date( 'H:i:s', time() ),
-			'tz_long' => $systemTimeZone,
+// 			'tz_long' => $systemTimeZone,
+			'tz_long' => date_default_timezone_get(),
 			'tz_short' => date( 'T', time() ),
 		];
 	}
@@ -131,7 +132,11 @@ class System {
 
 	public function svxlink_status() {
 		$status = $this->orp_helper_call('svxlink', 'status');
-		return trim($status);
+		if ($status) {
+			return trim($status);
+		} else {
+			return 'not_available';
+		}
  	}
 
 	// stop, start, restart
@@ -216,7 +221,12 @@ class System {
 			$count++;
 		}
 		
-		return $diskArray;
+		if ($diskArray) {
+			return $diskArray;
+		} else {
+			return ['status' => 'not_available'];
+		}
+
 	}
 
 

@@ -5,11 +5,13 @@
 
 class Modules {
 
-    public $Database;
+	public $Database;
 	public $modules_path;
 	public $modulesUploadTempDir;
 	private $includes_path;
 	private $core_modules = ['Help','Parrot','EchoLink'];
+	private $orpMinVerReq = "3.0.0"; // This may be less than current ORP version. It is the milestone version that modules must meet to be installed and compatable.
+
 	
 	// SVXLink Locations
 	private $svxlink_events_d_path = '/usr/share/svxlink/events.d/';
@@ -47,6 +49,69 @@ class Modules {
 		$module = $this->Database->select_single($sql);
 		$moduleOptionsArray = json_decode($module['moduleOptions']);
 		return $moduleOptionsArray;	
+	}
+
+
+
+	###############################################
+	# Write Module Record
+	###############################################
+
+	// Accepts multiple rows and/or columns
+	public function write_modules($moduleArray = []) {
+
+		// Remove moduleKey child element if sent. No need to rewrite that to DB.
+		foreach(array_keys($moduleArray) as $key) { unset($moduleArray[$key]['moduleKey']); }
+
+		// Build SQL Update Strings
+		foreach($moduleArray as $currModuleKey => $currModuleValue) {
+			$colKeyValArray = [];
+			foreach($currModuleValue as $colKey => $colValue) { $colKeyValArray[] = $colKey . " = '" . $colValue . "'"; }
+			$colKeyValPairs  = implode(", ", $colKeyValArray);
+			$sql = "UPDATE modules SET $colKeyValPairs WHERE moduleKey = $currModuleKey;";
+			$update_result = $this->Database->update($sql);
+			if ($update_result == false) { return false; } // Break if failure with individual row update
+		}
+		return true; // true on last row update.
+	}
+
+
+
+	###############################################
+	# Get Module SVXLink Name by ID
+	###############################################
+
+	public function get_module_svxlink_name($id) {
+		$sql = 'SELECT * FROM "modules" WHERE "moduleKey" = "'.$id.'";';
+		$select_result = $this->Database->select_key_value($sql, 'moduleKey', 'svxlinkName');
+		$svxlink_name = $select_result[$id];
+		return $svxlink_name;	
+	}
+
+
+
+	###############################################
+	# Get Module SVXLink ID by ID (Key)
+	###############################################
+
+	public function get_module_svxlink_id($id) {
+		$sql = 'SELECT * FROM "modules" WHERE "moduleKey" = "'.$id.'";';
+		$select_result = $this->Database->select_key_value($sql, 'moduleKey', 'svxlinkID');
+		$svxlinkID = $select_result[$id];
+		return $svxlinkID;	
+	}
+
+
+
+	###############################################
+	# Get Module ID by SVXLink Name
+	###############################################
+
+	public function get_module_id($svxlink_name) {
+		$sql = 'SELECT * FROM "modules" WHERE "svxlinkName" = "'.$svxlink_name.'";';
+		$select_result = $this->Database->select_key_value($sql, 'svxlinkName', 'moduleKey');
+		$id = $select_result[$svxlink_name];
+		return $id;	
 	}
 
 
@@ -102,10 +167,7 @@ class Modules {
 	###############################################
 
 	public function activateMod($id) {
-		$sql = 'SELECT * FROM "modules" WHERE "moduleKey" = "'.$id.'";';
-		$select_result = $this->Database->select_key_value($sql, 'moduleKey', 'svxlinkName');
-		$svxlink_name = $select_result[$id];
-
+		$svxlink_name = $this->get_module_svxlink_name($id);
 		# REWRITE PENDING
 		# Currently Redirects to Database Class
 		# Plan to pull logic form those classes once everything points here
@@ -114,10 +176,8 @@ class Modules {
 		$this->initialize_module($svxlink_name);		
 		$this->Database->set_update_flag(true);
 
-		return array(
-			'msgType' => 'success',
-			'msgText' => 'The module has been successfully <strong>activated</strong>.'
-		);
+		// FUTURE: More error checking
+		return true;
 	}
 
 
@@ -133,126 +193,93 @@ class Modules {
 		$this->Database->deactive_module($id);
 		$this->Database->set_update_flag(true);
 
-		return array(
-			'msgType' => 'success',
-			'msgText' => 'The module has been successfully <strong>deactivated</strong>.'
-		);
+		// FUTURE: More error checking
+		return true;
 	}
 
 
 
 	###############################################
-	# Upload Module
+	# Process Upload Module
 	###############################################
 
-	public function upload_module($fileNameArray) {
+	public function process_upload_module($tmpFilePath) {
 
-		$maxFileSize = 500000000; // size in bytes
-		$allowedExts = array('zip');
-	
-		//Loop through each file
-		for($i=0; $i<count($fileNameArray['name']); $i++) {
-			//Get the temp file path
-			$tmpFile1 = $fileNameArray['tmp_name'][$i];
-			
-			$temp_ext = explode(".", $fileNameArray['name'][$i]);
-			$extension = end($temp_ext);
-
-			$uploadedModuleZip = $this->modules_path . 'tempModule.' . $extension;
-			
-			# Check File Size isn't too large
-			if($fileNameArray['size'][$i] > $maxFileSize){
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'Sorry, but the file you tried to upload is <strong>too large</strong>.'
-				);	
-			}
-
-			# Check to see if file is allowed type
-			if(!in_array($extension, $allowedExts)) {
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'Sorry, but the file you tried to upload is not in a supported format. Files must modules packaged up with a .zip extension.'
-				);	
-			}
-
-			# Check to see if system temp folder is writable
-			if (!is_writable( sys_get_temp_dir() )) {
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'Sorry, it looks like there is a configuration issue. The system\'s temp folder is not writable'
-				);	
-			}
-
-			# Check for error reported by file array
-			if ($fileNameArray['error'][$i] > 0) {
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'There was a problem uploading the file'
-				);	
-			}
-
-
-			if ($tmpFile1 != ""){
-				if(file_exists($uploadedModuleZip)) {
-				    unlink($uploadedModuleZip); //remove orphan
-				}
-				move_uploaded_file($tmpFile1, $uploadedModuleZip);
-
-				if (file_exists($uploadedModuleZip)) {
-					### SUCCESSFUL UPLOAD ###
-					$unzip = $this->unzip_module($uploadedModuleZip);
-					if ($unzip == true) {
-						### SUCCESSFUL UNZIP ###
-						$install_results = $this->install_module($this->modulesUploadTempDir);
-						if ( is_array($install_results) ) {
-							if (isset($install_results['Module_Info']['display_name'])) {
-								$currDisplayName = trim($install_results['Module_Info']['display_name']);
-								return array(
-									'msgType' => 'success',
-									'msgText' => 'The ' . $currDisplayName . ' module has been successfully installed. To use it, you must first activate it.'
-								);	
-							} else {
-								return array(
-									'msgType' => 'success',
-									'msgText' => 'Module has been successfully installed. To use it, you must first activate it.'
-								);	
-							}
-
-						} else {
-							return array(
-								'msgType' => 'error',
-								'msgText' => 'There was a problem installing the module. Either this is not an OpenRepeater module, or the zip file was improperly constructed, or the module already exists.'
-							);	
-							
-						}
-
-							
-					} else {
-						### FAILED UNZIP ###
-						return array(
-							'msgType' => 'error',
-							'msgText' => 'There was a problem Unzipping the file'
-						);	
-					}
-										
-				} else {
-					// Failure
-					return array(
-						'msgType' => 'error',
-						'msgText' => 'There was a problem uploading the file.'
-					);						
-				}
-				
-			}
-
+		$extension = pathinfo($tmpFilePath, PATHINFO_EXTENSION);
+		$uploadedModuleZip = $this->modules_path . 'tempModule.' . $extension;
+		
+		# Check to see if system temp folder is writable
+		if (!is_writable( sys_get_temp_dir() )) {
+			$statusArray = ['status' => 'error', 'msgText' => _('Sorry, it looks like there is a configuration issue. The system\'s temp folder is not writable')];
+			return $statusArray;
 		}
 
+		if ($tmpFilePath != ""){
+			if(file_exists($uploadedModuleZip)) {
+				unlink($uploadedModuleZip); //remove orphan
+			}
+			rename($tmpFilePath, $uploadedModuleZip);
+// 			move_uploaded_file($returnArray[$curKey]['tmp_name'], $returnArray[$curKey]['full_path']);
+
+			if (file_exists($uploadedModuleZip)) {
+				### SUCCESSFUL UPLOAD ###
+				$unzip = $this->unzip_module($uploadedModuleZip);
+				if ($unzip == true) {
+					### SUCCESSFUL UNZIP ###
+					$install_results = $this->install_module($this->modulesUploadTempDir);
+					if ( is_array($install_results) ) {
+
+						// Check if modules version meets requirement for installatiton
+						if ( version_compare($this->orpMinVerReq, $install_results['Module_Info']['min_orp_ver'], 'eq') ) {
+							if (isset($install_results['Module_Info']['display_name'])) {
+								$moduleID = $this->get_module_id($install_results['Module_Info']['mod_name']);
+								$moduleSVXLinkID = $this->get_module_svxlink_id($moduleID);
+								$currDisplayName = trim($install_results['Module_Info']['display_name']);
+								$statusArray = ['status' => 'success', 'msgText' => $currDisplayName . ': ' . _('Module has been successfully installed. To use it, you must first activate it.')];
+								$statusArray = array_merge($statusArray, $install_results['Module_Info']);
+								$statusArray['moduleKey'] = $moduleID;
+								$statusArray['svxlinkID'] = $moduleSVXLinkID;
+								return $statusArray;	
+							} else {
+								$statusArray = ['status' => 'success', 'msgText' => _('Module has been successfully installed. To use it, you must first activate it.')];
+								return $statusArray;
+							}
+
+						// Module doesn't meet version requirements
+						} else {
+							$this->remove_module($install_results['Module_Info']['mod_name']);
+							$statusArray = ['status' => 'error', 'msgText' => _('This module cannot be installed because it does not meet the minimum version requirements of this version of OpenRepeater.')];
+							return $statusArray;
+						}
+
+
+
+
+
+					} else {
+						$statusArray = ['status' => 'error', 'msgText' => _('There was a problem installing the module. Either this is not an OpenRepeater module, or the zip file was improperly constructed, or the module already exists.')];
+						return $statusArray;
+					}
+
+
+				} else {
+					### FAILED UNZIP ###
+					$statusArray = ['status' => 'error', 'msgText' => _('There was a problem Unzipping the file')];
+					return $statusArray;
+				}
+
+			} else {
+				// Failure
+				$statusArray = ['status' => 'error', 'msgText' => _('There was a problem uploading the file.')];
+				return $statusArray;
+			}
+			
+		}
+
+
 		# Some how it got thru validation, but nothing was done.
-		return array(
-			'msgType' => 'error',
-			'msgText' => 'Don\'t know what happened, but nothing appears to have been done.'
-		);	
+		$statusArray = ['status' => 'error', 'msgText' => _('Don\'t know what happened, but nothing appears to have been done.')];
+		return $statusArray;
 
 	}
 
@@ -265,7 +292,7 @@ class Modules {
 	public function unzip_module($selected_archive) {
 		try	{
 			if (!file_exists($this->modulesUploadTempDir)) {
-			    mkdir($this->modulesUploadTempDir, 0777, true);
+				mkdir($this->modulesUploadTempDir, 0777, true);
 			}
 
 			// Clean up any Mac OS trash in user zip file if it exists
@@ -295,7 +322,7 @@ class Modules {
 			}
 
 		} catch (Exception $e) {
-		    echo "Exception : " . $e;
+			echo "Exception : " . $e;
 		}
 	}
 
@@ -324,6 +351,7 @@ class Modules {
 					$currTarget = $file['filePath'];
 					$currLink = $this->svxlink_events_d_path . $file['fileName'];
 					if (file_exists($currLink)) { unlink($currLink); } // Clean old link/file
+					if (!file_exists($this->svxlink_events_d_path)) { mkdir($this->svxlink_events_d_path, 0777, true); } // Create events.d directory if for some reason it doesn't exist
 					symlink($currTarget, $currLink); // Set New Link
 				}
 			}
@@ -339,17 +367,18 @@ class Modules {
 					$currTarget = $file['filePath'];
 					$currLink = $this->svxlink_modules_d_path . $file['fileName'];
 					if (file_exists($currLink)) { unlink($currLink); } // Clean old link/file
+					if (!file_exists($this->svxlink_modules_d_path)) { mkdir($this->svxlink_modules_d_path, 0777, true); } // Create modules.d directory if for some reason it doesn't exist
 					symlink($currTarget, $currLink); // Set New Link
 				}
 			}
-	
-	
+
+
 			### Check for SVXLink Sounds and link into place ###
-	
+
 			$svxlink_sounds_path = $this->svxlink_sounds . $svxlink_name;
 			$mod_sounds_path = $this->modules_path . $svxlink_name . '/svxlink/sounds/en_US/';
 			if (file_exists($mod_sounds_path)) {
-				if (file_exists($svxlink_sounds_path)) { exec('rm ' . $svxlink_sounds_path . ' -R'); }
+				if (file_exists($svxlink_sounds_path)) { exec('rm ' . $svxlink_sounds_path . ' -R'); } // remove orphan first
 				symlink($mod_sounds_path, $svxlink_sounds_path); // Set New Link
 			}
 
@@ -359,11 +388,16 @@ class Modules {
 		### Created DB record in modules table, if it doesn't exist, and set as deactive ###
 
 		if ($this->Database->exists('modules','svxlinkName',$svxlink_name) == false) { 
+			// Reset auto increment of modules table
+			$sql = 'UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME="modules";';
+			$insert_result = $this->Database->insert($sql);
+
+			// Insert new record
 			$sql = 'INSERT INTO "modules" ("moduleKey","moduleEnabled","svxlinkName","svxlinkID") VALUES (NULL,'.$enabled.',\''.$svxlink_name.'\',\''.$this->find_next_svxlink_id().'\')';
 			$insert_result = $this->Database->insert($sql);
 		}
 
-	
+
 		### If no options are set in DB, check for default settings file and load if one exists ###
 
 		$sql = 'SELECT * FROM "modules" WHERE "svxlinkName" = \''.$svxlink_name.'\';';
@@ -378,7 +412,7 @@ class Modules {
 				$default_settings['moduleKey'] = $module_key;
 				$this->save_module_settings($default_settings, 'install');
 			}
-			
+
 		}
 
 	}
@@ -407,7 +441,7 @@ class Modules {
 		if (file_exists($ini_path)) {
 			$mod_ini_array = parse_ini_file($ini_path, true);
 		} else {
-		    $error_level++;
+			$error_level++;
 		}
 
 		if ( isset($mod_ini_array['Module_Info']['mod_name']) ) {
@@ -466,7 +500,7 @@ class Modules {
 		$mod_events_d_path = $this->modules_path . $svxlink_name . '/svxlink/events.d/';
 		if (file_exists($mod_events_d_path)) {
 			$fileArray = $this->read_dir($mod_events_d_path);
-			
+
 			// Remove link for each file
 			foreach($fileArray as $file) {
 				$currLink = $this->svxlink_events_d_path . $file['fileName'];
@@ -478,7 +512,7 @@ class Modules {
 		$mod_modules_d_path = $this->modules_path . $svxlink_name . '/svxlink/modules.d/';
 		if (file_exists($mod_modules_d_path)) {
 			$fileArray = $this->read_dir($mod_modules_d_path);
-			
+
 			// Remove link for each file
 			foreach($fileArray as $file) {
 				$currLink = $this->svxlink_modules_d_path . $file['fileName'];
@@ -495,7 +529,7 @@ class Modules {
 		}
 
 		### Remove module dir ###
-		
+
 		exec('rm ' . $this->modules_path . $svxlink_name . ' -R');
 		if ( !file_exists( $this->modules_path . $svxlink_name ) ) {
 
@@ -508,21 +542,12 @@ class Modules {
 		$delete_result = $this->Database->delete_row($sql);
 			if ($delete_result) { 
 				$this->Database->set_update_flag(true);
-				return array(
-					'msgType' => 'success',
-					'msgText' => 'Successfully deleted the module.'
-				);
+				return true;
 			} else {
-				return array(
-					'msgType' => 'error',
-					'msgText' => 'There was a problem fully deleting the module.'
-				);
+				return false;
 			}
 		} else {
-			return array(
-				'msgType' => 'error',
-				'msgText' => 'There was a problem deleting the module.'
-			);
+			return false;
 		}
 		
 	}
@@ -532,95 +557,6 @@ class Modules {
 	###############################################
 	# Display All Modules
 	###############################################
-
-	### OLD 2.2.X AND PRIOR UI ####
-	public function display_all() {
-		$modules = $this->get_modules();
-
-		$return_html = '
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th><div style="width:200px">Module</div></th>
-					<th>Description</th>
-				</tr>
-			</thead>
-			
-			<tbody>
-			';
-
-		foreach($modules as $cur_mod) { 
-			$mod_ini_file = $this->modules_path.$cur_mod['svxlinkName'].'/info.ini';
-			$mod_settings_file = $this->modules_path.$cur_mod['svxlinkName'].'/settings.php';
-			$dtmf_help_file = $this->modules_path.$cur_mod['svxlinkName'].'/dtmf.php';
-
-			$curr_mod_ini = $this->read_ini($cur_mod['svxlinkName']);
-
-			if (isset($curr_mod_ini['Module_Info']['display_name'])) {
-				$currDisplayName = $curr_mod_ini['Module_Info']['display_name'];
-			} else {
-			    $currDisplayName = $cur_mod['svxlinkName'];
-			}
-
-			$return_html .= '
-			<tr>
-				<td>
-					<div><h3>' . $currDisplayName . ' (' . $cur_mod['svxlinkID'] .'#)</h3></div>
- 					<div>';
- 			
- 			if ($cur_mod['moduleEnabled']==1) { 
-	 			$return_html .= '<span class="label-success label label-default">Active</span>';
-	 		} else {
-		 		$return_html .= '<span class="label-default label">Inactive</span>';
-		 	}
-			
-			$return_html .= '</div><div>';
-			
-			// Activate / Deactiveate Link
-			if ($cur_mod['moduleEnabled']==1) {
-				$return_html .= '<a href="?deactivate='.$cur_mod['moduleKey'].'">Deactivate</a>';
-			} else {
-				$return_html .= '<a href="?activate='.$cur_mod['moduleKey'].'">Activate</a>';													
-			}
-
-			// Settings Link...if Applicable
-			if ($cur_mod['moduleEnabled']==1 && file_exists($mod_settings_file)) {
-				$return_html .= ' | <a href="modules.php?settings='.$cur_mod['moduleKey'].'">Settings</a>';
-			}
-
-			// Delete Link...if not core module			
-			if ( $cur_mod['moduleEnabled']==0 && !in_array($cur_mod['svxlinkName'], $this->core_modules) ) {
-				$return_html .= ' | <a href="#" data-toggle="modal" data-target="#deleteModule" onclick="deleteModule(\'' . $cur_mod['svxlinkName'] . '\',\'' . $currDisplayName . '\'); return false;">Delete</a>';
-			}
-
-			// DTMF Link...if Applicable
-			if ($cur_mod['moduleEnabled']==1 && file_exists($dtmf_help_file)) {
-				$return_html .= ' | <a href="dtmf.php#'.$cur_mod['svxlinkName'].'">DTMF</a>';
-			}
-
-			$return_html .= '</div></td><td>';
-			
-			if (isset($curr_mod_ini['Module_Info']['mod_desc'])) {
-				$return_html .= $curr_mod_ini['Module_Info']['mod_desc'];
-			} else {
-			    $return_html .= "<em>(No Description)</em>";
-			}
-
-			// Version / Author Info
-			if ( isset($curr_mod_ini['Module_Info']['version']) || isset($curr_mod_ini['Module_Info']['authors']) ) { $return_html .= '<br><br>'; }
-			if (isset($curr_mod_ini['Module_Info']['version'])) { $return_html .= 'Version: ' . $curr_mod_ini['Module_Info']['version'] . '&nbsp;&nbsp;&nbsp;'; }
-			if (isset($curr_mod_ini['Module_Info']['version'])) { $return_html .= 'Authors: ' . $curr_mod_ini['Module_Info']['authors']; }
-
-
-			$return_html .= '</td></tr>';
-
-		} /* End Current Module */
-
-		$return_html .= '</tbody></table>';
-		
-		return $return_html;	
-	}
-
 
 	public function getModulesJSON($listType = 'full') {
 		$modules = $this->get_modules();
@@ -640,7 +576,7 @@ class Modules {
 			if (isset($curr_mod_ini['Module_Info']['display_name'])) {
 				$modules[$curID]['displayName'] = $curr_mod_ini['Module_Info']['display_name'];
 			} else {
-			    $modules[$curID]['displayName'] = $currDisplayName = $cur_mod['svxlinkName'];
+				$modules[$curID]['displayName'] = $currDisplayName = $cur_mod['svxlinkName'];
 			}
 
 			// Module type		
@@ -704,7 +640,6 @@ class Modules {
 
 	public function display_settings($id) {
 		$modules = $this->get_modules();
-
 		// If modules settings page is request, display that if it exist
 		$mod_settings_file = $this->modules_path . $modules[$id]['svxlinkName'] . '/settings.php';
 		if (file_exists($mod_settings_file)) {
@@ -713,7 +648,7 @@ class Modules {
 			if (isset($mod_ini['Module_Info']['display_name'])) {
 				$displayName = $mod_ini['Module_Info']['display_name'];
 			} else {
-			    $displayName = $modules[$id]['svxlinkName'];
+				$displayName = $modules[$id]['svxlinkName'];
 			}
 
 			// Modules Includes: CSS & JS (if they exist)
@@ -729,39 +664,44 @@ class Modules {
 
 			// Built Top of Form
 			$form_top = '
-			<form class="form-inline" role="form" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" id="moduleSettingsUpdate">
-
-			<div class="row-fluid sortable">
-				<div class="box span12">
-					<div class="box-header well" data-original-title>
-						<h2>' . $displayName . ' Module Settings</h2>
-					</div>
-					<div class="box-content">
+			<form class="form-horizontal form-label-left input_mask" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" id="moduleSettingsUpdate">
+			
+			<div class="page-title">
+				<div class="title_full">
+					<h3><i class="fa fa-plug"></i> ' . $displayName . ' Module Settings</h3>
+				</div>
+			</div>
+			
+			<div class="clearfix"></div>
 			';
+
 
 			// Built Bottom of Form
 			$form_bottom = '
-						<div class="form-actions">
-						  <!-- PASS MODULE KEY FOR UPDATE DATABASE AND REDIRECT BACK TO SETTINGS PAGE -->
-						  <input type="hidden" name="moduleKey" value="' . $id . '">
-						  <input type="hidden" name="updateModuleSettings">		
-						  <input type="submit">
-						</div>
-				
-					</div>
-				</div><!--/span-->
-			</div><!--/row-->
+			<div class="clearfix"></div>
+			
+			<div class="form-actions">
+				<!-- PASS MODULE KEY FOR UPDATE DATABASE AND REDIRECT BACK TO SETTINGS PAGE -->
+				<input type="hidden" name="moduleKey" value="' . $id . '">
+				<input type="hidden" name="updateModuleSettings">
+				<button type="submit" id="saveModuleSettingsBtn" class="btn btn-primary"><i class="fa fa-save"></i> Save & Exit</button>
+			</div>
+			
 			</form>			
 			';
+
 
 			// ***************************************************************** //
 			// Construct Page Content
 			ob_start();
-			include($this->includes_path . 'header.php');
+			$customCSS = 'page-moduleSettings.css'; // Inserted in header
+			$customJS = 'page-moduleSettings.js'; // Inserted in footer
+			echo "<script>var newPageTitle = '" . $pageTitle . "';</script>";
+			include($this->includes_path . 'module_header.php');
 			echo $form_top;
 			include($mod_settings_file);
 			echo $form_bottom;
-			include($this->includes_path . 'footer.php');
+			include($this->includes_path . 'module_footer.php');
 			$moduleHTML = ob_get_clean();
 			// ***************************************************************** //
 
@@ -773,7 +713,7 @@ class Modules {
 
 			// Construct Page Content
 			ob_start(); include($this->includes_path . 'header.php'); $moduleHTML = ob_get_clean();
-		    $moduleHTML .= "<h2>No Settings Page found.</h2>";
+			$moduleHTML .= "<h2>No Settings Page found.</h2>";
 			ob_start(); include($this->includes_path . 'footer.php'); $moduleHTML .= ob_get_clean();
 
 			return $moduleHTML;
@@ -798,7 +738,7 @@ class Modules {
 				if (isset($curr_mod_ini['Module_Info']['display_name'])) {
 					$currDisplayName = $curr_mod_ini['Module_Info']['display_name'];
 				} else {
-				    $currDisplayName = $cur_mod['svxlinkName'];
+					$currDisplayName = $cur_mod['svxlinkName'];
 				}
 
 				$module_settings_file = $this->modules_path . $cur_mod['svxlinkName'] . '/settings.php';
@@ -809,17 +749,13 @@ class Modules {
 		}
 
 		if (!empty($modulesActive)) {
-			// Render Parent and Child menus
-			$return_html = '<li><a class="ajax-link" href="../modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a>';
-			$return_html .= ' <ul class="nav nav-pills nav-stacked">';
+			// Render Setting Menus for Active Modules
 			foreach ($modulesActive as $mod_id => $mod_name) {
-				$return_html .= '<li><a href="../modules.php?settings='.$mod_id.'">&nbsp;&nbsp;&nbsp;<i class="icon-chevron-right"></i><span class="hidden-tablet"> '.$mod_name.'</span></a></li>';
+				$curSettingsURL = 'modules.php?settings=' . $mod_id;
+				$curNavID = 'nav_' . $modules[$mod_id]['svxlinkName'];
+				$curSvxlinkID = $modules[$mod_id]['svxlinkID'];
+				$return_html .= '<li><a id="'.$curNavID.'" data-svxlinkid="'.$curSvxlinkID.'" class="navLink" href="'.$curSettingsURL.'">'.$mod_name.'</a></li>';
 			}
-			$return_html .= '  </ul>';
-			$return_html .= '</li>';
-		} else {
-			// Render Parent menu only
-			$return_html = '<li><a class="ajax-link" href="../modules.php"><i class="icon-align-justify"></i><span class="hidden-tablet"> Modules</span></a></li>';
 		}
 		
 		echo $return_html;
@@ -843,7 +779,7 @@ class Modules {
 					if (isset($curr_mod_ini['Module_Info']['display_name'])) {
 						$currDisplayName = $curr_mod_ini['Module_Info']['display_name'];
 					} else {
-					    $currDisplayName = $cur_mod_loop['svxlinkName'];
+						$currDisplayName = $cur_mod_loop['svxlinkName'];
 					}
 
 					$return_html .= '<a name="' . $cur_mod_loop['svxlinkName'] . '"></a>';			
@@ -877,7 +813,7 @@ class Modules {
 			$mod_ini_array = parse_ini_file($ini_path, true);
 			return $mod_ini_array;
 		} else {
-		    return false;
+			return false;
 		}
 
 	}
@@ -896,11 +832,11 @@ class Modules {
 
 		$x = 1; 
 		while( !isset($nextNumber) && $maxID >= $x ) {
-		    if (!in_array($x,$existingIDs)) {
-			    $nextNumber = $x;
+			if (!in_array($x,$existingIDs)) {
+				$nextNumber = $x;
 				return $nextNumber;
-		    }
-		    $x++;
+			}
+			$x++;
 		}
 		
 	}

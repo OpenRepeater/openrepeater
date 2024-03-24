@@ -3,352 +3,361 @@
 // SESSION CHECK TO SEE IF USER IS LOGGED IN.
 session_start();
 if ((!isset($_SESSION['username'])) || (!isset($_SESSION['userID']))){
-	header('location: login.php'); // If they aren't logged in, send them to login page.
+	header('location: index.php'); // If they aren't logged in, send them to login page.
 } elseif (!isset($_SESSION['callsign'])) {
 	header('location: wizard/index.php'); // If they are logged in, but they haven't set a callsign then send them to setup wizard.
 } else { // If they are logged in and have set a callsign, show the page.
 // --------------------------------------------------------
 
-################################################################################
-# AUTOLOAD CLASSES
-require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.php');
-################################################################################
-$classAudioFiles = new AudioFiles();
-
-if (isset($_POST['action'])){
-	if ($_POST['action'] == "upload_file") {
-		$results = $classAudioFiles->audio_upload_files('identification', $_FILES['file']);
-		$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
-		
-	} else if ($_POST['action'] == "rename_file") {
-		$results = $classAudioFiles->audio_rename_file('identification',$_POST['oldFileName'],$_POST['newFileLabel']);
-		$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
-
-	} else if ($_POST['action'] == "delete_file") {
-		$results = $classAudioFiles->audio_delete_files('identification',$_POST["delfile"]);
-		$alert = '<div class="alert alert-'.$results['msgType'].'">'.$results['msgText'].'</div>';
-	}
-}
-
-?>
-
-<?php
-$pageTitle = "Identification"; 
-
-$customJS = "page-identification.js, morse-resampler.js, morse-XAudioServer.js, morse.js, morse-main.js"; // "file1.js, file2.js, ... "
-$customCSS = "page-identification.css"; // "file1.css, file2.css, ... "
+$customJS = 'page-identification.js, orp-audio-player.js, dropzone.js, upload-file.js, morse-resampler.js, morse-XAudioServer.js, morse.js, morse-main.js'; // 'file1.js, file2.js, ... '
+$customCSS = 'page-identification.css, orp-audio-player.css, upload-file.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
+
+$AudioFiles = new AudioFiles();
+$identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 ?>
 
-			<?php if (isset($alert)) { echo $alert; } ?>
 
-			<?php if (!$settings['callSign']) { ?><div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">×</button><strong>Oops!</strong> It's going to be a little hard to send identification without a callsign defined. Please <a href="settings.php">set it here</a>.</div><?php } else { ?>
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_full">
+                <h3><i class="fa fa-volume-up"></i> <?=_('Identification')?></h3>
+              </div>
+            </div>
 
+            <div class="clearfix"></div>
 
-			<form class="form-inline" role="form" action="functions/ajax_db_update.php" method="post" id="short_ID_settings">
-			<div class="row-fluid sortable">
-				<div class="box span12">
-					<div class="box-header well" data-original-title>
-						<h2><i class="icon-time"></i> Short ID Settings</h2>
-					</div>
-					<div class="box-content">
-
-						  <fieldset>
-
-							<div class="control-group">
-								<div class="controls mode">
-									<span>Mode: </span>
-									<select	id="ID_Short_Mode" name="ID_Short_Mode">
-										<option value="disabled" <?php if ($settings['ID_Short_Mode'] == 'disabled') { echo "selected"; } ?>>-Disabled-</option>
-										<option value="morse" <?php if ($settings['ID_Short_Mode'] == 'morse') { echo "selected"; } ?>>Morse Identification Only</option>
-										<option value="voice" <?php if ($settings['ID_Short_Mode'] == 'voice') { echo "selected"; } ?>>Basic Voice Identification</option>
-										<option value="custom" <?php if ($settings['ID_Short_Mode'] == 'custom') { echo "selected"; } ?>>Custom Identification</option>
-									</select>
-								</div>
-							</div>
-
-
-							<div id="short-id-grp-enable"> <!-- START enable/disable short ID setting -->
-
-								<div id="general" style="display: none;"> <!-- Expand Setting -->
-										<legend>General Settings</legend>
-										<div class="control-group">
-											<label class="control-label" for="ID_Short_IntervalMin">Short Identification Time Interval</label>
-											<div class="controls">
-											  <div class="input-append">
-												<input id="ID_Short_IntervalMin" name="ID_Short_IntervalMin" size="16" type="text" value="<?php echo $settings['ID_Short_IntervalMin']; ?>" required><span class="add-on">mins</span>
-											  </div>
-											  <span class="help-inline">The purpose of the short identification is to just announce that the station is on the air. Typically just the callsign is transmitted. This value is the number of minutes between short identifications. For a repeater, a good value is ten minutes. Please make sure that you identify as frequently as required.</span>
-											</div>
-										</div>
-
-								</div>
-								
-								<div id="morse" style="display: none;"> <!-- Expand Setting -->
-									<legend>Morse Identification Only</legend>
-										<p>Your short identifications will be made with morse code only, at the interval set above. The morse code settings (such as WPM, pitch, and suffix) can be set below in the <a href="#globalMorse">Global Morse ID Settings</a> section.</p>
-								</div>
-								
-								<div id="voice" style="display: none;"> <!-- Expand Setting -->
-									<legend>Basic Voice Identification</legend>
-										<p>Your short identification will be made with the system callsign spelled out in phonetics at the interval set above. You have the option to append morse identification afterwards if you so desire.</p>
-								</div>
-								
-								<div id="custom" style="display: none;"> <!-- Expand Setting -->
-									<legend>Custom Identification</legend>
-										<p>Your short identification will be made with a custom audio file that you can record and upload into the identifications library. You may upload as many MP3 or WAV files as you'd like. Upon upload, the system will convert these into the appropriate WAV format. You may preview the audio clips then select the one you would like to use for short ID. This will be played at the interval set above. You have the option to append morse identification afterwards if you so desire.</p>									
-									
-
-								<?php
-									// Load Table of Audio Files for Short IDs 	
-									$audioTable_ShortID = $classAudioFiles->display_audio_files('identification', $settings['ID_Short_CustomFile'],'ID_Short_CustomFile');	
-									echo $audioTable_ShortID['table'];
-									// Note that modal dialogs will be generated by long ID section below.
-								?>
-
-
-								<!-- Button triggered modal -->
-								<button class="btn" data-toggle="modal" data-target="#uploadFile"><i class="icon-arrow-up"></i> Upload</button>
-																											
-								</div>
-								
-								<div id="shortID_Options" class="appendGrp">
-
-									<div id="appendShortMorseID" class="appendOption" style="display: none;">
-									<label for="ID_Short_AppendMorse">Append Morse ID: </label>
-									<select	id="ID_Short_AppendMorse" name="ID_Short_AppendMorse">
-										<option value="False" <?php if ($settings['ID_Short_AppendMorse'] == 'False') { echo "selected"; } ?>>No</option>
-										<option value="True" <?php if ($settings['ID_Short_AppendMorse'] == 'True') { echo "selected"; } ?>>Yes</option>
-									</select>
-									</div>
-									
-									<div id="activeID" class="appendOption" style="display: none;">
-									<label for="ID_Only_When_Active">ID only when active: </label>
-									<select	id="ID_Only_When_Active" name="ID_Only_When_Active">
-										<option value="False" <?php if ($settings['ID_Only_When_Active'] == 'False') { echo "selected"; } ?>>No</option>
-										<option value="True" <?php if ($settings['ID_Only_When_Active'] == 'True') { echo "selected"; } ?>>Yes</option>
-									</select>
-									</div>
-
-								</div>
-
-							</div> <!-- END enable/disable short ID setting -->
-								
-						</fieldset>
-
-					</div>
-				</div><!--/span-->			
-			</div><!--/row-->
-			</form>
-
-
-			<form class="form-inline" role="form" action="functions/ajax_db_update.php" method="post" id="long_ID_settings">
-			<div class="row-fluid sortable">
-				<div class="box span12">
-					<div class="box-header well" data-original-title>
-						<h2><i class="icon-time"></i> Long ID Settings</h2>
-					</div>
-					<div class="box-content">
-
-						  <fieldset>
-
-
-							<div class="control-group">
-								<div class="controls mode">
-									<span>Mode: </span>
-									<select	id="ID_Long_Mode" name="ID_Long_Mode">
-										<option value="disabled" <?php if ($settings['ID_Long_Mode'] == 'disabled') { echo "selected"; } ?>>-Disabled-</option>
-										<option value="morse" <?php if ($settings['ID_Long_Mode'] == 'morse') { echo "selected"; } ?>>Morse Identification Only</option>
-										<option value="voice" <?php if ($settings['ID_Long_Mode'] == 'voice') { echo "selected"; } ?>>Basic Voice Identification</option>
-										<option value="custom" <?php if ($settings['ID_Long_Mode'] == 'custom') { echo "selected"; } ?>>Custom Identification</option>
-									</select>
-								</div>
-							</div>
-
-
-							<div id="long-id-grp-enable"> <!-- START enable/disable Long ID setting -->
-
-								<div id="general" style="display: none;"> <!-- Expand Setting -->
-									<legend>General Settings</legend>
-										<div class="control-group">
-											<label class="control-label" for="ID_Long_IntervalMin">Long ID Time</label>
-											<div class="controls">
-											  <div class="input-append">
-												<input id="ID_Long_IntervalMin" name="ID_Long_IntervalMin" size="16" type="text" value="<?php echo $settings['ID_Long_IntervalMin']; ?>" required><span class="add-on">mins</span>
-											  </div>
-											  <span class="help-inline">The number of minutes between long identifications. The purpose of the long identification is to transmit some more information about the station. A good value for a repeater is every 60 minutes.</span>
-											</div>
-										</div>
-								</div>
+            <div class="row">
 
 
 
-								<div id="morse" style="display: none;"> <!-- Expand Setting -->
-									<legend>Morse Identification Only</legend>
-										<p>Your long identifications will be made with morse code only, at the interval set above. The morse code settings (such as WPM, pitch, and suffix) can be set below in the <a href="#globalMorse">Global Morse ID Settings</a> section.</p>
-								</div>
-
-								<div id="voice" style="display: none;"> <!-- Expand Setting -->
-									<legend>Basic Voice Identification</legend>
-										<p>Your long identification will be made with the system callsign spelled out in phonetics at the interval set above. You have the option to append other items such as the current time and morse identification afterwards if you so desire.</p>
-								</div>
-
-								<div id="custom" style="display: none;"> <!-- Expand Setting -->
-									<legend>Custom Identification</legend>
-										<p>Your long identification will be made with a custom audio file that you can record and upload into the identifications library. You may upload as many MP3 or WAV files as you'd like. Upon upload, the system will convert these into the appropriate WAV format. You may preview the audio clips then select the one you would like to use for long ID. This will be played at the interval set above. You have the option to append other items such as the current time and morse identification afterwards if you so desire.</p>									
-
-								<?php 
-									// Load Table of Audio Files for Short IDs 	
-									$audioTable_LongID = $classAudioFiles->display_audio_files('identification', $settings['ID_Long_CustomFile'], 'ID_Long_CustomFile');
-									echo $audioTable_LongID['table'];
-									// Note that modal dialogs will be generated below outside of the main form.
-								?>
+              <div class="col-md-6 col-xs-12">
 
 
-								<!-- Button triggered modal -->
-								<button class="btn" data-toggle="modal" data-target="#uploadFile"><i class="icon-arrow-up"></i> Upload</button>
-									
-								</div>
-								
-								
-								<div id="append" class="appendGrp" style="display: none;"> <!-- Expand Setting -->
+                <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
+                  <div class="x_title"><h4><?=_('Short ID Settings')?></h4></div>
 
-									<div class="appendOption">
-									<label for="ID_Long_AppendTime">Announce Current Time: </label>
-									<select	id="ID_Long_AppendTime" name="ID_Long_AppendTime">
-										<option value="False" <?php if ($settings['ID_Long_AppendTime'] == 'False') { echo "selected"; } ?>>No</option>
-										<option value="True" <?php if ($settings['ID_Long_AppendTime'] == 'True') { echo "selected"; } ?>>Yes</option>
-									</select>
-									</div>
+                  <div class="x_content">
+                    <form id="idFormShort" class="idForm form-horizontal form-label-left input_mask">
 
-									<?php
-									/* FUTURE UPDATE TO ANNOUNCE CTCSS TONE
-									<div class="appendOption">
-									<label for="ID_Long_AppendTone">Announce CTCSS (PL) Tone: </label>
-									<select	id="ID_Long_AppendTone" name="ID_Long_AppendTone">
-										<option value="False" <?php if ($settings['ID_Long_AppendTone'] == 'False') { echo "selected"; } ?>>No</option>
-										<option value="True" <?php if ($settings['ID_Long_AppendTone'] == 'True') { echo "selected"; } ?>>Yes</option>
-									</select>
-									</div>
-									*/
-									?>
+                      <div class="form-group">
+                        <div class="btn-group btn-group-sm id-type" data-toggle="buttons">
+                          <label class="btn btn-default<?= $settings['ID_Short_Mode'] == 'disabled' ? ' active':'' ?>"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode1"  value="disabled"<?= $settings['ID_Short_Mode'] == 'disabled' ? ' checked':'' ?>><?=_('Disabled')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Short_Mode'] == 'morse' ? ' active':'' ?>"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode2" value="morse"<?= $settings['ID_Short_Mode'] == 'morse' ? ' checked':'' ?>><?=_('Morse Only')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Short_Mode'] == 'voice' ? ' active':'' ?>"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode3" value="voice"<?= $settings['ID_Short_Mode'] == 'voice' ? ' checked':'' ?>><?=_('Basic Voice')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Short_Mode'] == 'custom' ? ' active':'' ?>"><input type="radio" name="ID_Short_Mode" id="ID_Short_Mode4" value="custom"<?= $settings['ID_Short_Mode'] == 'custom' ? ' checked':'' ?>><?=_('Custom')?></label>
+                        </div>
+                      </div>
 
-									<div class="appendOption">
-									<label for="ID_Long_AppendMorse">Append Morse ID: </label>
-									<select	id="ID_Long_AppendMorse" name="ID_Long_AppendMorse">
-										<option value="False" <?php if ($settings['ID_Long_AppendMorse'] == 'False') { echo "selected"; } ?>>No</option>
-										<option value="True" <?php if ($settings['ID_Long_AppendMorse'] == 'True') { echo "selected"; } ?>>Yes</option>
-									</select>
-									</div>
+                      <div id="ID_Short_Interval_Grp" class="form-group" style="display:none;">
+                        <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Short ID Time')?>
+						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
+                        </label>
+                        <div class="col-md-6 col-sm-9 col-xs-7">
+                          <input type="number" id="ID_Short_IntervalMin" name="ID_Short_IntervalMin" class="form-control" value="<?= $settings['ID_Short_IntervalMin'] ?>" placeholder="<?=_('Minutes')?>" required>
+                        </div>
+                      </div>
 
+                      <div id="ID_Short_Custom_Audio_Grp" class="form-group" style="display:none;">
+                        <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Audio File')?>
+                        	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
+                        </label>
+                        <div class="col-md-6 col-sm-9 col-xs-7">
+						  <select id="ID_Short_CustomFile" name="ID_Short_CustomFile" class="form-control">
+						  </select>
+                        </div>
+                      </div>
+
+                      <div id="ID_After_TX_Grp" class="form-group col-md-6 col-sm-6 col-xs-12" style="display:none;">
+                        <div class="gray-box">
+                        <label class="control-label col-md-9"><?=_('ID after TX')?>
+						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
+                        </label>
+                        <div class="col-md-3">
+						  <input type="hidden" name="ID_Only_When_Active" value="False">
+                          <input id="ID_Only_When_Active" name="ID_Only_When_Active" type="checkbox" value="True" class="js-switch"<?= $settings['ID_Only_When_Active'] == 'True' ? ' checked':'' ?>/> 
+                        </div>
+                        </div>
+                      </div>
+
+                      <div id="ID_Short_Append_Morse_Grp" class="form-group col-md-6 col-sm-6 col-xs-12" style="display:none;">
+                        <div class="gray-box">
+                        <label class="control-label col-md-9"><?=_('Append Morse ID')?>
+						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
+                        </label>
+                        <div class="col-md-3">
+						  <input type="hidden" name="ID_Short_AppendMorse" value="False">
+                          <input id="ID_Short_AppendMorse" name="ID_Short_AppendMorse" type="checkbox" value="True" class="js-switch"<?= $settings['ID_Short_AppendMorse'] == 'True' ? ' checked':'' ?>/> 
+                        </div>
+                        </div>
+                      </div>
+
+                    </form>
+                  </div>
+                </div>
+
+
+
+
+
+                <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
+                  <div class="x_title"><h4><?=_('Long ID Settings')?></h4></div>
+
+                  <div class="x_content">
+                    <form id="idFormLong" class="idForm form-horizontal form-label-left input_mask">
+
+                      <div class="form-group">
+                        <div class="btn-group btn-group-sm id-type" data-toggle="buttons">
+                          <label class="btn btn-default<?= $settings['ID_Long_Mode'] == 'disabled' ? ' active':'' ?>"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode1"  value="disabled"<?= $settings['ID_Long_Mode'] == 'disabled' ? ' checked':'' ?>><?=_('Disabled')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Long_Mode'] == 'morse' ? ' active':'' ?>"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode2" value="morse"<?= $settings['ID_Long_Mode'] == 'morse' ? ' checked':'' ?>><?=_('Morse Only')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Long_Mode'] == 'voice' ? ' active':'' ?>"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode3" value="voice"<?= $settings['ID_Long_Mode'] == 'voice' ? ' checked':'' ?>><?=_('Basic Voice')?></label>
+                          <label class="btn btn-default<?= $settings['ID_Long_Mode'] == 'custom' ? ' active':'' ?>"><input type="radio" name="ID_Long_Mode" id="ID_Long_Mode4" value="custom"<?= $settings['ID_Long_Mode'] == 'custom' ? ' checked':'' ?>><?=_('Custom')?></label>
+                        </div>
+
+
+                      </div>
+
+                      <div id="ID_Long_Interval_Grp" class="form-group" style="display:none;">
+                        <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Long ID Time')?>
+						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The number of minutes between long identifications. The purpose of the long identification is to transmit some more information about the station. A good value for a repeater is every 60 minutes.')?>"></i>
+                        </label>
+                        <div class="col-md-6 col-sm-9 col-xs-7">
+                          <input id="ID_Long_IntervalMin" name="ID_Long_IntervalMin" type="number" class="form-control" value="<?= $settings['ID_Long_IntervalMin'] ?>" placeholder="<?=_('Minutes')?>">
+                        </div>
+                      </div>
+
+                      <div id="ID_Long_Custom_Audio_Grp" class="form-group" style="display:none;">
+                        <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Audio File')?>
+                        	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
+                        </label>
+                        <div class="col-md-6 col-sm-9 col-xs-7">
+						  <select id="ID_Long_CustomFile" name="ID_Long_CustomFile" class="form-control">
+						  </select>
+                        </div>
+                      </div>
+
+
+
+<!-- <div class="divider"></div> -->
+
+                      <div id="ID_Long_Annc_Time_Grp" class="form-group col-md-6 col-sm-6 col-xs-12" style="display:none;">
+                        <div class="gray-box">
+                        <label class="control-label col-md-9"><?=_('Announce Time')?>
+						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
+                        </label>
+                        <div class="col-md-3">
+						  <input type="hidden" name="ID_Long_AppendTime" value="False">
+                          <input id="ID_Long_AppendTime" name="ID_Long_AppendTime" type="checkbox" value="True" class="js-switch"<?= $settings['ID_Long_AppendTime'] == 'True' ? ' checked':'' ?>/> 
+                        </div>
+                        </div>
+                      </div>
+
+                      <div id="ID_Long_Append_Morse_Grp" class="form-group col-md-6 col-sm-6 col-xs-12" style="display:none;">
+                        <div class="gray-box">
+                        <label class="control-label col-md-9"><?=_('Append Morse ID')?>
+						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
+                        </label>
+                        <div class="col-md-3">
+						  <input type="hidden" name="ID_Long_AppendMorse" value="False">
+                          <input id="ID_Long_AppendMorse" name="ID_Long_AppendMorse" type="checkbox" value="True" class="js-switch"<?= $settings['ID_Long_AppendMorse'] == 'True' ? ' checked':'' ?>/> 
+                        </div>
+                        </div>
+                      </div>
+
+
+                    </form>
+                  </div>
+                </div>
+
+
+
+                <?php $callSign = strtoupper($settings['callSign']); ?>
+                <div class="x_panel">
+				  <div class="sectionStatus"><i class="fa"></i></div>
+                  <div class="x_title"><h4><?=_('Global Morse ID Settings')?></h4></div>
+
+                  <div class="x_content">
+                    <form id="idFormMorse" class="idForm form-horizontal form-label-left input_mask">
+
+                      <div class="form-group">
+                        <label class="control-label col-md-12"><?=_('Morse Callsign')?>
+						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Use the following callsign variation for ALL morse code identification.')?>"></i>
+                        </label>
+
+                        <div class="btn-group btn-group-sm col-md-12" data-toggle="buttons">
+                          <label class="btn btn-default<?= $settings['ID_Morse_Suffix'] == '' ? ' active':'' ?>"><input type="radio" name="ID_Morse_Suffix" id="morseSuffix1" value=""<?= $settings['ID_Morse_Suffix'] == '' ? ' checked':'' ?>><?=$callSign?></label>
+                          <label class="btn btn-default<?= $settings['ID_Morse_Suffix'] == '/R' ? ' active':'' ?>"><input type="radio" name="ID_Morse_Suffix" id="morseSuffix2" value="/R"<?= $settings['ID_Morse_Suffix'] == '/R' ? ' checked':'' ?>><?=$callSign?><strong>/R</strong></label>
+                          <label class="btn btn-default<?= $settings['ID_Morse_Suffix'] == '/RPT' ? ' active':'' ?>"><input type="radio" name="ID_Morse_Suffix" id="morseSuffix3" value="/RPT"<?= $settings['ID_Morse_Suffix'] == '/RPT' ? ' checked':'' ?>><?=$callSign?><strong>/RPT</strong></label>
+                        </div>
+                      </div>
+
+
+                      <div class="form-group">
+                        <label class="control-label col-md-12"><?=_('Global speed and tone')?>
+                        	<i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('Set the speed (WPM) and tone (Hz) of ALL morse code identification.')?>"></i>
+                        </label>
+
+                        <div class="col-md-12">
+	                        <div class="col-md-12">
+								<div class="knob_wrapper">
+									<input class="knob" id="ID_Morse_WPM" data-width="130" data-height="85" data-min="5" data-max="35" data-step="5" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="<?=$settings['ID_Morse_WPM']?>">
+									<label><?=_('WPM')?></label>									
 								</div>
 
-							</div> <!-- END enable/disable Long ID setting -->
+								<div class="knob_wrapper">
+									<input class="knob" id="ID_Morse_Pitch" data-width="130" data-height="85" data-min="400" data-max="1200" data-step="100" data-angleOffset=-90 data-angleArc=180 data-fgColor="#8dc63f" value="<?=$settings['ID_Morse_Pitch']?>">
+									<label><?=_('Pitch (Hz)')?></label>
+								</div>
+	                        </div>
+							<input type="hidden" name="ID_Morse_WPM" value="<?=$settings['ID_Morse_WPM']?>">
+							<input type="hidden" name="ID_Morse_Pitch" value="<?=$settings['ID_Morse_Pitch']?>">							
 
-						
-						  </fieldset>
+	                        <div class="col-md-12">
+								<button id="morsePreview" type="button" class="btn btn-primary"><i class="fa fa-play"></i> <?=_('Preview')?></button>
+								<input type="hidden" id="callSign" value="<?=$callSign?>">
+								<input type="hidden" id="morseOutput" value="">
+	                        </div>
+                        </div>
 
-					</div>
-				</div><!--/span-->			
-			</div><!--/row-->
-			</form>
+                      </div>
 
+                    </form>
+                  </div>
 
-			<div id="morse-id-grp-enable" style="display: none;"> <!-- START enable/disable Morse ID setting -->
-			<form name="morse_form" class="sform form-inline" role="form" action="functions/ajax_db_update.php" method="post" id="morse_ID_settings">
-			<div class="row-fluid sortable">
-				<div class="box span12">
-					<div class="box-header well" data-original-title>
-						<h2><i class="icon-volume-up"></i> Global Morse ID Settings</h2>
-					</div>
-					<div class="box-content">
+                </div>
 
-						<a name="globalMorse"></a>
-
-						  <fieldset>
-
-							<p>Use the following callsign variation for ALL morse code identification.</p>
-							
-							<label class="radio-inline" for="suffix1" style="margin-right: 50px;">
-							<input type="radio" name="ID_Morse_Suffix" id="suffix1" value="" <?php if ($settings['ID_Morse_Suffix'] == '') { echo "checked"; } ?>>
-							<?php echo strtoupper($settings['callSign']); ?></label>
-
-							<label class="radio-inline" for="suffix2" style="margin-right: 50px;">
-							<input type="radio" name="ID_Morse_Suffix" id="suffix2" value="/R" <?php if ($settings['ID_Morse_Suffix'] == '/R') { echo "checked"; } ?>>
-							<?php echo strtoupper($settings['callSign']); ?><strong>/R</strong></label>
-
-							<label class="radio-inline" for="suffix3" style="margin-right: 50px;">
-							<input type="radio" name="ID_Morse_Suffix" id="suffix3" value="/RPT" <?php if ($settings['ID_Morse_Suffix'] == '/RPT') { echo "checked"; } ?>>
-							<?php echo strtoupper($settings['callSign']); ?><strong>/RPT</strong></label>							
-
-							<hr>
-							<p>Set the speed (WPM) and tone of ALL morse code identification.</p>
-
-							<select name="ID_Morse_WPM">
-								<option value="10" <?php if ($settings['ID_Morse_WPM'] == '10') { echo "selected"; } ?>>10 WPM</option>
-								<option value="15" <?php if ($settings['ID_Morse_WPM'] == '15') { echo "selected"; } ?>>15 WPM</option>
-								<option value="20" <?php if ($settings['ID_Morse_WPM'] == '20') { echo "selected"; } ?>>20 WPM</option>
-								<option value="25" <?php if ($settings['ID_Morse_WPM'] == '25') { echo "selected"; } ?>>25 WPM</option>
-								<option value="30" <?php if ($settings['ID_Morse_WPM'] == '30') { echo "selected"; } ?>>30 WPM</option>
-							</select>
-							
-							<select name="ID_Morse_Pitch" id="pitch">
-								<option value="400" <?php if ($settings['ID_Morse_Pitch'] == '400') { echo "selected"; } ?>>400 Hz</option>
-								<option value="600" <?php if ($settings['ID_Morse_Pitch'] == '600') { echo "selected"; } ?>>600 Hz</option>
-								<option value="800" <?php if ($settings['ID_Morse_Pitch'] == '800') { echo "selected"; } ?>>800 Hz</option>
-								<option value="1000" <?php if ($settings['ID_Morse_Pitch'] == '1000') { echo "selected"; } ?>>1000 Hz</option>
-								<option value="1200" <?php if ($settings['ID_Morse_Pitch'] == '1200') { echo "selected"; } ?>>1200 Hz</option>
-							</select>
-							
-							<input class="btn btn-primary" id="play" type="button" value="Preview" onClick="javascript:playM()"/>
-							
-							<input type="hidden" name="call" id="callsign" value="<?php echo strtoupper($settings['callSign']); ?>">
-							<input type="hidden" id="morseCallsign" name="morseCallsign">
-							<input type="hidden" name="output">
-							<p><em>NOTE: The preview option is only a browser simulation of what the audio should sound like on the live repeater.</em></p>
-
-						  </fieldset>
-
-					</div>
-				</div><!--/span-->			
-			</div><!--/row-->
-			</form>
-
-			</div> <!-- END enable/disable Morse ID setting -->
+              </div>
 
 
 
-			<?php } // Ending tag for check of callsign definition ?>
 
-			
-<?php echo $audioTable_LongID['modals']; ?>
 
-<!-- Modal - UPLOAD DIALOG -->
 
-<form action="identification.php" method="post" enctype="multipart/form-data">
-<div class="modal fade" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-	<h3 class="modal-title" id="myModalLabel">Upload Custom Identification Clip</h3>
-      </div>
-      <div class="modal-body">
-		<p>Upload your own custom recorded audio files for identification. The file should be in MP3 or WAV format and any excess 'dead air' should be trimmed off of the clip and audio levels normalized.</p>
-		<input type="hidden" name="action" value="upload_file">
-		<input type="file" name="file[]" id="file" required>
-		<p><em><br>DO NOT UPLOAD FILES THAT CONTAIN MUSIC, CLIPS OF MUSIC, OR OTHER COPYRIGHTED MATERIAL...IT'S ILLEGAL.</em></p>
-      </div>
-      <div class="modal-footer">
-	<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-	<button type="submit" class="btn btn-success"><i class="icon-arrow-up icon-white"></i> Upload</button>
+              <div class="col-md-6  col-xs-12">
 
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div>
-</form>	
-    
+
+
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h4 class="navbar-left"><?=_('Identification Clip Library')?></h4>
+                    <div class="nav navbar-right">
+                      <button type="button" class="btn btn-success upload_file" data-upload-type="identification"><i class="fa fa-upload"></i> <?=_('Upload ID Clip')?></button>
+                    </div>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+					
+                    <table id="id_library" class="audio-table table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
+					  <thead>
+						  <tr>
+							  <th><?=_('Name')?></th>
+							  <th class="button_grp" style="text-align: right;"><?=_('Actions')?></th>
+						  </tr>
+					  </thead>   
+
+                      <tbody>
+                      </tbody>
+
+                    </table>
+
+                  </div>
+                </div>
+
+              </div>
+           </div>
+          </div>
+        </div>
+        <!-- /page content -->
+
+<? ######################################################################### ?>
+
+<script id="idRowTemplate" type = "text/template">
+	<tr id="clip%%INDEX%%" data-row-name="%%FILE_LABEL%%" data-row-file="%%FILE_NAME%%">
+		<td>
+			<div id="player%%INDEX%%" class="orp_player">
+			    <audio preload="true">
+			        <source src="%%FILE_URL%%">
+			    </audio>
+			    <button class="play"><span></span></button>
+			</div>
+
+			<span class="audio_name">%%FILE_LABEL%%</span>
+		</td>
+
+		<td class="options">			
+          <ul class="nav nav-pills" role="tablist">
+            <li role="presentation" class="dropdown">
+              <a id="drop6" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false"><i class="fa fa-cog"></i> <span class="caret"></span></a>
+              <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6">
+                <li role="presentation"><a role="menuitem" class="renameIdentification" tabindex="-1" href="#"><i class="fa fa-repeat"></i> <?=_('Rename')?></a>
+                </li>
+                <li role="presentation"><a role="menuitem" class="identificationURL" tabindex="-1" href="%%FILE_URL%%"><i class="fa fa-download"></i> <?=_('Download')?></a>
+                </li>
+                <li role="presentation"><a role="menuitem" class="deleteIdentification" tabindex="-1"><i class="fa fa-remove"></i> <?=_('Delete')?></a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+		</td>
+	</tr>
+
+</script>
+
+
+<?php 
+	$shortSettings = [
+		'ID_Short_Mode' => $settings['ID_Short_Mode'],
+		'ID_Long_Mode' => $settings['ID_Long_Mode'],
+		'ID_Short_CustomFile' => $settings['ID_Short_CustomFile'],
+		'ID_Long_CustomFile' => $settings['ID_Long_CustomFile'],
+	];
+?>
+
+<script>
+	var settingsJSON = '<?= json_encode($shortSettings) ?>';
+	var identificationAudio = '<?= $identificationAudio ?>';
+
+	var modal_RenameTitle = '<?=_('Rename Clip')?>';
+	var modal_RenameBody = '<p><?=_('Please enter the new file name')?></p>';
+	var modal_RenamePlaceholder = '<?=_('New File Name')?>';
+	var modal_RenameBtnOK = '<?=_('Rename')?>';
+	var modal_RenameProgressTitle = '<?= _('Renaming Clip') ?>';
+	var modal_RenameNotifyTitle = '<?= _('Clip Renamed') ?>';
+	var modal_RenameNotifyDesc = '<?= _('The identification clip has been successfully renamed.') ?>';
+
+
+
+	var modal_DeleteIdentTitle = '<?= _('Delete Clip') ?>';
+	var modal_DeleteIdentBody = '<?= _('Are you sure you want to delete this identification clip?') ?>';
+	var modal_DeleteIdentBtnOK = '<?= _('Delete Forever') ?>';
+	var modal_DeleteIdentProgressTitle = '<?= _('Deleting Identification Clip') ?>';
+	var modal_DeleteIdentNotifyTitle = '<?= _('Clip Deleted') ?>';
+	var modal_DeleteIdentNotifyDesc = '<?= _('The identification clip has been successfully deleted.') ?>';
+
+
+/*
+	var modal_DeleteTitle = '<?=_('Delete Clip')?>';
+	var modal_DeleteBody = '<p><?=_('Are you sure that you wish to delete the following clip?')?></p>';
+	var modal_DeleteBtnOK = '<?=_('Delete')?>';
+	var modal_DeleteBtnOKclass = 'btn-danger'
+
+	var modal_DeleteErrorTitle = '<?=_('Delete Error')?>';
+	var modal_DeleteErrorBody = '<p><?=_('You cannot delete the following clip as it is in use.')?></p>';
+	var modal_DeleteErrorBtnOK = '<?=_('Dismiss')?>';
+*/
+
+	var modal_UploadTitle = '<?=_('Upload Identification')?>';
+	var modal_dzDefaultText = '<?=_('Drag files here or click to browse for files.')?>';
+	var modal_dzCustomDesc = '<?=_('Upload your own custom recorded audio files for identification. The file should be in MP3 or WAV format and any excess dead air should be trimmed off of the clip and audio levels normalized. DO NOT UPLOAD FILES THAT CONTAIN MUSIC, CLIPS OF MUSIC, OR OTHER COPYRIGHTED MATERIAL...IT IS ILLEGAL.')?>';
+	var uploadSuccessTitle = '<?=_('Upload Complete')?>';
+	var uploadSuccessText = '<?=_('New custom identification was successfully uploaded to library.')?>';
+</script>
+
 <?php include('includes/footer.php'); ?>
 
 <?php

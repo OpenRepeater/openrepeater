@@ -1,0 +1,23 @@
+.scrollTerms {
+	height:200px;
+	width:100%;
+	border:1px solid #ccc;
+	padding: 15px;
+	box-sizing: border-box;
+	overflow-x:auto;
+	margin-bottom: 5px;
+	background-color: #F7F7F7;
+}
+
+/* .wizard_horizontal ul.wizard_steps li a.selected:before, .step_no { */
+
+
+ul.wizard_steps a.selected:before, a.selected .step_no {
+	background: #006838!important;
+	color: #ffffff!important;
+}
+
+ul.wizard_steps {
+	margin-left: -21px!important;
+	margin-bottom: 40px!important;
+}
