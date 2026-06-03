@@ -15,6 +15,8 @@ $customJS = 'page-settings.js'; // 'file1.js, file2.js, ... '
 // $customCSS = 'page-ports.css'; // 'file1.css, file2.css, ... '
 
 include('includes/header.php');
+
+$cardChannels = isset($settings['CARD_CHANNELS']) ? $settings['CARD_CHANNELS'] : '2';
 ?>
 
         <!-- page content -->
@@ -69,6 +71,15 @@ include('includes/header.php');
 							<input id="repeaterTimeoutSec" name="repeaterTimeoutSec" type="number" class="form-control" value="<?= $settings['repeaterTimeoutSec'] ?>" placeholder="<?=_('Seconds')?>" aria-describedby="basic-addon2">
 						    <span class="input-group-addon" id="basic-addon2"><?=_('Secs')?></span>
 						  </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="control-label col-md-6 col-sm-3 col-xs-5"><?=_('Sound Card Channels')?>
+						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The number of channels supported by the sound card. Multi-channel cards may require this value for SVXLink to start correctly.')?>"></i>
+                        </label>
+                        <div class="col-md-6 col-sm-9 col-xs-7">
+						  <input id="CARD_CHANNELS" name="CARD_CHANNELS" type="number" min="1" step="1" class="form-control" value="<?= $cardChannels ?>" placeholder="<?=_('Channels')?>">
                         </div>
                       </div>
 

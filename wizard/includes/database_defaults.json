@@ -10,6 +10,7 @@
 		"rxTone": "0",
 		"txTailValueSec": "1",
 		"txTone": "0",
+		"CARD_CHANNELS": "2",
 		"courtesyMode": "beep",
 		"ID_Short_Mode": "morse",
 		"ID_Long_Mode": "voice",

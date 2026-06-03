@@ -14,6 +14,7 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 		"rxTone"				=>		"",
 		"txTailValueSec"		=>		"2",
 		"txTone"				=>		"",
+		"CARD_CHANNELS"			=>		"2",
 		"courtesyMode"			=>		"beep",
 		"ID_Short_Mode"			=>		"morse",
 		"ID_Long_Mode"			=>		"voice",

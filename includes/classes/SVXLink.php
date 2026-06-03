@@ -95,6 +95,8 @@ class SVXLink {
 		$global_array['CFG_DIR'] = 'svxlink.d';
 		$global_array['TIMESTAMP_FORMAT'] = '"%c"';
 		$global_array['CARD_SAMPLE_RATE'] = '48000';
+		$cardChannels = isset($this->settingsArray['CARD_CHANNELS']) ? $this->settingsArray['CARD_CHANNELS'] : '2';
+		$global_array['CARD_CHANNELS'] = (is_numeric($cardChannels) && $cardChannels >= 1) ? (int) $cardChannels : '2';
 		//$global_array['LOCATION_INFO'] = 'LocationInfo';
 
 		// Add Link Sections if defined
