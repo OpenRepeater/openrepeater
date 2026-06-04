@@ -204,13 +204,17 @@ class SVXLink {
 
 	public function build_tx($curPort, $curPortType = 'GPIO') {
 		$audio_dev = explode("|", $this->portsArray[$curPort]['txAudioDev']);
+		$repeater_timeout = '300';
+		if (isset($this->settingsArray['repeaterTimeoutSec']) && is_numeric($this->settingsArray['repeaterTimeoutSec'])) {
+			$repeater_timeout = $this->settingsArray['repeaterTimeoutSec'];
+		}
 
 		$tx_array['TX_Port'.$curPort] = [
 		'TYPE' => 'Local',
 		'AUDIO_DEV' => $audio_dev[0],
 		'AUDIO_CHANNEL' => $audio_dev[1],
 		'PTT_HANGTIME' => ($this->settingsArray['txTailValueSec'] * 1000),
-		'TIMEOUT' => '300',
+		'TIMEOUT' => $repeater_timeout,
 		'TX_DELAY' => '50',
 		];
 
