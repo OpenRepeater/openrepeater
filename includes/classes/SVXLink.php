@@ -450,7 +450,8 @@ class SVXLink {
 		}
 		# ID only if there is activity, only affect short IDs
 		if ($this->settingsArray['ID_Only_When_Active'] == 'True') {
-			$id_array['IDENT_ONLY_AFTER_TX'] = '4';
+			$identOnlyAfterTx = isset($this->settingsArray['ID_Only_After_TX_Sec']) ? $this->settingsArray['ID_Only_After_TX_Sec'] : '4';
+			$id_array['IDENT_ONLY_AFTER_TX'] = (is_numeric($identOnlyAfterTx) && $identOnlyAfterTx >= 0) ? (int) $identOnlyAfterTx : '4';
 		}
 
 

@@ -28,6 +28,7 @@
 		"repeaterDTMF_disable": "False",
 		"repeaterDTMF_disable_pin": "1234",
 		"ID_Only_When_Active": "True",
+		"ID_Only_After_TX_Sec": "4",
 		"Location_Info": "",
 		"LinkGroup_Settings":{"1": {"defaultActive": "1","timeout": "0"}}
 	},

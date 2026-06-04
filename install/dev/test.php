@@ -29,6 +29,7 @@ require_once(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/includes/autoloadClasses.
 		"ID_Short_AppendMorse"	=>		"False",
 		"ID_Short_CustomFile"	=>		"Sample_Short_ID_Clip.wav",
 		"ID_Morse_Amplitude"	=>		"-13.98",
+		"ID_Only_After_TX_Sec"	=>		"4",
 		"repeaterDTMF_disable"	=>		"False",
 		"repeaterDTMF_disable_pin"	=>	"1234"
 		);

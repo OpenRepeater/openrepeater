@@ -63,6 +63,7 @@ $(function() {
 				$('#ID_Short_Interval_Grp').hide();
 				$('#ID_Short_Custom_Audio_Grp').hide();
 				$('#ID_After_TX_Grp').hide();
+				$('#ID_After_TX_Delay_Grp').hide();
 				$('#ID_Short_Append_Morse_Grp').hide();
 				break;
 	
@@ -70,6 +71,7 @@ $(function() {
 				$('#ID_Short_Interval_Grp').show();
 				$('#ID_Short_Custom_Audio_Grp').hide();
 				$('#ID_After_TX_Grp').show();
+				$('#ID_After_TX_Delay_Grp').show();
 				$('#ID_Short_Append_Morse_Grp').hide();
 				break;
 	
@@ -77,6 +79,7 @@ $(function() {
 				$('#ID_Short_Interval_Grp').show();
 				$('#ID_Short_Custom_Audio_Grp').hide();
 				$('#ID_After_TX_Grp').show();
+				$('#ID_After_TX_Delay_Grp').show();
 				$('#ID_Short_Append_Morse_Grp').show();
 				break;
 	
@@ -84,6 +87,7 @@ $(function() {
 				$('#ID_Short_Interval_Grp').show();
 				$('#ID_Short_Custom_Audio_Grp').show();
 				$('#ID_After_TX_Grp').show();
+				$('#ID_After_TX_Delay_Grp').show();
 				$('#ID_Short_Append_Morse_Grp').show();
 				break;
 		}	
