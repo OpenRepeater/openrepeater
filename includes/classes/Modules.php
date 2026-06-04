@@ -520,6 +520,12 @@ class Modules {
 			}
 		}
 
+		// generated module configuration
+		$svxlink_module_config_path = '/etc/svxlink/svxlink.d/Module' . $svxlink_name . '.conf';
+		if (file_exists($svxlink_module_config_path) || is_link($svxlink_module_config_path)) {
+			unlink($svxlink_module_config_path);
+		}
+
 		### Check for SVXLink Sounds and remove ###
 
 		$svxlink_sounds_path = $this->svxlink_sounds . $svxlink_name;
