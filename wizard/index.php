@@ -89,11 +89,10 @@ $wizardSettingsArray = json_decode($wizardSettingsJSON, false);
                         </li>
                       </ul>
 
-<form id="wizardForm">
+<form id="wizardForm" novalidate>
 <? ################################################################################ ?>
 
-<!-- <div id="step-1"> -->
-<div id="step-3">
+<div id="step-1">
 	<h3 class="StepTitle"><strong><?=_('Step 1')?></strong> - <?=_('Welcome to OpenRepeater')?></h3>
 
 	<p><?=_('Welcome to the OpenRepeater setup wizard. This wizard will guide you through the essential settings to get your OpenRepeater controller up and running. It will not set all of the settings and it will set many to defaults. Note that none of your entries will be applied until you have completed the wizard, applied your changes, and rebuilt and restart the controller. Any other setting you will be able to modify after the controller is setup.')?></p>
@@ -151,8 +150,7 @@ $wizardSettingsArray = json_decode($wizardSettingsJSON, false);
 
 <? ################################################################################ ?>
 
-<!--                        <div id="step-3"> -->
-                       <div id="step-1">
+                       <div id="step-3">
                         <h3 class="StepTitle"><strong><?=_('Step 3')?></strong> - <?=_('Setup Hardware')?></h3>
 
 
