@@ -58,7 +58,7 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('...')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-                          <input type="number" id="ID_Short_IntervalMin" name="ID_Short_IntervalMin" class="form-control" value="<?= $settings['ID_Short_IntervalMin'] ?>" placeholder="<?=_('Minutes')?>" required>
+                          <input type="number" min="1" step="1" id="ID_Short_IntervalMin" name="ID_Short_IntervalMin" class="form-control" value="<?= $settings['ID_Short_IntervalMin'] ?>" placeholder="<?=_('Minutes')?>" required>
                         </div>
                       </div>
 
@@ -127,7 +127,7 @@ $identificationAudio = $AudioFiles->get_audio_filesJSON('identification');
 						  <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="right" title="<?=_('The number of minutes between long identifications. The purpose of the long identification is to transmit some more information about the station. A good value for a repeater is every 60 minutes.')?>"></i>
                         </label>
                         <div class="col-md-6 col-sm-9 col-xs-7">
-                          <input id="ID_Long_IntervalMin" name="ID_Long_IntervalMin" type="number" class="form-control" value="<?= $settings['ID_Long_IntervalMin'] ?>" placeholder="<?=_('Minutes')?>">
+                          <input id="ID_Long_IntervalMin" name="ID_Long_IntervalMin" type="number" min="1" step="1" class="form-control" value="<?= $settings['ID_Long_IntervalMin'] ?>" placeholder="<?=_('Minutes')?>">
                         </div>
                       </div>
 
